@@ -1,0 +1,551 @@
+/* Data Dosen - Form Page Styles (Create & Edit) */
+
+.main-content {
+    padding: 2rem;
+    margin-left: 260px;
+    min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+}
+
+.page-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.breadcrumb-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.breadcrumb-custom a {
+    color: var(--color-primary-500);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb-custom a:hover {
+    color: var(--color-primary-700);
+}
+
+.breadcrumb-custom span {
+    color: var(--color-gray-400);
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Form Elements */
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-gray-700);
+    margin-bottom: 0.5rem;
+}
+
+.form-label .required {
+    color: #ef4444;
+}
+
+.form-control,
+.form-select {
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.padding-option {
+    padding: 50px;
+}
+
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* File Upload */
+.file-upload-wrapper {
+    border: 2px dashed var(--color-gray-300);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.file-upload-wrapper:hover {
+    border-color: var(--color-primary-500);
+    background: rgba(59, 130, 246, 0.02);
+}
+
+.file-upload-wrapper.dragover {
+    border-color: var(--color-primary-500);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.file-upload-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--color-gray-400);
+    margin: 0 auto 1rem;
+}
+
+.file-upload-text {
+    color: var(--color-gray-600);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.file-upload-hint {
+    color: var(--color-gray-400);
+    font-size: 0.75rem;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+.image-preview {
+    margin-top: 1rem;
+}
+
+.image-preview img {
+    max-width: 200px;
+    border-radius: 8px;
+    border: 2px solid var(--color-gray-200);
+}
+
+/* Current Image (Edit Page) */
+.current-image {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--color-gray-50);
+    border-radius: 8px;
+}
+
+.current-image img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--color-gray-200);
+}
+
+.current-image-info {
+    flex: 1;
+}
+
+.current-image-label {
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+/* Add Option Button */
+.btn-add-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: var(--color-primary-500);
+    background: rgba(59, 130, 246, 0.1);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+}
+
+.btn-add-option:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.btn-add-option svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.btn-primary-custom {
+    background: var(--color-primary-500);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary-custom:hover {
+    background: var(--color-primary-600);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary-custom {
+    background: white;
+    color: var(--color-gray-700);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid var(--color-gray-300);
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-secondary-custom:hover {
+    background: var(--color-gray-50);
+    border-color: var(--color-gray-400);
+    color: var(--color-gray-700);
+}
+
+/* Select2 Custom Styles */
+.select2-container--bootstrap-5 .select2-selection {
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.select2-container--bootstrap-5.select2-container--focus .select2-selection {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Helper Text */
+.helper-text {
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    margin-top: 0.25rem;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--color-gray-200);
+    padding: 1.5rem;
+}
+
+/* Form Divider */
+.form-divider {
+    border: none;
+    border-top: 2px solid var(--color-gray-200);
+    margin: 2rem 0;
+}
+
+/* Section Header in Form */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.section-header svg {
+    color: var(--color-primary-500);
+    flex-shrink: 0;
+}
+
+.section-title-form {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.section-subtitle-form {
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* Input Group with Icon */
+.input-group-custom {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.input-group-custom .form-control {
+    padding-left: 2.75rem;
+}
+
+/* Custom Dropdown with Delete Button */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.custom-dropdown-trigger:hover {
+    border-color: var(--color-primary-500);
+}
+
+.custom-dropdown.active .custom-dropdown-trigger {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.custom-dropdown-text {
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    flex: 1;
+}
+
+.custom-dropdown-arrow {
+    width: 16px;
+    height: 16px;
+    color: var(--color-gray-400);
+    transition: transform 0.2s;
+}
+
+.custom-dropdown.active .custom-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.custom-dropdown.active .custom-dropdown-menu {
+    display: block;
+}
+
+.custom-dropdown-empty {
+    padding: 1rem;
+    text-align: center;
+    color: var(--color-gray-400);
+    font-size: 0.875rem;
+}
+
+.custom-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-gray-100);
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.custom-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.custom-dropdown-item:hover {
+    background: var(--color-gray-50);
+}
+
+.custom-dropdown-item.selected {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.custom-dropdown-item .item-text {
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    flex: 1;
+}
+
+.custom-dropdown-item.selected .item-text {
+    color: var(--color-primary-600);
+    font-weight: 600;
+}
+
+.item-delete-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 0.5rem;
+}
+
+.item-delete-btn svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-gray-400);
+    transition: color 0.2s;
+}
+
+.item-delete-btn:hover {
+    background: #fee2e2;
+}
+
+.item-delete-btn:hover svg {
+    color: #dc2626;
+}
+
+/* Selected Badges (for multiple selection like keahlian) */
+.selected-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    min-height: 36px;
+}
+
+.selected-badges:empty {
+    display: none;
+}
+
+.selected-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-primary-500);
+    color: white;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.selected-badge:hover {
+    background: var(--color-primary-600);
+}
+
+.badge-remove-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.badge-remove-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.badge-remove-btn svg {
+    width: 12px;
+    height: 12px;
+    color: white;
+}

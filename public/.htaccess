@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Jika permintaan bukan file fisik 
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # Jika permintaan bukan direktori fisik
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Arahkan semua permintaan ke index.php
+    RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
+</IfModule>

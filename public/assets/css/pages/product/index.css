@@ -1,0 +1,368 @@
+/* Data Product - List Page Styles */
+
+/* Menggunakan CSS variables dari variables.css */
+
+.main-content {
+    padding: 2rem;
+    margin-left: 260px;
+    min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+}
+
+.page-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.page-header-list {
+    margin-bottom: 10px;
+    padding: 70px 2rem 10px 2rem;
+}
+
+.page-title {
+    font-size: var(--fs-2xl) !important;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--color-gray-500);
+    font-size: var(--fs-base);
+    margin-top: 10px;
+}
+
+.card {
+    background: white;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 1.5rem;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Search Bar */
+.search-wrapper {
+    position: relative;
+    width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.625rem 1rem 0.625rem 2.75rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(1, 181, 185, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray-400);
+    width: 18px;
+    height: 18px;
+}
+
+/* Buttons */
+.btn-primary-custom {
+    background: var(--color-primary-500);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-primary-custom:hover {
+    background: var(--color-primary-600);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(1, 181, 185, 0.3);
+}
+
+/* Table */
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 0 0 12px 12px;
+}
+
+.table-custom {
+    width: 100%;
+    margin: 0;
+}
+
+.table-custom thead {
+    background: var(--color-gray-50);
+}
+
+/* Column widths - disesuaikan untuk 4 kolom + action */
+.col-id {
+    min-width: 80px;
+    width: 80px;
+}
+
+.col-logo {
+    min-width: 100px;
+}
+
+.col-name {
+    min-width: 280px;
+}
+
+.col-link {
+    min-width: 350px;
+}
+
+.table-custom thead th {
+    padding: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-gray-700);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--color-gray-200);
+    white-space: nowrap;
+}
+
+.table-custom tbody td {
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    border-bottom: 1px solid var(--color-gray-200);
+    vertical-align: middle;
+}
+
+.table-custom tbody tr:hover {
+    background: var(--color-gray-50);
+}
+
+.table-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Action Cell - Fixed position saat scroll horizontal */
+.action-cell {
+    position: sticky;
+    right: 0;
+    background: white;
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.05);
+    min-width: 140px;
+    width: 140px;
+}
+
+.table-custom tbody tr:hover .action-cell {
+    background: var(--color-gray-50);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-action svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-view {
+    background: var(--color-tertiary-500);
+    color: white;
+}
+
+.btn-view:hover {
+    background: var(--color-tertiary-600);
+    transform: translateY(-1px);
+}
+
+.btn-edit {
+    background: var(--color-secondary-500);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: var(--color-secondary-600);
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: var(--color-error);
+    color: white;
+}
+
+.btn-delete:hover {
+    background: var(--color-error-dark);
+    transform: translateY(-1px);
+}
+
+/* Product Logo */
+.logo-product {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid var(--color-gray-200);
+}
+
+/* Product Name */
+.product-name {
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin-bottom: 0.25rem;
+}
+
+.product-category {
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    font-weight: 500;
+}
+
+/* Product Link */
+.product-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-primary-500);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    word-break: break-all;
+}
+
+.product-link:hover {
+    color: var(--color-primary-600);
+    text-decoration: underline;
+}
+
+.product-link svg {
+    flex-shrink: 0;
+}
+
+/* Pagination */
+.pagination-wrapper {
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pagination-info {
+    color: var(--color-gray-600);
+    font-size: 0.875rem;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.pagination .page-link {
+    color: var(--color-gray-700);
+    border: 1px solid var(--color-gray-300);
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.pagination .page-link:hover {
+    background: var(--color-gray-50);
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-500);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--color-primary-500);
+    border-color: var(--color-primary-500);
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state svg {
+    width: 64px;
+    height: 64px;
+    color: var(--color-gray-300);
+    margin-bottom: 1rem;
+}
+
+.empty-state h6 {
+    color: var(--color-gray-700);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .search-wrapper {
+        width: 100%;
+    }
+
+    .pagination-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-header-list {
+        padding: 70px 1rem 10px 1rem;
+    }
+}

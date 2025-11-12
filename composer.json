@@ -1,0 +1,21 @@
+{
+    "name": "group-1/pbl_web_lab_ai",
+    "description": "Website profil & CMS Laboratorium Informatika",
+    "type": "project",
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "nandah4",
+            "email": "nyustira6@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "App\\" : "app/"
+        }
+    }
+}

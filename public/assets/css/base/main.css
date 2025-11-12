@@ -1,0 +1,73 @@
+/**
+ * Main Stylesheet
+ * Applied Informatics Laboratory - Web Profile
+ *
+ * Import Order:
+ * 1. Vendors (Bootstrap)
+ * 2. Base styles (reset, variables, fonts)
+ * 3. Components
+ * 4. Layouts
+ * 5. Pages
+ * 6. Utilities
+ */
+
+/* ========== VENDORS ========== */
+@import '../bootstrap.min.css';
+
+/* ========== BASE ========== */
+@import 'reset.css';
+@import 'variables.css';
+@import 'fonts.css';
+
+/* ========== COMPONENTS ========== */
+/* @import 'components/buttons.css'; */
+/* @import 'components/forms.css'; */
+/* @import 'components/cards.css'; */
+
+/* ========== LAYOUTS ========== */
+/* @import 'layouts/header.css'; */
+/* @import 'layouts/footer.css'; */
+/* @import 'layouts/sidebar.css'; */
+
+/* ========== PAGES ========== */
+/* @import 'pages/home.css'; */
+/* @import 'pages/login.css'; */
+
+/* ========== UTILITIES ========== */
+/* @import 'utilities/spacing.css'; */
+/* @import 'utilities/display.css'; */
+
+
+/* ========== GLOBAL STYLES ========== */
+body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* Container */
+.container-custom {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Selection */
+::selection {
+    background-color: var(--color-primary-500);
+    color: white;
+}
+
+/* Focus Visible */
+*:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+}

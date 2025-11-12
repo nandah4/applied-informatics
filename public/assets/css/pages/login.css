@@ -1,0 +1,163 @@
+/**
+ * Login Page Styles
+ * Applied Informatics Laboratory
+ */
+
+/* ========== LOGIN PAGE LAYOUT ========== */
+
+.login-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Manrope", sans-serif;
+}
+.parent-login {
+  display: grid;
+  grid-template-columns: 2fr 1.3fr;
+  height: 100%;
+  height: 100vh;
+}
+.child-left-login {
+  padding: 15px;
+  overflow: hidden;
+}
+.child-left-login img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.parent-img-left-login {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.child-overlay-img-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: start;
+  padding: 25px;
+}
+.child-overlay-img-left h5 {
+  color: white;
+  margin-bottom: 10px;
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-medium);
+}
+
+.child-overlay-img-left p {
+  color: white;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-regular);
+  text-align: start;
+}
+
+.card-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Logo */
+.header-login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin: 0px 0px 20px 0px;
+}
+.container-logo-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Logo size */
+.container-logo-login img {
+  max-width: 200px; /* keep logo limited but responsive */
+  width: 100%;
+  height: auto;
+}
+.header-login-card h4 {
+  text-align: center;
+}
+
+.card-login form {
+  width: 100%;
+}
+
+/* Form Login */
+.main-login-card {
+  max-width: 80%;
+  margin: auto;
+}
+
+.form-control:focus {
+  box-shadow: none !important;
+  outline: none !important;
+  border-color: var(--color-primary-500) !important;
+}
+.ig-password .form-control,
+.ig-email .form-control {
+  padding: 14px 10px !important;
+}
+.form-control::placeholder,
+.input-group-text {
+  font-weight: var(--fw-regular) !important;
+  font-size: var(--fs-sm) !important;
+}
+.ig-email .input-group-text {
+  background-color: var(--color-primary-500);
+  color: white;
+}
+.ig-password .input-group-text {
+  cursor: pointer;
+  background-color: white !important;
+  border: none !important;
+}
+.form-control {
+  border-top-right-radius: 0.375rem !important;
+  border-bottom-right-radius: 0.375rem !important;
+}
+
+.label-form {
+  font-size: var(--fs-lg) !important;
+  font-weight: var(--fw-medium) !important;
+}
+
+/* Button Login */
+.btn-login {
+  width: 100%;
+  background-color: var(--color-primary-200) !important;
+  padding: 13px 0px !important;
+  font-weight: var(--fw-semibold) !important;
+}
+.btn-login:hover {
+  background-color: var(--color-primary-500) !important;
+  color: white !important;
+}
+
+/* ========== MEDIA QUERY ========== */
+@media (max-width: 768px) {
+  .parent-login {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .child-left-login {
+    display: none;
+  }
+  .login-body {
+    width: 100%;
+    display: block;
+  }
+}
