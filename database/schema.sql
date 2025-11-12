@@ -64,3 +64,12 @@ CREATE TABLE tbl_dosen_keahlian(
 
 -- CREATE PROCEDURE sp_dosen di dir procedures/sp_dosen.sql
 
+-- CREATE TABLE fasilitas
+CREATE TABLE tbl_fasilitas (
+    fasilitas_id  BIGSERIAL PRIMARY KEY,
+    nama          VARCHAR(150) NOT NULL,
+    deskripsi     TEXT,
+    foto          VARCHAR(255),
+    created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
+);

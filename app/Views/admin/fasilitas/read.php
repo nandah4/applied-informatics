@@ -66,12 +66,9 @@
                         <div class="info-label">Nama Fasilitas</div>
                         <div class="info-value">Komputer Lab A</div>
                     </div>
-
                     <div class="info-row">
-                        <div class="info-label">Status</div>
-                        <div class="info-value">
-                            <span class="badge-custom badge-success">Tersedia</span>
-                        </div>
+                        <div class="info-label">Deskripsi</div>
+                        <div class="info-value">Komputer Lab A</div>
                     </div>
 
                     <div class="info-row">

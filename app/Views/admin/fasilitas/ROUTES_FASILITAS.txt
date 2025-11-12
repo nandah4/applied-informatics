@@ -1,0 +1,87 @@
+/**
+ * ============================================================================
+ * ROUTING FASILITAS - KERANGKA KERJA
+ * ============================================================================
+ *
+ * Copy code ini ke config/routes.php
+ * Letakkan di section yang sesuai (setelah route dosen)
+ */
+
+// ========================================
+// FASILITAS ROUTES
+// ========================================
+
+/**
+ * GET /fasilitas
+ * Halaman list fasilitas dengan pagination
+ */
+$router->get('fasilitas', function () {
+    $controller = new FasilitasController();
+    $result = $controller->getAllFasilitas();
+
+    $listFasilitas = $result['data'];
+    $pagination = $result['pagination'];
+
+    require __DIR__ . '/../app/Views/admin/fasilitas/index.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * GET /fasilitas/create
+ * Halaman form tambah fasilitas
+ */
+$router->get('fasilitas/create', function () {
+    require __DIR__ . '/../app/Views/admin/fasilitas/create.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * POST /fasilitas/create
+ * Handle submit form create
+ */
+$router->post('fasilitas/create', function () {
+    $controller = new FasilitasController();
+    $controller->createFasilitas();
+});
+
+/**
+ * GET /fasilitas/edit/:id
+ * Halaman form edit fasilitas
+ */
+$router->get('fasilitas/edit/:id', function ($id) {
+    $controller = new FasilitasController();
+    $result = $controller->getFasilitasById($id);
+
+    $fasilitas = $result['data'];
+
+    require __DIR__ . '/../app/Views/admin/fasilitas/edit.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * POST /fasilitas/update
+ * Handle submit form update
+ */
+$router->post('fasilitas/update', function () {
+    $controller = new FasilitasController();
+    $controller->updateFasilitas();
+});
+
+/**
+ * GET /fasilitas/detail/:id
+ * Halaman detail fasilitas
+ */
+$router->get('fasilitas/detail/:id', function ($id) {
+    $controller = new FasilitasController();
+    $result = $controller->getFasilitasById($id);
+
+    $fasilitas = $result['data'];
+
+    require __DIR__ . '/../app/Views/admin/fasilitas/read.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * POST /fasilitas/delete/:id
+ * Handle delete fasilitas
+ */
+$router->post('fasilitas/delete/:id', function ($id) {
+    $controller = new FasilitasController();
+    $controller->deleteFasilitasById($id);
+});
