@@ -50,7 +50,6 @@
                     <div class="partner-header-info">
                         <h2 class="partner-title">PT. Teknologi Informasi Indonesia</h2>
                         <div class="partner-meta">
-                            <span class="badge-custom badge-primary">Perusahaan</span>
                             <span class="badge-custom badge-success">Mitra Aktif</span>
                         </div>
                     </div>
@@ -79,13 +78,6 @@
                     </div>
 
                     <div class="info-row">
-                        <div class="info-label">Tipe Mitra</div>
-                        <div class="info-value">
-                            <span class="badge-custom badge-primary">Perusahaan</span>
-                        </div>
-                    </div>
-
-                    <div class="info-row">
                         <div class="info-label">Status</div>
                         <div class="info-value">
                             <span class="badge-custom badge-success">Mitra Aktif</span>
@@ -93,13 +85,13 @@
                     </div>
 
                     <div class="info-row">
-                        <div class="info-label">Tanggal Kerjasama</div>
+                        <div class="info-label">Tanggal Mulai Kerjasama</div>
                         <div class="info-value">15 Januari 2024</div>
                     </div>
 
                     <div class="info-row">
-                        <div class="info-label">Tanggal Ditambahkan</div>
-                        <div class="info-value">10 November 2024</div>
+                        <div class="info-label">Tanggal Akhir Kerjasama</div>
+                        <div class="info-value">15 Januari 2024</div>
                     </div>
 
                     <div class="info-row">

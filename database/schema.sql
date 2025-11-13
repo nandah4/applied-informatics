@@ -73,3 +73,18 @@ CREATE TABLE tbl_fasilitas (
     created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+-- CREATE TABLE mitra 
+CREATE TYPE status_enum AS ENUM ('aktif', 'non-aktif');
+
+CREATE TABLE tbl_mitra (
+    id              BIGSERIAL PRIMARY KEY,
+    nama            VARCHAR(150) NOT NULL,
+    status          status_enum NOT NULL DEFAULT 'non-aktif',
+    deskripsi	    TEXT,
+    logo_mitra      VARCHAR(255),
+    tanggal_mulai   DATE,
+    tanggal_akhir   DATE,
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);

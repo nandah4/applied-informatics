@@ -710,7 +710,7 @@
 
       const nameValidation = validationHelpers.validateName(
         data.full_name,
-        3,
+        1,
         255
       );
       if (!nameValidation.valid) {
