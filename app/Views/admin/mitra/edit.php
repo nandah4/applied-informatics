@@ -18,6 +18,9 @@
 
     <!-- Data Mitra Form Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/mitra/form.css') ?>">
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 
 <body>
@@ -53,21 +56,49 @@
                             <div class="helper-text">Berikan nama lengkap mitra</div>
                         </div>
 
-                        <!-- Tipe Mitra -->
+                        <!-- Status Mitra -->
                         <div class="col-md-6 mb-3">
                             <label for="tipe_mitra" class="form-label">
-                                Tipe Mitra
+                                Status Mitra
                             </label>
                             <select class="form-select" id="tipe_mitra" name="tipe_mitra">
-                                <option value="">Pilih Tipe Mitra</option>
-                                <option value="Perusahaan" selected>Perusahaan</option>
-                                <option value="Perguruan Tinggi">Perguruan Tinggi</option>
-                                <option value="UMKM">UMKM</option>
-                                <option value="Instansi Pemerintah">Instansi Pemerintah</option>
-                                <option value="Organisasi">Organisasi</option>
-                                <option value="Startup">Startup</option>
+                                <option value="aktif" selected>Aktif</option>
+                                <option value="non-aktif">Non Aktif</option>
                             </select>
-                            <div class="helper-text">Kategori mitra (opsional)</div>
+                        </div>
+
+                        <!-- Tanggal Mulai Kerjasama -->
+                        <div class="col-md-6 mb-3">
+                            <label for="tanggal_mulai" class="form-label">
+                                Tanggal Mulai Kerjasama <span class="required">*</span>
+                            </label>
+                            <div class="date-input-wrapper">
+                                <svg class="date-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <input type="text" class="form-control date-input" id="tanggal_mulai" name="tanggal_mulai" value="15/03/2023" placeholder="Pilih tanggal mulai" required readonly>
+                            </div>
+                            <div class="helper-text">Tanggal dimulainya kerjasama dengan mitra</div>
+                        </div>
+
+                        <!-- Tanggal Akhir Kerjasama -->
+                        <div class="col-md-6 mb-3">
+                            <label for="tanggal_akhir" class="form-label">
+                                Tanggal Akhir Kerjasama
+                            </label>
+                            <div class="date-input-wrapper">
+                                <svg class="date-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <input type="text" class="form-control date-input" id="tanggal_akhir" name="tanggal_akhir" placeholder="Pilih tanggal akhir (opsional)" readonly>
+                            </div>
+                            <div class="helper-text">Kosongkan jika kerjasama masih berlangsung</div>
                         </div>
 
                         <!-- Logo Mitra -->
@@ -152,6 +183,9 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script>
         // File upload preview
         const fileInput = document.getElementById('logo_mitra');
@@ -190,6 +224,45 @@
             if (currentImageWrapper) {
                 currentImageWrapper.style.display = 'block';
             }
+        });
+
+        // Initialize Flatpickr for date inputs
+        const tanggalMulaiPicker = flatpickr("#tanggal_mulai", {
+            dateFormat: "d/m/Y",
+            locale: {
+                firstDayOfWeek: 1,
+                weekdays: {
+                    shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                },
+                months: {
+                    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                }
+            },
+            allowInput: true,
+            onChange: function(selectedDates, dateStr, instance) {
+                // Update min date for tanggal_akhir when tanggal_mulai changes
+                if (selectedDates.length > 0) {
+                    tanggalAkhirPicker.set('minDate', selectedDates[0]);
+                }
+            }
+        });
+
+        const tanggalAkhirPicker = flatpickr("#tanggal_akhir", {
+            dateFormat: "d/m/Y",
+            locale: {
+                firstDayOfWeek: 1,
+                weekdays: {
+                    shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                },
+                months: {
+                    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                }
+            },
+            allowInput: true
         });
 
         // Form submit

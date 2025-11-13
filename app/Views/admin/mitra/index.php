@@ -74,8 +74,9 @@
                     <thead>
                         <tr>
                             <th class="col-id">ID</th>
-                            <th class="col-name">Nama Mitra</th>
                             <th class="col-logo">Logo</th>
+                            <th class="col-name">Nama Mitra</th>
+                            <th class="col-status">Status</th>
                             <th class="action-cell">Aksi</th>
                         </tr>
                     </thead>
@@ -83,13 +84,13 @@
                         <!-- Sample Data Row 1 -->
                         <tr>
                             <td class="col-id">1</td>
-                            <td class="col-name">
-                                <div class="partner-name">PT. Teknologi Informasi Indonesia</div>
-                                <div class="partner-type">Perusahaan</div>
-                            </td>
                             <td class="col-logo">
                                 <img src="https://via.placeholder.com/80x80/01b5b9/ffffff?text=TII" alt="Logo" class="logo-partner">
                             </td>
+                            <td class="col-name">
+                                <div class="partner-name">PT. Teknologi Informasi Indonesia</div>
+                            </td>
+                            <td class="col-status">Aktif</td>
                             <td class="action-cell">
                                 <div class="action-buttons">
                                     <a href="<?= base_url('mitra/detail') ?>" class="btn-action btn-view" title="Lihat Detail">
@@ -113,7 +114,7 @@
                             </td>
                         </tr>
 
-                        
+
 
                         <!-- Empty State (Uncomment when there's no data) -->
                         <!-- <tr>

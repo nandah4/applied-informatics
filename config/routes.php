@@ -379,6 +379,15 @@ $router->get('mitra/edit', function () {
 
 // TODO: Tambahkan route POST untuk create, update, delete mitra
 
+/**
+ * Mitra - Create Page
+ * URL: POST /mitra/create
+ */
+$router->post('mitra/create', function () {
+    $controller = new MitraController();
+    $controller->createMitra();
+}, [AuthMiddleware::class]);
+
 // ============================================================================
 // END OF ROUTES
 // ============================================================================
