@@ -1,0 +1,24 @@
+.dummy {
+    border-radius: 10px;
+    text-align: left;
+    height: 100%;
+}
+
+.deskripsi {
+    border-radius: 10px;
+    height: 100%;
+}
+
+.gambar-lab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn {
+    background-color: var(--color-primary-500) !important;
+}
+
+.beranda {
+    margin-bottom: 100px;
+}

@@ -3,7 +3,7 @@
         'name' => 'group-1/pbl_web_lab_ai',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '3469211ddb92186a04583ec0362f1e61e68acdac',
+        'reference' => 'cde3b85d5d70e04051e2408a4d81eafcc894348e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'group-1/pbl_web_lab_ai' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '3469211ddb92186a04583ec0362f1e61e68acdac',
+            'reference' => 'cde3b85d5d70e04051e2408a4d81eafcc894348e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
