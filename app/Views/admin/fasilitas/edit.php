@@ -21,6 +21,9 @@
 </head>
 
 <body>
+    <!-- Alert Placeholder -->
+    <div id="liveAlertPlaceholder"></div>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -40,17 +43,38 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formFasilitas" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="1">
+                <form id="formFasilitas" method="POST" enctype="multipart/form-data"
+                    data-ajax-url="<?= base_url('fasilitas/update') ?>"
+                    data-redirect-url="<?= base_url('fasilitas') ?>"
+                    data-success-message="Data fasilitas berhasil diupdate.">
+
+                    <!-- Hidden Field: ID Fasilitas -->
+                    <input type="hidden" id="fasilitas_id" name="fasilitas_id" value="<?= htmlspecialchars($fasilitas['fasilitas_id']) ?>">
 
                     <div class="row">
                         <!-- Nama Fasilitas -->
                         <div class="col-12 mb-3">
-                            <label for="nama_fasilitas" class="form-label">
+                            <label for="nama" class="form-label">
                                 Nama Fasilitas <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama_fasilitas" name="nama_fasilitas" placeholder="Masukkan nama fasilitas" value="Komputer Lab A" required>
+                            <input type="text" class="form-control" id="nama" name="nama"
+                                placeholder="Masukkan nama fasilitas"
+                                value="<?= htmlspecialchars($fasilitas['nama']) ?>"
+                                required>
+                            <div id="namaError" class="invalid-feedback"></div>
                             <div class="helper-text">Berikan nama yang jelas dan deskriptif untuk fasilitas</div>
+                        </div>
+
+                        <!-- Deskripsi -->
+                        <div class="col-12 mb-3">
+                            <label for="deskripsi" class="form-label">
+                                Deskripsi
+                            </label>
+                            <textarea class="form-control" id="deskripsi" name="deskripsi"
+                                rows="4"
+                                placeholder="Masukkan deskripsi singkat tentang fasilitas"><?= htmlspecialchars($fasilitas['deskripsi'] ?? '') ?></textarea>
+                            <div id="deskripsiError" class="invalid-feedback"></div>
+                            <div class="helper-text">Deskripsikan lebih lanjut mengenai fasilitas tersebut</div>
                         </div>
 
                         <!-- Foto Fasilitas -->
@@ -59,14 +83,24 @@
                                 Foto Fasilitas
                             </label>
 
-                            <!-- Current Image -->
+                            <!-- Current Image Display -->
                             <div class="current-image-wrapper mb-3">
                                 <div class="current-image-label">Foto saat ini:</div>
-                                <img src="https://via.placeholder.com/400x300/01b5b9/ffffff?text=Lab+A" alt="Current Photo" class="current-image" id="currentImage">
+                                <?php if (!empty($fasilitas['foto'])): ?>
+                                    <img src="<?= upload_url('fasilitas/' . $fasilitas['foto']) ?>"
+                                        alt="Current Photo"
+                                        class="current-image"
+                                        id="currentImage">
+                                <?php else: ?>
+                                    <img src="<?= upload_url('default/image.png') ?>"
+                                        alt="No Photo"
+                                        class="current-image"
+                                        id="currentImage">
+                                <?php endif; ?>
                                 <div class="helper-text mt-2">Klik area upload di bawah untuk mengganti foto</div>
                             </div>
 
-                            <!-- File Upload -->
+                            <!-- Upload Box -->
                             <div class="file-upload-wrapper" id="fileUploadWrapper">
                                 <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -77,10 +111,15 @@
                                     <strong>Klik untuk upload foto baru</strong> atau drag and drop
                                 </div>
                                 <div class="file-upload-hint">
-                                    PNG, JPG, JPEG maksimal 5MB
+                                    PNG, JPG, JPEG maksimal 2MB
                                 </div>
                             </div>
-                            <input type="file" class="file-upload-input" id="foto_fasilitas" name="foto_fasilitas" accept="image/png,image/jpg,image/jpeg">
+
+                            <!-- File Input -->
+                            <input type="file" class="file-upload-input" id="foto" name="foto" accept="image/png,image/jpg,image/jpeg">
+                            <div id="fotoError" class="invalid-feedback"></div>
+
+                            <!-- Preview New Image -->
                             <div class="image-preview" id="imagePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
                                 <button type="button" class="btn-remove-preview" id="btnRemovePreview">
@@ -102,7 +141,7 @@
                             </svg>
                             Batal
                         </a>
-                        <button type="submit" class="btn-primary-custom">
+                        <button type="submit" class="btn-primary-custom" id="btn-submit-update-fasilitas">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
@@ -126,54 +165,12 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <script>
-        // File upload preview
-        const fileInput = document.getElementById('foto_fasilitas');
-        const fileUploadWrapper = document.getElementById('fileUploadWrapper');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
-        const btnRemovePreview = document.getElementById('btnRemovePreview');
-        const currentImageWrapper = document.querySelector('.current-image-wrapper');
+    <!-- Helper Scripts (Must load before form.js) -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+    <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-        fileUploadWrapper.addEventListener('click', function() {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    fileUploadWrapper.style.display = 'none';
-                    if (currentImageWrapper) {
-                        currentImageWrapper.style.display = 'none';
-                    }
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Remove preview
-        btnRemovePreview.addEventListener('click', function(e) {
-            e.stopPropagation();
-            fileInput.value = '';
-            imagePreview.style.display = 'none';
-            fileUploadWrapper.style.display = 'flex';
-            if (currentImageWrapper) {
-                currentImageWrapper.style.display = 'block';
-            }
-        });
-
-        // Form submit
-        document.getElementById('formFasilitas').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Add your form submission logic here
-            console.log('Form submitted');
-            alert('Data fasilitas berhasil diupdate!');
-        });
-    </script>
+    <!-- Data Fasilitas Form Page JS -->
+    <script src="<?= asset_url('js/pages/fasilitas/form.js') ?>"></script>
 </body>
 
 </html>
