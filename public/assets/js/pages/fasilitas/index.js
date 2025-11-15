@@ -1,11 +1,12 @@
 /**
- * File: pages/dosen/index.js
- * Deskripsi: Script untuk halaman list data dosen
+ * File: pages/fasilitas/index.js
+ * Deskripsi: Script untuk halaman list data fasilitas
  *
  * Fitur:
- * - Search/Filter data dosen
- * - Delete dosen dengan konfirmasi
- * - Notifikasi menggunakan Bootstrap Alert
+ * - Search/Filter data fasilitas (client-side)
+ * - Pagination controls (server-side)
+ * - Delete fasilitas dengan konfirmasi (AJAX)
+ * - Mobile menu toggle
  *
  * Dependencies:
  * - jQuery
@@ -18,14 +19,12 @@
     // ============================================================
     // MODUL SEARCH/FILTER
     // ============================================================
-
     const SearchModule = {
         /**
          * Inisialisasi fungsi search/filter
          */
         init: function() {
             const searchInput = document.querySelector('.search-input');
-
             if (searchInput) {
                 searchInput.addEventListener('input', this.handleSearch);
             }
@@ -43,89 +42,89 @@
 
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
-
                 // Tampilkan baris jika mengandung keyword, sembunyikan jika tidak
                 row.style.display = text.includes(searchTerm) ? '' : 'none';
             });
         }
     };
 
-  // ============================================================
-  // MODUL PAGINATION
-  // ============================================================
+    // ============================================================
+    // MODUL PAGINATION
+    // ============================================================
+    const PaginationModule = {
+        /**
+         * Inisialisasi pagination controls
+         */
+        init: function() {
+            const perPageSelect = document.getElementById('perPageSelect');
 
-  const PaginationModule = {
-      /**
-       * Inisialisasi pagination controls
-       */
-      init: function() {
-          const perPageSelect = document.getElementById('perPageSelect');
+            if (perPageSelect) {
+                perPageSelect.addEventListener('change', this.handlePerPageChange);
+            }
+        },
 
-          if (perPageSelect) {
-              perPageSelect.addEventListener('change', this.handlePerPageChange);
-          }
-      },
+        /**
+         * Handle perubahan jumlah data per halaman
+         *
+         * @param {Event} e - Event object
+         */
+        handlePerPageChange: function(e) {
+            const perPage = e.target.value;
+            const currentUrl = new URL(window.location.href);
 
-      /**
-       * Handle perubahan jumlah data per halaman
-       * @param {Event} e - Event object
-       */
-      handlePerPageChange: function(e) {
-          const perPage = e.target.value;
-          const currentUrl = new URL(window.location.href);
+            // Update parameter per_page dan reset ke page 1
+            currentUrl.searchParams.set('per_page', perPage);
+            currentUrl.searchParams.set('page', '1');
 
-          // Update parameter per_page dan reset ke page 1
-          currentUrl.searchParams.set('per_page', perPage);
-          currentUrl.searchParams.set('page', '1');
-
-          // Redirect ke URL baru
-          window.location.href = currentUrl.toString();
-      }
-  };
-
+            // Redirect ke URL baru
+            window.location.href = currentUrl.toString();
+        }
+    };
 
     // ============================================================
-    // MODUL DELETE DOSEN
+    // MODUL DELETE FASILITAS
     // ============================================================
-
     const DeleteModule = {
         /**
-         * Tampilkan konfirmasi dan hapus dosen
+         * Tampilkan konfirmasi dan hapus fasilitas
          * Function ini dipanggil dari button delete di view
          *
-         * @param {number} id - ID dosen yang akan dihapus
+         * @param {number} id - ID fasilitas yang akan dihapus
+         * @param {string} deleteUrl - URL endpoint delete
          */
-        confirmDelete: function(id) {
+        confirmDelete: function(id, deleteUrl) {
             // Tampilkan konfirmasi native browser
-            if (!confirm('Apakah Anda yakin ingin menghapus data dosen ini?\n\nData yang dihapus tidak dapat dikembalikan.')) {
+            if (!confirm('Apakah Anda yakin ingin menghapus data fasilitas ini?\n\nData yang dihapus tidak dapat dikembalikan.')) {
                 return; // User cancel, hentikan proses
             }
 
             // Proses delete
-            this.deleteDosen(id);
+            this.deleteFasilitas(id, deleteUrl);
         },
 
         /**
-         * Proses delete dosen via AJAX
+         * Proses delete fasilitas via AJAX
          * Menggunakan jQueryHelpers untuk standardisasi AJAX call
          *
-         * @param {number} id - ID dosen yang akan dihapus
+         * @param {number} id - ID fasilitas yang akan dihapus
+         * @param {string} deleteUrl - URL endpoint delete
          */
-        deleteDosen: function(id) {
+        deleteFasilitas: function(id, deleteUrl) {
             // Disable tombol delete untuk mencegah multiple clicks
-            const deleteBtn = $(`button[onclick="confirmDelete(${id})"]`);
+            // Gunakan selector yang lebih spesifik dengan data attribute
+            const deleteBtn = $(`button[data-fasilitas-id="${id}"]`);
             deleteBtn.prop('disabled', true);
 
             // Request AJAX menggunakan jQueryHelpers
             jQueryHelpers.makeAjaxRequest({
-                url: `/applied-informatics/dosen/delete/${id}`,
+                url: deleteUrl,
                 method: 'POST',
                 data: {},
                 onSuccess: (response) => {
                     if (response.success) {
                         // Tampilkan notifikasi success
                         jQueryHelpers.showAlert(
-                            'Data dosen berhasil dihapus!',
+                            'Data fasilitas berhasil dihapus!',
                             'success',
                             2000
                         );
@@ -137,7 +136,7 @@
                     } else {
                         // Tampilkan pesan error dari server
                         jQueryHelpers.showAlert(
-                            response.message || 'Gagal menghapus data dosen',
+                            response.message || 'Gagal menghapus data fasilitas',
                             'danger',
                             5000
                         );
@@ -155,7 +154,7 @@
                     );
 
                     // Log error untuk debugging
-                    console.error('Delete dosen error:', errorMessage);
+                    console.error('Delete fasilitas error:', errorMessage);
 
                     // Re-enable tombol delete
                     deleteBtn.prop('disabled', false);
@@ -165,16 +164,14 @@
     };
 
     // ============================================================
-    // MODUL MOBILE MENU (Optional - untuk future development)
+    // MODUL MOBILE MENU
     // ============================================================
-
     const MobileMenuModule = {
         /**
          * Inisialisasi mobile menu toggle
          */
         init: function() {
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-
             if (mobileMenuBtn) {
                 mobileMenuBtn.addEventListener('click', this.toggleMenu);
             }
@@ -186,30 +183,26 @@
         toggleMenu: function() {
             console.log('Mobile menu toggled');
             // TODO: Implementasi toggle menu untuk mobile
+            // Contoh: document.querySelector('.sidebar').classList.toggle('active');
         }
     };
 
     // ============================================================
     // INISIALISASI
     // ============================================================
-
-    /**
-     * Jalankan semua modul saat document ready
-     */
     $(document).ready(function() {
         // Inisialisasi modul search
         SearchModule.init();
 
-        // Inisialisasi pagination
+        // Inisialisasi modul pagination
         PaginationModule.init();
-
 
         // Inisialisasi mobile menu
         MobileMenuModule.init();
 
         // Expose confirmDelete ke global scope untuk dipanggil dari HTML
-        window.confirmDelete = function(id) {
-            DeleteModule.confirmDelete(id);
+        window.confirmDelete = function(id, deleteUrl) {
+            DeleteModule.confirmDelete(id, deleteUrl);
         };
     });
 
