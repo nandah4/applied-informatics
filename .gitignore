@@ -1,4 +1,10 @@
 .env
 
 public/uploads/dosen/*
+!public/uploads/dosen/.gitkeep
+
 public/uploads/fasilitas/*
+!public/uploads/fasilitas/.gitkeep
+
+public/uploads/mitra/*
+!public/uploads/mitra/.gitkeep
