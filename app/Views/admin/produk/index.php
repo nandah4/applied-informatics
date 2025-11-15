@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
 
     <!-- Data Product Page CSS -->
-    <link rel="stylesheet" href="<?= asset_url('css/pages/product/index.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/pages/produk/index.css') ?>">
 </head>
 
 <body>
@@ -58,7 +58,7 @@
                     </div>
 
                     <!-- Add Button -->
-                    <a href="<?= base_url('mitra/create') ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('produk/create') ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -74,74 +74,115 @@
                     <thead>
                         <tr>
                             <th class="col-id">ID</th>
-                            <th class="col-logo">Logo</th>
-                            <th class="col-name">Nama Product</th>
-                            <th class="col-link">Link/URL</th>
+                            <th class="col-foto">Foto</th>
+                            <th class="col-name">Nama Produk</th>
+                            <th class="col-author">Author</th>
+                            <th class="col-link">Link Produk</th>
                             <th class="action-cell">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
+                        <?php
+                        // Data dummy untuk demo UI
+                        $dummyProduk = [
+                            [
+                                'id_produk' => 1,
+                                'nama_produk' => 'Aplikasi E-Learning',
+                                'foto_produk' => 'elearning.jpg',
+                                'link_produk' => 'https://elearning.example.com',
+                                'author_dosen_id' => 1,
+                                'author_mahasiswa_nama' => null,
+                                'author_display' => 'Dr. John Doe'
+                            ],
+                            [
+                                'id_produk' => 2,
+                                'nama_produk' => 'Sistem Manajemen Lab',
+                                'foto_produk' => 'labmanagement.jpg',
+                                'link_produk' => 'https://labmanagement.example.com',
+                                'author_dosen_id' => null,
+                                'author_mahasiswa_nama' => 'Ahmad Hidayat',
+                                'author_display' => 'Ahmad Hidayat'
+                            ],
+                            [
+                                'id_produk' => 3,
+                                'nama_produk' => 'IoT Monitoring System',
+                                'foto_produk' => 'iot.jpg',
+                                'link_produk' => 'https://iot.example.com',
+                                'author_dosen_id' => 2,
+                                'author_mahasiswa_nama' => 'Siti Nurhaliza',
+                                'author_display' => 'Prof. Jane Smith & Siti Nurhaliza'
+                            ],
+                        ];
 
-                        <!-- Sample Data Row 2 -->
-                        <tr>
-                            <td class="col-id">2</td>
-                            <td class="col-logo">
-                                <img src="https://via.placeholder.com/60x60/ff7d10/ffffff?text=LAB" alt="Logo" class="logo-product">
-                            </td>
-                            <td class="col-name">
-                                <div class="product-name">Lab Management System</div>
-                                <div class="product-category">Dashboard</div>
-                            </td>
-                            <td class="col-link">
-                                <a href="https://labmanagement.example.com" target="_blank" class="product-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                        <polyline points="15 3 21 3 21 9"></polyline>
-                                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                                    </svg>
-                                    https://labmanagement.example.com
-                                </a>
-                            </td>
-                            <td class="action-cell">
-                                <div class="action-buttons">
-                                    <a href="<?= base_url('mitra/detail') ?>" class="btn-action btn-view" title="Lihat Detail">
+                        if (!empty($dummyProduk)) :
+                            foreach ($dummyProduk as $produk) :
+                                $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
+                        ?>
+                                <tr>
+                                    <td class="col-id"><?= htmlspecialchars($produk['id_produk']) ?></td>
+                                    <td class="col-foto">
+                                        <img src="<?= $fotoUrl ?>" alt="Foto <?= htmlspecialchars($produk['nama_produk']) ?>" class="foto-produk">
+                                    </td>
+                                    <td class="col-name">
+                                        <div class="product-name"><?= htmlspecialchars($produk['nama_produk']) ?></div>
+                                    </td>
+                                    <td class="col-author">
+                                        <div class="author-info"><?= htmlspecialchars($produk['author_display']) ?></div>
+                                    </td>
+                                    <td class="col-link">
+                                        <?php if (!empty($produk['link_produk'])) : ?>
+                                            <a href="<?= htmlspecialchars($produk['link_produk']) ?>" target="_blank" class="product-link">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                                </svg>
+                                                <?= htmlspecialchars($produk['link_produk']) ?>
+                                            </a>
+                                        <?php else : ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="action-cell">
+                                        <div class="action-buttons">
+                                            <a href="<?= base_url('produk/detail'); ?>" class="btn-action btn-view" title="Lihat Detail">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            </a>
+                                            <a href="<?= base_url('produk/edit') ?>" class="btn-action btn-edit" title="Edit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                                </svg>
+                                            </a>
+                                            <button class="btn-action btn-delete" title="Hapus" onclick="confirmDelete(<?= $produk['id_produk'] ?>, '<?= htmlspecialchars($produk['nama_produk']) ?>')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php
+                            endforeach;
+                        else :
+                            ?>
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                                         </svg>
-                                    </a>
-                                    <a href="<?= base_url('mitra/edit') ?>" class="btn-action btn-edit" title="Edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                                        </svg>
-                                    </a>
-                                    <button class="btn-action btn-delete" title="Hapus" onclick="confirmDelete(2, 'Lab Management System')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                      
-
-                        <!-- Empty State (Uncomment when there's no data) -->
-                        <!-- <tr>
-                            <td colspan="5">
-                                <div class="empty-state">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                                    </svg>
-                                    <h6>Tidak ada data product</h6>
-                                    <p>Mulai dengan menambahkan product pertama Anda</p>
-                                </div>
-                            </td>
-                        </tr> -->
+                                        <h6>Tidak ada data produk</h6>
+                                        <p>Mulai dengan menambahkan produk pertama Anda</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

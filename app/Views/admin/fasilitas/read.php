@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail: <?= htmlspecialchars($fasilitas['nama']) ?> - Applied Informatics Laboratory</title>
+    <title>Detail Fasilitas - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -63,7 +63,7 @@
 
                     <div class="info-row">
                         <div class="info-label">ID Fasilitas</div>
-                        <div class="info-value">#<?= $fasilitas['fasilitas_id'] ?></div>
+                        <div class="info-value"><?= $fasilitas['fasilitas_id'] ?></div>
                     </div>
 
                     <div class="info-row">
@@ -72,12 +72,9 @@
                     </div>
 
                     <div class="info-row">
-                        <div class="info-label">Deskripsi</div>
+                        <div class="info-label">Terakhir Diperbarui</div>
                         <div class="info-value">
-                            <?= !empty($fasilitas['deskripsi'])
-                                ? nl2br(htmlspecialchars($fasilitas['deskripsi']))
-                                : '<span style="color: var(--color-gray-400);">Tidak ada deskripsi</span>'
-                            ?>
+                            <?= date('d F Y, H:i', strtotime($fasilitas['updated_at'])) ?> WIB
                         </div>
                     </div>
 
@@ -87,13 +84,26 @@
                             <?= date('d F Y, H:i', strtotime($fasilitas['created_at'])) ?> WIB
                         </div>
                     </div>
+                </div>
 
-                    <div class="info-row">
-                        <div class="info-label">Terakhir Diperbarui</div>
-                        <div class="info-value">
-                            <?= date('d F Y, H:i', strtotime($fasilitas['updated_at'])) ?> WIB
-                        </div>
-                    </div>
+                <!-- Deskripsi Section -->
+                <div class="description-section">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Deskripsi
+                    </h3>
+                    <p class="description-text">
+                        <?= !empty($fasilitas['deskripsi'])
+                            ? nl2br(htmlspecialchars($fasilitas['deskripsi']))
+                            : 'Tidak ada deskripsi'
+                        ?>
+                    </p>
                 </div>
 
                 <!-- Action Buttons -->
@@ -135,7 +145,7 @@
 
     <!-- Feather Icons -->
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    
+
     <!-- Sidebar JS (jQuery Version) -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 

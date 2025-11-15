@@ -266,16 +266,21 @@
     gap: 1rem;
 }
 
+.pagination-info {
+    color: var(--color-gray-600);
+    font-size: 0.875rem;
+}
+
+.pagination {
+    margin: 0;
+}
+
 .pagination-info span {
     display: flex;
       align-items: center;
       color: var(--color-gray-600);    
       font-size: 0.875rem;    
       gap: 10px;
-}
-
-.pagination {
-    margin: 0;
 }
 
 .pagination .page-link {
@@ -329,40 +334,57 @@
     font-size: 0.875rem;
 }
 
-/* Badge Kategori Mitra */
-.badge-kategori {
-    display: inline-block;
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.8125rem;
+/* Column widths untuk aktivitas */
+.col-foto {
+    min-width: 150px;
+    width: 150px;
+}
+
+.col-judul {
+    min-width: 350px;
+}
+
+.col-tanggal {
+    min-width: 150px;
+    width: 150px;
+}
+
+/* Foto Aktivitas */
+.foto-aktivitas {
+    width: 120px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid var(--color-gray-200);
+}
+
+/* Judul Aktivitas */
+.aktivitas-judul {
     font-weight: 600;
-    text-align: center;
-    white-space: nowrap;
+    color: var(--color-gray-900);
+    line-height: 1.4;
 }
 
-.badge-industri {
-    background-color: #dbeafe;
-    color: #1e40af;
+/* Per Page Select Styling */
+.per-page-select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.badge-internasional {
-    background-color: #fce7f3;
-    color: #be185d;
+.per-page-select:hover {
+    border-color: var(--color-primary-500);
 }
 
-.badge-institusi-pemerintah {
-    background-color: #e0e7ff;
-    color: #4338ca;
-}
-
-.badge-institusi-pendidikan {
-    background-color: #dcfce7;
-    color: #166534;
-}
-
-.badge-komunitas {
-    background-color: #fef3c7;
-    color: #92400e;
+.per-page-select:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(1, 181, 185, 0.1);
 }
 
 /* Responsive */

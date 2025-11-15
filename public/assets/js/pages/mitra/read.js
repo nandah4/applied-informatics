@@ -36,14 +36,15 @@
         success: function (response) {
           if (response.success) {
             jQueryHelpers.showAlert(
-              response.message || "Data mitra berhasil dihapus",
-              "success"
+              "Data mitra berhasil dihapus",
+              "success",
+              1500
             );
 
-            // Redirect ke list page setelah 1 detik
+            // Redirect ke list page setelah .05 detik
             setTimeout(function () {
               window.location.href = "/applied-informatics/mitra";
-            }, 1000);
+            }, 500);
           } else {
             jQueryHelpers.showAlert(
               response.message || "Gagal menghapus data mitra",

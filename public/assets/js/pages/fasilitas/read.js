@@ -65,7 +65,7 @@
                         setTimeout(() => {
                             // Redirect ke index, bukan reload
                             window.location.href = '/applied-informatics/fasilitas';
-                        }, 2000);
+                        }, 500);
                     } else {
                         // Tampilkan pesan error dari server
                         jQueryHelpers.showAlert(

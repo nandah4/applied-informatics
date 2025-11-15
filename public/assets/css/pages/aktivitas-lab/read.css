@@ -1,9 +1,14 @@
-/* Data Fasilitas - Detail/Read Page Styles */
+/* Aktivitas Detail/Read Page - Clean & Modern Styles */
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
 
 .main-content {
     padding: 2rem;
     margin-left: 260px;
     min-height: 100vh;
+    background: var(--color-gray-50);
 }
 
 @media (max-width: 768px) {
@@ -13,32 +18,23 @@
     }
 }
 
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+
 .page-header {
     background: white;
     padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     margin-bottom: 2rem;
-}
-
-.page-title {
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: var(--color-gray-900);
-    margin: 0;
-}
-
-.page-subtitle {
-    color: var(--color-gray-500);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
 }
 
 .breadcrumb-custom {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
     font-size: 0.875rem;
 }
 
@@ -46,6 +42,7 @@
     color: var(--color-primary-500);
     text-decoration: none;
     transition: color 0.2s;
+    font-weight: 500;
 }
 
 .breadcrumb-custom a:hover {
@@ -56,20 +53,50 @@
     color: var(--color-gray-400);
 }
 
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.page-subtitle {
+    color: var(--color-gray-500);
+    font-size: 0.9375rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+
+/* ============================================================
+   CARD CONTAINER
+   ============================================================ */
+
 .card {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     border: none;
     margin-bottom: 2rem;
+    overflow: hidden;
 }
 
 .card-body {
-    padding: 2rem;
+    padding: 2.5rem;
 }
 
-/* Facility Photo Container */
-.facility-photo-container {
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+}
+
+/* ============================================================
+   IMAGE SECTION
+   ============================================================ */
+
+.aktivitas-photo-container {
     width: 100%;
     max-width: 300px;
     margin-bottom: 2rem;
@@ -77,7 +104,7 @@
     overflow: hidden;
 }
 
-.facility-photo {
+.aktivitas-photo {
     width: 100%;
     height: auto;
     max-height: 400px;
@@ -85,9 +112,15 @@
     object-fit: cover;
 }
 
-/* Facility Information Section */
-.facility-info-section {
+
+/* ============================================================
+   DETAIL CONTENT SECTION
+   ============================================================ */
+
+   /* Partner Information Section */
+.aktivitas-info-section {
     margin-bottom: 2rem;
+    margin-top: 30px;
 }
 
 /* Section Styles */
@@ -141,11 +174,20 @@
     font-weight: 500;
 }
 
+/* Description Section */
+.description-section {
+    margin-bottom: 2rem;
+}
+
 .description-text {
     font-size: 0.875rem;
     color: var(--color-gray-700);
     line-height: 1.7;
 }
+
+/* ============================================================
+   ACTION BUTTONS
+   ============================================================ */
 
 /* Action Buttons */
 .action-buttons {
@@ -225,16 +267,53 @@
     color: white;
 }
 
-/* Responsive */
+/* ============================================================
+   RESPONSIVE DESIGN
+   ============================================================ */
+
 @media (max-width: 768px) {
-    .facility-photo-container {
-        max-width: 100%;
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .detail-content {
+        gap: 1.5rem;
+    }
+
+    .detail-actions {
+        flex-direction: column;
     }
 
     .btn-primary-custom,
-    .btn-secondary-custom,
-    .btn-danger-custom {
+    .btn-secondary-custom {
         width: 100%;
         justify-content: center;
     }
+
+    .detail-image-wrapper {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.page-header {
+    animation: fadeIn 0.3s ease-out;
 }

@@ -132,7 +132,7 @@
                         // Reload page setelah 2 detik untuk refresh data
                         setTimeout(() => {
                             window.location.reload();
-                        }, 2000);
+                        }, 500);
                     } else {
                         // Tampilkan pesan error dari server
                         jQueryHelpers.showAlert(

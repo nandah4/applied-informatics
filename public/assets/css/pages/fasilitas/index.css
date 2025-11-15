@@ -235,8 +235,8 @@
 
 /* Facility Photo */
 .table-photo {
-    width: 300px;
-    height: 200px;
+    width: 120px;
+    height: 80px;
     border-radius: 8px;
     object-fit: cover;
     border: 2px solid var(--color-gray-200);
@@ -259,10 +259,13 @@
     gap: 1rem;
 }
 
-.pagination-info {
-    color: var(--color-gray-600);
-    font-size: 0.875rem;
-}
+.pagination-info span {
+      display: flex;
+      align-items: center;
+      color: var(--color-gray-600);    
+      font-size: 0.875rem;    
+      gap: 10px;
+ }
 
 .pagination {
     margin: 0;
@@ -296,8 +299,8 @@
 
 /* Empty State */
 .empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
+    text-align: start;
+    padding: 2em 2rem;
 }
 
 .empty-state svg {

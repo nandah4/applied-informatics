@@ -216,7 +216,7 @@
           jQueryHelpers.showError(error.fieldId, error.errorId, error.message);
         });
         // Tampilkan alert untuk error pertama
-        jQueryHelpers.showAlert(validationErrors[0].message, "danger", 5000);
+        // jQueryHelpers.showAlert(validationErrors[0].message, "danger", 5000);
         return;
       }
 
@@ -225,7 +225,6 @@
       
       // Disable tombol submit
       const submitButton = $form.find('button[type="submit"]');
-      const originalText = submitButton.text();
       const buttonState = jQueryHelpers.disableButton(submitButton.attr('id') || 'submit-btn', "Menyimpan...");
 
       // Kirim AJAX request
@@ -240,7 +239,7 @@
             jQueryHelpers.showAlert(successMessage, "success", 1500);
             setTimeout(() => {
               window.location.href = redirectUrl;
-            }, 1500);
+            }, 500);
           } else {
             jQueryHelpers.showAlert("Gagal: " + response.message, "danger", 5000);
             buttonState.enable();
@@ -311,7 +310,7 @@
         errors.push({
           fieldId: "foto",
           errorId: "fotoError",
-          message: "Foto fasilitas wajib diisi.",
+          message: "Foto fasilitas wajib diisi",
         });
       }
 

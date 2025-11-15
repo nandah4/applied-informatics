@@ -4,26 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Fasilitas - Applied Informatics Laboratory</title>
+    <title>Tambah Aktivitas - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <!-- Base CSS - Must load first -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
 
-    <!-- Data Fasilitas Form Page CSS -->
-    <link rel="stylesheet" href="<?= asset_url('css/pages/fasilitas/form.css') ?>">
+    <!-- Aktivitas Form Page CSS -->
+    <link rel="stylesheet" href="<?= asset_url('css/pages/aktivitas-lab/form.css') ?>">
 </head>
 
 <body>
-    <!-- Alert Placeholder -->
+    <!-- Alert Placeholder untuk notifikasi -->
     <div id="liveAlertPlaceholder"></div>
-
+    
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -32,50 +32,46 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('fasilitas') ?>">Data Fasilitas</a>
+                <a href="<?= base_url('aktivitas-lab') ?>">Aktivitas Laboratorium</a>
                 <span>/</span>
-                <span>Tambah Fasilitas</span>
+                <span>Tambah Aktivitas</span>
             </div>
-            <h1 class="page-title">Tambah Fasilitas</h1>
-            <p class="page-subtitle">Tambahkan data fasilitas baru ke sistem</p>
+            <h1 class="page-title">Tambah Aktivitas Baru</h1>
+            <p class="page-subtitle">Buat aktivitas laboratorium baru</p>
         </div>
 
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formFasilitas" method="POST" enctype="multipart/form-data"
-                    data-ajax-url="<?= base_url('fasilitas/create') ?>"
-                    data-redirect-url="<?= base_url('fasilitas') ?>"
-                    data-success-message="Data fasilitas berhasil ditambahkan.">
-
+                <form id="formCreateAktivitas" method="POST" action="<?= base_url('aktivitas-lab/create') ?>" enctype="multipart/form-data">
                     <div class="row">
-                        <!-- Nama Fasilitas -->
+                        <!-- Judul Aktivitas -->
                         <div class="col-12 mb-3">
-                            <label for="nama" class="form-label">
-                                Nama Fasilitas <span class="required">*</span>
+                            <label for="judul_aktivitas" class="form-label">
+                                Judul Aktivitas <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama fasilitas">
-                            <div class="helper-text">Berikan nama yang jelas dan deskriptif untuk fasilitas</div>
-                            <!-- Tambahkan div untuk error message -->
-                            <div id="namaError" class="invalid-feedback"></div>
+                            <input type="text" class="form-control" id="judul_aktivitas" name="judul" placeholder="Masukkan judul aktivitas" required>
+                            <div class="helper-text">Berikan judul yang jelas dan deskriptif</div>
+                            <div id="judulAktivitasError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Deskripsi -->
-                        <div class="col-12 mb-3">
-                            <label for="deskripsi" class="form-label">
-                                Deskripsi
+                        <!-- Tanggal Kegiatan -->
+                        <div class="col-md-6 mb-3">
+                            <label for="tanggal_kegiatan" class="form-label">
+                                Tanggal Kegiatan <span class="required">*</span>
                             </label>
-                            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4" placeholder="Masukkan deskripsi singkat tentang fasilitas"></textarea>
-                            <div class="helper-text">Deskripsikan lebih lanjut mengenai fasilitas tersebut</div>
-                            <!-- Tambahkan div untuk error message -->
-                            <div id="deskripsiError" class="invalid-feedback"></div>
+                            <input type="date" class="form-control date-input-native" id="tanggal_kegiatan" name="tanggal_kegiatan" required>
+                            <div class="helper-text">Tanggal pelaksanaan kegiatan</div>
+                            <div id="tanggalKegiatanError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Foto Fasilitas -->
+                        <!-- Foto Aktivitas -->
                         <div class="col-12 mb-3">
                             <label class="form-label">
-                                Foto Fasilitas <span class="required">*</span>
+                                Foto Aktivitas
                             </label>
+
+                            <!-- File Upload -->
                             <div class="file-upload-wrapper" id="fileUploadWrapper">
                                 <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -83,31 +79,43 @@
                                     <line x1="12" y1="3" x2="12" y2="15"></line>
                                 </svg>
                                 <div class="file-upload-text">
-                                    <strong>Klik untuk upload</strong> atau drag and drop
+                                    <strong>Klik untuk upload foto</strong> atau drag and drop
                                 </div>
                                 <div class="file-upload-hint">
-                                    PNG, JPG, JPEG maksimal 2MB
+                                    PNG, JPG, JPEG maksimal 2MB (Rekomendasi: 1200x800px)
                                 </div>
                             </div>
-                            <input type="file" class="file-upload-input" id="foto" name="foto" accept="image/png,image/jpg,image/jpeg">
-                            <div id="fotoError" class="invalid-feedback"></div>
+                            <input type="file" class="file-upload-input" id="foto_aktivitas" name="foto_aktivitas" accept="image/png,image/jpg,image/jpeg">
+
+                            <!-- Image Preview -->
                             <div class="image-preview" id="imagePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
                                 <div class="helper-text" id="helper-text-preview">Klik preview untuk hapus foto aktivitas</div>
                             </div>
+                            <div id="fotoAktivitasError" class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Deskripsi -->
+                        <div class="col-12 mb-3">
+                            <label for="deskripsi" class="form-label">
+                                Deskripsi Aktivitas <span class="required">*</span>
+                            </label>
+                            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi aktivitas" required></textarea>
+                            <div class="helper-text">Jelaskan detail aktivitas, tujuan, dan hasil yang dicapai</div>
+                            <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
                     </div>
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('fasilitas') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('aktivitas-lab') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                             Batal
                         </a>
-                        <button type="submit" class="btn-primary-custom" id="btn-submit-create-fasilitas">
+                        <button type="submit" class="btn-primary-custom" id="btn-submit-create-aktivitas">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
@@ -131,13 +139,12 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Helper Scripts (Must load before form.js) -->
+    <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-    <!-- Data fasilitas Form Page JS -->
-    <script src="<?= asset_url('js/pages/fasilitas/form.js') ?>"></script>
-
+    <!-- Page Spesific Scripts -->
+    <script src="<?= asset_url('js/pages/aktivitas-lab/form.js') ?>"></script>
 </body>
 
 </html>

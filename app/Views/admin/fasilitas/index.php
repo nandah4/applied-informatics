@@ -95,7 +95,7 @@
                                     </td>
                                     <td>
                                         <?php if (!empty($fasilitas['foto'])): ?>
-                                            <img src="<?= upload_url('fasilitas/' . $fasilitas['foto']) ?>" alt="Foto" class="table-photo" >
+                                            <img src="<?= upload_url('fasilitas/' . $fasilitas['foto']) ?>" alt="Foto" class="table-photo">
                                         <?php else: ?>
                                             <img src="<?= upload_url('default/image.png') ?>" alt="No Photo" class="table-photo">
                                         <?php endif; ?>
@@ -144,56 +144,58 @@
             </div>
 
             <!-- Pagination -->
-            <div class="pagination-wrapper">
-                <div class="pagination-info">
-                    <span>Menampilkan
-                        <select id="perPageSelect" class="per-page-select">
-                            <option value="5" <?= ($pagination['per_page'] == 5) ? 'selected' : '' ?>>5</option>
-                            <option value="10" <?= ($pagination['per_page'] == 10) ? 'selected' : '' ?>>10</option>
-                            <option value="25" <?= ($pagination['per_page'] == 25) ? 'selected' : '' ?>>25</option>
-                            <option value="50" <?= ($pagination['per_page'] == 50) ? 'selected' : '' ?>>50</option>
-                            <option value="100" <?= ($pagination['per_page'] == 100) ? 'selected' : '' ?>>100</option>
-                        </select>
-                        dari <strong><?= $pagination['total_records'] ?></strong> data
-                    </span>
+            <?php if (isset($pagination) && $pagination['total_pages'] > 0) : ?>
+                <div class="pagination-wrapper">
+                    <div class="pagination-info">
+                        <span>Menampilkan
+                            <select id="perPageSelect" class="per-page-select">
+                                <option value="5" <?= ($pagination['per_page'] == 5) ? 'selected' : '' ?>>5</option>
+                                <option value="10" <?= ($pagination['per_page'] == 10) ? 'selected' : '' ?>>10</option>
+                                <option value="25" <?= ($pagination['per_page'] == 25) ? 'selected' : '' ?>>25</option>
+                                <option value="50" <?= ($pagination['per_page'] == 50) ? 'selected' : '' ?>>50</option>
+                                <option value="100" <?= ($pagination['per_page'] == 100) ? 'selected' : '' ?>>100</option>
+                            </select>
+                            dari <strong><?= $pagination['total_records'] ?></strong> data
+                        </span>
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <!-- Previous Button -->
+                            <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
+                                <a class="page-link"
+                                    href="<?= $pagination['has_prev'] ? base_url('fasilitas?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'])
+                                                : '#' ?>"
+                                    tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
+                                    Previous
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers dengan Ellipsis -->
+                            <?php foreach ($pagination['page_numbers'] as $pageData): ?>
+                                <?php if ($pageData['is_ellipsis']): ?>
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                <?php else: ?>
+                                    <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
+                                        <a class="page-link"
+                                            href="<?= base_url('fasilitas?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
+                                            <?= $pageData['number'] ?>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+
+                            <!-- Next Button -->
+                            <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
+                                <a class="page-link"
+                                    href="<?= $pagination['has_next'] ? base_url('fasilitas?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'])
+                                                : '#' ?>">
+                                    Next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        <!-- Previous Button -->
-                        <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
-                            <a class="page-link"
-                                href="<?= $pagination['has_prev'] ? base_url('fasilitas?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'])
-                                            : '#' ?>"
-                                tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
-                                Previous
-                            </a>
-                        </li>
-
-                        <!-- Page Numbers dengan Ellipsis -->
-                        <?php foreach ($pagination['page_numbers'] as $pageData): ?>
-                            <?php if ($pageData['is_ellipsis']): ?>
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
-                            <?php else: ?>
-                                <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
-                                    <a class="page-link"
-                                        href="<?= base_url('fasilitas?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
-                                        <?= $pageData['number'] ?>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-
-                        <!-- Next Button -->
-                        <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
-                            <a class="page-link"
-                                href="<?= $pagination['has_next'] ? base_url('fasilitas?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'])
-                                            : '#' ?>">
-                                Next
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 

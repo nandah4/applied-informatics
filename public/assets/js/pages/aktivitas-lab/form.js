@@ -10,7 +10,7 @@
       $("#helper-text-preview").hide();
 
       const fileUploadWrapper = $("#fileUploadWrapper");
-      const fileInput = $("#logo_mitra");
+      const fileInput = $("#foto_aktivitas");
       const imagePreview = $("#imagePreview");
       const previewImg = $("#previewImg");
 
@@ -21,13 +21,14 @@
         fileInput.click();
       });
 
-      // CHANGE: Event perubahan file input (untuk menampilkan preview image after pick)
+      // Event perubahan file input (untuk menampilkan preview image after pick)
       fileInput.on("change", (e) => {
         FileUploadModule.handleFileSelect(
           e.target.files[0],
           previewImg,
           imagePreview,
-          fileUploadWrapper
+          fileUploadWrapper,
+          fileInput
         );
       });
 
@@ -46,6 +47,8 @@
      * @param {File} file - File yang dipilih
      * @param {HTMLElement} previewImg - Element preview gambar
      * @param {HTMLElement} imagePreview - Element container preview
+     * @param {HTMLElement} fileUploadWrapper - Element wrapper upload
+     * @param {HTMLElement} fileInput - Element input file
      */
     handleFileSelect: (
       file,
@@ -95,9 +98,9 @@
   // MODUL SUBMIT FORM
   // ============================================================
 
-  const FormCreateMitra = {
+  const FormCreateAktivitas = {
     init: function () {
-      $("#btn-submit-create-mitra").on("click", (e) => {
+      $("#btn-submit-create-aktivitas").on("click", (e) => {
         e.preventDefault();
         this.handleSubmit();
       });
@@ -107,7 +110,7 @@
       const formData = this.getFormData();
       const validationErrors = this.validateFormData(formData);
 
-      jQueryHelpers.clearAllErrors("formMitra");
+      jQueryHelpers.clearAllErrors("formCreateAktivitas");
 
       if (validationErrors.length > 0) {
         validationErrors.forEach((error) => {
@@ -118,12 +121,12 @@
 
       const submitData = this.prepareFormData(formData);
       const buttonState = jQueryHelpers.disableButton(
-        "btn-submit-create-mitra",
+        "btn-submit-create-aktivitas",
         "Menyimpan ..."
       );
 
       jQueryHelpers.makeAjaxRequest({
-        url: "/applied-informatics/mitra/create",
+        url: "/applied-informatics/aktivitas-lab/create",
         method: "POST",
         data: submitData,
         processData: false,
@@ -131,11 +134,11 @@
         onSuccess: (response) => {
           if (response.success) {
             jQueryHelpers.showAlert(
-              "Data mitra berhasil ditambahkan!",
+              "Data aktivitas berhasil ditambahkan!",
               "success"
             );
             setTimeout(() => {
-              window.location.href = "/applied-informatics/mitra";
+              window.location.href = "/applied-informatics/aktivitas-lab";
             }, 500);
           } else {
             jQueryHelpers.showAlert(
@@ -152,67 +155,70 @@
         },
       });
     },
+
     getFormData: () => {
       return {
-        nama: $("#nama_mitra").val().trim(),
-        status: $("#status_mitra").val(),
-        kategori_mitra: $("#kategori_mitra").val(),
-        logo_mitra: $("#logo_mitra")[0].files[0],
-        tanggal_mulai: $("#tanggal_mulai").val().trim(),
-        tanggal_akhir: $("#tanggal_akhir").val().trim(),
+        judul: $("#judul_aktivitas").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
+        foto_aktivitas: $("#foto_aktivitas")[0].files[0],
+        tanggal_kegiatan: $("#tanggal_kegiatan").val().trim(),
       };
     },
+
     validateFormData: (data) => {
       const errors = [];
 
-      const nameValidation = validationHelpers.validateName(data.nama, 1, 255);
-      if (!nameValidation.valid) {
+      // Validasi judul
+      const judulValidation = validationHelpers.validateName(data.judul, 5, 255);
+      if (!judulValidation.valid) {
         errors.push({
-          fieldId: "nama_mitra",
-          errorId: "namaMitraError",
-          message: nameValidation.message,
+          fieldId: "judul_aktivitas",
+          errorId: "judulAktivitasError",
+          message: judulValidation.message,
         });
       }
 
-      if (!data.tanggal_mulai || data.tanggal_mulai.length < 1) {
+      // Validasi deskripsi
+      if (!data.deskripsi || data.deskripsi.length < 10) {
         errors.push({
-          fieldId: "tanggal_mulai",
-          errorId: "tanggalMulaiError",
-          message: "Tanggal mulai wajib Diisi",
+          fieldId: "deskripsi",
+          errorId: "deskripsiError",
+          message: "Deskripsi minimal 10 karakter",
         });
       }
 
-      if (data.tanggal_akhir && data.tanggal_akhir < data.tanggal_mulai) {
+      // Validasi tanggal kegiatan
+      if (!data.tanggal_kegiatan || data.tanggal_kegiatan.length < 1) {
         errors.push({
-          fieldId: "tanggal_akhir",
-          errorId: "tanggalAkhirError",
-          message: "Tanggal akhir tidak boleh lebih awal dari tanggal mulai",
+          fieldId: "tanggal_kegiatan",
+          errorId: "tanggalKegiatanError",
+          message: "Tanggal Kegiatan wajib diisi",
         });
       }
 
-      if (data.logo_mitra) {
+      // Validasi foto (opsional, tapi jika ada harus valid)
+      if (data.foto_aktivitas) {
         const sizeValidation = validationHelpers.validateFileSize(
-          data.logo_mitra,
+          data.foto_aktivitas,
           2
         );
 
         if (!sizeValidation.valid) {
           errors.push({
-            fieldId: "logo_mitra",
-            errorId: "logoMitraError",
+            fieldId: "foto_aktivitas",
+            errorId: "fotoAktivitasError",
             message: sizeValidation.message,
           });
         }
 
         const typeValidation = validationHelpers.validateFileType(
-          data.logo_mitra,
+          data.foto_aktivitas,
           ["image/jpeg", "image/jpg", "image/png"]
         );
         if (!typeValidation.valid) {
           errors.push({
-            fieldId: "logo_mitra",
-            errorId: "logoMitraError",
+            fieldId: "foto_aktivitas",
+            errorId: "fotoAktivitasError",
             message: typeValidation.message,
           });
         }
@@ -220,23 +226,16 @@
 
       return errors;
     },
+
     prepareFormData: (data) => {
       const formData = new FormData();
 
-      formData.append("nama", data.nama);
-      formData.append("status", data.status);
-      formData.append("kategori_mitra", data.kategori_mitra);
-      formData.append("tanggal_mulai", data.tanggal_mulai);
-
-      // Hanya append tanggal_akhir jika ada value
-      if (data.tanggal_akhir && data.tanggal_akhir !== "") {
-        formData.append("tanggal_akhir", data.tanggal_akhir);
-      }
-
+      formData.append("judul", data.judul);
       formData.append("deskripsi", data.deskripsi);
+      formData.append("tanggal_kegiatan", data.tanggal_kegiatan);
 
-      if (data.logo_mitra) {
-        formData.append("logo_mitra", data.logo_mitra);
+      if (data.foto_aktivitas) {
+        formData.append("foto_aktivitas", data.foto_aktivitas);
       }
 
       return formData;
@@ -249,6 +248,6 @@
 
   $(document).ready(function () {
     FileUploadModule.init();
-    FormCreateMitra.init();
+    FormCreateAktivitas.init();
   });
 })();
