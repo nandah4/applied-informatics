@@ -3,8 +3,7 @@
    ========================================== */
 
 :root {
-    --sidebar-width: 280px;
-    --sidebar-collapsed-width: 60px;
+    --sidebar-width: 290px;
     --sidebar-bg: #ffffff;
     --sidebar-border: #e5e7eb;
     --sidebar-text: #4b5563;
@@ -43,24 +42,6 @@
     overflow: hidden;
 }
 
-/* Sidebar Collapsed State */
-.sidebar.collapsed {
-    width: var(--sidebar-collapsed-width);
-}
-
-/* Hide semua konten kecuali toggle button */
-.sidebar.collapsed .sidebar-logo,
-.sidebar.collapsed .sidebar-nav,
-.sidebar.collapsed .sidebar-footer {
-    display: none;
-}
-
-/* Center toggle button */
-.sidebar.collapsed .sidebar-header {
-    justify-content: center;
-    padding: 1.5rem 0.5rem;
-}
-
 /* Sidebar Header */
 .sidebar-header {
     padding: 0px 1rem;
@@ -68,6 +49,7 @@
     justify-content: space-between;
     align-items: center;
     min-height: 80px;
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .sidebar-logo {
@@ -84,46 +66,6 @@
     transition: all var(--transition-speed) ease;
 }
 
-.logo-text {
-    transition: opacity var(--transition-speed) ease;
-}
-
-.logo-text h5 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--sidebar-text-hover);
-    margin: 0;
-}
-
-.logo-text small {
-    font-size: var(--text-sm);
-    color: var(--sidebar-text);
-}
-
-.btn-toggle-sidebar {
-    background: transparent;
-    border: 1px solid var(--sidebar-border);
-    border-radius: 0.5rem;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: var(--sidebar-text);
-}
-
-.btn-toggle-sidebar:hover {
-    background-color: var(--sidebar-active-bg);
-    color: var(--sidebar-text-hover);
-}
-
-.btn-toggle-sidebar svg {
-    width: 18px;
-    height: 18px;
-}
-
 /* Sidebar Navigation */
 .sidebar-nav {
     flex: 1;
@@ -134,7 +76,7 @@
 
 /* Custom Scrollbar */
 .sidebar-nav::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
 }
 
 .sidebar-nav::-webkit-scrollbar-track {
@@ -157,25 +99,51 @@
 
 .sidebar-nav .nav-item {
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
+}
+
+/* Nav item with submenu */
+.sidebar-nav .nav-item:has(.submenu) {
+    margin-bottom: 1rem;
 }
 
 .nav-link {
-    display: flex; 
+    display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
     color: var(--sidebar-text);
     text-decoration: none;
-    border-radius: 0.5rem;
+    border-radius: 2px 10px 10px 2px;
     transition: all 0.2s ease;
     font-size: 0.875rem;
     font-weight: 500;
     position: relative;
-    border: 1px solid transparent;
 }
 
 .nav-link:hover {
     color: var(--sidebar-text-hover);
+    background-color: var(--sidebar-active-bg);
+}
+
+/* Active state for navigation links */
+.nav-link.active {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-500);
+    font-weight: 600;
+}
+
+.nav-link.active svg {
+    color: var(--color-primary-500);
+}
+
+/* Parent menu active state */
+.nav-link.parent-dashboard.active, .nav-link.parent-menu.active {
+    color: var(--color-primary-600);
+    font-weight: 600;
+}
+
+.nav-link.parent-menu.active svg {
+    color: var(--color-primary-500);
 }
 
 .nav-link:focus,
@@ -214,27 +182,33 @@
     transition: opacity var(--transition-speed) ease;
 }
 
-.nav-arrow {
-    width: 16px !important;
-    height: 16px !important;
-    margin-left: auto;
-    margin-right: 0 !important;
-    transition: transform 0.3s ease, opacity var(--transition-speed) ease;
+/* Parent menu styling */
+.nav-link.parent-menu {
+    cursor: default;
+    pointer-events: none;
+    margin-bottom: 0;
+    font-weight: 500;
+    color: var(--sidebar-text-hover);
+    background-color: transparent;
 }
 
-/* Expanded Parent Menu */
-.nav-link.expanded .nav-arrow {
-    transform: rotate(180deg);
+.nav-link.parent-menu svg {
+    color: var(--sidebar-text-hover);
 }
 
 /* Submenu */
 .submenu {
-    padding: 0.5rem 0 0.5rem 1rem;
+    padding: 0.25rem 0 0.75rem 1rem;
     margin: 0;
+    margin-top: 0.25rem;
 }
 
 .submenu .nav-item {
-    margin-bottom: 7px;
+    margin-bottom: 5px;
+}
+
+.submenu .nav-item:last-child {
+    margin-bottom: 0;
 }
 
 .submenu .nav-link {
@@ -254,6 +228,7 @@
 
 .submenu .nav-link:hover {
     padding-left: 2.5rem;
+    background-color: var(--sidebar-active-bg);
 }
 
 .submenu .nav-link:focus,
@@ -274,10 +249,13 @@
     color: var(--sidebar-text-hover);
 }
 
+/* Active state for submenu items */
 .submenu .nav-link.active {
-    color: var(--sidebar-active-text);
-    background-color: var(--sidebar-active-bg);
-    border-left: 3px solid var(--sidebar-active-border);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-600);
+    font-weight: 600;
+    border-left: 3px solid var(--color-primary-6x00);
+    padding-left: calc(2.5rem - 3px);
 }
 
 /* Navigation Divider */
@@ -294,64 +272,6 @@
     color: var(--sidebar-text);
     letter-spacing: 0.05em;
     transition: opacity var(--transition-speed) ease;
-}
-
-/* Sidebar Footer */
-.sidebar-footer {
-    border-top: 1px solid var(--sidebar-border);
-    padding: 1rem;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.user-info:hover {
-    background-color: var(--sidebar-active-bg);
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    background-color: var(--sidebar-active-bg);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: var(--sidebar-active-text);
-}
-
-.user-avatar svg {
-    width: 20px;
-    height: 20px;
-}
-
-.user-details {
-    flex: 1;
-    min-width: 0;
-    transition: opacity var(--transition-speed) ease;
-}
-
-.user-details h6 {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--sidebar-text-hover);
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.user-details small {
-    font-size: 0.75rem;
-    color: var(--sidebar-text);
 }
 
 /* Text Danger for Logout */
@@ -409,26 +329,11 @@
         transform: translateX(0);
         box-shadow: var(--sidebar-shadow);
     }
-
-    .sidebar.collapsed {
-        transform: translateX(-100%);
-    }
 }
 
 /* Focus Styles for Accessibility */
-.nav-link:focus,
-.btn-toggle-sidebar:focus {
+.nav-link:focus {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 1px;
-}
-
-/* Loading State Animation (optional) */
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
 }
 

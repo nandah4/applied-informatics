@@ -20,7 +20,16 @@ class MitraModel extends BaseModel
     protected $table_name = 'tbl_mitra';
 
     /**
-     * Get all mitra
+     * Hitung total semua data mitra
+     * @return int
+     */
+    public function getTotalRecords()
+    {
+        return $this->count(); // Panggil count() dari BaseModel
+    }
+
+    /**
+     * Ambil semua data mitra
      * @return array
      */
     public function getAll()
@@ -42,6 +51,40 @@ class MitraModel extends BaseModel
             ];
         }
     }
+
+    /**
+     * Ambil data mitra dengan limit dan offset untuk pagination
+     * @param int $limit - Jumlah data per halaman
+     * @param int $offset - Data dimulai dari baris ke berapa
+     * @return array
+     */
+    public function getAllWithLimit($limit, $offset)
+    {
+        try {
+            $query = "SELECT * FROM {$this->table_name}
+                      ORDER BY created_at DESC
+                      LIMIT :limit OFFSET :offset";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $data,
+                'message' => 'Data berhasil diambil'
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil data: ' . $e->getMessage()
+            ];
+        }
+    }
+
 
     /**
      * Get mitra by ID
@@ -84,13 +127,14 @@ class MitraModel extends BaseModel
     {
         try {
             $query = "INSERT INTO {$this->table_name}
-                      (nama, status, logo_mitra, tanggal_mulai, tanggal_akhir, deskripsi)
+                      (nama, status, kategori_mitra, logo_mitra, tanggal_mulai, tanggal_akhir, deskripsi)
                       VALUES
-                      (:nama, :status, :logo_mitra, :tanggal_mulai, :tanggal_akhir, :deskripsi)";
+                      (:nama, :status, :kategori_mitra, :logo_mitra, :tanggal_mulai, :tanggal_akhir, :deskripsi)";
 
             $params = [
                 ':nama' => $data['nama'],
                 ':status' => $data['status'],
+                ':kategori_mitra' => $data['kategori_mitra'] ?? 'industri',
                 ':logo_mitra' => $data['logo_mitra'],
                 ':tanggal_mulai' => $data['tanggal_mulai'],
                 ':tanggal_akhir' => $data['tanggal_akhir'] ?? null,
@@ -99,13 +143,12 @@ class MitraModel extends BaseModel
 
             $this->executeQuery($query, $params);
 
-            // Get last insert ID
-            $lastId = $this->db->lastInsertId();
+            // // Get last insert ID
+            // $lastId = $this->db->lastInsertId();
 
             return [
                 'success' => true,
-                'message' => 'Data mitra berhasil ditambahkan',
-                'data' => ['id' => $lastId]
+                'message' => 'Data mitra berhasil ditambahkan'
             ];
         } catch (PDOException $e) {
             return [
@@ -127,6 +170,7 @@ class MitraModel extends BaseModel
             $query = "UPDATE {$this->table_name}
                       SET nama = :nama,
                           status = :status,
+                          kategori_mitra = :kategori_mitra,
                           logo_mitra = :logo_mitra,
                           tanggal_mulai = :tanggal_mulai,
                           tanggal_akhir = :tanggal_akhir,
@@ -138,6 +182,7 @@ class MitraModel extends BaseModel
                 ':id' => $id,
                 ':nama' => $data['nama'],
                 ':status' => $data['status'],
+                ':kategori_mitra' => $data['kategori_mitra'] ?? 'industri',
                 ':logo_mitra' => $data['logo_mitra'],
                 ':tanggal_mulai' => $data['tanggal_mulai'],
                 ':tanggal_akhir' => $data['tanggal_akhir'] ?? null,

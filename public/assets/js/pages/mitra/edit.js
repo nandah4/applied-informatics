@@ -27,7 +27,8 @@
           e.target.files[0],
           previewImg,
           imagePreview,
-          fileUploadWrapper
+          fileUploadWrapper,
+          fileInput
         );
       });
 
@@ -92,12 +93,12 @@
   };
 
   // ============================================================
-  // MODUL SUBMIT FORM
+  // MODUL UPDATE MITRA
   // ============================================================
 
-  const FormCreateMitra = {
+  const FormUpdateMitra = {
     init: function () {
-      $("#btn-submit-create-mitra").on("click", (e) => {
+      $("#formUpdateMitra").on("submit", (e) => {
         e.preventDefault();
         this.handleSubmit();
       });
@@ -107,7 +108,7 @@
       const formData = this.getFormData();
       const validationErrors = this.validateFormData(formData);
 
-      jQueryHelpers.clearAllErrors("formMitra");
+      jQueryHelpers.clearAllErrors("formUpdateMitra");
 
       if (validationErrors.length > 0) {
         validationErrors.forEach((error) => {
@@ -117,13 +118,15 @@
       }
 
       const submitData = this.prepareFormData(formData);
-      const buttonState = jQueryHelpers.disableButton(
-        "btn-submit-create-mitra",
-        "Menyimpan ..."
-      );
+
+      // Disable submit button
+      const submitButton = $("#formUpdateMitra").find('button[type="submit"]');
+      submitButton.prop("disabled", true);
+      const originalButtonHtml = submitButton.html();
+      submitButton.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...');
 
       jQueryHelpers.makeAjaxRequest({
-        url: "/applied-informatics/mitra/create",
+        url: "/applied-informatics/mitra/update",
         method: "POST",
         data: submitData,
         processData: false,
@@ -131,7 +134,7 @@
         onSuccess: (response) => {
           if (response.success) {
             jQueryHelpers.showAlert(
-              "Data mitra berhasil ditambahkan!",
+              "Data mitra berhasil diupdate!",
               "success"
             );
             setTimeout(() => {
@@ -143,17 +146,20 @@
               "danger",
               5000
             );
-            buttonState.enable();
+            submitButton.prop("disabled", false);
+            submitButton.html(originalButtonHtml);
           }
         },
         onError: (errorMessage) => {
           jQueryHelpers.showAlert("Error: " + errorMessage, "danger");
-          buttonState.enable();
+          submitButton.prop("disabled", false);
+          submitButton.html(originalButtonHtml);
         },
       });
     },
     getFormData: () => {
       return {
+        id: $('input[name="id"]').val(),
         nama: $("#nama_mitra").val().trim(),
         status: $("#status_mitra").val(),
         kategori_mitra: $("#kategori_mitra").val(),
@@ -223,6 +229,7 @@
     prepareFormData: (data) => {
       const formData = new FormData();
 
+      formData.append("id", data.id);
       formData.append("nama", data.nama);
       formData.append("status", data.status);
       formData.append("kategori_mitra", data.kategori_mitra);
@@ -249,6 +256,6 @@
 
   $(document).ready(function () {
     FileUploadModule.init();
-    FormCreateMitra.init();
+    FormUpdateMitra.init();
   });
 })();

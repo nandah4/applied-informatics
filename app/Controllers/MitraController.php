@@ -22,6 +22,55 @@ class MitraController
     // ========================================
 
     /**
+     * Get all mitra for index page
+     * Method: GET
+     *
+     * @return array
+     */
+    public function getAllMitra()
+    {
+        return $this->mitraModel->getAll();
+    }
+
+    /**
+     * Ambil semua data mitra dengan pagination
+     * Method: GET
+     *
+     * @param int $page - Halaman saat ini
+     * @param int $perPage - Item per halaman (default 10)
+     * @return array - ['success', 'data', 'pagination']
+     */
+    public function getAllMitraWithPagination($page = 1, $perPage = 10)
+    {
+        // Hitung total data
+        $totalRecords = $this->mitraModel->getTotalRecords();
+
+        // Generate pagination data
+        $pagination = PaginationHelper::paginate($totalRecords, $page, $perPage);
+
+        // Ambil data dengan limit dan offset
+        $mitras = $this->mitraModel->getAllWithLimit($pagination['per_page'], $pagination['offset']);
+
+        return [
+            'success' => true,
+            'data' => $mitras['data'] ?? [],
+            'pagination' => $pagination
+        ];
+    }
+
+    /**
+     * Get mitra by ID
+     * Method: GET
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getMitraById($id)
+    {
+        return $this->mitraModel->getById($id);
+    }
+
+    /**
      * Handle request untuk create mitra baru
      * Method: POST
      * Endpoint: /applied-informatics/mitra/create
@@ -39,12 +88,13 @@ class MitraController
         // 2. Ambil data dari POST
         $nama = $_POST['nama'] ?? '';
         $status = $_POST['status'] ?? 'aktif';
-        $tanggal_mulai = $_POST['tanggal_mulai'] ?? '';
+        $kategori_mitra = $_POST['kategori_mitra'] ?? 'industri';
+        $tanggal_mulai = $_POST['tanggal_mulai'];
         $tanggal_akhir = $_POST['tanggal_akhir'] ?? null;
         $deskripsi = $_POST['deskripsi'] ?? '';
 
         // 3. Validasi input
-        $validationErrors = $this->validateMitraInput($nama, $tanggal_mulai, $tanggal_akhir);
+        $validationErrors = $this->validateMitraInput($nama, $kategori_mitra, $tanggal_mulai, $tanggal_akhir);
 
         if (!empty($validationErrors)) {
             ResponseHelper::error($validationErrors[0]); // Return error pertama
@@ -73,6 +123,7 @@ class MitraController
         $mitraData = [
             'nama' => $nama,
             'status' => $status,
+            'kategori_mitra' => $kategori_mitra,
             'logo_mitra' => $logoFileName,
             'tanggal_mulai' => $tanggal_mulai,
             'tanggal_akhir' => $tanggal_akhir,
@@ -103,13 +154,15 @@ class MitraController
      * Validasi input untuk create/update mitra
      *
      * @param string $nama
+     * @param string $kategori_mitra
      * @param string $tanggal_mulai
      * @param string $tanggal_akhir
      * @return array - Array of error messages (kosong jika valid)
      */
-    private function validateMitraInput($nama, $tanggal_mulai, $tanggal_akhir)
+    private function validateMitraInput($nama, $kategori_mitra, $tanggal_mulai, $tanggal_akhir)
     {
         $errors = [];
+        $allowedKategori = ['industri', 'internasional', 'institusi pemerintah', 'institusi pendidikan', 'komunitas'];
 
         // Validasi nama
         if (empty($nama)) {
@@ -119,6 +172,13 @@ class MitraController
             if (!$namaValidation['valid']) {
                 $errors[] = $namaValidation['message'];
             }
+        }
+
+        // Validasi kategori mitra
+        if (empty($kategori_mitra)) {
+            $errors[] = "Kategori mitra wajib diisi";
+        } elseif (!in_array($kategori_mitra, $allowedKategori)) {
+            $errors[] = "Kategori mitra tidak valid";
         }
 
         // Validasi tanggal mulai
@@ -135,4 +195,137 @@ class MitraController
 
         return $errors;
     }
+
+    /**
+     * Handle request untuk update mitra
+     * Method: POST
+     * Endpoint: /applied-informatics/mitra/update
+     *
+     * @return void - Mengembalikan JSON response
+     */
+    public function updateMitra()
+    {
+        // 1. Validasi request method
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            ResponseHelper::error('Invalid request method');
+            return;
+        }
+
+        // 2. Ambil data dari POST
+        $id = $_POST['id'] ?? null;
+        $nama = $_POST['nama'] ?? '';
+        $status = $_POST['status'] ?? 'aktif';
+        $kategori_mitra = $_POST['kategori_mitra'] ?? 'industri';
+        $tanggal_mulai = $_POST['tanggal_mulai'] ?? '';
+        $tanggal_akhir = $_POST['tanggal_akhir'] ?? null;
+        $deskripsi = $_POST['deskripsi'] ?? '';
+
+        // 3. Validasi ID
+        if (!$id) {
+            ResponseHelper::error('ID mitra tidak valid');
+            return;
+        }
+
+        // 4. Validasi input
+        $validationErrors = $this->validateMitraInput($nama, $kategori_mitra, $tanggal_mulai, $tanggal_akhir);
+
+        if (!empty($validationErrors)) {
+            ResponseHelper::error($validationErrors[0]);
+            return;
+        }
+
+        // 5. Get data mitra lama untuk logo
+        $oldMitraResult = $this->mitraModel->getById($id);
+        if (!$oldMitraResult['success']) {
+            ResponseHelper::error('Mitra tidak ditemukan');
+            return;
+        }
+
+        $oldMitra = $oldMitraResult['data'];
+        $logoFileName = $oldMitra['logo_mitra'];
+
+        // 6. Handle upload logo baru (jika ada)
+        if (isset($_FILES['logo_mitra']) && $_FILES['logo_mitra']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $uploadResult = FileUploadHelper::upload(
+                $_FILES['logo_mitra'],
+                'image',
+                'mitra',
+                2 * 1024 * 1024
+            );
+
+            if (!$uploadResult['success']) {
+                ResponseHelper::error($uploadResult['message']);
+                return;
+            }
+
+            // Hapus logo lama jika ada
+            if ($oldMitra['logo_mitra']) {
+                FileUploadHelper::delete($oldMitra['logo_mitra'], 'mitra');
+            }
+
+            $logoFileName = $uploadResult['filename'];
+        }
+
+        // 7. Siapkan data untuk update
+        $mitraData = [
+            'nama' => $nama,
+            'status' => $status,
+            'kategori_mitra' => $kategori_mitra,
+            'logo_mitra' => $logoFileName,
+            'tanggal_mulai' => $tanggal_mulai,
+            'tanggal_akhir' => $tanggal_akhir,
+            'deskripsi' => $deskripsi
+        ];
+
+        // 8. Update ke database
+        $result = $this->mitraModel->update($id, $mitraData);
+
+        if (!$result['success']) {
+            ResponseHelper::error($result['message']);
+            return;
+        }
+
+        // 9. Return success response
+        ResponseHelper::success('Data mitra berhasil diupdate', ['id' => $id]);
+    }
+
+    /**
+     * Handle request untuk delete mitra
+     * Method: POST
+     * Endpoint: /applied-informatics/mitra/delete/{id}
+     *
+     * @param int $id
+     * @return void - Mengembalikan JSON response
+     */
+    public function deleteMitra($id)
+    {
+        // 1. Validasi request method
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            ResponseHelper::error('Invalid request method');
+            return;
+        }
+
+        // 2. Validasi ID
+        if (!$id || !is_numeric($id)) {
+            ResponseHelper::error('ID mitra tidak valid');
+            return;
+        }
+
+        // 3. Delete dari database
+        $result = $this->mitraModel->delete($id);
+
+        if (!$result['success']) {
+            ResponseHelper::error($result['message']);
+            return;
+        }
+
+        // 4. Hapus file logo jika ada
+        if (isset($result['data']['logo_mitra']) && $result['data']['logo_mitra']) {
+            FileUploadHelper::delete($result['data']['logo_mitra'], 'mitra');
+        }
+
+        // 5. Return success response
+        ResponseHelper::success('Data mitra berhasil dihapus');
+    }
+
 }

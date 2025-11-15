@@ -12,7 +12,7 @@
 /* Main Content Area */
 .main-content {
     flex: 1;
-    margin-left: 280px; /* Same as sidebar width */
+    margin-left: 290px !important; /* Same as sidebar width */
     transition: margin-left 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -27,14 +27,14 @@
 /* Content Container */
 .content-wrapper {
     flex: 1;
-    padding: 2rem;
+    padding: 2rem 2.5rem;
 }
 
 /* Topbar (Optional) */
 .topbar {
     background-color: #ffffff;
     border-bottom: 1px solid #e5e7eb;
-    padding: 1rem 2rem;
+    padding: 1rem 2.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;

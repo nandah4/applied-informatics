@@ -18,12 +18,12 @@
 
     <!-- Data Mitra Form Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/mitra/form.css') ?>">
-
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 
 <body>
+    <!-- Alert Placeholder untuk notifikasi -->
+    <div id="liveAlertPlaceholder"></div>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -43,8 +43,14 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formMitra" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="1">
+                <?php
+                $logoUrl = $mitra['logo_mitra']
+                    ? upload_url('mitra/' . $mitra['logo_mitra'])
+                    : upload_url('default/image.png');
+                ?>
+
+                <form id="formUpdateMitra" method="POST" action="<?= base_url('mitra/update') ?>" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="<?= htmlspecialchars($mitra['id']) ?>">
 
                     <div class="row">
                         <!-- Nama Mitra -->
@@ -52,19 +58,35 @@
                             <label for="nama_mitra" class="form-label">
                                 Nama Mitra <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama_mitra" name="nama_mitra" value="PT. Teknologi Informasi Indonesia" placeholder="Masukkan nama mitra" required>
+                            <input type="text" class="form-control" id="nama_mitra" name="nama" value="<?= htmlspecialchars($mitra['nama']) ?>" placeholder="Masukkan nama mitra" required>
                             <div class="helper-text">Berikan nama lengkap mitra</div>
                         </div>
 
                         <!-- Status Mitra -->
                         <div class="col-md-6 mb-3">
-                            <label for="tipe_mitra" class="form-label">
+                            <label for="status_mitra" class="form-label">
                                 Status Mitra
                             </label>
-                            <select class="form-select" id="tipe_mitra" name="tipe_mitra">
-                                <option value="aktif" selected>Aktif</option>
-                                <option value="non-aktif">Non Aktif</option>
+                            <select class="form-select" id="status_mitra" name="status">
+                                <option value="aktif" <?= $mitra['status'] === 'aktif' ? 'selected' : '' ?>>Aktif</option>
+                                <option value="non-aktif" <?= $mitra['status'] === 'non-aktif' ? 'selected' : '' ?>>Non Aktif</option>
                             </select>
+                        </div>
+
+                        <!-- Kategori Mitra -->
+                        <div class="col-md-6 mb-3">
+                            <label for="kategori_mitra" class="form-label">
+                                Kategori Mitra <span class="required">*</span>
+                            </label>
+                            <select class="form-select" id="kategori_mitra" name="kategori_mitra" required>
+                                <option value="" disabled>Pilih Kategori Mitra</option>
+                                <option value="industri" <?= $mitra['kategori_mitra'] === 'industri' ? 'selected' : '' ?>>Industri</option>
+                                <option value="internasional" <?= $mitra['kategori_mitra'] === 'internasional' ? 'selected' : '' ?>>Internasional</option>
+                                <option value="institusi pemerintah" <?= $mitra['kategori_mitra'] === 'institusi pemerintah' ? 'selected' : '' ?>>Institusi Pemerintah</option>
+                                <option value="institusi pendidikan" <?= $mitra['kategori_mitra'] === 'institusi pendidikan' ? 'selected' : '' ?>>Institusi Pendidikan</option>
+                                <option value="komunitas" <?= $mitra['kategori_mitra'] === 'komunitas' ? 'selected' : '' ?>>Komunitas</option>
+                            </select>
+                            <div class="helper-text">Pilih kategori yang sesuai dengan jenis mitra</div>
                         </div>
 
                         <!-- Tanggal Mulai Kerjasama -->
@@ -72,15 +94,7 @@
                             <label for="tanggal_mulai" class="form-label">
                                 Tanggal Mulai Kerjasama <span class="required">*</span>
                             </label>
-                            <div class="date-input-wrapper">
-                                <svg class="date-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                                <input type="text" class="form-control date-input" id="tanggal_mulai" name="tanggal_mulai" value="15/03/2023" placeholder="Pilih tanggal mulai" required readonly>
-                            </div>
+                            <input type="date" class="form-control date-input-native" id="tanggal_mulai" name="tanggal_mulai" value="<?= $mitra["tanggal_mulai"] ?>" required>
                             <div class="helper-text">Tanggal dimulainya kerjasama dengan mitra</div>
                         </div>
 
@@ -89,15 +103,7 @@
                             <label for="tanggal_akhir" class="form-label">
                                 Tanggal Akhir Kerjasama
                             </label>
-                            <div class="date-input-wrapper">
-                                <svg class="date-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                                <input type="text" class="form-control date-input" id="tanggal_akhir" name="tanggal_akhir" placeholder="Pilih tanggal akhir (opsional)" readonly>
-                            </div>
+                            <input type="date" class="form-control date-input-native" id="tanggal_akhir" name="tanggal_akhir" value="<?= $mitra["tanggal_akhir"] ?>">
                             <div class="helper-text">Kosongkan jika kerjasama masih berlangsung</div>
                         </div>
 
@@ -109,8 +115,7 @@
 
                             <!-- Current Logo -->
                             <div class="current-image-wrapper mb-3">
-                                <div class="current-image-label">Logo saat ini:</div>
-                                <img src="https://via.placeholder.com/200x200/01b5b9/ffffff?text=TII" alt="Current Logo" class="current-image" id="currentImage">
+                                <img src="<?= $logoUrl ?>" alt="Logo <?= htmlspecialchars($mitra['nama']) ?>" class="current-image" id="currentImage">
                                 <div class="helper-text mt-2">Klik area upload di bawah untuk mengganti logo</div>
                             </div>
 
@@ -131,12 +136,7 @@
                             <input type="file" class="file-upload-input" id="logo_mitra" name="logo_mitra" accept="image/png,image/jpg,image/jpeg,image/svg+xml">
                             <div class="image-preview" id="imagePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
-                                <button type="button" class="btn-remove-preview" id="btnRemovePreview">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
+                                <div class="helper-text" id="helper-text-preview">Klik preview untuk hapus logo baru mitra</div>
                             </div>
                         </div>
 
@@ -145,7 +145,7 @@
                             <label for="deskripsi" class="form-label">
                                 Deskripsi
                             </label>
-                            <textarea class="form-control" id="deskripsi" name="deskripsi" placeholder="Masukkan deskripsi singkat tentang mitra">PT. Teknologi Informasi Indonesia adalah perusahaan teknologi terkemuka yang fokus pada pengembangan solusi digital dan transformasi bisnis.</textarea>
+                            <textarea class="form-control" id="deskripsi" name="deskripsi" placeholder="Masukkan deskripsi singkat tentang mitra"><?= htmlspecialchars($mitra['deskripsi'] ?? '') ?></textarea>
                             <div class="helper-text">Deskripsikan profil dan kerjasama dengan mitra</div>
                         </div>
                     </div>
@@ -183,96 +183,13 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Flatpickr JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Helper Scripts -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+    <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-    <script>
-        // File upload preview
-        const fileInput = document.getElementById('logo_mitra');
-        const fileUploadWrapper = document.getElementById('fileUploadWrapper');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
-        const btnRemovePreview = document.getElementById('btnRemovePreview');
-        const currentImageWrapper = document.querySelector('.current-image-wrapper');
+    <!-- Page Spesific Scripts -->
+    <script src="<?= asset_url('js/pages/mitra/edit.js') ?>"></script>
 
-        fileUploadWrapper.addEventListener('click', function() {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    fileUploadWrapper.style.display = 'none';
-                    if (currentImageWrapper) {
-                        currentImageWrapper.style.display = 'none';
-                    }
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Remove preview
-        btnRemovePreview.addEventListener('click', function(e) {
-            e.stopPropagation();
-            fileInput.value = '';
-            imagePreview.style.display = 'none';
-            fileUploadWrapper.style.display = 'flex';
-            if (currentImageWrapper) {
-                currentImageWrapper.style.display = 'block';
-            }
-        });
-
-        // Initialize Flatpickr for date inputs
-        const tanggalMulaiPicker = flatpickr("#tanggal_mulai", {
-            dateFormat: "d/m/Y",
-            locale: {
-                firstDayOfWeek: 1,
-                weekdays: {
-                    shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
-                },
-                months: {
-                    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                }
-            },
-            allowInput: true,
-            onChange: function(selectedDates, dateStr, instance) {
-                // Update min date for tanggal_akhir when tanggal_mulai changes
-                if (selectedDates.length > 0) {
-                    tanggalAkhirPicker.set('minDate', selectedDates[0]);
-                }
-            }
-        });
-
-        const tanggalAkhirPicker = flatpickr("#tanggal_akhir", {
-            dateFormat: "d/m/Y",
-            locale: {
-                firstDayOfWeek: 1,
-                weekdays: {
-                    shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
-                },
-                months: {
-                    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                }
-            },
-            allowInput: true
-        });
-
-        // Form submit
-        document.getElementById('formMitra').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Add your form submission logic here
-            console.log('Form submitted');
-            alert('Data mitra berhasil diupdate!');
-        });
-    </script>
 </body>
 
 </html>

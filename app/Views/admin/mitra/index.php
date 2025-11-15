@@ -21,6 +21,8 @@
 </head>
 
 <body>
+    <!-- Alert Placeholder untuk notifikasi -->
+    <div id="liveAlertPlaceholder"></div>
 
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
@@ -76,84 +78,145 @@
                             <th class="col-id">ID</th>
                             <th class="col-logo">Logo</th>
                             <th class="col-name">Nama Mitra</th>
+                            <th class="col-kategori">Kategori</th>
                             <th class="col-status">Status</th>
                             <th class="action-cell">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Sample Data Row 1 -->
-                        <tr>
-                            <td class="col-id">1</td>
-                            <td class="col-logo">
-                                <img src="https://via.placeholder.com/80x80/01b5b9/ffffff?text=TII" alt="Logo" class="logo-partner">
-                            </td>
-                            <td class="col-name">
-                                <div class="partner-name">PT. Teknologi Informasi Indonesia</div>
-                            </td>
-                            <td class="col-status">Aktif</td>
-                            <td class="action-cell">
-                                <div class="action-buttons">
-                                    <a href="<?= base_url('mitra/detail') ?>" class="btn-action btn-view" title="Lihat Detail">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                    </a>
-                                    <a href="<?= base_url('mitra/edit') ?>" class="btn-action btn-edit" title="Edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                                        </svg>
-                                    </a>
-                                    <button class="btn-action btn-delete" title="Hapus" onclick="confirmDelete(1, 'PT. Teknologi Informasi Indonesia')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        <?php
+                        // Helper function untuk kategori badge class
+                        function getKategoriClass($kategori)
+                        {
+                            $mapping = [
+                                'industri' => 'badge-industri',
+                                'internasional' => 'badge-internasional',
+                                'institusi pemerintah' => 'badge-institusi-pemerintah',
+                                'institusi pendidikan' => 'badge-institusi-pendidikan',
+                                'komunitas' => 'badge-komunitas'
+                            ];
+                            return $mapping[$kategori] ?? 'badge-industri';
+                        }
 
+                        // Helper function untuk format kategori label
+                        function formatKategoriLabel($kategori)
+                        {
+                            return ucwords($kategori);
+                        }
 
+                        if (!empty($listMitra)) :
+                            foreach ($listMitra as $mitra) :
+                                $logoUrl = $mitra['logo_mitra']
+                                    ? upload_url('mitra/' . $mitra['logo_mitra'])
+                                    : upload_url('default/image.png');
 
-                        <!-- Empty State (Uncomment when there's no data) -->
-                        <!-- <tr>
-                            <td colspan="4">
-                                <div class="empty-state">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="9" cy="7" r="4"></circle>
-                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                    </svg>
-                                    <h6>Tidak ada data mitra</h6>
-                                    <p>Mulai dengan menambahkan mitra pertama Anda</p>
-                                </div>
-                            </td>
-                        </tr> -->
+                                $kategoriClass = getKategoriClass($mitra['kategori_mitra']);
+                                $kategoriLabel = formatKategoriLabel($mitra['kategori_mitra']);
+                                $statusLabel = ucfirst($mitra['status']);
+                        ?>
+                                <tr>
+                                    <td class="col-id"><?= htmlspecialchars($mitra['id']) ?></td>
+                                    <td class="col-logo">
+                                        <img src="<?= $logoUrl ?>" alt="Logo <?= htmlspecialchars($mitra['nama']) ?>" class="logo-partner">
+                                    </td>
+                                    <td class="col-name">
+                                        <div class="partner-name"><?= htmlspecialchars($mitra['nama']) ?></div>
+                                    </td>
+                                    <td class="col-kategori">
+                                        <span class="badge-kategori <?= $kategoriClass ?>"><?= $kategoriLabel ?></span>
+                                    </td>
+                                    <td class="col-status"><?= $statusLabel ?></td>
+                                    <td class="action-cell">
+                                        <div class="action-buttons">
+                                            <a href="<?= base_url('mitra/detail/' . $mitra['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            </a>
+                                            <a href="<?= base_url('mitra/edit/' . $mitra['id']) ?>" class="btn-action btn-edit" title="Edit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                                </svg>
+                                            </a>
+                                            <button class="btn-action btn-delete" title="Hapus" onclick="confirmDelete(<?= $mitra['id'] ?>, '<?= htmlspecialchars($mitra['nama']) ?>')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php
+                            endforeach;
+                        else :
+                            ?>
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <h6>Tidak ada data mitra</h6>
+                                        <p>Mulai dengan menambahkan mitra pertama Anda</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
             <!-- Pagination -->
-            <div class="pagination-wrapper">
-                <div class="pagination-info">
-                    Menampilkan <strong>1-3</strong> dari <strong>3</strong> data
+            <?php if (isset($pagination) && $pagination['total_pages'] > 0) : ?>
+                <div class="pagination-wrapper">
+                    <div class="pagination-info">
+                        <span>Menampilkan
+                            <select id="perPageSelect" class="per-page-select">
+                                <option value="5" <?= ($pagination['per_page'] == 5) ? 'selected' : '' ?>>5</option>
+                                <option value="10" <?= ($pagination['per_page'] == 10) ? 'selected' : '' ?>>10</option>
+                                <option value="25" <?= ($pagination['per_page'] == 25) ? 'selected' : '' ?>>25</option>
+                                <option value="50" <?= ($pagination['per_page'] == 50) ? 'selected' : '' ?>>50</option>
+                                <option value="100" <?= ($pagination['per_page'] == 100) ? 'selected' : '' ?>>100</option>
+                            </select>
+                            dari <strong><?= $pagination['total_records'] ?></strong> data
+                        </span>
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <!-- Previous Button -->
+                            <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
+                                <a class="page-link"
+                                   href="<?= $pagination['has_prev'] ? base_url('mitra?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>"
+                                   tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
+                                    Previous
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            <?php foreach ($pagination['page_numbers'] as $pageData) : ?>
+                                <?php if ($pageData['is_ellipsis']) : ?>
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                <?php else : ?>
+                                    <li class="page-item <?= $pageData['number'] == $pagination['current_page'] ? 'active' : '' ?>">
+                                        <a class="page-link" href="<?= base_url('mitra?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
+                                            <?= $pageData['number'] ?>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+
+                            <!-- Next Button -->
+                            <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
+                                <a class="page-link"
+                                   href="<?= $pagination['has_next'] ? base_url('mitra?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>">
+                                    Next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -170,15 +233,11 @@
     <!-- Sidebar JS (jQuery Version) -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <script>
-        function confirmDelete(id, name) {
-            if (confirm(`Apakah Anda yakin ingin menghapus mitra "${name}"?`)) {
-                // Handle delete action
-                console.log('Delete mitra ID:', id);
-                // Add your delete logic here
-            }
-        }
-    </script>
+    <!-- Helper Scripts -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+
+    <!-- Page Specific Scripts -->
+    <script src="<?= asset_url('js/pages/mitra/index.js') ?>"></script>
 
 </body>
 
