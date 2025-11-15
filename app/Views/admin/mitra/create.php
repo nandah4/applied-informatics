@@ -18,13 +18,10 @@
 
     <!-- Data Mitra Form Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/mitra/form.css') ?>">
-
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 
 <body>
-     <!-- Alert Placeholder untuk notifikasi -->
+    <!-- Alert Placeholder untuk notifikasi -->
     <div id="liveAlertPlaceholder"></div>
 
     <!-- Sidebar -->
@@ -55,7 +52,7 @@
                             </label>
                             <input type="text" class="form-control" id="nama_mitra" name="nama_mitra" placeholder="Masukkan nama mitra" required>
                             <div class="helper-text">Berikan nama lengkap mitra</div>
-                          <div id="namaMitraError" class="invalid-feedback"></div>
+                            <div id="namaMitraError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Status Mitra -->
@@ -67,7 +64,24 @@
                                 <option value="aktif" selected>Aktif</option>
                                 <option value="non-aktif">Non Aktif</option>
                             </select>
-                             <div id="statusError" class="invalid-feedback"></div>
+                            <div id="statusError" class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Kategori Mitra -->
+                        <div class="col-md-6 mb-3">
+                            <label for="kategori_mitra" class="form-label">
+                                Kategori Mitra <span class="required">*</span>
+                            </label>
+                            <select class="form-select" id="kategori_mitra" name="kategori_mitra" required>
+                                <option value="" disabled selected>Pilih Kategori Mitra</option>
+                                <option value="industri">Industri</option>
+                                <option value="internasional">Internasional</option>
+                                <option value="institusi pemerintah">Institusi Pemerintah</option>
+                                <option value="institusi pendidikan">Institusi Pendidikan</option>
+                                <option value="komunitas">Komunitas</option>
+                            </select>
+                            <div class="helper-text">Pilih kategori yang sesuai dengan jenis mitra</div>
+                            <div id="kategoriMitraError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Tanggal Mulai Kerjasama -->
@@ -75,17 +89,9 @@
                             <label for="tanggal_mulai" class="form-label">
                                 Tanggal Mulai Kerjasama <span class="required">*</span>
                             </label>
-                            <div class="date-input-wrapper">
-                                <svg class="date-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                                <input type="text" class="form-control date-input" id="tanggal_mulai" name="tanggal_mulai" placeholder="Pilih tanggal mulai" required readonly>
-                            </div>
+                            <input type="date" class="form-control date-input-native" id="tanggal_mulai" name="tanggal_mulai" required>
                             <div class="helper-text">Tanggal dimulainya kerjasama dengan mitra</div>
-                             <div id="tanggalMulaiError" class="invalid-feedback"></div>
+                            <div id="tanggalMulaiError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Tanggal Akhir Kerjasama -->
@@ -93,23 +99,15 @@
                             <label for="tanggal_akhir" class="form-label">
                                 Tanggal Akhir Kerjasama
                             </label>
-                            <div class="date-input-wrapper">
-                                <svg class="date-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                                <input type="text" class="form-control date-input" id="tanggal_akhir" name="tanggal_akhir" placeholder="Pilih tanggal akhir (opsional)" readonly>
-                            </div>
+                            <input type="date" class="form-control date-input-native" id="tanggal_akhir" name="tanggal_akhir">
                             <div class="helper-text">Kosongkan jika kerjasama masih berlangsung</div>
-                             <div id="tanggalAkhirError" class="invalid-feedback"></div>
+                            <div id="tanggalAkhirError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Logo Mitra -->
                         <div class="col-12 mb-3">
                             <label class="form-label">
-                                Logo Mitra <span class="required">*</span>
+                                Logo Mitra
                             </label>
                             <div class="file-upload-wrapper" id="fileUploadWrapper">
                                 <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -128,6 +126,7 @@
                             <div class="image-preview" id="imagePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
                             </div>
+                            <div class="helper-text" id="helper-text-preview">Klik preview untuk hapus logo mitra</div>
                             <div id="logoMitraError" class="invalid-feedback"></div>
                         </div>
 
@@ -174,49 +173,12 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Flatpickr JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
     <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
     <!-- Form JS -->
     <script src="<?= asset_url('js/pages/mitra/form.js') ?>"></script>
-
-    <script>
-        // File upload preview
-        const fileInput = document.getElementById('logo_mitra');
-        const fileUploadWrapper = document.getElementById('fileUploadWrapper');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
-
-        fileUploadWrapper.addEventListener('click', function() {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    fileUploadWrapper.style.display = 'none';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Remove preview
-        imagePreview.addEventListener('click', function() {
-            fileInput.value = '';
-            imagePreview.style.display = 'none';
-            fileUploadWrapper.style.display = 'flex';
-        });
-
-        
-    </script>
 </body>
 
 </html>

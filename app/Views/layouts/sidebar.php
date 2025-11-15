@@ -9,12 +9,12 @@ function isActive($url, $current)
     return strpos($current, $url) !== false ? 'active' : '';
 }
 
-// Helper function to check if parent menu should be expanded
-function isExpanded($urls, $current)
+// Helper function to check if any submenu item is active
+function hasActiveChild($urls, $current)
 {
     foreach ($urls as $url) {
         if (strpos($current, $url) !== false) {
-            return 'show';
+            return 'active';
         }
     }
     return '';
@@ -28,9 +28,6 @@ function isExpanded($urls, $current)
         <div class="sidebar-logo">
             <img src="<?= asset_url('images/lab-ai-logo.png') ?>" alt="Lab AI Logo" class="logo-img">
         </div>
-        <!-- <button class="btn-toggle-sidebar" id="toggleSidebar">
-            <i data-feather="chevron-left"></i>
-        </button> -->
     </div>
 
     <!-- Sidebar Navigation -->
@@ -39,7 +36,7 @@ function isExpanded($urls, $current)
 
             <!-- Dashboard -->
             <li class="nav-item">
-                <a href="<?= base_url('dashboard') ?>" class="nav-link <?= isActive('dashboard', $current_url) ?>">
+                <a href="<?= base_url('dashboard') ?>" class="nav-link parent-dashboard <?= isActive('dashboard', $current_url) ?>">
                     <i data-feather="home"></i>
                     <span class="nav-text">Dashboard</span>
                 </a>
@@ -50,121 +47,74 @@ function isExpanded($urls, $current)
                 <span>Manajemen Data</span>
             </li>
 
-            <!-- Manajemen Anggota (with collapse) -->
+            <!-- Manajemen Anggota -->
             <li class="nav-item">
-                <a
-                    class="nav-link" data-bs-toggle="collapse" href="#kontenAnggotaCollapse" role="button" aria-expanded="false"
-                    aria-controls="collapseExample">
-                    <span>
-                        <i data-feather="users"></i>
-                        <span class="nav-text">Manajemen Anggota</span>
-                    </span>
-
-                    <i data-feather="chevron-down" class="nav-arrow"></i>
+                <a class="nav-link parent-menu <?= hasActiveChild(['dosen'], $current_url) ?>">
+                    <i data-feather="users"></i>
+                    <span class="nav-text">Manajemen Anggota</span>
                 </a>
-
-                <div class="collapse" id="kontenAnggotaCollapse">
-                    <ul class="nav flex-column submenu">
-                        <li class="nav-item">
-                            <a href="<?= base_url('dosen') ?>"
-                                class="nav-link">
-                                <span class="nav-text">Data Dosen</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('index.php?url=anggota/mahasiswa') ?>"
-                                class="nav-link">
-                                <span class="nav-text">Data Mahasiswa</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="nav flex-column submenu">
+                    <li class="nav-item">
+                        <a href="<?= base_url('dosen') ?>" class="nav-link <?= isActive('dosen', $current_url) ?>">
+                            <span class="nav-text">Data Dosen</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
-            <!-- Manajemen Konten Lab (with collapse) -->
+            <!-- Konten Laboratorium -->
             <li class="nav-item">
-                <a
-                    class="btn nav-link" data-bs-toggle="collapse" href="#kontenLabCollapse" role="button" aria-expanded="false" aria-controls="collapseExample">
-                    <span>
-                        <i data-feather="grid"></i>
-                        <span class="nav-text">Konten Laboratorium</span>
-                    </span>
-
-                    <i data-feather="chevron-down" class="nav-arrow"></i>
+                <a class="nav-link parent-menu <?= hasActiveChild(['fasilitas', 'produk', 'mitra'], $current_url) ?>">
+                    <i data-feather="grid"></i>
+                    <span class="nav-text">Konten Laboratorium</span>
                 </a>
-
-                <div class="collapse" id="kontenLabCollapse">
-                    <ul class="nav flex-column submenu">
-                        <li class="nav-item">
-                            <a href="<?= base_url('fasilitas') ?>"
-                                class="nav-link">
-                                <span class="nav-text">Kelola Fasilitas</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('produk') ?>"
-                                class="nav-link">
-                                <span class="nav-text">Kelola Produk</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('mitra') ?>"
-                                class="nav-link">
-                                <span class="nav-text">Kelola Mitra Kerjasama</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="nav flex-column submenu">
+                    <li class="nav-item">
+                        <a href="<?= base_url('fasilitas') ?>" class="nav-link <?= isActive('fasilitas', $current_url) ?>">
+                            <span class="nav-text">Kelola Fasilitas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('produk') ?>" class="nav-link <?= isActive('produk', $current_url) ?>">
+                            <span class="nav-text">Kelola Produk</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('mitra') ?>" class="nav-link <?= isActive('mitra', $current_url) ?>">
+                            <span class="nav-text">Kelola Mitra Kerjasama</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
-            <!-- Manajemen Aktivitas (with collapse) -->
+            <!-- Manajemen Aktivitas -->
             <li class="nav-item">
-                <a
-                    class="btn nav-link" data-bs-toggle="collapse" href="#activityCollapse" role="button" aria-expanded="false" aria-controls="collapseExample">
-                    <span>
-                        <i data-feather="activity"></i>
-                        <span class="nav-text">Manajemen Aktivitas</span>
-                    </span>
-
-                    <i data-feather="chevron-down" class="nav-arrow"></i>
+                <a class="nav-link parent-menu <?= hasActiveChild(['publikasi', 'penelitian', 'pengabdian', 'kekayaan'], $current_url) ?>">
+                    <i data-feather="activity"></i>
+                    <span class="nav-text">Manajemen Aktivitas</span>
                 </a>
-
-                <div class="collapse" id="activityCollapse">
-                    <ul class="nav flex-column submenu">
-                        <li class="nav-item">
-                            <a href="<?= base_url('index.php?url=aktivitas/publikasi') ?>"
-                                class="nav-link">
-                                <span class="nav-text">Publikasi Akademik</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('index.php?url=aktivitas/penelitian') ?>"
-                                class="nav-link">
-                                <span class="nav-text">Penelitian</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('index.php?url=aktivitas/pengabdian') ?>"
-                                class="nav-link">
-
-                                <span class="nav-text">Pengabdian</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('index.php?url=aktivitas/kekayaan') ?>"
-                                class="nav-link">
-
-                                <span class="nav-text">Kekayaan Intelektual</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-
-            <!-- Divider -->
-            <li class="nav-divider">
-                <span>Pengaturan</span>
+                <ul class="nav flex-column submenu">
+                    <li class="nav-item">
+                        <a href="<?= base_url('index.php?url=aktivitas/publikasi') ?>" class="nav-link <?= isActive('publikasi', $current_url) ?>">
+                            <span class="nav-text">Publikasi Akademik</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('index.php?url=aktivitas/penelitian') ?>" class="nav-link <?= isActive('penelitian', $current_url) ?>">
+                            <span class="nav-text">Penelitian</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('index.php?url=aktivitas/pengabdian') ?>" class="nav-link <?= isActive('pengabdian', $current_url) ?>">
+                            <span class="nav-text">Pengabdian</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('index.php?url=aktivitas/kekayaan') ?>" class="nav-link <?= isActive('kekayaan', $current_url) ?>">
+                            <span class="nav-text">Kekayaan Intelektual</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
             <!-- Logout -->
@@ -174,6 +124,7 @@ function isExpanded($urls, $current)
                     <span class="nav-text">Keluar</span>
                 </a>
             </li>
+            <br><br>
 
         </ul>
     </nav>

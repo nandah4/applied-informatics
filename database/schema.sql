@@ -1,6 +1,7 @@
 -- CREATE DATABASE
 CREATE DATABASE db_lab_ai;
 
+
 -- CREATE TABLE users
 CREATE TYPE user_role_enum AS ENUM ('guest', 'admin');
 
@@ -18,11 +19,13 @@ CREATE TABLE tbl_users (
     INSERT INTO tbl_users (email, password, role)
     VALUES ('admin@gmail.com', crypt('12345678', gen_salt('bf', 12)), 'admin');
 
+
 -- CREATE TABLE jabatan
 CREATE TABLE tbl_jabatan(
     id BIGSERIAL PRIMARY KEY,
     jabatan VARCHAR(255) UNIQUE NOT NULL
 );
+
 
 -- CREATE TABLE keahlian
 CREATE TABLE tbl_keahlian(
@@ -47,6 +50,7 @@ CREATE TABLE tbl_dosen (
     ON DELETE SET NULL
 );
 
+
 -- CREATE TABLE dosen - keahlian
 CREATE TABLE tbl_dosen_keahlian(
     dosen_id bigint,
@@ -62,7 +66,9 @@ CREATE TABLE tbl_dosen_keahlian(
     PRIMARY KEY(dosen_id, keahlian_id)
 )
 
+
 -- CREATE PROCEDURE sp_dosen di dir procedures/sp_dosen.sql
+
 
 -- CREATE TABLE fasilitas
 CREATE TABLE tbl_fasilitas (
@@ -74,8 +80,14 @@ CREATE TABLE tbl_fasilitas (
     updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+
 -- CREATE TABLE mitra 
+
 CREATE TYPE status_enum AS ENUM ('aktif', 'non-aktif');
+CREATE TYPE kategori_mitra_enum AS ENUM ('industri', 'internasional', 'institusi pemerintah', 'institusi pendidikan', 'komunitas');
+
+    -- Cara drop ENUM
+    DROP TYPE nama_enum;
 
 CREATE TABLE tbl_mitra (
     id              BIGSERIAL PRIMARY KEY,
@@ -83,8 +95,39 @@ CREATE TABLE tbl_mitra (
     status          status_enum NOT NULL DEFAULT 'non-aktif',
     deskripsi	    TEXT,
     logo_mitra      VARCHAR(255),
+    kategori_mitra  kategori_mitra_enum NOT NULL DEFAULT 'industri',
     tanggal_mulai   DATE,
     tanggal_akhir   DATE,
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+
+-- CREATE TABLE publikasi
+
+ CREATE TABLE tbl_publikasi (
+    id              BIGSERIAL PRIMARY KEY,
+    dosen_id        BIGINT NOT NULLL,
+    judul	        VARCHAR(255) NOT NULL,
+    url_publikasi   VARCHAR(255),
+    kategori_mitra  kategori_mitra_enum NOT NULL DEFAULT 'industri',
+    tanggal_mulai   DATE,
+    tanggal_akhir   DATE,
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+
+-- CREATE TABLE aktivitas_lab
+
+CREATE TABLE tbl_aktivitas_lab (
+    id              BIGSERIAL PRIMARY KEY,
+    judul_aktivitas VARCHAR(255) NOT NULL,
+    deskripsi       TEXT,
+    foto_aktivitas  VARCHAR(255), 
+    tanggal_kegiatan DATE, 
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+- sekar

@@ -42,15 +42,52 @@
         <!-- Detail Card -->
         <div class="card">
             <div class="card-body">
+                <?php
+                // Helper functions
+                function getKategoriClassDetail($kategori)
+                {
+                    $mapping = [
+                        'industri' => 'badge-industri',
+                        'internasional' => 'badge-internasional',
+                        'institusi pemerintah' => 'badge-institusi-pemerintah',
+                        'institusi pendidikan' => 'badge-institusi-pendidikan',
+                        'komunitas' => 'badge-komunitas'
+                    ];
+                    return $mapping[$kategori] ?? 'badge-industri';
+                }
+
+                function formatTanggal($tanggal)
+                {
+                    if (!$tanggal) return '-';
+                    $bulan = [
+                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                    ];
+                    $date = date_create($tanggal);
+                    return date_format($date, 'd') . ' ' . $bulan[(int)date_format($date, 'n')] . ' ' . date_format($date, 'Y');
+                }
+
+                $logoUrl = $mitra['logo_mitra']
+                    ? upload_url('mitra/' . $mitra['logo_mitra'])
+                    : upload_url('default/image.png');
+
+                $statusBadge = $mitra['status'] === 'aktif' ? 'badge-success' : 'badge-warning';
+                $statusLabel = $mitra['status'] === 'aktif' ? 'Mitra Aktif' : 'Mitra Non-Aktif';
+
+                $kategoriClass = getKategoriClassDetail($mitra['kategori_mitra']);
+                $kategoriLabel = ucwords($mitra['kategori_mitra']);
+                ?>
+
                 <!-- Mitra Header with Logo -->
                 <div class="partner-header">
                     <div class="partner-logo-container">
-                        <img src="https://via.placeholder.com/200x200/01b5b9/ffffff?text=TII" alt="Partner Logo" class="partner-logo">
+                        <img src="<?= $logoUrl ?>" alt="Logo <?= htmlspecialchars($mitra['nama']) ?>" class="partner-logo">
                     </div>
                     <div class="partner-header-info">
-                        <h2 class="partner-title">PT. Teknologi Informasi Indonesia</h2>
+                        <h2 class="partner-title"><?= htmlspecialchars($mitra['nama']) ?></h2>
                         <div class="partner-meta">
-                            <span class="badge-custom badge-success">Mitra Aktif</span>
+                            <span class="badge-custom <?= $statusBadge ?>"><?= $statusLabel ?></span>
                         </div>
                     </div>
                 </div>
@@ -69,34 +106,41 @@
 
                     <div class="info-row">
                         <div class="info-label">ID Mitra</div>
-                        <div class="info-value">#001</div>
+                        <div class="info-value"><?=$mitra['id'];?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Nama Mitra</div>
-                        <div class="info-value">PT. Teknologi Informasi Indonesia</div>
+                        <div class="info-value"><?= htmlspecialchars($mitra['nama']) ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Status</div>
                         <div class="info-value">
-                            <span class="badge-custom badge-success">Mitra Aktif</span>
+                            <span class="badge-custom <?= $statusBadge ?>"><?= $statusLabel ?></span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Kategori Mitra</div>
+                        <div class="info-value">
+                            <span class="badge-kategori <?= $kategoriClass ?>"><?= $kategoriLabel ?></span>
                         </div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Tanggal Mulai Kerjasama</div>
-                        <div class="info-value">15 Januari 2024</div>
+                        <div class="info-value"><?= formatTanggal($mitra['tanggal_mulai']) ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Tanggal Akhir Kerjasama</div>
-                        <div class="info-value">15 Januari 2024</div>
+                        <div class="info-value"><?= formatTanggal($mitra['tanggal_akhir']) ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Terakhir Diperbarui</div>
-                        <div class="info-value">11 November 2024</div>
+                        <div class="info-value"><?= formatTanggal($mitra['updated_at']) ?></div>
                     </div>
                 </div>
 
@@ -113,7 +157,7 @@
                         Deskripsi
                     </h3>
                     <p class="description-text">
-                        PT. Teknologi Informasi Indonesia adalah perusahaan teknologi terkemuka yang fokus pada pengembangan solusi digital dan transformasi bisnis. Kami telah menjalin kerjasama strategis dalam berbagai proyek pengembangan aplikasi, pelatihan SDM, dan transfer pengetahuan di bidang teknologi informasi. Mitra ini telah berkontribusi signifikan dalam mendukung penelitian dan pengembangan laboratorium serta memberikan kesempatan magang bagi mahasiswa.
+                        <?= $mitra['deskripsi'] ? nl2br(htmlspecialchars($mitra['deskripsi'])) : 'Tidak ada deskripsi.' ?>
                     </p>
                 </div>
 
@@ -126,13 +170,13 @@
                         </svg>
                         Kembali
                     </a>
-                    <a href="<?= base_url('mitra/edit/1') ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('mitra/edit/' . $mitra['id']) ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                         </svg>
                         Edit Data
                     </a>
-                    <button class="btn-danger-custom" onclick="confirmDelete()">
+                    <button class="btn-danger-custom" onclick="confirmDelete(<?= $mitra['id'] ?>, '<?= htmlspecialchars($mitra['nama']) ?>')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -156,16 +200,11 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <script>
-        function confirmDelete() {
-            if (confirm('Apakah Anda yakin ingin menghapus mitra ini?')) {
-                // Handle delete action
-                console.log('Delete mitra');
-                alert('Mitra berhasil dihapus!');
-                window.location.href = '<?= base_url('mitra') ?>';
-            }
-        }
-    </script>
+    <!-- Helper Scripts -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+
+    <!-- Page Specific Scripts -->
+    <script src="<?= asset_url('js/pages/mitra/read.js') ?>"></script>
 </body>
 
 </html>

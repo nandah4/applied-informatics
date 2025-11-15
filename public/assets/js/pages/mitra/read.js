@@ -1,0 +1,102 @@
+(function () {
+  "use strict";
+
+  // ============================================================
+  // MODUL DELETE MITRA (Detail Page)
+  // ============================================================
+
+  const DeleteMitraModule = {
+    init: function () {
+      // Function sudah dipanggil dari HTML onclick
+      // Tidak perlu event binding di sini
+    },
+
+    confirmDelete: function (id, name) {
+      // Confirm dengan user
+      if (
+        !confirm(
+          `Apakah Anda yakin ingin menghapus mitra "${name}"?\n\nData yang dihapus tidak dapat dikembalikan.`
+        )
+      ) {
+        return;
+      }
+
+      // Disable delete button dengan loading spinner
+      $(".btn-danger-custom")
+        .prop("disabled", true)
+        .html(
+          '<span class="spinner-border spinner-border-sm me-2"></span>Menghapus...'
+        );
+
+      // AJAX delete request
+      $.ajax({
+        url: "/applied-informatics/mitra/delete/" + id,
+        method: "POST",
+        dataType: "json",
+        success: function (response) {
+          if (response.success) {
+            jQueryHelpers.showAlert(
+              response.message || "Data mitra berhasil dihapus",
+              "success"
+            );
+
+            // Redirect ke list page setelah 1 detik
+            setTimeout(function () {
+              window.location.href = "/applied-informatics/mitra";
+            }, 1000);
+          } else {
+            jQueryHelpers.showAlert(
+              response.message || "Gagal menghapus data mitra",
+              "danger",
+              5000
+            );
+
+            // Re-enable button dengan icon delete
+            $(".btn-danger-custom")
+              .prop("disabled", false)
+              .html(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Hapus Data'
+              );
+          }
+        },
+        error: function (xhr) {
+          const response = xhr.responseJSON;
+          jQueryHelpers.showAlert(
+            response?.message || "Terjadi kesalahan saat menghapus data",
+            "danger",
+            5000
+          );
+
+          // Re-enable button dengan icon delete
+          $(".btn-danger-custom")
+            .prop("disabled", false)
+            .html(
+              '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Hapus Data'
+            );
+        },
+      });
+    },
+  };
+
+  // ============================================================
+  // EXPOSE FUNCTION KE GLOBAL SCOPE
+  // ============================================================
+
+  // Agar bisa dipanggil dari HTML onclick
+  window.confirmDelete = function (id, name) {
+    DeleteMitraModule.confirmDelete(id, name);
+  };
+
+  // ============================================================
+  // INISIALISASI
+  // ============================================================
+
+  $(document).ready(function () {
+    DeleteMitraModule.init();
+
+    // Initialize feather icons
+    if (typeof feather !== "undefined") {
+      feather.replace();
+    }
+  });
+})();
