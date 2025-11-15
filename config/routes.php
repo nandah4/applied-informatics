@@ -457,6 +457,122 @@ $router->post('mitra/delete/(\d+)', function ($id) {
 }, [AuthMiddleware::class]);
 
 // ============================================================================
+// AKTIVITAS LABORATORIUM MANAGEMENT
+// ============================================================================
+// CRUD operations untuk data aktivitas laboratorium
+
+// ----------------------------------------
+// READ Operations
+// ----------------------------------------
+
+/**
+ * Aktivitas - List/Index dengan Pagination
+ * URL: GET /aktivitas?page={number}&per_page={number}
+ */
+$router->get('aktivitas-lab', function () {
+    $controller = new AktivitasController();
+
+    // Ambil parameter dari query string
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+    // Ambil data dengan pagination
+    $result = $controller->getAllAktivitasWithPagination($page, $perPage);
+
+    $listAktivitas = $result['data'] ?? [];
+    $pagination = $result['pagination'] ?? null;
+
+    require __DIR__ . '/../app/Views/admin/aktivitas-lab/index.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Aktivitas - Detail Page
+ * URL: GET /aktivitas/detail/{id}
+ */
+$router->get('aktivitas-lab/detail/(\\d+)', function ($id) {
+    $controller = new AktivitasController();
+
+    // Get data aktivitas by ID
+    $aktivitasData = $controller->getAktivitasById((int)$id);
+
+    if (!$aktivitasData['success']) {
+        header("Location: " . base_url('aktivitas-lab'));
+        exit;
+    }
+
+    $aktivitas = $aktivitasData['data'];
+
+    require __DIR__ . '/../app/Views/admin/aktivitas-lab/read.php';
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// CREATE Operations
+// ----------------------------------------
+
+/**
+ * Aktivitas - Create Page (Form)
+ * URL: GET /aktivitas/create
+ */
+$router->get('aktivitas-lab/create', function () {
+    require __DIR__ . '/../app/Views/admin/aktivitas-lab/create.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Aktivitas - Create (Handle Submit)
+ * URL: POST /aktivitas/create
+ */
+$router->post('aktivitas-lab/create', function () {
+    $controller = new AktivitasController();
+    $controller->createAktivitas();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// UPDATE Operations
+// ----------------------------------------
+
+/**
+ * Aktivitas - Edit Page (Form)
+ * URL: GET /aktivitas/edit/{id}
+ */
+$router->get('aktivitas-lab/edit/(\\d+)', function ($id) {
+    $controller = new AktivitasController();
+
+    // Get data aktivitas by ID
+    $aktivitasData = $controller->getAktivitasById((int)$id);
+
+    if (!$aktivitasData['success']) {
+        header("Location: " . base_url('aktivitas-lab'));
+        exit;
+    }
+
+    $aktivitas = $aktivitasData['data'];
+
+    require __DIR__ . '/../app/Views/admin/aktivitas-lab/edit.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Aktivitas - Update (Handle Submit)
+ * URL: POST /aktivitas/update
+ */
+$router->post('aktivitas-lab/update', function () {
+    $controller = new AktivitasController();
+    $controller->updateAktivitas();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// DELETE Operations
+// ----------------------------------------
+
+/**
+ * Aktivitas - Delete
+ * URL: POST /aktivitas/delete/{id}
+ */
+$router->post('aktivitas-lab/delete/(\\d+)', function ($id) {
+    $controller = new AktivitasController();
+    $controller->deleteAktivitas($id);
+}, [AuthMiddleware::class]);
+
+// ============================================================================
 // END OF ROUTES
 // ============================================================================
 

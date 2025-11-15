@@ -45,11 +45,13 @@ require_once __DIR__ . '/../app/Models/JabatanModel.php';
 require_once __DIR__ . '/../app/Models/KeahlianModel.php';
 require_once __DIR__ . '/../app/Models/DosenModel.php';
 require_once __DIR__ . '/../app/Models/MitraModel.php';
+require_once __DIR__ . '/../app/Models/AktivitasModel.php';
 
 // Load Controllers
 require_once __DIR__ . '/../app/Controllers/AuthController.php';
 require_once __DIR__ . '/../app/Controllers/DosenController.php';
 require_once __DIR__ . '/../app/Controllers/MitraController.php';
+require_once __DIR__ . '/../app/Controllers/AktivitasController.php';
 
 // Load semua route dari config/routes.php
 $router = require_once __DIR__ . '/../config/routes.php';

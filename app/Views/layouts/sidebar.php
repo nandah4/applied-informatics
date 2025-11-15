@@ -89,12 +89,27 @@ function hasActiveChild($urls, $current)
 
             <!-- Manajemen Aktivitas -->
             <li class="nav-item">
-                <a class="nav-link parent-menu <?= hasActiveChild(['publikasi', 'penelitian', 'pengabdian', 'kekayaan'], $current_url) ?>">
+                <a class="nav-link parent-menu <?= hasActiveChild(['aktivitas-lab', 'penelitian', 'pengabdian', 'kekayaan'], $current_url) ?>">
                     <i data-feather="activity"></i>
                     <span class="nav-text">Manajemen Aktivitas</span>
                 </a>
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
+                        <a href="<?= base_url('aktivitas-lab') ?>" class="nav-link <?= isActive('aktivitas-lab', $current_url) ?>">
+                            <span class="nav-text">Kelola Aktivitas Lab</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('aktivitas-lab') ?>" class="nav-link <?= isActive('informasi-rekrutment', $current_url) ?>">
+                            <span class="nav-text">Kelola Informasi Rekrutment</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('index.php?url=aktivitas/publikasi') ?>" class="nav-link <?= isActive('publikasi', $current_url) ?>">
+                            <span class="nav-text">Publikasi Akademik</span>
+                        </a>
+                    </li>
+                    <!-- <li class="nav-item">
                         <a href="<?= base_url('index.php?url=aktivitas/publikasi') ?>" class="nav-link <?= isActive('publikasi', $current_url) ?>">
                             <span class="nav-text">Publikasi Akademik</span>
                         </a>
@@ -113,7 +128,7 @@ function hasActiveChild($urls, $current)
                         <a href="<?= base_url('index.php?url=aktivitas/kekayaan') ?>" class="nav-link <?= isActive('kekayaan', $current_url) ?>">
                             <span class="nav-text">Kekayaan Intelektual</span>
                         </a>
-                    </li>
+                    </li> -->
                 </ul>
             </li>
 
