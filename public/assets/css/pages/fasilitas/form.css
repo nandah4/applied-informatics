@@ -151,6 +151,9 @@ textarea.form-control {
     position: relative;
     display: inline-block;
 }
+#previewImg {
+    cursor: pointer;
+}
 
 .image-preview img {
     max-width: 400px;

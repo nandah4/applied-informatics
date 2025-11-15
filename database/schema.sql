@@ -130,4 +130,27 @@ CREATE TABLE tbl_aktivitas_lab (
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-- sekar
+
+-- CREATE TABLE produk
+
+CREATE TABLE tbl_produk (
+    id     BIGSERIAL PRIMARY KEY,
+    nama_produk   VARCHAR(255) NOT NULL,
+    deskripsi     TEXT,
+    foto_produk   VARCHAR(255),
+    link_produk   VARCHAR(255),
+
+    -- Kolom jika author adalah Dosen (terhubung ke tbl_dosen)
+    author_dosen_id BIGINT, 
+
+    -- Kolom jika author adalah Mahasiswa (teks biasa)
+    author_mahasiswa_nama VARCHAR(255), 
+    
+    created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at    TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_author_dosen
+        FOREIGN KEY(author_dosen_id) 
+        REFERENCES tbl_dosen(id)
+        ON DELETE SET NULL
+);

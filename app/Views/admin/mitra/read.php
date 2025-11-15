@@ -23,6 +23,9 @@
 </head>
 
 <body>
+    <!-- Alert Placeholder untuk notifikasi -->
+    <div id="liveAlertPlaceholder"></div>
+    
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -54,18 +57,6 @@
                         'komunitas' => 'badge-komunitas'
                     ];
                     return $mapping[$kategori] ?? 'badge-industri';
-                }
-
-                function formatTanggal($tanggal)
-                {
-                    if (!$tanggal) return '-';
-                    $bulan = [
-                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
-                    ];
-                    $date = date_create($tanggal);
-                    return date_format($date, 'd') . ' ' . $bulan[(int)date_format($date, 'n')] . ' ' . date_format($date, 'Y');
                 }
 
                 $logoUrl = $mitra['logo_mitra']
@@ -106,7 +97,7 @@
 
                     <div class="info-row">
                         <div class="info-label">ID Mitra</div>
-                        <div class="info-value"><?=$mitra['id'];?></div>
+                        <div class="info-value"><?= $mitra['id']; ?></div>
                     </div>
 
                     <div class="info-row">
@@ -140,7 +131,12 @@
 
                     <div class="info-row">
                         <div class="info-label">Terakhir Diperbarui</div>
-                        <div class="info-value"><?= formatTanggal($mitra['updated_at']) ?></div>
+                        <div class="info-value"><?= formatTanggal($mitra['updated_at'], true) ?></div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Tanggal Ditambahkan</div>
+                        <div class="info-value"><?= formatTanggal($mitra['created_at'], true) ?></div>
                     </div>
                 </div>
 

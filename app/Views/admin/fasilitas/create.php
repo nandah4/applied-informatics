@@ -21,6 +21,9 @@
 </head>
 
 <body>
+    <!-- Alert Placeholder -->
+    <div id="liveAlertPlaceholder"></div>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -40,15 +43,32 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formFasilitas" method="POST" enctype="multipart/form-data">
+                <form id="formFasilitas" method="POST" enctype="multipart/form-data"
+                    data-ajax-url="<?= base_url('fasilitas/create') ?>"
+                    data-redirect-url="<?= base_url('fasilitas') ?>"
+                    data-success-message="Data fasilitas berhasil ditambahkan.">
+
                     <div class="row">
                         <!-- Nama Fasilitas -->
                         <div class="col-12 mb-3">
-                            <label for="nama_fasilitas" class="form-label">
+                            <label for="nama" class="form-label">
                                 Nama Fasilitas <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama_fasilitas" name="nama_fasilitas" placeholder="Masukkan nama fasilitas" required>
+                            <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama fasilitas">
                             <div class="helper-text">Berikan nama yang jelas dan deskriptif untuk fasilitas</div>
+                            <!-- Tambahkan div untuk error message -->
+                            <div id="namaError" class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Deskripsi -->
+                        <div class="col-12 mb-3">
+                            <label for="deskripsi" class="form-label">
+                                Deskripsi
+                            </label>
+                            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4" placeholder="Masukkan deskripsi singkat tentang fasilitas"></textarea>
+                            <div class="helper-text">Deskripsikan lebih lanjut mengenai fasilitas tersebut</div>
+                            <!-- Tambahkan div untuk error message -->
+                            <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Foto Fasilitas -->
@@ -66,12 +86,14 @@
                                     <strong>Klik untuk upload</strong> atau drag and drop
                                 </div>
                                 <div class="file-upload-hint">
-                                    PNG, JPG, JPEG maksimal 5MB
+                                    PNG, JPG, JPEG maksimal 2MB
                                 </div>
                             </div>
-                            <input type="file" class="file-upload-input" id="foto_fasilitas" name="foto_fasilitas" accept="image/png,image/jpg,image/jpeg" required>
+                            <input type="file" class="file-upload-input" id="foto" name="foto" accept="image/png,image/jpg,image/jpeg">
+                            <div id="fotoError" class="invalid-feedback"></div>
                             <div class="image-preview" id="imagePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
+                                <div class="helper-text" id="helper-text-preview">Klik preview untuk hapus foto aktivitas</div>
                             </div>
                         </div>
                     </div>
@@ -85,7 +107,7 @@
                             </svg>
                             Batal
                         </a>
-                        <button type="submit" class="btn-primary-custom">
+                        <button type="submit" class="btn-primary-custom" id="btn-submit-create-fasilitas">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
@@ -109,45 +131,13 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <script>
-        // File upload preview
-        const fileInput = document.getElementById('foto_fasilitas');
-        const fileUploadWrapper = document.getElementById('fileUploadWrapper');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
+    <!-- Helper Scripts (Must load before form.js) -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+    <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-        fileUploadWrapper.addEventListener('click', function() {
-            fileInput.click();
-        });
+    <!-- Data fasilitas Form Page JS -->
+    <script src="<?= asset_url('js/pages/fasilitas/form.js') ?>"></script>
 
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    fileUploadWrapper.style.display = 'none';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Remove preview
-        imagePreview.addEventListener('click', function() {
-            fileInput.value = '';
-            imagePreview.style.display = 'none';
-            fileUploadWrapper.style.display = 'flex';
-        });
-
-        // Form submit
-        document.getElementById('formFasilitas').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Add your form submission logic here
-            console.log('Form submitted');
-            alert('Data fasilitas berhasil ditambahkan!');
-        });
-    </script>
 </body>
 
 </html>

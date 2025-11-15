@@ -268,38 +268,102 @@ $router->post('dosen/delete-keahlian', function () {
 // CRUD operations untuk data fasilitas laboratorium
 
 /**
- * Fasilitas - List/Index
- * URL: GET /fasilitas
+ * Fasilitas - List/Index (dengan Pagination)
+ * URL: GET /fasilitas?page=1&per_page=10
+ * 
  */
 $router->get('fasilitas', function () {
+    $controller = new FasilitasController();
+    $result = $controller->getAllFasilitas();
+
+    $listFasilitas = $result['data'];      // Variable untuk view index.php
+    $pagination = $result['pagination'];
+
     require __DIR__ . '/../app/Views/admin/fasilitas/index.php';
 }, [AuthMiddleware::class]);
 
 /**
- * Fasilitas - Create Page
+ * Fasilitas - Create Page (Form)
  * URL: GET /fasilitas/create
+ * 
+ * Tidak perlu passing data, form kosong
  */
 $router->get('fasilitas/create', function () {
     require __DIR__ . '/../app/Views/admin/fasilitas/create.php';
 }, [AuthMiddleware::class]);
 
 /**
- * Fasilitas - Detail Page
- * URL: GET /fasilitas/detail
+ * Fasilitas - Create (Handle Submit)
+ * URL: POST /fasilitas/create
+ * 
+ * Response JSON dari controller
  */
-$router->get('fasilitas/detail', function () {
+$router->post('fasilitas/create', function () {
+    $controller = new FasilitasController();
+    $controller->createFasilitas();
+}, [AuthMiddleware::class]);
+
+/**
+ * Fasilitas - Detail Page
+ * URL: GET /fasilitas/detail/{id}
+ * 
+ */
+$router->get('fasilitas/detail/(\d+)', function ($id) {
+    $controller = new FasilitasController();
+    $result = $controller->getFasilitasById($id);
+
+    // Jika data tidak ditemukan, redirect ke index
+    if (!$result['success']) {
+        header("Location: " . base_url('fasilitas'));
+        exit;
+    }
+
+    $fasilitas = $result['data'];  // Variable untuk view read.php
+
     require __DIR__ . '/../app/Views/admin/fasilitas/read.php';
 }, [AuthMiddleware::class]);
 
 /**
- * Fasilitas - Edit Page
- * URL: GET /fasilitas/edit
+ * Fasilitas - Edit Page (Form)
+ * URL: GET /fasilitas/edit/{id}
+ * 
  */
-$router->get('fasilitas/edit', function () {
+$router->get('fasilitas/edit/(\d+)', function ($id) {
+    $controller = new FasilitasController();
+    $result = $controller->getFasilitasById($id);
+
+    // Jika data tidak ditemukan, redirect ke index
+    if (!$result['success']) {
+        header("Location: " . base_url('fasilitas'));
+        exit;
+    }
+
+    $fasilitas = $result['data'];  // Variable untuk view edit.php
+
     require __DIR__ . '/../app/Views/admin/fasilitas/edit.php';
 }, [AuthMiddleware::class]);
 
-// TODO: Tambahkan route POST untuk create, update, delete fasilitas
+/**
+ * Fasilitas - Update (Handle Submit)
+ * URL: POST /fasilitas/update
+ * 
+ * Response JSON dari controller
+ */
+$router->post('fasilitas/update', function () {
+    $controller = new FasilitasController();
+    $controller->updateFasilitas();
+}, [AuthMiddleware::class]);
+
+/**
+ * Fasilitas - Delete
+ * URL: POST /fasilitas/delete/{id}
+ * 
+ * Response JSON dari controller
+ */
+$router->post('fasilitas/delete/(\d+)', function ($id) {
+    $controller = new FasilitasController();
+    $controller->deleteFasilitasById($id);
+}, [AuthMiddleware::class]);
 
 // ============================================================================
 // PRODUK MANAGEMENT

@@ -22,6 +22,9 @@
 </head>
 
 <body>
+     <!-- Alert Placeholder untuk notifikasi -->
+    <div id="liveAlertPlaceholder"></div>
+    
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -30,7 +33,6 @@
         <?php
         // Data aktivitas dari controller
         $fotoUrl = upload_url('aktivitas-lab/' . $aktivitas['foto_aktivitas']);
-        $tanggalFormatted = date('d F Y', strtotime($aktivitas['tanggal_kegiatan']));
         ?>
 
         <!-- Page Header -->
@@ -54,10 +56,16 @@
             <div class="card-body">
 
                 <!-- Div : Photo -->
-                <div class="col-md-3 mb-4 mb-md-0">
-                    <div class="detail-image-wrapper">
-                        <img src="<?= $fotoUrl ?>" alt="Foto <?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>" class="detail-image">
-                    </div>
+                <div class="aktivitas-photo-container">
+                    <?php if (!empty($aktivitas['foto_aktivitas'])): ?>
+                        <img src="<?= upload_url('aktivitas-lab/' . $aktivitas['foto_aktivitas']) ?>"
+                            alt="Foto Aktivitas: <?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>"
+                            class="aktivitas-photo">
+                    <?php else: ?>
+                        <img src="<?= upload_url('default/image.png') ?>"
+                            alt="No Photo Available"
+                            class="aktivitas-photo">
+                    <?php endif; ?>
                 </div>
 
                 <!-- Div : Informasi Detail -->
@@ -84,12 +92,16 @@
 
                     <div class="info-row">
                         <div class="info-label">Tanggal Aktivitas</div>
-                        <div class="info-value"><?= $tanggalFormatted ?></div>
+                        <div class="info-value"><?= date('d M Y H', strtotime($aktivitas['tanggal_kegiatan'])) ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Terakhir Diperbarui</div>
-                        <div class="info-value"><?= date('d M Y H:i', strtotime($aktivitas['updated_at'])) ?></div>
+                        <div class="info-value"><?= formatTanggal($aktivitas['updated_at'], true); ?></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Tanggal Ditambahkan</div>
+                        <div class="info-value"><?= formatTanggal($aktivitas['updated_at'], true); ?></div>
                     </div>
                 </div>
 
@@ -124,21 +136,15 @@
                         </svg>
                         Edit Data
                     </a>
+                     <button class="btn-danger-custom" onclick="confirmDelete(<?= $aktivitas['id'] ?>, '<?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Hapus Data
+                    </button>
                 </div>
             </div>
-
-
-
-            <!-- Back Button -->
-            <!-- <div class="detail-actions mt-4">
-                <a href="<?= base_url('aktivitas-lab') ?>" class="btn-secondary-custom">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
-                    Kembali ke Daftar
-                </a>
-            </div> -->
         </div>
 
     </div>
@@ -154,6 +160,12 @@
 
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
+
+    <!-- Helper Scripts -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+
+    <!-- Main Logic JS -->
+    <script src="<?= asset_url('js/pages/aktivitas-lab/read.js') ?>"></script>
 
     <script>
         // Initialize feather icons

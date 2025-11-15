@@ -109,7 +109,7 @@ class AktivitasController
         $uploadResult = FileUploadHelper::upload(
             $_FILES['foto_aktivitas'],
             'image',
-            'aktivitas',
+            'aktivitas-lab',
             2 * 1024 * 1024
         );
 
@@ -134,7 +134,7 @@ class AktivitasController
         if (!$result['success']) {
             // Jika gagal dan ada foto yang sudah diupload, hapus fotonya
             if ($fotoFileName) {
-                FileUploadHelper::delete($fotoFileName, 'aktivitas');
+                FileUploadHelper::delete($fotoFileName, 'aktivitas-lab');
             }
 
             ResponseHelper::error($result['message']);
@@ -232,7 +232,7 @@ class AktivitasController
             $uploadResult = FileUploadHelper::upload(
                 $_FILES['foto_aktivitas'],
                 'image',
-                'aktivitas',
+                'aktivitas-lab',
                 2 * 1024 * 1024
             );
 
@@ -243,7 +243,7 @@ class AktivitasController
 
             // Hapus foto lama jika ada
             if ($oldAktivitas['foto_aktivitas']) {
-                FileUploadHelper::delete($oldAktivitas['foto_aktivitas'], 'aktivitas');
+                FileUploadHelper::delete($oldAktivitas['foto_aktivitas'], 'aktivitas-lab');
             }
 
             $fotoFileName = $uploadResult['filename'];
@@ -301,7 +301,7 @@ class AktivitasController
 
         // 4. Hapus file foto jika ada
         if (isset($result['data']['foto_aktivitas']) && $result['data']['foto_aktivitas']) {
-            FileUploadHelper::delete($result['data']['foto_aktivitas'], 'aktivitas');
+            FileUploadHelper::delete($result['data']['foto_aktivitas'], 'aktivitas-lab');
         }
 
         // 5. Return success response

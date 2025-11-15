@@ -7,79 +7,103 @@
     <title>Detail Fasilitas - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Base CSS - Must load first -->
-    <link rel="stylesheet" href="<?= asset_url('css/base/variables.css') ?>">
-    <link rel="stylesheet" href="<?= asset_url('css/base/reset.css') ?>">
+    <!-- Main CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
 
-    <!-- Data Fasilitas Read Page CSS -->
+    <!-- Data Fasilitas Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/fasilitas/read.css') ?>">
 </head>
 
 <body>
-    <!-- Sidebar -->
+    <div id="liveAlertPlaceholder"></div>
+
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
-    <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
                 <a href="<?= base_url('fasilitas') ?>">Data Fasilitas</a>
                 <span>/</span>
                 <span>Detail Fasilitas</span>
             </div>
-            <h1 class="page-title">Detail Fasilitas</h1>
+            <h1 class="page-title"><?= htmlspecialchars($fasilitas['nama']) ?></h1>
             <p class="page-subtitle">Informasi lengkap tentang fasilitas</p>
         </div>
 
-        <!-- Detail Card -->
         <div class="card">
             <div class="card-body">
-                <!-- Facility Photo -->
+                <!-- Foto Fasilitas -->
                 <div class="facility-photo-container">
-                    <img src="https://via.placeholder.com/800x400/01b5b9/ffffff?text=Komputer+Lab+A" alt="Facility Photo" class="facility-photo">
+                    <?php if (!empty($fasilitas['foto'])): ?>
+                        <img src="<?= upload_url('fasilitas/' . $fasilitas['foto']) ?>"
+                            alt="Foto Fasilitas: <?= htmlspecialchars($fasilitas['nama']) ?>"
+                            class="facility-photo">
+                    <?php else: ?>
+                        <img src="<?= upload_url('default/image.png') ?>"
+                            alt="No Photo Available"
+                            class="facility-photo">
+                    <?php endif; ?>
                 </div>
 
-                <!-- Facility Information -->
+                <!-- Informasi Fasilitas -->
                 <div class="facility-info-section">
                     <h3 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
                         </svg>
                         Informasi Fasilitas
                     </h3>
 
                     <div class="info-row">
                         <div class="info-label">ID Fasilitas</div>
-                        <div class="info-value">#001</div>
+                        <div class="info-value"><?= $fasilitas['fasilitas_id'] ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Nama Fasilitas</div>
-                        <div class="info-value">Komputer Lab A</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Deskripsi</div>
-                        <div class="info-value">Komputer Lab A</div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">Tanggal Ditambahkan</div>
-                        <div class="info-value">10 November 2024</div>
+                        <div class="info-value"><?= htmlspecialchars($fasilitas['nama']) ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Terakhir Diperbarui</div>
-                        <div class="info-value">11 November 2024</div>
+                        <div class="info-value">
+                            <?= date('d F Y, H:i', strtotime($fasilitas['updated_at'])) ?> WIB
+                        </div>
                     </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Tanggal Ditambahkan</div>
+                        <div class="info-value">
+                            <?= date('d F Y, H:i', strtotime($fasilitas['created_at'])) ?> WIB
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deskripsi Section -->
+                <div class="description-section">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Deskripsi
+                    </h3>
+                    <p class="description-text">
+                        <?= !empty($fasilitas['deskripsi'])
+                            ? nl2br(htmlspecialchars($fasilitas['deskripsi']))
+                            : 'Tidak ada deskripsi'
+                        ?>
+                    </p>
                 </div>
 
                 <!-- Action Buttons -->
@@ -91,13 +115,17 @@
                         </svg>
                         Kembali
                     </a>
-                    <a href="<?= base_url('fasilitas/edit/1') ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('fasilitas/edit/' . $fasilitas['fasilitas_id']) ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                         </svg>
                         Edit Data
                     </a>
-                    <button class="btn-danger-custom" onclick="confirmDelete()">
+                    <!-- Tambahkan data-fasilitas-id attribute -->
+                    <button
+                        class="btn-danger-custom"
+                        data-fasilitas-id="<?= $fasilitas['fasilitas_id'] ?>"
+                        onclick="confirmDelete(<?= $fasilitas['fasilitas_id'] ?>, '<?= base_url('fasilitas/delete/' . $fasilitas['fasilitas_id']) ?>')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -113,24 +141,19 @@
     <script src="<?= asset_url('js/jquery.min.js') ?>"></script>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Feather Icons -->
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
-    <!-- Sidebar JS -->
+    <!-- Sidebar JS (jQuery Version) -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <script>
-        function confirmDelete() {
-            if (confirm('Apakah Anda yakin ingin menghapus fasilitas ini?')) {
-                // Handle delete action
-                console.log('Delete facility');
-                alert('Fasilitas berhasil dihapus!');
-                window.location.href = '<?= base_url('fasilitas') ?>';
-            }
-        }
-    </script>
+    <!-- Helper Scripts -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+
+    <!-- Data Fasilitas Page JS -->
+    <script src="<?= asset_url('js/pages/fasilitas/read.js') ?>"></script>
 </body>
 
 </html>

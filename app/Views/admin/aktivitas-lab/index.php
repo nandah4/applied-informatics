@@ -97,7 +97,7 @@
                                     <td class="col-judul">
                                         <div class="aktivitas-judul"><?= htmlspecialchars($aktivitas['judul_aktivitas']) ?></div>
                                     </td>
-                                    <td class="col-tanggal"><?= $tanggalFormatted ?></td>
+                                    <td class="col-tanggal"><?= formatTanggal ($aktivitas['tanggal_kegiatan']); ?></td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
                                             <a href="<?= base_url('aktivitas-lab/detail/' . $aktivitas['id']) ?>" class="btn-action btn-view" title="Lihat Detail">

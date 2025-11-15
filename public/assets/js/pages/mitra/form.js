@@ -179,7 +179,7 @@
         errors.push({
           fieldId: "tanggal_mulai",
           errorId: "tanggalMulaiError",
-          message: "Tanggal Mulai Wajib Diisi",
+          message: "Tanggal mulai wajib Diisi",
         });
       }
 

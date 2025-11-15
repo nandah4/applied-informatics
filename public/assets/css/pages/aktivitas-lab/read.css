@@ -96,26 +96,22 @@
    IMAGE SECTION
    ============================================================ */
 
-.detail-image-wrapper {
-    position: relative;
+.aktivitas-photo-container {
     width: 100%;
+    max-width: 300px;
+    margin-bottom: 2rem;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    background: var(--color-gray-100);
 }
 
-.detail-image {
+.aktivitas-photo {
     width: 100%;
     height: auto;
+    max-height: 400px;
     display: block;
     object-fit: cover;
-    transition: transform 0.3s ease;
 }
 
-.detail-image-wrapper:hover .detail-image {
-    transform: scale(1.02);
-}
 
 /* ============================================================
    DETAIL CONTENT SECTION

@@ -266,9 +266,12 @@
     gap: 1rem;
 }
 
-.pagination-info {
-    color: var(--color-gray-600);
-    font-size: 0.875rem;
+.pagination-info span {
+    display: flex;
+      align-items: center;
+      color: var(--color-gray-600);    
+      font-size: 0.875rem;    
+      gap: 10px;
 }
 
 .pagination {

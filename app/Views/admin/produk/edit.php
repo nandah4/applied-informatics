@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Product - Applied Informatics Laboratory</title>
+    <title>Edit Produk - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -16,63 +16,99 @@
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
 
-    <!-- Data Product Form Page CSS -->
-    <link rel="stylesheet" href="<?= asset_url('css/pages/product/form.css') ?>">
+    <!-- Produk Form Page CSS -->
+    <link rel="stylesheet" href="<?= asset_url('css/pages/produk/form.css') ?>">
 </head>
 
 <body>
+    <!-- Alert Placeholder -->
+    <div id="liveAlertPlaceholder"></div>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
+
+    <?php
+    // Dummy data produk untuk edit - will be replaced with actual data from controller
+    $produk = [
+        'id_produk' => 1,
+        'nama_produk' => 'Aplikasi E-Learning',
+        'deskripsi' => 'Platform e-learning yang memudahkan proses pembelajaran online dengan fitur lengkap dan user-friendly.',
+        'foto_produk' => 'elearning.jpg',
+        'link_produk' => 'https://elearning.example.com',
+        'author_dosen_id' => 1,
+        'author_mahasiswa_nama' => null
+    ];
+
+    // Dummy dosen list
+    $dummyDosen = [
+        ['id' => 1, 'full_name' => 'Dr. John Doe'],
+        ['id' => 2, 'full_name' => 'Prof. Jane Smith'],
+        ['id' => 3, 'full_name' => 'Dr. Ahmad Abdullah'],
+    ];
+
+    $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
+
+    // Tentukan author type berdasarkan data yang ada
+    if (!empty($produk['author_dosen_id']) && !empty($produk['author_mahasiswa_nama'])) {
+        $authorType = 'kolaborasi';
+    } elseif (!empty($produk['author_dosen_id'])) {
+        $authorType = 'dosen';
+    } else {
+        $authorType = 'mahasiswa';
+    }
+    ?>
 
     <!-- Main Content Area -->
     <div class="main-content">
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('product') ?>">Data Product</a>
+                <a href="<?= base_url('produk') ?>">Data Produk</a>
                 <span>/</span>
-                <span>Edit Product</span>
+                <span>Edit Produk</span>
             </div>
-            <h1 class="page-title">Edit Product</h1>
-            <p class="page-subtitle">Perbarui data product yang ada</p>
+            <h1 class="page-title">Edit Produk</h1>
+            <p class="page-subtitle">Perbarui data produk yang ada</p>
         </div>
 
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formProduct" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="1">
+                <form id="formEditProduk" method="POST" action="<?= base_url('produk/edit/' . $produk['id_produk']) ?>" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="<?= $produk['id_produk'] ?>">
 
                     <div class="row">
-                        <!-- Nama Product -->
-                        <div class="col-md-6 mb-3">
-                            <label for="nama_product" class="form-label">
-                                Nama Product <span class="required">*</span>
+                        <!-- Nama Produk -->
+                        <div class="col-12 mb-3">
+                            <label for="nama_produk" class="form-label">
+                                Nama Produk <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama_product" name="nama_product" value="E-Learning Platform" placeholder="Masukkan nama product" required>
-                            <div class="helper-text">Berikan nama yang jelas dan deskriptif untuk product</div>
+                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= htmlspecialchars($produk['nama_produk']) ?>" placeholder="Masukkan nama produk" required>
+                            <div class="helper-text">Berikan nama yang jelas dan deskriptif</div>
+                            <div id="namaProdukError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- URL/Link -->
+                        <!-- Link Produk -->
                         <div class="col-md-6 mb-3">
-                            <label for="url_product" class="form-label">
-                                Link/URL Product <span class="required">*</span>
+                            <label for="link_produk" class="form-label">
+                                Link Produk
                             </label>
-                            <input type="url" class="form-control" id="url_product" name="url_product" value="https://elearning.example.com" placeholder="https://example.com" required>
-                            <div class="helper-text">Masukkan URL lengkap dengan https://</div>
+                            <input type="url" class="form-control" id="link_produk" name="link_produk" value="<?= htmlspecialchars($produk['link_produk']) ?>" placeholder="https://example.com">
+                            <div class="helper-text">URL lengkap produk (opsional)</div>
+                            <div id="linkProdukError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Logo Product -->
+                        <!-- Foto Produk -->
                         <div class="col-12 mb-3">
                             <label class="form-label">
-                                Logo Product
+                                Foto Produk
                             </label>
 
-                            <!-- Current Logo -->
-                            <div class="current-image-wrapper mb-3">
-                                <div class="current-image-label">Logo saat ini:</div>
-                                <img src="https://via.placeholder.com/200x200/01b5b9/ffffff?text=APP" alt="Current Logo" class="current-image" id="currentImage">
-                                <div class="helper-text mt-2">Klik area upload di bawah untuk mengganti logo</div>
+                            <!-- Current Photo -->
+                            <div class="current-image-wrapper mb-3" id="currentImageWrapper">
+                                <div class="current-image-label">Foto saat ini:</div>
+                                <img src="<?= $fotoUrl ?>" alt="Foto <?= htmlspecialchars($produk['nama_produk']) ?>" class="current-image" id="currentImage">
+                                <div class="helper-text mt-2">Klik area upload di bawah untuk mengganti foto</div>
                             </div>
 
                             <!-- File Upload -->
@@ -83,13 +119,15 @@
                                     <line x1="12" y1="3" x2="12" y2="15"></line>
                                 </svg>
                                 <div class="file-upload-text">
-                                    <strong>Klik untuk upload logo baru</strong> atau drag and drop
+                                    <strong>Klik untuk upload foto baru</strong> atau drag and drop
                                 </div>
                                 <div class="file-upload-hint">
-                                    PNG, JPG, JPEG, SVG maksimal 2MB (Rekomendasi: rasio 1:1)
+                                    PNG, JPG, JPEG maksimal 2MB (Rekomendasi: 800x600px)
                                 </div>
                             </div>
-                            <input type="file" class="file-upload-input" id="logo_product" name="logo_product" accept="image/png,image/jpg,image/jpeg,image/svg+xml">
+                            <input type="file" class="file-upload-input" id="foto_produk" name="foto_produk" accept="image/png,image/jpg,image/jpeg">
+
+                            <!-- Image Preview -->
                             <div class="image-preview" id="imagePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
                                 <button type="button" class="btn-remove-preview" id="btnRemovePreview">
@@ -99,45 +137,85 @@
                                     </svg>
                                 </button>
                             </div>
+                            <div id="fotoProdukError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Kategori (Optional) -->
-                        <div class="col-md-6 mb-3">
-                            <label for="kategori" class="form-label">
-                                Kategori
+                        <!-- Author Type Selection -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">
+                                Tipe Author <span class="required">*</span>
                             </label>
-                            <select class="form-select" id="kategori" name="kategori">
-                                <option value="">Pilih Kategori</option>
-                                <option value="Web Application" selected>Web Application</option>
-                                <option value="Mobile App">Mobile App</option>
-                                <option value="Dashboard">Dashboard</option>
-                                <option value="IoT Platform">IoT Platform</option>
-                                <option value="API Service">API Service</option>
-                                <option value="Desktop App">Desktop App</option>
-                            </select>
-                            <div class="helper-text">Kategori product (opsional)</div>
+                            <div class="author-type-selection">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="author_type" id="author_type_dosen" value="dosen" <?= $authorType === 'dosen' ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="author_type_dosen">
+                                        Dosen
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="author_type" id="author_type_mahasiswa" value="mahasiswa" <?= $authorType === 'mahasiswa' ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="author_type_mahasiswa">
+                                        Mahasiswa
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="author_type" id="author_type_kolaborasi" value="kolaborasi" <?= $authorType === 'kolaborasi' ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="author_type_kolaborasi">
+                                        Kolaborasi (Dosen & Mahasiswa)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="helper-text">Pilih apakah author adalah Dosen, Mahasiswa, atau Kolaborasi keduanya</div>
                         </div>
 
-                        <!-- Deskripsi (Optional) -->
+                        <!-- Author Dosen (Dropdown) -->
+                        <div class="col-md-6 mb-3" id="author_dosen_wrapper" style="display: <?= ($authorType === 'dosen' || $authorType === 'kolaborasi') ? 'block' : 'none' ?>;">
+                            <label for="author_dosen_id" class="form-label">
+                                Pilih Dosen <span class="required" id="dosen_required">*</span>
+                            </label>
+                            <select class="form-select" id="author_dosen_id" name="author_dosen_id" <?= ($authorType === 'dosen' || $authorType === 'kolaborasi') ? 'required' : '' ?>>
+                                <option value="">Pilih Dosen</option>
+                                <?php foreach ($dummyDosen as $dosen) : ?>
+                                    <option value="<?= $dosen['id'] ?>" <?= $produk['author_dosen_id'] == $dosen['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($dosen['full_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="helper-text">Pilih dosen sebagai author produk</div>
+                            <div id="authorDosenError" class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Author Mahasiswa (Text Input) -->
+                        <div class="col-md-6 mb-3" id="author_mahasiswa_wrapper" style="display: <?= ($authorType === 'mahasiswa' || $authorType === 'kolaborasi') ? 'block' : 'none' ?>;">
+                            <label for="author_mahasiswa_nama" class="form-label">
+                                Nama Mahasiswa <span class="required" id="mahasiswa_required">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="author_mahasiswa_nama" name="author_mahasiswa_nama" value="<?= htmlspecialchars($produk['author_mahasiswa_nama'] ?? '') ?>" placeholder="Masukkan nama mahasiswa" <?= ($authorType === 'mahasiswa' || $authorType === 'kolaborasi') ? 'required' : '' ?>>
+                            <div class="helper-text">Masukkan nama lengkap mahasiswa</div>
+                            <div id="authorMahasiswaError" class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Deskripsi -->
                         <div class="col-12 mb-3">
                             <label for="deskripsi" class="form-label">
-                                Deskripsi
+                                Deskripsi Produk
                             </label>
-                            <textarea class="form-control" id="deskripsi" name="deskripsi" placeholder="Masukkan deskripsi singkat tentang product">Platform e-learning yang memudahkan proses pembelajaran online dengan fitur lengkap dan user-friendly.</textarea>
-                            <div class="helper-text">Deskripsikan fitur dan kegunaan product</div>
+                            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi produk"><?= htmlspecialchars($produk['deskripsi']) ?></textarea>
+                            <div class="helper-text">Jelaskan fitur dan kegunaan produk (opsional)</div>
+                            <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
                     </div>
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('product') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('produk') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                             Batal
                         </a>
-                        <button type="submit" class="btn-primary-custom">
+                        <button type="submit" class="btn-primary-custom" id="btn-submit-edit-produk">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
@@ -161,14 +239,64 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
+    <!-- Helper Scripts -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+    <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
+
+    <!-- Page Specific Scripts -->
+    <script src="<?= asset_url('js/pages/produk/form.js') ?>"></script>
+
     <script>
+        // Initialize feather icons
+        if (typeof feather !== "undefined") {
+            feather.replace();
+        }
+
+        // Author type toggle
+        const authorTypeDosen = document.getElementById('author_type_dosen');
+        const authorTypeMahasiswa = document.getElementById('author_type_mahasiswa');
+        const authorTypeKolaborasi = document.getElementById('author_type_kolaborasi');
+        const authorDosenWrapper = document.getElementById('author_dosen_wrapper');
+        const authorMahasiswaWrapper = document.getElementById('author_mahasiswa_wrapper');
+        const authorDosenSelect = document.getElementById('author_dosen_id');
+        const authorMahasiswaInput = document.getElementById('author_mahasiswa_nama');
+
+        function toggleAuthorFields() {
+            if (authorTypeDosen.checked) {
+                // Hanya Dosen
+                authorDosenWrapper.style.display = 'block';
+                authorMahasiswaWrapper.style.display = 'none';
+                authorDosenSelect.required = true;
+                authorMahasiswaInput.required = false;
+                authorMahasiswaInput.value = ''; // Clear mahasiswa input
+            } else if (authorTypeMahasiswa.checked) {
+                // Hanya Mahasiswa
+                authorDosenWrapper.style.display = 'none';
+                authorMahasiswaWrapper.style.display = 'block';
+                authorDosenSelect.required = false;
+                authorMahasiswaInput.required = true;
+                authorDosenSelect.value = ''; // Clear dosen select
+            } else if (authorTypeKolaborasi.checked) {
+                // Kolaborasi - tampilkan keduanya
+                authorDosenWrapper.style.display = 'block';
+                authorMahasiswaWrapper.style.display = 'block';
+                authorDosenSelect.required = true;
+                authorMahasiswaInput.required = true;
+                // Tidak perlu clear karena keduanya dibutuhkan
+            }
+        }
+
+        authorTypeDosen.addEventListener('change', toggleAuthorFields);
+        authorTypeMahasiswa.addEventListener('change', toggleAuthorFields);
+        authorTypeKolaborasi.addEventListener('change', toggleAuthorFields);
+
         // File upload preview
-        const fileInput = document.getElementById('logo_product');
+        const fileInput = document.getElementById('foto_produk');
         const fileUploadWrapper = document.getElementById('fileUploadWrapper');
         const imagePreview = document.getElementById('imagePreview');
         const previewImg = document.getElementById('previewImg');
         const btnRemovePreview = document.getElementById('btnRemovePreview');
-        const currentImageWrapper = document.querySelector('.current-image-wrapper');
+        const currentImageWrapper = document.getElementById('currentImageWrapper');
 
         fileUploadWrapper.addEventListener('click', function() {
             fileInput.click();
@@ -199,14 +327,6 @@
             if (currentImageWrapper) {
                 currentImageWrapper.style.display = 'block';
             }
-        });
-
-        // Form submit
-        document.getElementById('formProduct').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Add your form submission logic here
-            console.log('Form submitted');
-            alert('Data product berhasil diupdate!');
         });
     </script>
 </body>

@@ -8,3 +8,6 @@ public/uploads/fasilitas/*
 
 public/uploads/mitra/*
 !public/uploads/mitra/.gitkeep
+
+public/uploads/aktivitas-lab/*
+!public/uploads/aktivitas-lab/.gitkeep
