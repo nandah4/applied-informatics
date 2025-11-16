@@ -1,53 +1,112 @@
+@import '../base/fonts.css';
+@import '../base/variables.css';
 
-.navbar-nav .nav-link {
-  color: #000 !important; /* Mengubah warna font menjadi hitam */
-  margin-right: 20px; /* Memberikan jarak antar item menu */
-  font-weight: 500;
+/* Navbar Modern Minimalist */
+.navbar {
+    background: #ffffff;
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 1.30rem 0;
+    transition: all 0.3s ease;
 }
 
-.navbar-nav .nav-link:hover {
-  color: #555 !important; /* Warna saat hover */
-}
-
+/* Logo Styling */
 .navbar-brand {
-  margin-right: auto; /* Mendorong menu ke kanan */
+    padding: 0;
 }
 
-.navbar-collapse {
-  justify-content: flex-end; /* Memposisikan menu ke kanan */
-  margin-right: 20px; /* Memberikan jarak dari tepi kanan */
-}
-
-/* Memastikan toggler button terlihat */
-.navbar-toggler {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.navbar-brand {
-    max-width: 150px; /* Ukuran maksimal */
+.navbar-brand .logo {
+    height: 45px;
     width: auto;
-    height: auto;
+    object-fit: contain;
+    transition: height 0.3s ease;
 }
 
-/* Responsive untuk berbagai ukuran layar */
-@media (max-width: 992px) {
-    .navbar-brand {
-        max-width: 120px;
+/* Navigation Links */
+.navbar-nav .nav-link {
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: var(--fs-sm);
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
 
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  background-color: var(--color-primary-50);
+    color: var(--color-primary-600);
+    border-radius: 8px; 
+    padding: 8px 18px;
+    transition: all 0.2s ease;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.65rem 1.25rem;
+    transition: all 0.2s ease;
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: var(--fs-sm);
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+    color: var(--color-primary-600);
+    padding-left: 1.5rem;
+}
+
+/* Toggler Button */
+.navbar-toggler {
+    padding: 0.5rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+    .navbar-nav {
+        padding: 1rem 0;
+        gap: 0.5rem;
+    }
+    
+    .dropdown-menu {
+        border: none;
+        box-shadow: none;
+        padding-left: 1rem;
     }
 }
 
 @media (max-width: 768px) {
-    .navbar-brand {
-        max-width: 100px;
-
-
+    .navbar-brand .logo {
+        height: 38px;
     }
 }
 
 @media (max-width: 576px) {
-    .navbar-brand {
-        max-width: 80px;
-
+    .navbar-brand .logo {
+        height: 32px;
     }
+    
+    .navbar-nav .nav-link {
+        font-size: 0.9rem;
+    }
+}
+
+/* Scroll Effect (Optional - requires JS) */
+.navbar.scrolled {
+    padding: 0.5rem 0;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.scrolled .navbar-brand .logo {
+    height: 38px;
 }

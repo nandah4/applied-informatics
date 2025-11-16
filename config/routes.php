@@ -33,7 +33,15 @@ $router = new Router();
  * URL: /
  */
 $router->get('/', function () {
-    require __DIR__ . '/../app/Views/home/index.php';
+    require __DIR__ . '/../app/Views/client/index.php';
+});
+
+/**
+ * Tentang Kami
+ * URL: /tentang-kami
+ */
+$router->get('tentang-kami', function () {
+    require __DIR__ . '/../app/Views/client/tentang_kami.php';
 });
 
 /**
