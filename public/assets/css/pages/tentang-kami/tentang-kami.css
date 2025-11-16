@@ -1,0 +1,428 @@
+/**
+ * Tentang Kami Page Styles
+ * Applied Informatics Laboratory
+ *
+ * Design Philosophy:
+ * - Exceptionally clean and minimalist
+ * - Abundant white space for readability
+ * - Professional and academic aesthetic
+ * - Clear visual hierarchy
+ * - Grid-based, symmetrical layout
+ */
+
+@import '../../base/fonts.css';
+@import '../../base/variables.css';
+
+/* ========== MAIN PAGE CONTAINER ========== */
+.tentang-kami-page {
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+/* ========== PAGE TITLE SECTION ========== */
+.page-title-section {
+    padding: 4rem 0 3rem;
+    background-color: #ffffff;
+}
+
+.page-title {
+    font-family: var(--font-manrope, 'Manrope', sans-serif);
+    font-size: 2.75rem;
+    font-weight: var(--fw-bold, 700);
+    color: var(--color-tertiary-500, #02416c);
+    margin: 0;
+    text-align: center;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+/* ========== ABOUT LAB SECTION ========== */
+.about-lab-section {
+    padding: 3rem 0 5rem;
+    background-color: #ffffff;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.section-subtitle {
+    font-family: var(--font-manrope, 'Manrope', sans-serif);
+    font-size: 1.5rem;
+    font-weight: var(--fw-semibold, 600);
+    color: var(--color-primary-600, #01a3a7);
+    margin: 0 0 1.5rem;
+    letter-spacing: -0.01em;
+}
+
+.about-description {
+    font-family: var(--font-manrope, 'Manrope', sans-serif);
+    font-size: 1.125rem;
+    font-weight: var(--fw-regular, 400);
+    color: var(--text-secondary, #4b5563);
+    line-height: 1.8;
+    margin: 0;
+    text-align: justify;
+}
+
+/* ========== TEAM SECTION ========== */
+.team-section {
+    padding: 3rem 0 6rem;
+    background-color: var(--bg-secondary, #f9fafb);
+}
+
+.section-title {
+    font-family: var(--font-manrope, 'Manrope', sans-serif);
+    font-size: 2.25rem;
+    font-weight: var(--fw-bold, 700);
+    color: var(--color-tertiary-500, #02416c);
+    margin: 0 0 4rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+}
+
+/* ========== SUBSECTIONS ========== */
+.leadership-subsection,
+.members-subsection {
+    margin-bottom: 5rem;
+}
+
+.members-subsection {
+    margin-bottom: 0;
+}
+
+.subsection-title {
+    font-family: var(--font-manrope, 'Manrope', sans-serif);
+    font-size: 1.75rem;
+    font-weight: var(--fw-semibold, 600);
+    color: var(--color-primary-500, #01b5b9);
+    margin: 0 0 3rem;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+/* ========== GRID LAYOUTS ========== */
+
+/* Leadership Grid: 2 columns on desktop */
+.leadership-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3rem;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Members Grid: 3-4 columns on desktop */
+.members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2.5rem;
+    padding: 0 1rem;
+}
+
+/* ========== PROFILE CARDS ========== */
+.profile-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-light, #e5e7eb);
+}
+
+.profile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(1, 181, 185, 0.12);
+}
+
+/* ========== PROFILE IMAGE ========== */
+.profile-image-wrapper {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.75rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-primary-100, #dcf8f9), var(--color-secondary-100, #ffeedb));
+    padding: 4px;
+    box-shadow: 0 4px 12px rgba(1, 181, 185, 0.15);
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+}
+
+/* ========== PROFILE INFO ========== */
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.profile-name {
+    font-family: var(--font-manrope, 'Manrope', sans-serif);
+    font-size: 1.125rem;
+    font-weight: var(--fw-semibold, 600);
+    color: var(--text-primary, #111827);
+    margin: 0;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+}
+
+.profile-position {
+    font-family: var(--font-manrope, 'Manrope', sans-serif);
+    font-size: 0.95rem;
+    font-weight: var(--fw-medium, 500);
+    color: var(--color-primary-600, #01a3a7);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ========== EXPERTISE TAGS ========== */
+.profile-expertise {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.expertise-tag {
+    font-family: var(--font-manrope, 'Manrope', sans-serif);
+    font-size: 0.8125rem;
+    font-weight: var(--fw-medium, 500);
+    color: var(--color-tertiary-600, #023a61);
+    background-color: var(--color-primary-50, #f0fcfd);
+    padding: 0.4rem 0.875rem;
+    border-radius: 1rem;
+    border: 1px solid var(--color-primary-200, #b9f1f4);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.expertise-tag:hover {
+    background-color: var(--color-primary-100, #dcf8f9);
+    border-color: var(--color-primary-300, #96e9ef);
+    transform: translateY(-1px);
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* Large Desktop (1400px+) */
+@media (min-width: 1400px) {
+    .members-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Desktop (1024px - 1399px) */
+@media (min-width: 1024px) and (max-width: 1399px) {
+    .members-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .page-title {
+        font-size: 2.25rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .subsection-title {
+        font-size: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .about-description {
+        font-size: 1.0625rem;
+    }
+
+    .leadership-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
+    }
+
+    .members-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .leadership-subsection,
+    .members-subsection {
+        margin-bottom: 4rem;
+    }
+
+    .profile-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .profile-image-wrapper {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Mobile (576px - 767px) */
+@media (max-width: 767px) {
+    .page-title-section {
+        padding: 3rem 0 2rem;
+    }
+
+    .page-title {
+        font-size: 1.875rem;
+    }
+
+    .about-lab-section {
+        padding: 2rem 0 3.5rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .about-description {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .team-section {
+        padding: 2.5rem 0 4rem;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .subsection-title {
+        font-size: 1.375rem;
+        margin-bottom: 2rem;
+    }
+
+    .leadership-grid,
+    .members-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .leadership-subsection,
+    .members-subsection {
+        margin-bottom: 3rem;
+    }
+
+    .profile-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .profile-image-wrapper {
+        width: 110px;
+        height: 110px;
+    }
+
+    .profile-name {
+        font-size: 1.0625rem;
+    }
+
+    .profile-position {
+        font-size: 0.875rem;
+    }
+
+    .expertise-tag {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+    }
+}
+
+/* Small Mobile (<576px) */
+@media (max-width: 575px) {
+    .page-title {
+        font-size: 1.625rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .subsection-title {
+        font-size: 1.25rem;
+    }
+
+    .profile-card {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .profile-image-wrapper {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 1.25rem;
+    }
+
+    .about-description {
+        text-align: left;
+    }
+}
+
+/* ========== ACCESSIBILITY ========== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .profile-card,
+    .expertise-tag {
+        transition: none;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .profile-card {
+        border: 2px solid var(--color-primary-500, #01b5b9);
+    }
+
+    .expertise-tag {
+        border: 2px solid var(--color-primary-500, #01b5b9);
+    }
+}
+
+/* Focus states for accessibility */
+.profile-card:focus-within {
+    outline: 3px solid var(--color-primary-500, #01b5b9);
+    outline-offset: 2px;
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+    .tentang-kami-page {
+        background: white;
+    }
+
+    .profile-card {
+        box-shadow: none;
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+
+    .profile-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .team-section {
+        background: white;
+    }
+}
