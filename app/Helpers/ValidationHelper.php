@@ -52,6 +52,53 @@ class ValidationHelper
         ];
     }
 
+        /**
+     * Validasi URL
+     *
+     * @param string $url - URL yang akan divalidasi
+     * @param bool $required - Apakah field wajib diisi (default: false)
+     * @return array - ['valid' => bool, 'message' => string]
+     */
+    public static function validateUrl($url, $required = false)
+    {
+        // Jika tidak required dan kosong, anggap valid
+        if (!$required && empty($url)) {
+            return [
+                'valid' => true,
+                'message' => ''
+            ];
+        }
+
+        // Cek apakah kosong (jika required)
+        if ($required && empty($url)) {
+            return [
+                'valid' => false,
+                'message' => 'URL tidak boleh kosong'
+            ];
+        }
+
+        // Validasi format URL
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return [
+                'valid' => false,
+                'message' => 'Format URL tidak valid'
+            ];
+        }
+
+        // Validasi panjang maksimal
+        if (strlen($url) > 255) {
+            return [
+                'valid' => false,
+                'message' => 'URL maksimal 255 karakter'
+            ];
+        }
+
+        return [
+            'valid' => true,
+            'message' => ''
+        ];
+    }
+
     /**
      * Validasi NIDN (Nomor Induk Dosen Nasional)
      * NIDN harus 10 digit angka

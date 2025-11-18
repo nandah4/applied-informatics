@@ -28,25 +28,10 @@
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
     <?php
-    // Dummy data produk untuk edit - will be replaced with actual data from controller
-    $produk = [
-        'id_produk' => 1,
-        'nama_produk' => 'Aplikasi E-Learning',
-        'deskripsi' => 'Platform e-learning yang memudahkan proses pembelajaran online dengan fitur lengkap dan user-friendly.',
-        'foto_produk' => 'elearning.jpg',
-        'link_produk' => 'https://elearning.example.com',
-        'author_dosen_id' => 1,
-        'author_mahasiswa_nama' => null
-    ];
-
-    // Dummy dosen list
-    $dummyDosen = [
-        ['id' => 1, 'full_name' => 'Dr. John Doe'],
-        ['id' => 2, 'full_name' => 'Prof. Jane Smith'],
-        ['id' => 3, 'full_name' => 'Dr. Ahmad Abdullah'],
-    ];
-
-    $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
+    // Generate foto URL
+    $fotoUrl = !empty($produk['foto_produk']) 
+        ? upload_url('produk/' . $produk['foto_produk']) 
+        : upload_url('default/image.png');
 
     // Tentukan author type berdasarkan data yang ada
     if (!empty($produk['author_dosen_id']) && !empty($produk['author_mahasiswa_nama'])) {
@@ -74,8 +59,12 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formEditProduk" method="POST" action="<?= base_url('produk/edit/' . $produk['id_produk']) ?>" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="<?= $produk['id_produk'] ?>">
+                <form id="formProduk" method="POST" enctype="multipart/form-data" 
+                    data-ajax-url="<?= base_url('produk/update') ?>"
+                    data-redirect-url="<?= base_url('produk') ?>"
+                    data-success-message="Data produk berhasil diupdate.">
+                    
+                    <input type="hidden" id="id" name="id" value="<?= htmlspecialchars($produk['id']) ?>">
 
                     <div class="row">
                         <!-- Nama Produk -->
@@ -83,7 +72,7 @@
                             <label for="nama_produk" class="form-label">
                                 Nama Produk <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= htmlspecialchars($produk['nama_produk']) ?>" placeholder="Masukkan nama produk" required>
+                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= htmlspecialchars($produk['nama_produk']) ?>" placeholder="Masukkan nama produk">
                             <div class="helper-text">Berikan nama yang jelas dan deskriptif</div>
                             <div id="namaProdukError" class="invalid-feedback"></div>
                         </div>
@@ -93,7 +82,7 @@
                             <label for="link_produk" class="form-label">
                                 Link Produk
                             </label>
-                            <input type="url" class="form-control" id="link_produk" name="link_produk" value="<?= htmlspecialchars($produk['link_produk']) ?>" placeholder="https://example.com">
+                            <input type="url" class="form-control" id="link_produk" name="link_produk" value="<?= htmlspecialchars($produk['link_produk'] ?? '') ?>" placeholder="https://example.com">
                             <div class="helper-text">URL lengkap produk (opsional)</div>
                             <div id="linkProdukError" class="invalid-feedback"></div>
                         </div>
@@ -175,11 +164,19 @@
                             </label>
                             <select class="form-select" id="author_dosen_id" name="author_dosen_id" <?= ($authorType === 'dosen' || $authorType === 'kolaborasi') ? 'required' : '' ?>>
                                 <option value="">Pilih Dosen</option>
-                                <?php foreach ($dummyDosen as $dosen) : ?>
-                                    <option value="<?= $dosen['id'] ?>" <?= $produk['author_dosen_id'] == $dosen['id'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($dosen['full_name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
+                                <?php
+                                if (!empty($listDosen)) :
+                                    foreach ($listDosen as $dosen) :
+                                ?>
+                                        <option value="<?= $dosen['id'] ?>" <?= $produk['author_dosen_id'] == $dosen['id'] ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($dosen['full_name']) ?>
+                                        </option>
+                                    <?php
+                                    endforeach;
+                                else :
+                                    ?>
+                                    <option value="" disabled>Tidak ada data dosen</option>
+                                <?php endif; ?>
                             </select>
                             <div class="helper-text">Pilih dosen sebagai author produk</div>
                             <div id="authorDosenError" class="invalid-feedback"></div>
@@ -200,7 +197,7 @@
                             <label for="deskripsi" class="form-label">
                                 Deskripsi Produk
                             </label>
-                            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi produk"><?= htmlspecialchars($produk['deskripsi']) ?></textarea>
+                            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi produk"><?= htmlspecialchars($produk['deskripsi'] ?? '') ?></textarea>
                             <div class="helper-text">Jelaskan fitur dan kegunaan produk (opsional)</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
@@ -215,7 +212,7 @@
                             </svg>
                             Batal
                         </a>
-                        <button type="submit" class="btn-primary-custom" id="btn-submit-edit-produk">
+                        <button type="submit" class="btn-primary-custom" id="btn-submit-update-produk">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
@@ -245,90 +242,6 @@
 
     <!-- Page Specific Scripts -->
     <script src="<?= asset_url('js/pages/produk/form.js') ?>"></script>
-
-    <script>
-        // Initialize feather icons
-        if (typeof feather !== "undefined") {
-            feather.replace();
-        }
-
-        // Author type toggle
-        const authorTypeDosen = document.getElementById('author_type_dosen');
-        const authorTypeMahasiswa = document.getElementById('author_type_mahasiswa');
-        const authorTypeKolaborasi = document.getElementById('author_type_kolaborasi');
-        const authorDosenWrapper = document.getElementById('author_dosen_wrapper');
-        const authorMahasiswaWrapper = document.getElementById('author_mahasiswa_wrapper');
-        const authorDosenSelect = document.getElementById('author_dosen_id');
-        const authorMahasiswaInput = document.getElementById('author_mahasiswa_nama');
-
-        function toggleAuthorFields() {
-            if (authorTypeDosen.checked) {
-                // Hanya Dosen
-                authorDosenWrapper.style.display = 'block';
-                authorMahasiswaWrapper.style.display = 'none';
-                authorDosenSelect.required = true;
-                authorMahasiswaInput.required = false;
-                authorMahasiswaInput.value = ''; // Clear mahasiswa input
-            } else if (authorTypeMahasiswa.checked) {
-                // Hanya Mahasiswa
-                authorDosenWrapper.style.display = 'none';
-                authorMahasiswaWrapper.style.display = 'block';
-                authorDosenSelect.required = false;
-                authorMahasiswaInput.required = true;
-                authorDosenSelect.value = ''; // Clear dosen select
-            } else if (authorTypeKolaborasi.checked) {
-                // Kolaborasi - tampilkan keduanya
-                authorDosenWrapper.style.display = 'block';
-                authorMahasiswaWrapper.style.display = 'block';
-                authorDosenSelect.required = true;
-                authorMahasiswaInput.required = true;
-                // Tidak perlu clear karena keduanya dibutuhkan
-            }
-        }
-
-        authorTypeDosen.addEventListener('change', toggleAuthorFields);
-        authorTypeMahasiswa.addEventListener('change', toggleAuthorFields);
-        authorTypeKolaborasi.addEventListener('change', toggleAuthorFields);
-
-        // File upload preview
-        const fileInput = document.getElementById('foto_produk');
-        const fileUploadWrapper = document.getElementById('fileUploadWrapper');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
-        const btnRemovePreview = document.getElementById('btnRemovePreview');
-        const currentImageWrapper = document.getElementById('currentImageWrapper');
-
-        fileUploadWrapper.addEventListener('click', function() {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    fileUploadWrapper.style.display = 'none';
-                    if (currentImageWrapper) {
-                        currentImageWrapper.style.display = 'none';
-                    }
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Remove preview
-        btnRemovePreview.addEventListener('click', function(e) {
-            e.stopPropagation();
-            fileInput.value = '';
-            imagePreview.style.display = 'none';
-            fileUploadWrapper.style.display = 'flex';
-            if (currentImageWrapper) {
-                currentImageWrapper.style.display = 'block';
-            }
-        });
-    </script>
 </body>
 
 </html>
