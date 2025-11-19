@@ -1,20 +1,3 @@
-<?php
-// Data dummy untuk demo UI
-$produk = [
-    'id_produk' => 1,
-    'nama_produk' => 'Aplikasi E-Learning',
-    'deskripsi' => 'Platform e-learning yang memudahkan proses pembelajaran online dengan fitur lengkap dan user-friendly. Dilengkapi dengan sistem manajemen kursus, video pembelajaran interaktif, quiz online, dan tracking progress siswa secara real-time.',
-    'foto_produk' => 'elearning.jpg',
-    'link_produk' => 'https://elearning.example.com',
-    'author_dosen_id' => 1,
-    'author_mahasiswa_nama' => null,
-    'author_display' => 'Dr. John Doe', // Contoh nama dosen dari join
-    'created_at' => '2024-01-10 10:00:00',
-    'updated_at' => '2024-01-12 14:30:00'
-];
-
-$fotoUrl = upload_url('produk/' . $produk['foto_produk']);
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,7 +21,17 @@ $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
 </head>
 
 <body>
+    <!-- Alert Placeholder -->
+    <div id="liveAlertPlaceholder"></div>
+
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
+
+    <?php
+    // Generate foto URL
+    $fotoUrl = !empty($produk['foto_produk']) 
+        ? upload_url('produk/' . $produk['foto_produk']) 
+        : upload_url('default/image.png');
+    ?>
 
     <div class="main-content">
         <!-- Page Header -->
@@ -73,7 +66,7 @@ $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
 
                     <div class="info-row">
                         <div class="info-label">ID Produk</div>
-                        <div class="info-value"><?= $produk['id_produk'] ?></div>
+                        <div class="info-value"><?= $produk['id'] ?></div>
                     </div>
 
                     <div class="info-row">
@@ -92,7 +85,7 @@ $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
                                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="12" cy="7" r="4"></circle>
                                         </svg>
-                                        <?= htmlspecialchars($produk['author_display']) ?> (Dosen)
+                                        <?= htmlspecialchars($produk['dosen_name']) ?> (Dosen)
                                     </span>
                                     <span class="author-badge author-mahasiswa" style="margin-left: 8px;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -109,7 +102,7 @@ $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                         <circle cx="12" cy="7" r="4"></circle>
                                     </svg>
-                                    <?= htmlspecialchars($produk['author_display']) ?> (Dosen)
+                                    <?= htmlspecialchars($produk['dosen_name']) ?> (Dosen)
                                 </span>
                             <?php elseif (!empty($produk['author_mahasiswa_nama'])) : ?>
                                 <!-- Hanya Mahasiswa -->
@@ -188,13 +181,16 @@ $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
                         </svg>
                         Kembali
                     </a>
-                    <a href="<?= base_url('produk/edit/' . $produk['id_produk']) ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('produk/edit/' . $produk['id']) ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                         </svg>
                         Edit Data
                     </a>
-                    <button class="btn-danger-custom" onclick="confirmDelete(<?= $produk['id_produk'] ?>, '<?= base_url('produk/delete/' . $produk['id_produk']) ?>')">
+                    <button 
+                        class="btn-danger-custom" 
+                        data-produk-id="<?= $produk['id'] ?>"
+                        onclick="confirmDelete(<?= $produk['id'] ?>, '<?= base_url('produk/delete/' . $produk['id']) ?>')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>

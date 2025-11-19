@@ -43,14 +43,17 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formCreateProduk" method="POST" action="<?= base_url('produk/create') ?>" enctype="multipart/form-data">
+                <form id="formProduk" method="POST" enctype="multipart/form-data"
+                    data-ajax-url="<?= base_url('produk/create') ?>"
+                    data-redirect-url="<?= base_url('produk') ?>"
+                    data-success-message="Data produk berhasil ditambahkan.">
                     <div class="row">
                         <!-- Nama Produk -->
                         <div class="col-12 mb-3">
                             <label for="nama_produk" class="form-label">
                                 Nama Produk <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Masukkan nama produk" required>
+                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Masukkan nama produk">
                             <div class="helper-text">Berikan nama yang jelas dan deskriptif</div>
                             <div id="namaProdukError" class="invalid-feedback"></div>
                         </div>
@@ -61,7 +64,7 @@
                                 Link Produk
                             </label>
                             <input type="url" class="form-control" id="link_produk" name="link_produk" placeholder="https://example.com">
-                            <div class="helper-text">URL lengkap produk (opsional)</div>
+                            <div class="helper-text">URL lengkap produk (Opsional)</div>
                             <div id="linkProdukError" class="invalid-feedback"></div>
                         </div>
 
@@ -85,7 +88,7 @@
                                     PNG, JPG, JPEG maksimal 2MB (Rekomendasi: 800x600px)
                                 </div>
                             </div>
-                            <input type="file" class="file-upload-input" id="foto_produk" name="foto_produk" accept="image/png,image/jpg,image/jpeg" required>
+                            <input type="file" class="file-upload-input" id="foto_produk" name="foto_produk" accept="image/png,image/jpg,image/jpeg">
 
                             <!-- Image Preview -->
                             <div class="image-preview" id="imagePreview" style="display: none;">
@@ -102,7 +105,7 @@
                             </label>
                             <div class="author-type-selection">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="author_type" id="author_type_dosen" value="dosen" checked>
+                                    <input class="form-check-input" type="radio" name="author_type" id="author_type_dosen" value="dosen">
                                     <label class="form-check-label" for="author_type_dosen">
                                         Dosen
                                     </label>
@@ -121,26 +124,27 @@
                                 </div>
                             </div>
                             <div class="helper-text">Pilih apakah author adalah Dosen, Mahasiswa, atau Kolaborasi keduanya</div>
+                            <div id="authorTypeError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Author Dosen (Dropdown) -->
-                        <div class="col-md-6 mb-3" id="author_dosen_wrapper">
+                        <div class="col-md-6 mb-3" id="author_dosen_wrapper" style="display: none;">
                             <label for="author_dosen_id" class="form-label">
-                                Pilih Dosen <span class="required" id="dosen_required">*</span>
+                                Pilih Dosen <span class="required">*</span>
                             </label>
                             <select class="form-select" id="author_dosen_id" name="author_dosen_id">
                                 <option value="">Pilih Dosen</option>
                                 <?php
-                                // Dummy data dosen - will be replaced with actual data from controller
-                                $dummyDosen = [
-                                    ['id' => 1, 'full_name' => 'Dr. John Doe'],
-                                    ['id' => 2, 'full_name' => 'Prof. Jane Smith'],
-                                    ['id' => 3, 'full_name' => 'Dr. Ahmad Abdullah'],
-                                ];
-                                foreach ($dummyDosen as $dosen) :
+                                if (!empty($listDosen)) :
+                                    foreach ($listDosen as $dosen) :
                                 ?>
-                                    <option value="<?= $dosen['id'] ?>"><?= htmlspecialchars($dosen['full_name']) ?></option>
-                                <?php endforeach; ?>
+                                        <option value="<?= $dosen['id'] ?>"><?= htmlspecialchars($dosen['full_name']) ?></option>
+                                    <?php
+                                    endforeach;
+                                else :
+                                    ?>
+                                    <option value="" disabled>Tidak ada data dosen</option>
+                                <?php endif; ?>
                             </select>
                             <div class="helper-text">Pilih dosen sebagai author produk</div>
                             <div id="authorDosenError" class="invalid-feedback"></div>
@@ -206,81 +210,6 @@
 
     <!-- Page Specific Scripts -->
     <script src="<?= asset_url('js/pages/produk/form.js') ?>"></script>
-
-    <script>
-        // Initialize feather icons
-        if (typeof feather !== "undefined") {
-            feather.replace();
-        }
-
-        // Author type toggle
-        const authorTypeDosen = document.getElementById('author_type_dosen');
-        const authorTypeMahasiswa = document.getElementById('author_type_mahasiswa');
-        const authorTypeKolaborasi = document.getElementById('author_type_kolaborasi');
-        const authorDosenWrapper = document.getElementById('author_dosen_wrapper');
-        const authorMahasiswaWrapper = document.getElementById('author_mahasiswa_wrapper');
-        const authorDosenSelect = document.getElementById('author_dosen_id');
-        const authorMahasiswaInput = document.getElementById('author_mahasiswa_nama');
-
-        function toggleAuthorFields() {
-            if (authorTypeDosen.checked) {
-                // Hanya Dosen
-                authorDosenWrapper.style.display = 'block';
-                authorMahasiswaWrapper.style.display = 'none';
-                authorDosenSelect.required = true;
-                authorMahasiswaInput.required = false;
-                authorMahasiswaInput.value = ''; // Clear mahasiswa input
-            } else if (authorTypeMahasiswa.checked) {
-                // Hanya Mahasiswa
-                authorDosenWrapper.style.display = 'none';
-                authorMahasiswaWrapper.style.display = 'block';
-                authorDosenSelect.required = false;
-                authorMahasiswaInput.required = true;
-                authorDosenSelect.value = ''; // Clear dosen select
-            } else if (authorTypeKolaborasi.checked) {
-                // Kolaborasi - tampilkan keduanya
-                authorDosenWrapper.style.display = 'block';
-                authorMahasiswaWrapper.style.display = 'block';
-                authorDosenSelect.required = true;
-                authorMahasiswaInput.required = true;
-                // Tidak perlu clear karena keduanya dibutuhkan
-            }
-        }
-
-        authorTypeDosen.addEventListener('change', toggleAuthorFields);
-        authorTypeMahasiswa.addEventListener('change', toggleAuthorFields);
-        authorTypeKolaborasi.addEventListener('change', toggleAuthorFields);
-
-        // File upload preview
-        const fileInput = document.getElementById('foto_produk');
-        const fileUploadWrapper = document.getElementById('fileUploadWrapper');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
-
-        fileUploadWrapper.addEventListener('click', function() {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    fileUploadWrapper.style.display = 'none';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Remove preview
-        imagePreview.addEventListener('click', function() {
-            fileInput.value = '';
-            imagePreview.style.display = 'none';
-            fileUploadWrapper.style.display = 'flex';
-        });
-    </script>
 </body>
 
 </html>

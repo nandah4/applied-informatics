@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Product - Applied Informatics Laboratory</title>
+    <title>Data Produk - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -16,11 +16,13 @@
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
 
-    <!-- Data Product Page CSS -->
+    <!-- Data Produk Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/produk/index.css') ?>">
 </head>
 
 <body>
+    <!-- Alert Placeholder -->
+    <div id="liveAlertPlaceholder"></div>
 
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
@@ -31,8 +33,8 @@
         <div class="page-header-list">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="page-title">Data Product</h1>
-                    <p class="page-subtitle">Kelola data product Laboratorium Applied Informatics</p>
+                    <h1 class="page-title">Data Produk</h1>
+                    <p class="page-subtitle">Kelola data produk Laboratorium Applied Informatics</p>
                 </div>
                 <button class="btn-mobile-menu d-md-none" id="mobileMenuBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -54,7 +56,7 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
-                        <input type="text" class="search-input" placeholder="Cari nama product atau URL...">
+                        <input type="text" class="search-input" placeholder="Cari nama produk atau URL...">
                     </div>
 
                     <!-- Add Button -->
@@ -63,7 +65,7 @@
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        Tambah Product
+                        Tambah Produk
                     </a>
                 </div>
             </div>
@@ -83,43 +85,29 @@
                     </thead>
                     <tbody>
                         <?php
-                        // Data dummy untuk demo UI
-                        $dummyProduk = [
-                            [
-                                'id_produk' => 1,
-                                'nama_produk' => 'Aplikasi E-Learning',
-                                'foto_produk' => 'elearning.jpg',
-                                'link_produk' => 'https://elearning.example.com',
-                                'author_dosen_id' => 1,
-                                'author_mahasiswa_nama' => null,
-                                'author_display' => 'Dr. John Doe'
-                            ],
-                            [
-                                'id_produk' => 2,
-                                'nama_produk' => 'Sistem Manajemen Lab',
-                                'foto_produk' => 'labmanagement.jpg',
-                                'link_produk' => 'https://labmanagement.example.com',
-                                'author_dosen_id' => null,
-                                'author_mahasiswa_nama' => 'Ahmad Hidayat',
-                                'author_display' => 'Ahmad Hidayat'
-                            ],
-                            [
-                                'id_produk' => 3,
-                                'nama_produk' => 'IoT Monitoring System',
-                                'foto_produk' => 'iot.jpg',
-                                'link_produk' => 'https://iot.example.com',
-                                'author_dosen_id' => 2,
-                                'author_mahasiswa_nama' => 'Siti Nurhaliza',
-                                'author_display' => 'Prof. Jane Smith & Siti Nurhaliza'
-                            ],
-                        ];
+                        if (!empty($listProduk)) :
+                            foreach ($listProduk as $produk) :
+                                // Generate author display berdasarkan data
+                                $authorDisplay = '';
+                                if (!empty($produk['author_dosen_id']) && !empty($produk['author_mahasiswa_nama'])) {
+                                    // Kolaborasi
+                                    $authorDisplay = htmlspecialchars($produk['dosen_name']) . ' & ' . htmlspecialchars($produk['author_mahasiswa_nama']);
+                                } elseif (!empty($produk['author_dosen_id'])) {
+                                    // Dosen only
+                                    $authorDisplay = htmlspecialchars($produk['dosen_name']);
+                                } elseif (!empty($produk['author_mahasiswa_nama'])) {
+                                    // Mahasiswa only
+                                    $authorDisplay = htmlspecialchars($produk['author_mahasiswa_nama']);
+                                } else {
+                                    $authorDisplay = '-';
+                                }
 
-                        if (!empty($dummyProduk)) :
-                            foreach ($dummyProduk as $produk) :
-                                $fotoUrl = upload_url('produk/' . $produk['foto_produk']);
+                                $fotoUrl = !empty($produk['foto_produk']) 
+                                    ? upload_url('produk/' . $produk['foto_produk']) 
+                                    : upload_url('default/image.png');
                         ?>
                                 <tr>
-                                    <td class="col-id"><?= htmlspecialchars($produk['id_produk']) ?></td>
+                                    <td class="col-id"><?= htmlspecialchars($produk['id']) ?></td>
                                     <td class="col-foto">
                                         <img src="<?= $fotoUrl ?>" alt="Foto <?= htmlspecialchars($produk['nama_produk']) ?>" class="foto-produk">
                                     </td>
@@ -127,7 +115,7 @@
                                         <div class="product-name"><?= htmlspecialchars($produk['nama_produk']) ?></div>
                                     </td>
                                     <td class="col-author">
-                                        <div class="author-info"><?= htmlspecialchars($produk['author_display']) ?></div>
+                                        <div class="author-info"><?= $authorDisplay ?></div>
                                     </td>
                                     <td class="col-link">
                                         <?php if (!empty($produk['link_produk'])) : ?>
@@ -145,18 +133,22 @@
                                     </td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
-                                            <a href="<?= base_url('produk/detail'); ?>" class="btn-action btn-view" title="Lihat Detail">
+                                            <a href="<?= base_url('produk/detail/' . $produk['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                                     <circle cx="12" cy="12" r="3"></circle>
                                                 </svg>
                                             </a>
-                                            <a href="<?= base_url('produk/edit') ?>" class="btn-action btn-edit" title="Edit">
+                                            <a href="<?= base_url('produk/edit/' . $produk['id']) ?>" class="btn-action btn-edit" title="Edit">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                                                 </svg>
                                             </a>
-                                            <button class="btn-action btn-delete" title="Hapus" onclick="confirmDelete(<?= $produk['id_produk'] ?>, '<?= htmlspecialchars($produk['nama_produk']) ?>')">
+                                            <button 
+                                                class="btn-action btn-delete" 
+                                                title="Hapus"
+                                                data-produk-id="<?= $produk['id'] ?>"
+                                                onclick="confirmDelete(<?= $produk['id'] ?>, '<?= base_url('produk/delete/' . $produk['id']) ?>')">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <polyline points="3 6 5 6 21 6"></polyline>
                                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -172,11 +164,6 @@
                             <tr>
                                 <td colspan="6">
                                     <div class="empty-state">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                                        </svg>
                                         <h6>Tidak ada data produk</h6>
                                         <p>Mulai dengan menambahkan produk pertama Anda</p>
                                     </div>
@@ -188,24 +175,56 @@
             </div>
 
             <!-- Pagination -->
-            <div class="pagination-wrapper">
-                <div class="pagination-info">
-                    Menampilkan <strong>1-3</strong> dari <strong>3</strong> data
+            <?php if (isset($pagination) && $pagination['total_pages'] > 0) : ?>
+                <div class="pagination-wrapper">
+                    <div class="pagination-info">
+                        <span>Menampilkan
+                            <select id="perPageSelect" class="per-page-select">
+                                <option value="5" <?= ($pagination['per_page'] == 5) ? 'selected' : '' ?>>5</option>
+                                <option value="10" <?= ($pagination['per_page'] == 10) ? 'selected' : '' ?>>10</option>
+                                <option value="25" <?= ($pagination['per_page'] == 25) ? 'selected' : '' ?>>25</option>
+                                <option value="50" <?= ($pagination['per_page'] == 50) ? 'selected' : '' ?>>50</option>
+                                <option value="100" <?= ($pagination['per_page'] == 100) ? 'selected' : '' ?>>100</option>
+                            </select>
+                            dari <strong><?= $pagination['total_records'] ?></strong> data
+                        </span>
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <!-- Previous Button -->
+                            <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
+                                <a class="page-link"
+                                    href="<?= $pagination['has_prev'] ? base_url('produk?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>"
+                                    tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
+                                    Previous
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers dengan Ellipsis -->
+                            <?php foreach ($pagination['page_numbers'] as $pageData): ?>
+                                <?php if ($pageData['is_ellipsis']): ?>
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                <?php else: ?>
+                                    <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
+                                        <a class="page-link"
+                                            href="<?= base_url('produk?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
+                                            <?= $pageData['number'] ?>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+
+                            <!-- Next Button -->
+                            <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
+                                <a class="page-link"
+                                    href="<?= $pagination['has_next'] ? base_url('produk?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>">
+                                    Next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -222,15 +241,11 @@
     <!-- Sidebar JS (jQuery Version) -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <script>
-        function confirmDelete(id, name) {
-            if (confirm(`Apakah Anda yakin ingin menghapus product "${name}"?`)) {
-                // Handle delete action
-                console.log('Delete product ID:', id);
-                // Add your delete logic here
-            }
-        }
-    </script>
+    <!-- Helper Scripts -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+
+    <!-- Data Produk Page JS -->
+    <script src="<?= asset_url('js/pages/produk/index.js') ?>"></script>
 
 </body>
 
