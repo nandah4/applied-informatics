@@ -378,39 +378,124 @@ $router->post('fasilitas/delete/(\d+)', function ($id) {
 // ============================================================================
 // CRUD operations untuk data produk laboratorium
 
+// ----------------------------------------
+// READ Operations
+// ----------------------------------------
+
 /**
- * Produk - List/Index
- * URL: GET /produk
+ * Produk - List/Index (dengan Pagination)
+ * URL: GET /produk?page=1&per_page=10
  */
 $router->get('produk', function () {
+    $controller = new ProdukController();
+    $result = $controller->getAllProduk();
+
+    $listProduk = $result['data'];      // Variable untuk view index.php
+    $pagination = $result['pagination'];
+
     require __DIR__ . '/../app/Views/admin/produk/index.php';
 }, [AuthMiddleware::class]);
 
 /**
- * Produk - Create Page
+ * Produk - Detail Page
+ * URL: GET /produk/detail/{id}
+ */
+$router->get('produk/detail/(\d+)', function ($id) {
+    $controller = new ProdukController();
+    $result = $controller->getProdukById($id);
+
+    // Jika data tidak ditemukan, redirect ke index
+    if (!$result['success']) {
+        header("Location: " . base_url('produk'));
+        exit;
+    }
+
+    $produk = $result['data'];  // Variable untuk view read.php
+
+    require __DIR__ . '/../app/Views/admin/produk/read.php';
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// CREATE Operations
+// ----------------------------------------
+
+/**
+ * Produk - Create Page (Form)
  * URL: GET /produk/create
  */
 $router->get('produk/create', function () {
+    $controller = new ProdukController();
+    
+    // Get list dosen untuk dropdown
+    $dosenData = $controller->getAllDosen();
+    $listDosen = $dosenData['data'] ?? [];
+
     require __DIR__ . '/../app/Views/admin/produk/create.php';
 }, [AuthMiddleware::class]);
 
 /**
- * Produk - Detail Page
- * URL: GET /produk/detail
+ * Produk - Create (Handle Submit)
+ * URL: POST /produk/create
+ * 
+ * Response JSON dari controller
  */
-$router->get('produk/detail', function () {
-    require __DIR__ . '/../app/Views/admin/produk/read.php';
+$router->post('produk/create', function () {
+    $controller = new ProdukController();
+    $controller->createProduk();
 }, [AuthMiddleware::class]);
 
+// ----------------------------------------
+// UPDATE Operations
+// ----------------------------------------
+
 /**
- * Produk - Edit Page
- * URL: GET /produk/edit
+ * Produk - Edit Page (Form)
+ * URL: GET /produk/edit/{id}
  */
-$router->get('produk/edit', function () {
+$router->get('produk/edit/(\d+)', function ($id) {
+    $controller = new ProdukController();
+    $result = $controller->getProdukById($id);
+
+    // Jika data tidak ditemukan, redirect ke index
+    if (!$result['success']) {
+        header("Location: " . base_url('produk'));
+        exit;
+    }
+
+    $produk = $result['data'];  // Variable untuk view edit.php
+    
+    // Get list dosen untuk dropdown
+    $dosenData = $controller->getAllDosen();
+    $listDosen = $dosenData['data'] ?? [];
+
     require __DIR__ . '/../app/Views/admin/produk/edit.php';
 }, [AuthMiddleware::class]);
 
-// TODO: Tambahkan route POST untuk create, update, delete produk
+/**
+ * Produk - Update (Handle Submit)
+ * URL: POST /produk/update
+ * 
+ * Response JSON dari controller
+ */
+$router->post('produk/update', function () {
+    $controller = new ProdukController();
+    $controller->updateProduk();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// DELETE Operations
+// ----------------------------------------
+
+/**
+ * Produk - Delete
+ * URL: POST /produk/delete/{id}
+ * 
+ * Response JSON dari controller
+ */
+$router->post('produk/delete/(\d+)', function ($id) {
+    $controller = new ProdukController();
+    $controller->deleteProdukById($id);
+}, [AuthMiddleware::class]);
 
 // ============================================================================
 // MITRA KERJASAMA MANAGEMENT

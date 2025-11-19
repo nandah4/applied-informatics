@@ -47,6 +47,77 @@ const validationHelpers = {
         };
     },
 
+        /**
+     * Validasi URL
+     * 
+     * @param {string} url - URL yang akan divalidasi
+     * @param {boolean} required - Apakah field wajib diisi (default: false)
+     * @return {Object} - {valid: boolean, message: string}
+     */
+    validateUrl: function(url, required = false) {
+        // Jika tidak required dan kosong, anggap valid
+        if (!required && (!url || url.trim() === '')) {
+            return {
+                valid: true,
+                message: ''
+            };
+        }
+
+        // Cek apakah kosong (jika required)
+        if (required && (!url || url.trim() === '')) {
+            return {
+                valid: false,
+                message: 'URL tidak boleh kosong'
+            };
+        }
+
+        const trimmedUrl = url.trim();
+
+        // Regex untuk validasi URL (lebih ketat)
+        // Harus dimulai dengan http:// atau https://
+        const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+        
+        try {
+            const urlObj = new URL(trimmedUrl);
+            
+            // Pastikan protocol adalah http atau https
+            if (!['http:', 'https:'].includes(urlObj.protocol)) {
+                return {
+                    valid: false,
+                    message: 'URL harus menggunakan protokol http:// atau https://'
+                };
+            }
+        } catch (error) {
+            // Jika URL tidak valid, coba tambahkan https:// di depan
+            try {
+                new URL('https://' + trimmedUrl);
+                return {
+                    valid: false,
+                    message: 'Format URL tidak valid. Pastikan URL lengkap dengan protokol (https://)'
+                };
+            } catch (e) {
+                return {
+                    valid: false,
+                    message: 'Format URL tidak valid'
+                };
+            }
+        }
+
+        // Validasi panjang maksimal
+        if (trimmedUrl.length > 255) {
+            return {
+                valid: false,
+                message: 'URL maksimal 255 karakter'
+            };
+        }
+
+        return {
+            valid: true,
+            message: ''
+        };
+    },
+
+
     /**
      * Validasi NIDN (Nomor Induk Dosen Nasional)
      * Harus minimal 10 digit

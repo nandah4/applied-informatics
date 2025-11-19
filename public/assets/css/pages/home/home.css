@@ -1,24 +1,93 @@
-.dummy {
-    border-radius: 10px;
-    text-align: left;
-    height: 100%;
+/*ukuran font header welcome*/
+.header-welcome {
+  font-size: 14px;
 }
 
-.deskripsi {
-    border-radius: 10px;
-    height: 100%;
+/*Mengatur elemen sambutan yaitu: ukuran font, lebar dan mengatur posisi agar ke tengah*/
+.sambutan {
+  font-size: 18px;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
-.gambar-lab {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/*Memperbesar ukuran gambar pada bagian sambutan dan mengatur agar ke tengah*/
+.gambar-sambutan {
+  width: 50%;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/*Mengatur warna semua card yang ada agar sama*/
+.card-visi, .card-misi, .card-tahun-penelitian {
+  background-color: var(--color-primary-50) !important;
+  border: 3px solid var(--color-primary-300) !important;
+}
+
+/*Mengatur warna button*/
 .btn {
-    background-color: var(--color-primary-500) !important;
+  background-color: var(--color-primary-500) !important;
+  color: #ffffff;
 }
 
-.beranda {
-    margin-bottom: 100px;
+/*Mengatur ukuran font, warna dan posisi angka statistik*/
+.angka-statistik {
+  font-size: 100px;
+  color: var(--color-secondary-800);
+  margin-top: -2rem;
+}
+
+/*Mengatur ukuran font, warna dan posisi info statistik*/
+.info-statistik {
+  font-size: 20px;
+  color: var(--color-secondary-800);
+  margin-top: -1.5rem;
+}
+
+/*Tampilan button fasilitas*/
+.btn-fasilitas {
+  background-color: var(--color-primary-50);
+  border: 3px solid var(--color-primary-300) !important;
+  border-radius: 10px;
+  color: var(--color-primary-800);
+}
+
+/*Font dan warna font tahun penelitian*/
+.tahun-penelitian {
+  font-size: 20px;
+  color: var(--color-primary-800);
+}
+
+/*Warna line pada tahun penelitian*/
+.line {
+  color: white;
+  background-color: white;
+  border-color: white;
+}
+
+/*Ukuran radius border card pada tahun penelitian*/
+.card-tahun-penelitian{
+  border-radius: 8px;
+}
+
+/*Warna Font judul penelitian dan link nya*/
+.judul-penelitian, .link-penelitian{
+  color: var(--color-primary-700);
+}
+
+/*Ukuran Font judul penelitian*/
+.judul-penelitian{
+  font-size: 20px;
+}
+
+/*Ukuran Font link penelitian*/
+.link-penelitian{
+  font-size: 18px;
+}
+
+/*Posisi button aktivitas*/
+.btn-aktivitas{
+  margin-top: -1rem;
 }
