@@ -216,12 +216,12 @@
                         </div>
 
                         <!-- Divider -->
-                        <!-- <div class="col-12 mb-3">
+                        <div class="col-12 mb-3">
                             <hr class="form-divider">
-                        </div> -->
+                        </div>
 
                         <!-- Section: Profil Publikasi -->
-                        <!-- <div>
+                        <div class="col-12">
                             <div class="col-12 mb-3">
                                 <div class="section-header">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -230,130 +230,40 @@
                                     </svg>
                                     <h5 class="section-title-form">Profil Publikasi</h5>
                                 </div>
-                                <p class="section-subtitle-form">Link ke profil publikasi dosen (opsional)</p>
+                                <p class="section-subtitle-form">Link ke profil publikasi dosen</p>
                             </div>
 
+                            <!-- Container untuk list profil publikasi -->
+                            <div id="profilPublikasiContainer" class="col-12"></div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="url_sinta" class="form-label">
-                                    URL Sinta
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_sinta" name="url_sinta" placeholder="https://sinta.kemdikbud.go.id/authors/profile/...">
-                                </div>
-                                <div class="helper-text">Link profil Sinta dosen</div>
+                            <!-- Button Tambah Profil -->
+                            <div class="col-12 mb-3">
+                                <button type="button" class="btn-add-option" id="btnAddProfilPublikasi">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Tambah Profil Publikasi
+                                </button>
                             </div>
+                        </div>
 
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_scholar" class="form-label">
-                                    URL Google Scholar
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_scholar" name="url_scholar" placeholder="https://scholar.google.com/citations?user=...">
-                                </div>
-                                <div class="helper-text">Link profil Google Scholar</div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_scopus" class="form-label">
-                                    URL Scopus
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_scopus" name="url_scopus" placeholder="https://www.scopus.com/authid/detail.uri?authorId=...">
-                                </div>
-                                <div class="helper-text">Link profil Scopus</div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_orcid" class="form-label">
-                                    URL ORCID
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_orcid" name="url_orcid" placeholder="https://orcid.org/0000-0000-0000-0000">
-                                </div>
-                                <div class="helper-text">Link profil ORCID</div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_researchgate" class="form-label">
-                                    URL ResearchGate
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_researchgate" name="url_researchgate" placeholder="https://www.researchgate.net/profile/...">
-                                </div>
-                                <div class="helper-text">Link profil ResearchGate</div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_academia" class="form-label">
-                                    URL Academia.edu
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_academia" name="url_academia" placeholder="https://independent.academia.edu/...">
-                                </div>
-                                <div class="helper-text">Link profil Academia.edu</div>
-                            </div>
-                        </div> -->
-
-                    </div>
-
-                    <!-- Form Actions -->
-                    <div class="form-actions">
-                        <a href="index.php" class="btn-secondary-custom">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                            Batal
-                        </a>
-                        <button type="submit" id="btn-submit-update-dosen" class="btn-primary-custom">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            Update Data
-                        </button>
-                    </div>
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a href="index.php" class="btn-secondary-custom">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                Batal
+                            </a>
+                            <button type="submit" id="btn-submit-update-dosen" class="btn-primary-custom">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Update Data
+                            </button>
+                        </div>
                 </form>
             </div>
         </div>
@@ -416,11 +326,14 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Helper Scripts (Must load before form.js) -->
+    <!-- Helper Scripts (Must load before edit.js) -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-    <!-- Inline Script: Setup Edit Mode Data -->
+    <!-- Profil Publikasi Component (Must load before edit.js) -->
+    <script src="<?= asset_url('js/components/profilPublikasi.js') ?>"></script>
+
+    <!-- Setup Edit Mode Data -->
     <script>
         // Data dosen untuk edit mode (dari PHP)
         window.EDIT_MODE = true;
@@ -437,180 +350,8 @@
         };
     </script>
 
-    <!-- Data Dosen Form Page JS -->
-    <script src="<?= asset_url('js/pages/dosen/form.js') ?>"></script>
-
-    <!-- Inline Script: Edit Mode Initialization -->
-    <script>
-        $(document).ready(function() {
-            // Pre-select Jabatan
-            if (DOSEN_DATA.jabatan_id && DOSEN_DATA.jabatan_name) {
-                $('#jabatan').val(DOSEN_DATA.jabatan_id);
-                $('#jabatanText').text(DOSEN_DATA.jabatan_name).removeClass('placeholder');
-
-                // Mark dropdown item as selected
-                $(`#jabatanMenu .custom-dropdown-item[data-value="${DOSEN_DATA.jabatan_id}"]`).addClass('selected');
-            }
-
-            // Pre-select Keahlian
-            if (DOSEN_DATA.keahlian && DOSEN_DATA.keahlian.length > 0) {
-                const keahlianIds = [];
-                const keahlianNames = [];
-
-                // Populate keahlian dari data dosen
-                DOSEN_DATA.keahlian.forEach(function(k) {
-                    keahlianIds.push(k.id);
-                    keahlianNames.push(k.keahlian);
-
-                    // Mark dropdown item as selected
-                    $(`#keahlianMenu .custom-dropdown-item[data-value="${k.id}"]`).addClass('selected');
-                });
-
-                // Set hidden input value
-                $('#keahlian').val(keahlianIds.join(','));
-
-                // Update dropdown text
-                $('#keahlianText').text(`${keahlianIds.length} keahlian dipilih`).removeClass('placeholder');
-
-                // Add badges
-                const badgesContainer = $('#keahlianBadges');
-                badgesContainer.empty();
-
-                DOSEN_DATA.keahlian.forEach(function(k) {
-                    const badge = $('<div class="selected-badge"></div>');
-                    badge.html(`
-                        <span>${k.keahlian}</span>
-                        <button type="button" class="badge-remove-btn" data-id="${k.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    `);
-                    badgesContainer.append(badge);
-                });
-            }
-
-            // Show existing photo preview
-            if (DOSEN_DATA.foto_profil) {
-                const imagePreview = $('#imagePreview');
-                const previewImg = $('#previewImg');
-
-                previewImg.attr('src', '<?= base_url('uploads/dosen/') ?>' + DOSEN_DATA.foto_profil);
-                imagePreview.show();
-            }
-
-            // Override form submit untuk edit mode
-            $('#formDosen').off('submit').on('submit', function(e) {
-                e.preventDefault();
-
-                // Clear all errors
-                jQueryHelpers.clearAllErrors('formDosen');
-
-                // Get form data
-                const formData = {
-                    id: DOSEN_DATA.id,
-                    full_name: $('#full_name').val().trim(),
-                    email: $('#email').val().trim(),
-                    nidn: $('#nidn').val().trim(),
-                    jabatan_id: $('#jabatan').val().trim(),
-                    keahlian_ids: $('#keahlian').val().trim(),
-                    deskripsi: $('#deskripsi').val().trim(),
-                    foto_profil: $('#photo_profile')[0].files[0]
-                };
-
-                // Validasi
-                const errors = [];
-
-                const nameValidation = validationHelpers.validateName(formData.full_name, 3, 255);
-                if (!nameValidation.valid) {
-                    errors.push({ fieldId: 'full_name', errorId: 'fullNameError', message: nameValidation.message });
-                }
-
-                const emailValidation = validationHelpers.validateEmail(formData.email);
-                if (!emailValidation.valid) {
-                    errors.push({ fieldId: 'email', errorId: 'emailError', message: emailValidation.message });
-                }
-
-                const nidnValidation = validationHelpers.validateNIDN(formData.nidn, true);
-                if (!nidnValidation.valid) {
-                    errors.push({ fieldId: 'nidn', errorId: 'nidnError', message: nidnValidation.message });
-                }
-
-                const jabatanValidation = validationHelpers.validateRequired(formData.jabatan_id, 'Jabatan');
-                if (!jabatanValidation.valid) {
-                    errors.push({ fieldId: 'jabatan', errorId: 'jabatanError', message: jabatanValidation.message });
-                }
-
-                const keahlianValidation = validationHelpers.validateMultipleSelection(formData.keahlian_ids, 'keahlian');
-                if (!keahlianValidation.valid) {
-                    errors.push({ fieldId: 'keahlian', errorId: 'keahlianError', message: keahlianValidation.message });
-                }
-
-                // Validasi file (jika ada file baru)
-                if (formData.foto_profil) {
-                    const sizeValidation = validationHelpers.validateFileSize(formData.foto_profil, 2);
-                    if (!sizeValidation.valid) {
-                        errors.push({ fieldId: 'photo_profile', errorId: 'photoError', message: sizeValidation.message });
-                    }
-
-                    const typeValidation = validationHelpers.validateFileType(formData.foto_profil, ['image/jpeg', 'image/jpg', 'image/png']);
-                    if (!typeValidation.valid) {
-                        errors.push({ fieldId: 'photo_profile', errorId: 'photoError', message: typeValidation.message });
-                    }
-                }
-
-                // Show errors
-                if (errors.length > 0) {
-                    errors.forEach(error => {
-                        jQueryHelpers.showError(error.fieldId, error.errorId, error.message);
-                    });
-                    return;
-                }
-
-                // Prepare FormData
-                const submitData = new FormData();
-                submitData.append('id', formData.id);
-                submitData.append('full_name', formData.full_name);
-                submitData.append('email', formData.email);
-                submitData.append('nidn', formData.nidn);
-                submitData.append('jabatan_id', formData.jabatan_id);
-                submitData.append('keahlian_ids', formData.keahlian_ids);
-                submitData.append('deskripsi', formData.deskripsi);
-
-                if (formData.foto_profil) {
-                    submitData.append('foto_profil', formData.foto_profil);
-                }
-
-                // Disable button
-                const buttonState = jQueryHelpers.disableButton('btn-submit-update-dosen', 'Menyimpan...');
-
-                // Submit AJAX
-                jQueryHelpers.makeAjaxRequest({
-                    url: '/applied-informatics/dosen/update',
-                    method: 'POST',
-                    data: submitData,
-                    processData: false,
-                    contentType: false,
-                    onSuccess: (response) => {
-                        if (response.success) {
-                            jQueryHelpers.showAlert('Data dosen berhasil diupdate!', 'success');
-                            setTimeout(() => {
-                                window.location.href = '/applied-informatics/dosen';
-                            }, 1500);
-                        } else {
-                            jQueryHelpers.showAlert(response.message || 'Gagal update data', 'danger', 5000);
-                            buttonState.enable();
-                        }
-                    },
-                    onError: (errorMessage) => {
-                        jQueryHelpers.showAlert('Error: ' + errorMessage, 'danger', 5000);
-                        buttonState.enable();
-                    }
-                });
-            });
-        });
-    </script>
+    <!-- Data Dosen Edit Page JS (edit-specific logic, includes keahlian dropdown) -->
+    <script src="<?= asset_url('js/pages/dosen/edit.js') ?>"></script>
 </body>
 
 </html>

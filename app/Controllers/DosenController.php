@@ -64,18 +64,6 @@ class DosenController
             return;
         }
 
-        // 3b. Validasi khusus: Cek apakah jabatan "Ketua Lab" sudah ada
-        $jabatanName = $this->dosenModel->getJabatanNameById((int)$jabatan_id);
-        if ($jabatanName && stripos($jabatanName, 'kepala') !== false && stripos($jabatanName, 'laboratorium') !== false) {
-            // Jabatan ini adalah "Ketua Lab" atau variasinya
-            $checkExists = $this->dosenModel->isJabatanExists((int)$jabatan_id);
-
-            if ($checkExists['exists']) {
-                ResponseHelper::error('Ketua Lab sudah ada (' . $checkExists['dosen_name'] . '). Hanya boleh ada 1 Ketua Lab.');
-                return;
-            }
-        }
-
         // 4. Handle upload foto profil
         $fotoFileName = null;
         if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -112,8 +100,7 @@ class DosenController
         ];
 
         // 6. Insert dosen ke database menggunakan stored procedure
-        // Stored procedure akan handle insert dosen DAN keahlian sekaligus
-        $result = $this->dosenModel->insertDosen($dosenData);
+        $result = $this->dosenModel->insert($dosenData);
 
         if (!$result['success']) {
             // Jika gagal dan ada foto yang sudah diupload, hapus fotonya
@@ -126,10 +113,7 @@ class DosenController
         }
 
         // 7. Return success response
-        $dosen_id = $result['data']['id'];
-        ResponseHelper::success('Data dosen berhasil ditambahkan', [
-            'id' => $dosen_id
-        ]);
+        ResponseHelper::success('Data dosen berhasil ditambahkan', []);
     }
 
     /**

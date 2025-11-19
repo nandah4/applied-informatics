@@ -645,6 +645,253 @@ $router->post('aktivitas-lab/delete/(\\d+)', function ($id) {
 }, [AuthMiddleware::class]);
 
 // ============================================================================
+// RECRUITMENT MANAGEMENT
+// ============================================================================
+// CRUD operations untuk data recruitment/informasi rekrutment
+
+// ----------------------------------------
+// READ Operations
+// ----------------------------------------
+
+/**
+ * Recruitment - List/Index dengan Pagination
+ * URL: GET /recruitment?page={number}&per_page={number}
+ */
+$router->get('recruitment', function () {
+    // $controller = new RecruitmentController();
+
+    // // Ambil parameter dari query string
+    // $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    // $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+    // // Ambil data dengan pagination
+    // $result = $controller->getAllRecruitmentWithPagination($page, $perPage);
+
+    // $listRecruitment = $result['data'] ?? [];
+    // $pagination = $result['pagination'] ?? null;
+
+    require __DIR__ . '/../app/Views/admin/recruitment/index.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Recruitment - Detail Page
+ * URL: GET /recruitment/detail/{id}
+ */
+$router->get('recruitment/detail/(\\d+)', function ($id) {
+    // $controller = new RecruitmentController();
+
+    // // Get data recruitment by ID
+    // $recruitmentData = $controller->getRecruitmentById((int)$id);
+
+    // if (!$recruitmentData['success']) {
+    //     header("Location: " . base_url('recruitment'));
+    //     exit;
+    // }
+
+    // $recruitment = $recruitmentData['data'];
+
+    require __DIR__ . '/../app/Views/admin/recruitment/read.php';
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// CREATE Operations
+// ----------------------------------------
+
+/**
+ * Recruitment - Create Page (Form)
+ * URL: GET /recruitment/create
+ */
+$router->get('recruitment/create', function () {
+    require __DIR__ . '/../app/Views/admin/recruitment/create.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Recruitment - Create (Handle Submit)
+ * URL: POST /recruitment/create
+ */
+$router->post('recruitment/create', function () {
+    // $controller = new RecruitmentController();
+    // $controller->createRecruitment();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// UPDATE Operations
+// ----------------------------------------
+
+/**
+ * Recruitment - Edit Page (Form)
+ * URL: GET /recruitment/edit/{id}
+ */
+$router->get('recruitment/edit/(\\d+)', function ($id) {
+    // $controller = new RecruitmentController();
+
+    // // Get data recruitment by ID
+    // $recruitmentData = $controller->getRecruitmentById((int)$id);
+
+    // if (!$recruitmentData['success']) {
+    //     header("Location: " . base_url('recruitment'));
+    //     exit;
+    // }
+
+    // $recruitment = $recruitmentData['data'];
+
+    require __DIR__ . '/../app/Views/admin/recruitment/edit.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Recruitment - Update (Handle Submit)
+ * URL: POST /recruitment/update
+ */
+$router->post('recruitment/update', function () {
+    // $controller = new RecruitmentController();
+    // $controller->updateRecruitment();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// DELETE Operations
+// ----------------------------------------
+
+/**
+ * Recruitment - Delete
+ * URL: POST /recruitment/delete/{id}
+ */
+$router->post('recruitment/delete/(\\d+)', function ($id) {
+    // $controller = new RecruitmentController();
+    // $controller->deleteRecruitment($id);
+}, [AuthMiddleware::class]);
+
+// ============================================================================
+// PUBLIKASI MANAGEMENT
+// ============================================================================
+// CRUD operations untuk data publikasi dosen
+
+// ----------------------------------------
+// READ Operations
+// ----------------------------------------
+
+/**
+ * Publikasi - List/Index dengan Pagination
+ * URL: GET /publikasi?page={number}&per_page={number}
+ */
+$router->get('publikasi', function () {
+    // $controller = new PublikasiController();
+
+    // // Ambil parameter dari query string
+    // $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    // $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+    // // Ambil data dengan pagination
+    // $result = $controller->getAllPublikasiWithPagination($page, $perPage);
+
+    // $listPublikasi = $result['data'] ?? [];
+    // $pagination = $result['pagination'] ?? null;
+
+    // // Ambil data dosen untuk dropdown
+    // $dosenController = new DosenController();
+    // $dosenResult = $dosenController->getAllDosen();
+    // $listDosen = $dosenResult['data'] ?? [];
+
+    require __DIR__ . '/../app/Views/admin/publikasi/index.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Publikasi - Detail Page
+ * URL: GET /publikasi/detail/{id}
+ */
+$router->get('publikasi/detail/(\\d+)', function ($id) {
+    // $controller = new PublikasiController();
+
+    // // Get data publikasi by ID
+    // $publikasiData = $controller->getPublikasiById((int)$id);
+
+    // if (!$publikasiData['success']) {
+    //     header("Location: " . base_url('publikasi'));
+    //     exit;
+    // }
+
+    // $publikasi = $publikasiData['data'];
+
+    require __DIR__ . '/../app/Views/admin/publikasi/read.php';
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// CREATE Operations
+// ----------------------------------------
+
+/**
+ * Publikasi - Create Page (Form)
+ * URL: GET /publikasi/create
+ */
+$router->get('publikasi/create', function () {
+    // // Get list dosen untuk dropdown
+    // $dosenController = new DosenController();
+    // $dosenResult = $dosenController->getAllDosen();
+    // $listDosen = $dosenResult['data'] ?? [];
+
+    require __DIR__ . '/../app/Views/admin/publikasi/create.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Publikasi - Create (Handle Submit)
+ * URL: POST /publikasi/create
+ */
+$router->post('publikasi/create', function () {
+    // $controller = new PublikasiController();
+    // $controller->createPublikasi();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// UPDATE Operations
+// ----------------------------------------
+
+/**
+ * Publikasi - Edit Page (Form)
+ * URL: GET /publikasi/edit/{id}
+ */
+$router->get('publikasi/edit/(\\d+)', function ($id) {
+    // $controller = new PublikasiController();
+
+    // // Get data publikasi by ID
+    // $publikasiData = $controller->getPublikasiById((int)$id);
+
+    // if (!$publikasiData['success']) {
+    //     header("Location: " . base_url('publikasi'));
+    //     exit;
+    // }
+
+    // $publikasi = $publikasiData['data'];
+
+    // // Get list dosen untuk dropdown
+    // $dosenController = new DosenController();
+    // $dosenResult = $dosenController->getAllDosen();
+    // $listDosen = $dosenResult['data'] ?? [];
+
+    require __DIR__ . '/../app/Views/admin/publikasi/edit.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Publikasi - Update (Handle Submit)
+ * URL: POST /publikasi/update
+ */
+$router->post('publikasi/update', function () {
+    // $controller = new PublikasiController();
+    // $controller->updatePublikasi();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// DELETE Operations
+// ----------------------------------------
+
+/**
+ * Publikasi - Delete
+ * URL: POST /publikasi/delete/{id}
+ */
+$router->post('publikasi/delete/(\\d+)', function ($id) {
+    // $controller = new PublikasiController();
+    // $controller->deletePublikasi($id);
+}, [AuthMiddleware::class]);
+
+// ============================================================================
 // END OF ROUTES
 // ============================================================================
 
