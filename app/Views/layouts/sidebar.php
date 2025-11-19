@@ -100,12 +100,12 @@ function hasActiveChild($urls, $current)
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?= base_url('aktivitas-lab') ?>" class="nav-link <?= isActive('informasi-rekrutment', $current_url) ?>">
+                        <a href="<?= base_url('recruitment') ?>" class="nav-link <?= isActive('recruitment', $current_url) ?>">
                             <span class="nav-text">Kelola Informasi Rekrutment</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?= base_url('index.php?url=aktivitas/publikasi') ?>" class="nav-link <?= isActive('publikasi', $current_url) ?>">
+                        <a href="<?= base_url('publikasi') ?>" class="nav-link <?= isActive('publikasi', $current_url) ?>">
                             <span class="nav-text">Publikasi Akademik</span>
                         </a>
                     </li>

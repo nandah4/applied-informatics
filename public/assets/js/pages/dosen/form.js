@@ -687,6 +687,7 @@
           }
         },
         onError: (errorMessage) => {
+          console.log(errorMessage)
           jQueryHelpers.showAlert("Error: " + errorMessage, "danger");
           buttonState.enable();
         },
@@ -805,6 +806,12 @@
         formData.append("foto_profil", data.foto_profil);
       }
 
+      // Tambahkan profil publikasi jika ada
+      if (window.ProfilPublikasiModule) {
+        const profilPublikasi = window.ProfilPublikasiModule.getData();
+        formData.append("profil_publikasi", JSON.stringify(profilPublikasi));
+      }
+
       return formData;
     },
   };
@@ -820,5 +827,10 @@
     AddJabatanModule.init();
     AddKeahlianModule.init();
     FormSubmissionModule.init();
+
+    // Initialize Profil Publikasi Module
+    if (window.ProfilPublikasiModule) {
+      window.ProfilPublikasiModule.init();
+    }
   });
 })();

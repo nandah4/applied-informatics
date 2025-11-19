@@ -213,12 +213,12 @@
                         </div>
 
                         <!-- Divider -->
-                        <!-- <div class="col-12 mb-3">
+                        <div class="col-12 mb-3">
                             <hr class="form-divider">
-                        </div> -->
+                        </div>
 
                         <!-- Section: Profil Publikasi -->
-                        <!-- <div>
+                        <div class="col-12">
                             <div class="col-12 mb-3">
                                 <div class="section-header">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -227,130 +227,40 @@
                                     </svg>
                                     <h5 class="section-title-form">Profil Publikasi</h5>
                                 </div>
-                                <p class="section-subtitle-form">Link ke profil publikasi dosen (opsional)</p>
+                                <p class="section-subtitle-form">Link ke profil publikasi dosen</p>
                             </div>
 
+                            <!-- Container untuk list profil publikasi -->
+                            <div id="profilPublikasiContainer" class="col-12"></div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="url_sinta" class="form-label">
-                                    URL Sinta
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_sinta" name="url_sinta" placeholder="https://sinta.kemdikbud.go.id/authors/profile/...">
-                                </div>
-                                <div class="helper-text">Link profil Sinta dosen</div>
+                            <!-- Button Tambah Profil -->
+                            <div class="col-12 mb-3">
+                                <button type="button" class="btn-add-option" id="btnAddProfilPublikasi">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Tambah Profil Publikasi
+                                </button>
                             </div>
+                        </div>
 
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_scholar" class="form-label">
-                                    URL Google Scholar
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_scholar" name="url_scholar" placeholder="https://scholar.google.com/citations?user=...">
-                                </div>
-                                <div class="helper-text">Link profil Google Scholar</div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_scopus" class="form-label">
-                                    URL Scopus
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_scopus" name="url_scopus" placeholder="https://www.scopus.com/authid/detail.uri?authorId=...">
-                                </div>
-                                <div class="helper-text">Link profil Scopus</div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_orcid" class="form-label">
-                                    URL ORCID
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_orcid" name="url_orcid" placeholder="https://orcid.org/0000-0000-0000-0000">
-                                </div>
-                                <div class="helper-text">Link profil ORCID</div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_researchgate" class="form-label">
-                                    URL ResearchGate
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_researchgate" name="url_researchgate" placeholder="https://www.researchgate.net/profile/...">
-                                </div>
-                                <div class="helper-text">Link profil ResearchGate</div>
-                            </div>
-
-
-                            <div class="col-md-6 mb-3">
-                                <label for="url_academia" class="form-label">
-                                    URL Academia.edu
-                                </label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="url" class="form-control" id="url_academia" name="url_academia" placeholder="https://independent.academia.edu/...">
-                                </div>
-                                <div class="helper-text">Link profil Academia.edu</div>
-                            </div>
-                        </div> -->
-
-                    </div>
-
-                    <!-- Form Actions -->
-                    <div class="form-actions">
-                        <a href="index.php" class="btn-secondary-custom">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                            Batal
-                        </a>
-                        <button type="submit" id="btn-submit-create-dosen" class="btn-primary-custom">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            Simpan Data
-                        </button>
-                    </div>
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a href="<?= base_url("dosen") ?>" class="btn-secondary-custom">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                Batal
+                            </a>
+                            <button type="submit" id="btn-submit-create-dosen" class="btn-primary-custom">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Simpan Data
+                            </button>
+                        </div>
                 </form>
             </div>
         </div>
@@ -416,6 +326,9 @@
     <!-- Helper Scripts (Must load before form.js) -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
+
+    <!-- Profil Publikasi Component (Must load before form.js) -->
+    <script src="<?= asset_url('js/components/profilPublikasi.js') ?>"></script>
 
     <!-- Data Dosen Form Page JS -->
     <script src="<?= asset_url('js/pages/dosen/form.js') ?>"></script>

@@ -19,19 +19,9 @@
  * - deleteDosen(): Hapus dosen
  */
 
-class DosenModel
+class DosenModel extends BaseModel
 {
-    private $db;
-    private $table_name = 'tbl_dosen';
-
-    /**
-     * Constructor: Inisialisasi koneksi database
-     */
-    public function __construct()
-    {
-        $database = new Database();
-        $this->db = $database->getConnection();
-    }
+    protected $table_name = 'tbl_dosen';
 
     /**
      * Insert data dosen baru ke database menggunakan stored procedure
@@ -46,9 +36,9 @@ class DosenModel
      *                          'foto_profil' => string|null,
      *                          'deskripsi' => string|null
      *                      ]
-     * @return array - Format: ['success' => bool, 'message' => string, 'data' => ['id' => int]]
+     * @return array - Format: ['success' => bool, 'message' => string]
      */
-    public function insertDosen($data)
+    public function insert($data)
     {
         try {
             // Siapkan array keahlian_ids untuk PostgreSQL
@@ -90,20 +80,9 @@ class DosenModel
             // Execute procedure
             $stmt->execute();
 
-            // Jika berhasil (tidak ada exception), ambil ID dosen yang baru dibuat
-            // Karena procedure tidak return value, maka query manual
-            $lastIdQuery = "SELECT id FROM tbl_dosen WHERE email = :email ORDER BY id DESC LIMIT 1";
-            $lastIdStmt = $this->db->prepare($lastIdQuery);
-            $lastIdStmt->bindParam(':email', $data['email']);
-            $lastIdStmt->execute();
-            $result = $lastIdStmt->fetch(PDO::FETCH_ASSOC);
-
             return [
                 'success' => true,
                 'message' => 'Data dosen berhasil ditambahkan',
-                'data' => [
-                    'id' => $result['id'] ?? null
-                ]
             ];
         } catch (PDOException $e) {
             // Log error untuk debugging

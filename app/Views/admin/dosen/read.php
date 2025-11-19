@@ -40,7 +40,7 @@
         </div>
 
         <!-- Stats Card (Optional) -->
-        <div class="stat-card">
+        <!-- <div class="stat-card">
             <div class="stat-grid">
                 <div class="stat-item">
                     <div class="stat-value">10+</div>
@@ -59,7 +59,7 @@
                     <div class="stat-label">Mahasiswa Dibimbing</div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Profile Card -->
         <div class="card">
@@ -175,7 +175,7 @@
                 </div>
 
                 <!-- Profil Publikasi -->
-                <!-- <div style="margin-bottom: 2rem;">
+                <div style="margin-bottom: 2rem;">
                     <h3 class="section-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -271,7 +271,7 @@
                             </div>
                         </a>
                     </div>
-                </div> -->
+                </div>
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
