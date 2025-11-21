@@ -45,6 +45,23 @@ $router->get('tentang-kami', function () {
 });
 
 
+/**
+ * Produk Lab
+ * URL: /produk-lab
+ */
+$router->get('produk-lab', function () {
+    require __DIR__ . '/../app/Views/client/produk_lab.php';
+});
+
+/**
+ * Aktivitas Lab
+ * URL: /aktivitas-laboratorium
+ */
+$router->get('aktivitas-laboratorium', function () {
+    require __DIR__ . '/../app/Views/client/aktivitas_lab.php';
+});
+
+
 // ============================================================================
 // AUTH ROUTES
 // ============================================================================
