@@ -42,6 +42,17 @@
     --color-tertiary-800: #012642;
     --color-tertiary-900: #011f35;
 
+    /* Fourtiary Colors - Grey */
+    --color-fourtiary-100: #F2F2F2;
+    --color-fourtiary-200: #E6E6E6;
+    --color-fourtiary-300: #CCCCCC;
+    --color-fourtiary-400: #B3B3B3;
+    --color-fourtiary-500: #999999; /* Base */
+    --color-fourtiary-600: #666666;
+    --color-fourtiary-700: #4D4D4D;
+    --color-fourtiary-800: #333333;
+    --color-fourtiary-900: #1A1A1A;
+
     /* Neutral/Gray Colors */
     --color-gray-50: #f9fafb;
     --color-gray-100: #f3f4f6;

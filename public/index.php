@@ -36,6 +36,7 @@ require_once __DIR__ . '/../app/Helpers/FileUploadHelper.php';
 require_once __DIR__ . '/../app/Helpers/ValidationHelper.php';
 require_once __DIR__ . '/../app/Helpers/PaginationHelper.php';
 require_once __DIR__ . '/../app/Helpers/date_helper.php';
+require_once __DIR__ . '/../app/Helpers/CsrfHelper.php';
 
 // Load Middleware
 require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';

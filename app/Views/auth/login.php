@@ -1,9 +1,3 @@
-<?php
-// Load configuration if not already loaded (for direct access)
-if (!function_exists('base_url')) {
-    require_once __DIR__ . '/../../../config/app.php';
-}
-?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -11,6 +5,7 @@ if (!function_exists('base_url')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="base-url" content="/applied-informatics">
     <title>Login Admin - Applied Informatics Laboratory</title>
 
     <!-- Main CSS -->
@@ -27,6 +22,8 @@ if (!function_exists('base_url')) {
 </head>
 
 <body class="login-body">
+    <!-- Alert Placeholder untuk notifikasi -->
+    <div id="liveAlertPlaceholder"></div>
 
     <!-- Parent Layout @grid -->
     <div class="parent-login">
@@ -44,6 +41,9 @@ if (!function_exists('base_url')) {
 
         <div class="card-login">
             <form id="loginForm" method="post">
+                <!-- CSRF Token -->
+                <?= CsrfHelper::tokenField() ?>
+
                 <!-- Header content login card -->
                 <div class="header-login-card">
                     <div class="container-logo-login">
@@ -88,7 +88,6 @@ if (!function_exists('base_url')) {
 
     <!-- Scripts -->
     <script src="<?= asset_url('js/jquery.min.js') ?>"></script>
-    <script src="<?= asset_url('js/helpers/validation.js') ?>"></script>
     <script src="<?= asset_url('js/pages/login.js') ?>"></script>
 
     <!-- Bootstrap -->

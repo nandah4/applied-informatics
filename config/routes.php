@@ -44,14 +44,6 @@ $router->get('tentang-kami', function () {
     require __DIR__ . '/../app/Views/client/tentang_kami.php';
 });
 
-/**
- * Login Page
- * URL: /login
- */
-$router->get('login', function () {
-    require __DIR__ . '/../app/Views/auth/login.php';
-    exit;
-});
 
 // ============================================================================
 // AUTH ROUTES
@@ -59,10 +51,26 @@ $router->get('login', function () {
 // Routes untuk authentication (login, logout)
 
 /**
+ * Login Page
+ * URL: /login
+ * Redirect ke dashboard jika sudah login
+ */
+$router->get('admin/login', function () {
+    // Jika sudah login, redirect ke dashboard
+    if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+        header("Location: " . base_url('admin/dashboard'));
+        exit;
+    }
+
+    require __DIR__ . '/../app/Views/auth/login.php';
+    exit;
+});
+
+/**
  * Login - Handle Form Submit
  * URL: POST /login
  */
-$router->post('login', function () {
+$router->post('admin/login', function () {
     $controller = new AuthController();
     $controller->handleLogin();
 });
@@ -70,13 +78,31 @@ $router->post('login', function () {
 /**
  * Logout
  * URL: GET /logout
+ *
+ * Note: Idealnya logout menggunakan POST untuk keamanan,
+ * tapi untuk kemudahan navigasi tetap menggunakan GET.
  */
-$router->get('logout', function () {
-    session_unset();
+$router->get('admin/logout', function () {
+    // Hapus semua data session
+    $_SESSION = [];
+
+    // Hapus session cookie
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
+
+    // Destroy session
     session_destroy();
+
+    // Redirect ke homepage
     header("Location: " . base_url('/'));
     exit;
 });
+
 
 // ============================================================================
 // ADMIN DASHBOARD
@@ -87,7 +113,7 @@ $router->get('logout', function () {
  * Admin Dashboard
  * URL: /dashboard
  */
-$router->get('dashboard', function () {
+$router->get('admin/dashboard', function () {
     require __DIR__ . '/../app/Views/admin/index.php';
 }, [AuthMiddleware::class]);
 

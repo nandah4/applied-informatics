@@ -26,6 +26,13 @@ class AuthController
             return;
         }
 
+        // Validate CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
         // Get POST data - match with form field names
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -36,17 +43,19 @@ class AuthController
             return;
         }
 
-        // Sanitize input to prevent XSS
-        $email = $this->sanitizeInput($email);
+        // Sanitize email
+        $email = $this->sanitizeEmail($email);
 
         // Call auth model to login user
         $result = $this->authModel->login($email, $password);
 
         // Send response based on result
         if ($result['success']) {
+            // Regenerate CSRF token setelah login sukses
+            CsrfHelper::regenerateToken();
+
             ResponseHelper::success($result['message'], [
-                'user' => $result['user'],
-                'redirect' => base_url('dashboard')
+                'redirect' => base_url('admin/dashboard')
             ]);
         } else {
             ResponseHelper::error($result['message']);
@@ -55,15 +64,14 @@ class AuthController
 
 
     /**
-     * Sanitize input to prevent XSS attacks
-     * @param string $data
+     * Sanitize email input
+     * @param string $email
      * @return string
      */
-    private function sanitizeInput($data)
+    private function sanitizeEmail($email)
     {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-        return $data;
+        $email = trim($email);
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        return $email;
     }
 }
