@@ -2,6 +2,7 @@
 <?php
 include __DIR__ . '/../layouts/header.php';
 ?>
+<main>
 <!-- Section Selamat Datang -->
 <section class="p-5 selamat-datang">
     <div class="container text-center">
@@ -24,7 +25,7 @@ include __DIR__ . '/../layouts/header.php';
                 <div class="card card-visi card-custom-border">
                     <div class="card-body">
                         <!--logo -->
-                        <h5 class="mb-4">Visi Laboratorium Applied Informatics</h5>
+                        <h5 class="mb-4 visi">Visi Laboratorium Applied Informatics</h5>
                         <p>Menjadi laboratorium unggulan dalam pengembangan dan penerapan teknologi informasi inovatif
                             yang
                             mendukung transformasi digital berkelanjutan, mendorong kolaborasi lintas sektor, serta
@@ -36,7 +37,7 @@ include __DIR__ . '/../layouts/header.php';
             <div class="col-md-6">
                 <div class="card card-misi">
                     <div class="card-body">
-                        <h5 class="mb-4">Misi Laboratorium Applied Informatics</h5>
+                        <h5 class="mb-4 misi">Misi Laboratorium Applied Informatics</h5>
                         <p>Berfokus solusi Industri 4.0 dengan mengembangkan dan menerapkan teknologi inovatif guna
                             mengatasi tantangan seperti otomatisasi, integrasi sistem, dan pemrosesan data real-time,
                             yang
@@ -60,12 +61,12 @@ include __DIR__ . '/../layouts/header.php';
 
             <div class="col-md-6">
                 <div class="row">
-                    <div class="col-md-6 mb-5">
+                    <div class="col-sl-4 col-md-6 mb-5">
                         <h1 class="angka-statistik">15+</h1>
                         <p class="info-statistik">Publikasi</p>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-sl-4 col-md-6 mb-5">
                         <h1 class="angka-statistik">10+</h1>
                         <p class="info-statistik">Anggota Aktif</p>
                     </div>
@@ -113,7 +114,7 @@ include __DIR__ . '/../layouts/header.php';
 
         <div class="row g-4">
             <div class="col-md-3 text-center">
-                <div class="card card-tahun-penelitian">
+                <div class="card card-tahun-penelitian overflow-auto fixed-height">
                     <div class="card-body">
                         <p class="tahun-penelitian">Tahun Penelitian</p>
                         <p class="tahun-penelitian">2025</p>
@@ -132,7 +133,7 @@ include __DIR__ . '/../layouts/header.php';
             </div>
 
             <div class="col-md-9">
-                <div class="card card-judul-penelitian">
+                <div class="card card-judul-penelitian overflow-auto fixed-height">
                     <div class="card-body">
                         <p class="judul-penelitian">Prediksi Harga Saham dengan Indikator Analisis Teknikal Menggunakan
                             Long
@@ -196,6 +197,7 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </div>
 </section>
+</main>
 
 <link rel="stylesheet" href="<?= asset_url('css/pages/home/home.css') ?>">
 

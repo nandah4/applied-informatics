@@ -1,0 +1,135 @@
+main{
+    background-color: #ffffff;
+}
+.halaman{
+    font-size: 18px;
+}
+
+.halaman-ini{
+    color: var(--color-primary-500);
+}
+
+.judul{
+    font-size: 40px;
+}
+
+.deskripsi{
+    font-size: 18px;
+    width: 70%;
+}
+
+.card-container {
+  height: 250px;
+  width: 250px;
+  background-color: #999999;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.produk-item{
+    text-align: center;
+}
+
+.tipe{
+    opacity: 50%;
+    font-size: 14px;
+}
+
+.nama-produk{
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-size: 18px;
+}
+
+.card-container-owncloud{
+  height: 250px;
+  width: 250px;
+  background-color: var(--color-tertiary-500);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 50%;
+}
+
+.card-container-gitea {
+  height: 250px;
+  width: 250px;
+  background-color: var(--color-tertiary-500);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  }
+
+/* Container gambar dengan efek hover */
+.card-container,
+.card-container-owncloud,
+.card-container-gitea {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* PERBAIKAN: Efek overlay saat hover */
+.card-container:hover::before,
+.card-container-owncloud:hover::before,
+.card-container-gitea:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  z-index: 2;
+}
+
+/* PERBAIKAN: Teks hover di tengah card container */
+.hover-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.card-container:hover .hover-text,
+.card-container-owncloud:hover .hover-text,
+.card-container-gitea:hover .hover-text {
+  opacity: 1;
+}
+
+/* Pastikan gambar tetap di belakang */
+.gambar-produk {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+  max-height: 180px;
+  max-width: 200px;
+}
+
+/* Optional: Efek zoom out pada gambar saat hover */
+.card-container:hover .gambar-produk,
+.card-container-owncloud:hover .gambar-produk,
+.card-container-gitea:hover .gambar-produk {
+  transform: scale(0.95);
+}

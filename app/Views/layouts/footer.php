@@ -1,45 +1,45 @@
 <!-- Footer Section -->
 <footer class="footer">
     <div class="container-fluid p-5">
-        <div class="row">
-            <!--Lab ai but idk the content-->
-            <div class="col-12 col-lg-6 col-xl-7 mb-4">
-                <span>
-                <img src="<?= asset_url('images/lab-ai-logo.png') ?>" alt="Logo Laboratorium Applied Informatics"
-                class="img-fluid navbar-brand">
-                </span>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                </p>
-            </div>
+        <img src="<?= asset_url('images/lab-ai-logo.png') ?>" alt="Lab AI Logo" class="img-fluid logo-footer mb-5">
 
-            <div class="col-12 col-sm-6 col-lg-3 col-xl-2 mb-4">
-                <h6>Navigation</h6>
-                <ul class="list-unstyled">
-                    <li><a href="">Home</a></li>
-                    <li><a href="">Products</a></li>
-                    <li><a href="">Member</a></li>
-                    <li><a href="">Partners</a></li>
+        <div class="d-flex flex-row gap-4 mb-5">
+            <div><a href="">Beranda</a></div>
+            <div><a href="">Tentang Kami</a></div>
+            <div class="dropdown">
+                <button class="dropdown-toggle" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Riset dan Produk
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li><a href="" class="dropdown-item">Publikasi Dosen</a></li>
+                    <li><a href="" class="dropdown-item">Produk Lab</a></li>
                 </ul>
             </div>
+            <div><a href="">Mitra</a></div>
+            <div><a href="">Rekrutment</a></div>
+        </div>
 
-            <div class="col-12 col-sm-6 col-lg-3 col-xl-3 mb-4">
-                <h6>Contact Info</h6>
+        <div class="d-flex flex-row gap-4">
+            <div>
+                <i data-feather="home"></i>
                 <p>Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141</p>
+            </div>
+            <div>
                 <p>Applied Informatics Laboratory Postgraduate Building, 2nd Floor, Malang State Polytechnic</p>
+            </div>
+            <div>
                 <p>0984018041</p>
+            </div>
+            <div>
                 <p>info@company.com</p>
             </div>
         </div>
 
         <hr>
 
-        <!-- Copyright Section -->
-        <div class="row">
-            <div class="col-8">
-                <div class="copyright">
-                    <p class="mb-0">Copyright © 2025 Lab Applied Informatics Polinema</p>
-                </div>
-            </div>
+        <div class="text-center fw-bold">
+            <p>Copyright © 2025 Lab Applied Informatics Polinema </p>
         </div>
     </div>
 </footer>
@@ -55,5 +55,10 @@
 
 <!-- CSS Footer -->
 <link rel="stylesheet" href="<?= asset_url('css/components/footer.css') ?>">
+
+<!-- Feather Icon -->
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
 </body>
+
 </html>
