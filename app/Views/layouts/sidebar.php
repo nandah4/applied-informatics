@@ -134,7 +134,7 @@ function hasActiveChild($urls, $current)
 
             <!-- Logout -->
             <li class="nav-item">
-                <a href="<?= base_url('logout') ?>" class="nav-link text-danger">
+                <a href="<?= base_url('admin/logout') ?>" class="nav-link text-danger">
                     <i data-feather="log-out"></i>
                     <span class="nav-text">Keluar</span>
                 </a>
