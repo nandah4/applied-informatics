@@ -10,7 +10,7 @@
 class AuthModel
 {
     private $db;
-    private $table_name = 'tbl_users';
+    private $table_name = 'sys_users';
 
     public function __construct()
     {
@@ -46,17 +46,12 @@ class AuthModel
             // Store user data in session (exclude password)
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
-            $_SESSION['role'] = $user['role'] ?? 'guest';
+            $_SESSION['role'] = $user['role'];  // Role harus di-set di database
             $_SESSION['logged_in'] = true;
 
             return [
                 'success' => true,
                 'message' => 'Login sucess',
-                'user' => [
-                    'id' => $user['id'],
-                    'email' => $user['email'],
-                    'role' => $user['role'] ?? 'user'
-                ]
             ];
         } catch (PDOException $e) {
             error_log("Login error: " . $e->getMessage());

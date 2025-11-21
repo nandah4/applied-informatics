@@ -5,7 +5,7 @@
  */
 
 // Base URL Configuration -> untuk localhost:0000 sesuaikan port
-define('BASE_URL', 'http://localhost/applied-informatics');
+define('BASE_URL', 'http://localhost:8888/applied-informatics');
 
 function base_url($path = '')
 {

@@ -45,14 +45,6 @@
     --ls-wide: 0.025em;
 }
 
-/* Base Typography */
-body {
-    font-family: var(--font-manrope) !important;
-    font-size: var(--fs-base);
-    font-weight: var(--fw-regular);
-    line-height: var(--lh-normal);
-}
-
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-manrope);
