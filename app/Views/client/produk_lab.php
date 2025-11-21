@@ -4,9 +4,9 @@ include __DIR__ . '/../layouts/header.php';
 ?>
 
 <main class="p-5">
-
+    
     <div class="container-fluid">
-        <div class="halaman d-flex flex-row gap-4 mb-3">
+        <div class="halaman d-flex flex-row gap-4 mb-5">
             <p>Riset dan Produk</p>
             <p>></p>
             <p class="halaman-ini">Produk</p>
@@ -79,6 +79,7 @@ include __DIR__ . '/../layouts/header.php';
 
             <div class="col-sm-6 col-md-6 produk-item mb-3">
                 <div class="card-container-gitea mx-auto mb-1">
+                    <div class="container-bg"></div>
                     <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>" class="img-fluid mx-auto d-block gambar-produk">
                     </div>

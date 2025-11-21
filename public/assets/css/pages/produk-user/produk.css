@@ -1,21 +1,22 @@
-main{
-    background-color: #ffffff;
+main {
+  background-color: #ffffff;
 }
-.halaman{
-    font-size: 18px;
-}
-
-.halaman-ini{
-    color: var(--color-primary-500);
+.halaman {
+  font-size: 18px;
 }
 
-.judul{
-    font-size: 40px;
+.halaman-ini {
+  color: var(--color-primary-500);
 }
 
-.deskripsi{
-    font-size: 18px;
-    width: 70%;
+.judul {
+  font-size: 40px;
+}
+
+.deskripsi {
+  font-size: 18px;
+  width: 70%;
+  color: #999999;
 }
 
 .card-container {
@@ -28,16 +29,16 @@ main{
   justify-content: center;
 }
 
-.produk-item{
-    text-align: center;
+.produk-item {
+  text-align: center;
 }
 
-.tipe{
-    opacity: 50%;
-    font-size: 14px;
+.tipe {
+  opacity: 50%;
+  font-size: 14px;
 }
 
-.nama-produk{
+.nama-produk {
   width: 70%;
   margin-left: auto;
   margin-right: auto;
@@ -45,10 +46,9 @@ main{
   font-size: 18px;
 }
 
-.card-container-owncloud{
+.card-container-owncloud {
   height: 250px;
   width: 250px;
-  background-color: var(--color-tertiary-500);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -59,12 +59,45 @@ main{
 .card-container-gitea {
   height: 250px;
   width: 250px;
-  background-color: var(--color-tertiary-500);
+  position: relative;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  }
+}
+
+.card-container-owncloud::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-tertiary-500); /* Ganti warna di sini sesuka hati */
+  opacity: 0.5; /* Atur opacity di sini */
+  border-radius: 10px;
+  z-index: 0;
+}
+
+/* Background dengan opacity menggunakan pseudo-element */
+.card-container-gitea::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-primary-500); /* Ganti warna di sini sesuka hati */
+  opacity: 0.1; /* Atur opacity di sini */
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.logo-container {
+  /* Logo berada di atas background */
+  position: relative;
+  z-index: 1;
+}
 
 /* Container gambar dengan efek hover */
 .card-container,
@@ -77,10 +110,10 @@ main{
 }
 
 /* PERBAIKAN: Efek overlay saat hover */
-.card-container:hover::before,
-.card-container-owncloud:hover::before,
-.card-container-gitea:hover::before {
-  content: '';
+.card-container:hover::after,
+.card-container-owncloud:hover::after,
+.card-container-gitea:hover::after {
+  content: "";
   position: absolute;
   top: 0;
   left: 0;

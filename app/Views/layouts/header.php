@@ -53,7 +53,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Aktivitas Lab</a>
+                        <a class="nav-link" href="<?= base_url('aktivitas-laboratorium') ?>">Aktivitas Lab</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Mitra</a>
