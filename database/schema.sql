@@ -25,19 +25,36 @@ VALUES ('admin@gmail.com', crypt('12345678', gen_salt('bf', 12)), 'admin');
 
 -- ==========================================
 -- 2. REFERENCE DATA (ref_)
--- Tabel kecil untuk lookup/pilihan
+-- Tabel kecil untuk lookup/pilihan/detail
 -- ==========================================
 
--- Mengganti tbl_jabatan menjadi ref_jabatan
+-- table jabatan
 CREATE TABLE ref_jabatan(
     id BIGSERIAL PRIMARY KEY,
     nama_jabatan VARCHAR(255) UNIQUE NOT NULL
 );
 
--- Mengganti tbl_keahlian menjadi ref_keahlian
+-- table keahlian
 CREATE TABLE ref_keahlian(
     id BIGSERIAL PRIMARY KEY,
     nama_keahlian VARCHAR(255) UNIQUE NOT NULL
+);
+
+CREATE TYPE profil_tipe_enum AS ENUM (
+    'SINTA', 'SCOPUS', 'GOOGLE_SCHOLAR', 'ORCID', 'RESEARCHGATE'
+);
+
+-- table profil_publikasi_dosen
+CREATE TABLE ref_profil_publikasi (
+    id            BIGSERIAL PRIMARY KEY,
+    dosen_id      BIGINT NOT NULL, 
+    tipe          profil_tipe_enum NOT NULL, 
+    url_profil TEXT NOT NULL,
+
+    CONSTRAINT fk_mst_dosen
+        FOREIGN KEY(dosen_id) 
+        REFERENCES mst_dosen(id)
+        ON DELETE CASCADE
 );
 
 
@@ -54,7 +71,9 @@ CREATE TABLE mst_dosen (
     nidn VARCHAR(50) UNIQUE,
     foto_profil VARCHAR(255),
     deskripsi text default NULL,
-    jabatan_id bigint, 
+    jabatan_id bigint,
+    created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at    TIMESTAMP NOT NULL DEFAULT NOW(), 
 
     CONSTRAINT fk_ref_jabatan
         FOREIGN KEY(jabatan_id) 
@@ -119,29 +138,6 @@ CREATE TABLE map_produk_dosen (
         
     -- Composite Primary Key: Mencegah duplikasi data dosen yang sama di produk yang sama
     PRIMARY KEY (produk_id, dosen_id)
-);
-
--- ==========================================
--- 4. SUB-MASTER / DETAILS (dtl_)
--- Detail tambahan yang terikat pada Master
--- ==========================================
-
-CREATE TYPE profil_tipe_enum AS ENUM (
-    'SINTA', 'SCOPUS', 'GOOGLE_SCHOLAR', 'ORCID', 'RESEARCHGATE'
-);
-
--- Mengganti tbl_profil_publikasi menjadi dtl_dosen_link
--- Ini bukan data publikasi, tapi link profil eksternal dosen
-CREATE TABLE dtl_dosen_link (
-    id            BIGSERIAL PRIMARY KEY,
-    dosen_id      BIGINT NOT NULL, 
-    tipe          profil_tipe_enum NOT NULL, 
-    url_ke_profil VARCHAR(255) NOT NULL,
-
-    CONSTRAINT fk_mst_dosen
-        FOREIGN KEY(dosen_id) 
-        REFERENCES mst_dosen(id)
-        ON DELETE CASCADE
 );
 
 

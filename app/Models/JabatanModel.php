@@ -2,111 +2,121 @@
 
 /**
  * File: Models/JabatanModel.php
- * Description: Handle database operations for Jabatan
+ * Deskripsi: Model untuk operasi database tabel jabatan
+ *
+ * Tabel: ref_jabatan
+ * Kolom: id, nama_jabatan
+ *
+ * Fungsi:
+ * - createJabatan(): Insert jabatan baru
+ * - getAllJabatan(): Ambil semua jabatan
+ * - deleteJabatan(): Hapus jabatan by ID
  */
 
 class JabatanModel
 {
     private $db;
-    private $table_name = 'tbl_jabatan';
+    private $table_name = 'ref_jabatan';
 
-    function __construct()
+    public function __construct()
     {
-        $database = new Database;
+        $database = new Database();
         $this->db = $database->getConnection();
     }
 
+    /**
+     * Tambah jabatan baru
+     *
+     * @param string $jabatan - Nama jabatan
+     * @return array - Response dengan data {id, nama_jabatan}
+     */
     public function createJabatan($jabatan)
     {
         try {
-            // Cek apakah jabatan sudah ada
-            $query = "SELECT id FROM {$this->table_name} WHERE LOWER(jabatan) = LOWER(:jabatan) LIMIT 1";
+            $query = "INSERT INTO {$this->table_name}(nama_jabatan) VALUES(:jabatan)";
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':jabatan', $jabatan);
+            $stmt->bindParam(':jabatan', $jabatan, PDO::PARAM_STR);
             $stmt->execute();
 
-            // Jika SUDAH ada (fetch berhasil), return error
-            if ($stmt->fetch(PDO::FETCH_ASSOC)) {
-                return [
-                    'success' => false,
-                    'message' => 'Jabatan sudah ada dalam database'
-                ];
-            }
-
-            // Insert jabatan baru dengan RETURNING untuk mendapatkan ID
-            $insertQuery = "INSERT INTO {$this->table_name}(jabatan) VALUES(:jabatan) RETURNING id";
-            $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bindParam(':jabatan', $jabatan);
-            $insertStmt->execute();
-
-            $result = $insertStmt->fetch(PDO::FETCH_ASSOC);
+            $newId = $this->db->lastInsertId();
 
             return [
                 'success' => true,
                 'message' => 'Jabatan berhasil ditambahkan',
                 'data' => [
-                    'id' => $result['id'],
-                    'jabatan' => $jabatan
+                    'id' => $newId,
+                    'nama_jabatan' => $jabatan
                 ]
             ];
         } catch (PDOException $e) {
-            error_log("Jabatan Model create error: " . $e->getMessage());
+            error_log("JabatanModel create error: " . $e->getMessage());
+
+            // Cek error duplicate (constraint unique)
+            if (strpos($e->getMessage(), 'ref_jabatan_nama_jabatan_key') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Nama jabatan sudah ada'
+                ];
+            }
+
             return [
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => 'Gagal menambahkan jabatan'
             ];
         }
     }
 
+    /**
+     * Ambil semua data jabatan
+     *
+     * @return array - Response dengan data [{id, jabatan}]
+     */
     public function getAllJabatan()
     {
         try {
-            $query = "SELECT * FROM $this->table_name ORDER BY jabatan ASC";
+            // Alias nama_jabatan as jabatan untuk konsistensi dengan frontend
+            $query = "SELECT id, nama_jabatan FROM {$this->table_name} ORDER BY nama_jabatan ASC";
             $stmt = $this->db->prepare($query);
             $stmt->execute();
 
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return [
                 'success' => true,
-                'message' => 'Berhasil mendapatkan data jabatan',
-                'data' => $result
-
+                'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
             ];
-
         } catch (PDOException $e) {
-            error_log("Jabatan Model getAll error: " . $e->getMessage());
+            error_log("JabatanModel getAll error: " . $e->getMessage());
+
             return [
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+                'message' => 'Gagal mengambil data jabatan',
                 'data' => []
             ];
         }
     }
 
     /**
-     * Delete jabatan by ID
-     * @param int $id
-     * @return array
+     * Hapus jabatan berdasarkan ID
+     *
+     * @param int $id - ID jabatan
+     * @return array - Response success/error
      */
     public function deleteJabatan($id)
     {
         try {
-            // Check if jabatan exists
-            $checkQuery = "SELECT jabatan FROM {$this->table_name} WHERE id = :id LIMIT 1";
+            // Cek apakah jabatan ada
+            $checkQuery = "SELECT id FROM {$this->table_name} WHERE id = :id LIMIT 1";
             $checkStmt = $this->db->prepare($checkQuery);
             $checkStmt->bindParam(':id', $id, PDO::PARAM_INT);
             $checkStmt->execute();
 
-            $jabatan = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$jabatan) {
+            if (!$checkStmt->fetch()) {
                 return [
                     'success' => false,
                     'message' => 'Jabatan tidak ditemukan'
                 ];
             }
 
-            // Delete jabatan
+            // Hapus jabatan
             $deleteQuery = "DELETE FROM {$this->table_name} WHERE id = :id";
             $deleteStmt = $this->db->prepare($deleteQuery);
             $deleteStmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -118,9 +128,18 @@ class JabatanModel
             ];
         } catch (PDOException $e) {
             error_log("JabatanModel delete error: " . $e->getMessage());
+
+            // Cek error foreign key constraint
+            if (strpos($e->getMessage(), 'foreign key') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Jabatan tidak bisa dihapus karena masih digunakan'
+                ];
+            }
+
             return [
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => 'Gagal menghapus jabatan'
             ];
         }
     }

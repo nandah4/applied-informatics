@@ -49,13 +49,13 @@ function hasActiveChild($urls, $current)
 
             <!-- Manajemen Anggota -->
             <li class="nav-item">
-                <a class="nav-link parent-menu <?= hasActiveChild(['dosen'], $current_url) ?>">
+                <a class="nav-link parent-menu <?= hasActiveChild(['admin/dosen'], $current_url) ?>">
                     <i data-feather="users"></i>
                     <span class="nav-text">Manajemen Anggota</span>
                 </a>
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a href="<?= base_url('dosen') ?>" class="nav-link <?= isActive('dosen', $current_url) ?>">
+                        <a href="<?= base_url('admin/dosen') ?>" class="nav-link <?= isActive('admin/dosen', $current_url) ?>">
                             <span class="nav-text">Data Dosen</span>
                         </a>
                     </li>

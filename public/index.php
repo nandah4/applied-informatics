@@ -50,9 +50,12 @@ require_once __DIR__ . '/../app/Models/MitraModel.php';
 require_once __DIR__ . '/../app/Models/AktivitasModel.php';
 require_once __DIR__ . '/../app/Models/FasilitasModel.php';
 require_once __DIR__ . '/../app/Models/ProdukModel.php';
+require_once __DIR__ . '/../app/Models/ProfilPublikasiModel.php';
 
 // Load Controllers
 require_once __DIR__ . '/../app/Controllers/AuthController.php';
+require_once __DIR__ . '/../app/Controllers/JabatanController.php';
+require_once __DIR__ . '/../app/Controllers/KeahlianController.php';
 require_once __DIR__ . '/../app/Controllers/DosenController.php';
 require_once __DIR__ . '/../app/Controllers/MitraController.php';
 require_once __DIR__ . '/../app/Controllers/AktivitasController.php';

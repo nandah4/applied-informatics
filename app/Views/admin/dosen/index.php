@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="/applied-informatics">
+    <meta name="csrf-token" content="<?= CsrfHelper::generateToken() ?>">
     <title>Data Dosen - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
@@ -22,6 +24,7 @@
 
 <body>
     <div id="liveAlertPlaceholder"></div>
+    
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -58,7 +61,7 @@
                     </div>
 
                     <!-- Add Button -->
-                    <a href="<?= base_url('dosen/create') ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/dosen/create') ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -145,13 +148,13 @@
                                     </td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
-                                            <a href="<?= base_url('dosen/detail/' . $dt['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
+                                            <a href="<?= base_url('admin/dosen/detail/' . $dt['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                                     <circle cx="12" cy="12" r="3"></circle>
                                                 </svg>
                                             </a>
-                                            <a href="<?= base_url('dosen/edit/' . $dt['id']) ?>" class="btn-action btn-edit" title="Edit">
+                                            <a href="<?= base_url('admin/dosen/edit/' . $dt['id']) ?>" class="btn-action btn-edit" title="Edit">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                                                 </svg>
