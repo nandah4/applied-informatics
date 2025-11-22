@@ -26,7 +26,10 @@
 
 <body>
     <div id="liveAlertPlaceholder"></div>
-    
+
+    <!-- CSRF Token -->
+    <?= CsrfHelper::tokenField() ?>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -120,7 +123,7 @@
                             <span class="badge-custom badge-primary"><?= htmlspecialchars($dosenData['jabatan_name']) ?></span>
                         </div>
                     </div>
-                     <div class="info-row">
+                    <div class="info-row">
                         <div class="info-label">Terakhir Diperbarui</div>
                         <div class="info-value"><?= formatTanggal($dosenData['updated_at'], true) ?></div>
                     </div>
@@ -186,7 +189,7 @@
                             </svg>
                             Profil Publikasi
                         </h3>
-                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addProfilModal">
+                        <button type="button" class="btn-add-option d-flex gap-2" data-bs-toggle="modal" data-bs-target="#addProfilModal">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -221,7 +224,7 @@
                                 $cardClass = $tipeClasses[$profil['tipe']] ?? '';
                                 $urlHost = parse_url($profil['url_profil'], PHP_URL_HOST) ?? '';
                             ?>
-                                <div class="publication-card-wrapper">
+                                <div class="publication-card-wrapper mb-2">
                                     <a href="<?= htmlspecialchars($profil['url_profil']) ?>" target="_blank" class="publication-card <?= $cardClass ?>">
                                         <div class="publication-icon">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -241,13 +244,13 @@
                                             </svg>
                                         </div>
                                     </a>
-                                    <div class="publication-actions">
+                                    <div class="publication-actions mt-3 d-flex gap-2">
                                         <button type="button" class="btn btn-sm btn-outline-primary"
-                                                onclick="editProfil(<?= $profil['id'] ?>, '<?= htmlspecialchars($profil['url_profil']) ?>')">
+                                            onclick="editProfilPublikasi(<?= $profil['id'] ?>, '<?= htmlspecialchars($profil['url_profil'], ENT_QUOTES) ?>', '<?= htmlspecialchars($label) ?>')">
                                             Edit
                                         </button>
                                         <button type="button" class="btn btn-sm btn-outline-danger"
-                                                onclick="deleteProfil(<?= $profil['id'] ?>)">
+                                            onclick="deleteProfilPublikasi(<?= $profil['id'] ?>)">
                                             Hapus
                                         </button>
                                     </div>
@@ -265,30 +268,29 @@
                                 <h5 class="modal-title" id="addProfilModalLabel">Tambah Profil Publikasi</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form id="addProfilForm">
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="tipe" class="form-label">Tipe Profil</label>
-                                        <select class="form-select" id="tipe" name="tipe" required>
-                                            <option value="">Pilih Tipe</option>
-                                            <option value="SINTA">SINTA</option>
-                                            <option value="SCOPUS">Scopus</option>
-                                            <option value="GOOGLE_SCHOLAR">Google Scholar</option>
-                                            <option value="ORCID">ORCID</option>
-                                            <option value="RESEARCHGATE">ResearchGate</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="url_profil" class="form-label">URL Profil</label>
-                                        <input type="url" class="form-control" id="url_profil" name="url_profil"
-                                               placeholder="https://..." required>
-                                    </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="tipe" class="form-label">Tipe Profil <span class="required">*</span></label>
+                                    <select class="form-select" id="tipe">
+                                        <option value="">Pilih Tipe</option>
+                                        <option value="SINTA">SINTA</option>
+                                        <option value="SCOPUS">Scopus</option>
+                                        <option value="GOOGLE_SCHOLAR">Google Scholar</option>
+                                        <option value="ORCID">ORCID</option>
+                                        <option value="RESEARCHGATE">ResearchGate</option>
+                                    </select>
+                                    <div id="tipeError" class="invalid-feedback"></div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                <div class="mb-3">
+                                    <label for="url_profil" class="form-label">URL Profil <span class="required">*</span></label>
+                                    <input type="url" class="form-control" id="url_profil" placeholder="https://...">
+                                    <div id="urlProfilError" class="invalid-feedback"></div>
                                 </div>
-                            </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-primary" id="btn-add-profil-publikasi">Simpan</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -301,20 +303,22 @@
                                 <h5 class="modal-title" id="editProfilModalLabel">Edit Profil Publikasi</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form id="editProfilForm">
-                                <input type="hidden" id="edit_profil_id" name="id">
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="edit_url_profil" class="form-label">URL Profil</label>
-                                        <input type="url" class="form-control" id="edit_url_profil" name="url_profil"
-                                               placeholder="https://..." required>
-                                    </div>
+                            <div class="modal-body">
+                                <input type="hidden" id="edit_profil_id">
+                                <div class="mb-3">
+                                    <label class="form-label">Tipe Profil</label>
+                                    <input type="text" class="form-control" id="edit_profil_tipe" readonly>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                                <div class="mb-3">
+                                    <label for="edit_url_profil" class="form-label">URL Profil <span class="required">*</span></label>
+                                    <input type="url" class="form-control" id="edit_url_profil" placeholder="https://...">
+                                    <div id="editUrlProfilError" class="invalid-feedback"></div>
                                 </div>
-                            </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-primary" id="btn-update-profil-publikasi">Update</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -360,6 +364,7 @@
 
     <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+    <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
     <!-- Pass dosen_id to JavaScript -->
     <script>

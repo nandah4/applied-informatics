@@ -174,7 +174,7 @@ $router->get('admin/dosen/detail/(\d+)', function ($id) {
 
 /**
  * Dosen - Create Page (Form)
- * URL: GET /dosen/create
+ * URL: GET /admin/dosen/create
  */
 $router->get('admin/dosen/create', function () {
     $controller = new DosenController();
@@ -192,7 +192,7 @@ $router->get('admin/dosen/create', function () {
 
 /**
  * Dosen - Create (Handle Submit)
- * URL: POST /dosen/create
+ * URL: POST /admin/dosen/create
  */
 $router->post('admin/dosen/create', function () {
     $controller = new DosenController();
@@ -229,6 +229,10 @@ $router->get('admin/dosen/edit/(\d+)', function ($id) {
     $keahlianData = $keahlianController->getAllKeahlian();
     $listKeahlian = $keahlianData['data'] ?? [];
 
+    // Get profil publikasi dosen
+    $profilPublikasiData = $controller->getProfilPublikasi((int)$id);
+    $listProfilPublikasi = $profilPublikasiData['data'] ?? [];
+
     require __DIR__ . '/../app/Views/admin/dosen/edit.php';
 }, [AuthMiddleware::class]);
 
@@ -260,7 +264,7 @@ $router->post('admin/dosen/delete/(\d+)', function ($id) {
 
 /**
  * Jabatan - Create
- * URL: POST /dosen/create-jabatan
+ * URL: POST /admin/dosen/create-jabatan
  */
 $router->post('admin/dosen/create-jabatan', function () {
     $controller = new JabatanController();
@@ -269,7 +273,7 @@ $router->post('admin/dosen/create-jabatan', function () {
 
 /**
  * Jabatan - Delete
- * URL: POST /dosen/delete-jabatan
+ * URL: POST /admin/dosen/delete-jabatan
  */
 $router->post('admin/dosen/delete-jabatan', function () {
     $controller = new JabatanController();
@@ -282,7 +286,7 @@ $router->post('admin/dosen/delete-jabatan', function () {
 
 /**
  * Keahlian - Create
- * URL: POST /dosen/create-keahlian
+ * URL: POST /admin/dosen/create-keahlian
  */
 $router->post('admin/dosen/create-keahlian', function () {
     $controller = new KeahlianController();
@@ -291,7 +295,7 @@ $router->post('admin/dosen/create-keahlian', function () {
 
 /**
  * Keahlian - Delete
- * URL: POST /dosen/delete-keahlian
+ * URL: POST /admin/dosen/delete-keahlian
  */
 $router->post('admin/dosen/delete-keahlian', function () {
     $controller = new KeahlianController();

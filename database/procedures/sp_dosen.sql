@@ -44,9 +44,7 @@ $$;
 COMMENT ON PROCEDURE sp_insert_dosen_with_keahlian IS 'Procedure untuk insert dosen beserta keahlian. Gunakan RAISE EXCEPTION untuk error handling.';
 
 
-
--- DIVIDER
-
+--
 
 
 -- PROCEDURE : update data dosen ke table dosen dan keahlian
@@ -158,7 +156,7 @@ $$;
 -- PROCEDURE : update profil publikasi dosen
 CREATE OR REPLACE PROCEDURE sp_update_profil_publikasi (
     p_id BIGINT,
-    p_url_ke_profil TEXT
+    p_url_profil TEXT
 )
 LANGUAGE plpgsql
 AS $$
@@ -170,7 +168,7 @@ BEGIN
 
     -- Update data
     UPDATE ref_profil_publikasi
-    SET url_ke_profil = p_url_ke_profil
+    SET url_profil = p_url_profil
     WHERE id = p_id;
 END;
 $$;
