@@ -28,7 +28,7 @@
     <div class="main-content">
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('fasilitas') ?>">Data Fasilitas</a>
+                <a href="<?= base_url('admin/fasilitas') ?>">Data Fasilitas</a>
                 <span>/</span>
                 <span>Detail Fasilitas</span>
             </div>
@@ -63,7 +63,7 @@
 
                     <div class="info-row">
                         <div class="info-label">ID Fasilitas</div>
-                        <div class="info-value"><?= $fasilitas['fasilitas_id'] ?></div>
+                        <div class="info-value"><?= $fasilitas['id'] ?></div>
                     </div>
 
                     <div class="info-row">
@@ -108,14 +108,14 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="<?= base_url('fasilitas') ?>" class="btn-secondary-custom">
+                    <a href="<?= base_url('admin/fasilitas') ?>" class="btn-secondary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
                         Kembali
                     </a>
-                    <a href="<?= base_url('fasilitas/edit/' . $fasilitas['fasilitas_id']) ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/fasilitas/edit/' . $fasilitas['id']) ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                         </svg>
@@ -124,8 +124,8 @@
                     <!-- Tambahkan data-fasilitas-id attribute -->
                     <button
                         class="btn-danger-custom"
-                        data-fasilitas-id="<?= $fasilitas['fasilitas_id'] ?>"
-                        onclick="confirmDelete(<?= $fasilitas['fasilitas_id'] ?>, '<?= base_url('fasilitas/delete/' . $fasilitas['fasilitas_id']) ?>')">
+                        data-fasilitas-id="<?= $fasilitas['id'] ?>"
+                        onclick="confirmDelete(<?= $fasilitas['id'] ?>, '<?= base_url('admin/fasilitas/delete/' . $fasilitas['id']) ?>')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>

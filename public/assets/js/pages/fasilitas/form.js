@@ -12,6 +12,7 @@
  * - Upload file dengan preview (dukungan drag & drop)
  * - Validasi dan submit form (create & edit)
  * - Error handling per-field
+ * - CSRF Protection
  */
 
 (function () {
@@ -21,9 +22,6 @@
   // MODUL FILE UPLOAD
   // ============================================================
   const FileUploadModule = {
-    /**
-     * Inisialisasi fungsionalitas upload file
-     */
     init: function () {
       const fileUploadWrapper = document.getElementById("fileUploadWrapper");
       const fileInput = document.getElementById("foto");
@@ -34,12 +32,10 @@
 
       if (!fileUploadWrapper || !fileInput) return;
 
-      // Klik untuk upload
       fileUploadWrapper.addEventListener("click", () => {
         fileInput.click();
       });
 
-      // Event perubahan file input
       fileInput.addEventListener("change", (e) => {
         this.handleFileSelect(
           e.target.files[0], 
@@ -51,7 +47,6 @@
         );
       });
 
-      // Cek apakah btnRemovePreview ada (untuk edit mode)
       if (btnRemovePreview) {
         btnRemovePreview.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -59,27 +54,15 @@
         });
       }
 
-      // Untuk create mode, hapus preview dengan klik pada gambar preview
       if (!btnRemovePreview && imagePreview) {
         imagePreview.addEventListener("click", () => {
           this.removePreview(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper);
         });
       }
 
-      // Event drag and drop
       this.setupDragAndDrop(fileUploadWrapper, fileInput);
     },
 
-    /**
-     * Handle pemilihan file dan preview
-     *
-     * @param {File} file - File yang dipilih
-     * @param {HTMLElement} previewImg - Element preview gambar
-     * @param {HTMLElement} imagePreview - Element container preview
-     * @param {HTMLElement} fileInput - Input file element
-     * @param {HTMLElement} fileUploadWrapper - Wrapper upload box
-     * @param {HTMLElement} currentImageWrapper - Wrapper untuk gambar lama (edit mode)
-     */
     handleFileSelect: function (
       file, 
       previewImg, 
@@ -90,7 +73,6 @@
     ) {
       if (!file) return;
 
-      // Validasi ukuran file (2MB)
       const sizeValidation = validationHelpers.validateFileSize(file, 2);
       if (!sizeValidation.valid) {
         jQueryHelpers.showError("foto", "fotoError", sizeValidation.message);
@@ -98,7 +80,6 @@
         return;
       }
 
-      // Validasi tipe file
       const typeValidation = validationHelpers.validateFileType(file, [
         "image/jpeg",
         "image/jpg",
@@ -110,10 +91,8 @@
         return;
       }
 
-      // Clear error jika valid
       jQueryHelpers.clearError("foto", "fotoError");
 
-      // Tampilkan preview
       const reader = new FileReader();
       reader.onload = (e) => {
         previewImg.src = e.target.result;
@@ -126,15 +105,6 @@
       reader.readAsDataURL(file);
     },
 
-    /**
-     * Extract logic remove preview ke fungsi terpisah
-     * Hapus preview dan reset file input
-     *
-     * @param {HTMLElement} fileInput - Input file element
-     * @param {HTMLElement} imagePreview - Element container preview
-     * @param {HTMLElement} fileUploadWrapper - Wrapper upload box
-     * @param {HTMLElement} currentImageWrapper - Wrapper untuk gambar lama (edit mode)
-     */
     removePreview: function(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper) {
       fileInput.value = "";
       imagePreview.style.display = "none";
@@ -144,12 +114,6 @@
       }
     },
 
-    /**
-     * Setup fungsionalitas drag and drop
-     *
-     * @param {HTMLElement} wrapper - Element wrapper upload
-     * @param {HTMLElement} fileInput - Element file input
-     */
     setupDragAndDrop: function (wrapper, fileInput) {
       wrapper.addEventListener("dragover", (e) => {
         e.preventDefault();
@@ -177,57 +141,38 @@
   // MODUL SUBMIT FORM FASILITAS (Create & Edit)
   // ============================================================
   const FormSubmissionModule = {
-    /**
-     * Inisialisasi form submission
-     */
     init: function () {
-      // Binding ke 'submit' form, bukan 'click' tombol
       $("#formFasilitas").on("submit", (e) => {
         e.preventDefault();
         this.handleSubmit(e.currentTarget);
       });
     },
 
-    /**
-     * Handle submit form
-     *
-     * @param {HTMLFormElement} formElement - Element form yang disubmit
-     */
     handleSubmit: function (formElement) {
       const $form = $(formElement);
 
-      // Ambil data-* attributes dari form untuk URL & message dinamis
       const ajaxUrl = $form.data("ajax-url");
       const redirectUrl = $form.data("redirect-url");
       const successMessage = $form.data("success-message");
 
-      // Clear semua error messages
       jQueryHelpers.clearAllErrors("formFasilitas");
 
-      // Ambil data form
       const formData = this.getFormData();
       
-      // Validasi form
       const validationErrors = this.validateFormData(formData);
 
       if (validationErrors.length > 0) {
-        // Tampilkan error di bawah field yang sesuai
         validationErrors.forEach((error) => {
           jQueryHelpers.showError(error.fieldId, error.errorId, error.message);
         });
-        // Tampilkan alert untuk error pertama
-        // jQueryHelpers.showAlert(validationErrors[0].message, "danger", 5000);
         return;
       }
 
-      // Siapkan FormData untuk AJAX (support file upload)
       const submitData = this.prepareFormData(formData);
       
-      // Disable tombol submit
       const submitButton = $form.find('button[type="submit"]');
       const buttonState = jQueryHelpers.disableButton(submitButton.attr('id') || 'submit-btn', "Menyimpan...");
 
-      // Kirim AJAX request
       jQueryHelpers.makeAjaxRequest({
         url: ajaxUrl,
         method: "POST",
@@ -252,31 +197,30 @@
       });
     },
 
-    /**
-     * Ambil data dari form
-     *
-     * @return {Object} Data form
-     */
     getFormData: function () {
       return {
         nama: $("#nama").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
         foto: $("#foto")[0].files[0] || null,
-        fasilitas_id: $("#fasilitas_id").val() || null, // Untuk edit mode
+        id: $("#id").val() || null,
+        // ✅ AMBIL CSRF TOKEN DARI HIDDEN FIELD
+        csrf_token: $('input[name="csrf_token"]').val() || null,
       };
     },
 
-    /**
-     * Validasi data form
-     *
-     * @param {Object} data - Data form yang akan divalidasi
-     * @return {Array} Array of error objects
-     */
     validateFormData: function (data) {
       const errors = [];
-      const isCreateMode = data.fasilitas_id === null;
+      const isCreateMode = data.id === null;
 
-      // Validasi Nama (wajib, min 3 char, max 150 char)
+      // ✅ VALIDASI CSRF TOKEN
+      if (!data.csrf_token) {
+        errors.push({
+          fieldId: "csrf_token",
+          errorId: "csrfError",
+          message: "Token keamanan tidak ditemukan. Silakan refresh halaman.",
+        });
+      }
+
       const nameValidation = validationHelpers.validateName(
         data.nama, 
         3, 
@@ -291,10 +235,9 @@
         });
       }
 
-      // Validasi Deskripsi (opsional, max 5000 char)
       const deskripsiValidation = validationHelpers.validateText(
         data.deskripsi, 
-        5000, 
+        255, 
         false
       );
       if (!deskripsiValidation.valid) {
@@ -305,7 +248,6 @@
         });
       }
 
-      // Validasi Foto (wajib di mode Create, opsional di mode Edit)
       if (isCreateMode && !data.foto) {
         errors.push({
           fieldId: "foto",
@@ -314,9 +256,8 @@
         });
       }
 
-      // Validasi Foto (jika file baru di-upload)
       if (data.foto) {
-        const sizeValidation = validationHelpers.validateFileSize(data.foto, 2); // 2MB
+        const sizeValidation = validationHelpers.validateFileSize(data.foto, 2);
         if (!sizeValidation.valid) {
           errors.push({
             fieldId: "foto",
@@ -342,26 +283,20 @@
       return errors;
     },
 
-    /**
-     * Siapkan FormData untuk submit AJAX
-     *
-     * @param {Object} data - Data form
-     * @return {FormData} FormData object
-     */
     prepareFormData: function (data) {
       const formData = new FormData();
       
+      // ✅ SERTAKAN CSRF TOKEN
+      formData.append("csrf_token", data.csrf_token);
       formData.append("nama", data.nama);
       formData.append("deskripsi", data.deskripsi);
 
-      // Tambahkan foto jika ada
       if (data.foto) {
         formData.append("foto", data.foto);
       }
 
-      // Tambahkan ID jika ini mode edit
-      if (data.fasilitas_id) {
-        formData.append("fasilitas_id", data.fasilitas_id);
+      if (data.id) {
+        formData.append("id", data.id);
       }
 
       return formData;

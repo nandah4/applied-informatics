@@ -70,7 +70,7 @@ function hasActiveChild($urls, $current)
                 </a>
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a href="<?= base_url('fasilitas') ?>" class="nav-link <?= isActive('fasilitas', $current_url) ?>">
+                        <a href="<?= base_url('admin/fasilitas') ?>" class="nav-link <?= isActive('admin/fasilitas', $current_url) ?>">
                             <span class="nav-text">Kelola Fasilitas</span>
                         </a>
                     </li>

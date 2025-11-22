@@ -64,10 +64,10 @@ CREATE TABLE mst_dosen (
 
 -- Mengganti tbl_fasilitas menjadi mst_fasilitas
 CREATE TABLE mst_fasilitas (
-    id            BIGSERIAL PRIMARY KEY, -- ganti fasilitas_id jadi id biar konsisten
+    id            BIGSERIAL PRIMARY KEY, 
     nama          VARCHAR(150) NOT NULL,
-    deskripsi     TEXT,
-    foto          VARCHAR(255),
+    deskripsi     VARCHAR(255),
+    foto          TEXT,
     created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -93,8 +93,8 @@ CREATE TABLE mst_mitra (
 CREATE TABLE mst_produk (
     id            BIGSERIAL PRIMARY KEY,
     nama_produk   VARCHAR(255) NOT NULL,
-    deskripsi     TEXT,
-    foto_produk   VARCHAR(255),
+    deskripsi     VARCHAR(255),
+    foto_produk   TEXT,
     link_produk   VARCHAR(255),
     tim_mahasiswa VARCHAR(255), 
     

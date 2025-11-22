@@ -23,7 +23,7 @@
 class FasilitasModel
 {
     private $db;
-    private $table_name = 'tbl_fasilitas';
+    private $table_name = 'mst_fasilitas';
 
     /**
      * CONSTRUCTOR
@@ -44,7 +44,7 @@ class FasilitasModel
     {
         // Mengambil data yang ada dari database
         try {
-            $query = "SELECT * FROM {$this->table_name} ORDER BY fasilitas_id DESC";
+            $query = "SELECT * FROM {$this->table_name} ORDER BY id DESC";
             $stmt = $this->db->prepare($query);
             $stmt->execute();
 
@@ -94,7 +94,7 @@ class FasilitasModel
 
             // 2. Ambil data dengan pagination
             $query = "SELECT * FROM {$this->table_name}
-                      ORDER BY fasilitas_id DESC
+                      ORDER BY id DESC
                       LIMIT :limit OFFSET :offset";
 
             $stmt = $this->db->prepare($query);
@@ -125,16 +125,16 @@ class FasilitasModel
      * GET FASILITAS BY ID
      * 
      * Fungsi: Mengambil detail 1 fasilitas berdasarkan ID
-     * @param int $fasilitas_id - ID fasilitas
+     * @param int $id - ID fasilitas
      * @return array - ['success' => bool, 'message' => string, 'data' => array|null]
      */
-    public function getFasilitasById($fasilitas_id)
+    public function getFasilitasById($id)
     {
         try {
-            $query = "SELECT * FROM {$this->table_name} WHERE fasilitas_id = :id LIMIT 1";
+            $query = "SELECT * FROM {$this->table_name} WHERE id = :id LIMIT 1";
 
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id', $fasilitas_id, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
             $fasilitas = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -172,7 +172,7 @@ class FasilitasModel
     public function insertFasilitas($data)
     {
         try {
-            // ✅ PERBAIKAN: Gunakan CALL, bukan SELECT
+            // Gunakan CALL, bukan SELECT
             $query = "CALL sp_insert_fasilitas(
                 :nama,
                 :deskripsi,
@@ -191,7 +191,7 @@ class FasilitasModel
 
             // Ambil ID baru yang baru saja diinsert
             // Gunakan CURRVAL untuk mendapatkan ID terakhir dari sequence
-            $lastIdQuery = "SELECT CURRVAL(pg_get_serial_sequence('tbl_fasilitas', 'fasilitas_id')) as last_id";
+            $lastIdQuery = "SELECT CURRVAL(pg_get_serial_sequence('mst_fasilitas', 'id')) as last_id";
             $lastIdStmt = $this->db->prepare($lastIdQuery);
             $lastIdStmt->execute();
             $result = $lastIdStmt->fetch(PDO::FETCH_ASSOC);
@@ -225,11 +225,11 @@ class FasilitasModel
      * UPDATE FASILITAS
      * 
      * Fungsi: Update data fasilitas menggunakan stored procedure
-     * @param int $fasilitas_id - ID fasilitas yang akan diupdate
+     * @param int $id - ID fasilitas yang akan diupdate
      * @param array $data - Data yang akan diupdate ['nama', 'deskripsi', 'foto']
      * @return array - ['success' => bool, 'message' => string]
      */
-    public function updateFasilitas($fasilitas_id, $data)
+    public function updateFasilitas($id, $data)
     {
         try {
             // Gunakan CALL
@@ -243,7 +243,7 @@ class FasilitasModel
             $stmt = $this->db->prepare($query);
 
             // Bind parameters
-            $stmt->bindParam(':id', $fasilitas_id, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->bindParam(':nama', $data['nama'], PDO::PARAM_STR);
             $stmt->bindParam(':deskripsi', $data['deskripsi'], PDO::PARAM_STR);
             $stmt->bindParam(':foto', $data['foto'], PDO::PARAM_STR);
@@ -284,17 +284,17 @@ class FasilitasModel
      * DELETE FASILITAS
      *
      * Fungsi: Hapus fasilitas dari database menggunakan stored procedure
-     * @param int $fasilitas_id - ID fasilitas yang akan dihapus
+     * @param int $id - ID fasilitas yang akan dihapus
      * @return array - ['success' => bool, 'message' => string, 'data' => ['foto' => string]]
      */
-    public function deleteFasilitas($fasilitas_id)
+    public function deleteFasilitas($id)
     {
         try {
             // Ambil data foto SEBELUM delete
             // Karena stored procedure tidak return nilai foto
-            $checkQuery = "SELECT foto FROM {$this->table_name} WHERE fasilitas_id = :id LIMIT 1";
+            $checkQuery = "SELECT foto FROM {$this->table_name} WHERE id = :id LIMIT 1";
             $checkStmt = $this->db->prepare($checkQuery);
-            $checkStmt->bindParam(':id', $fasilitas_id, PDO::PARAM_INT);
+            $checkStmt->bindParam(':id', $id, PDO::PARAM_INT);
             $checkStmt->execute();
 
             $fasilitas = $checkStmt->fetch(PDO::FETCH_ASSOC);
@@ -309,7 +309,7 @@ class FasilitasModel
             // Panggil SP untuk menghapus data
             $deleteQuery = "CALL sp_delete_fasilitas(:id)";
             $deleteStmt = $this->db->prepare($deleteQuery);
-            $deleteStmt->bindParam(':id', $fasilitas_id, PDO::PARAM_INT);
+            $deleteStmt->bindParam(':id', $id, PDO::PARAM_INT);
             $deleteStmt->execute();
 
             // // ✅ FITUR BARU: Reset sequence jika tabel kosong setelah delete
@@ -359,7 +359,7 @@ class FasilitasModel
 
     //         // Jika tabel kosong, reset sequence ke 1
     //         if ($total == 0) {
-    //             $resetQuery = "ALTER SEQUENCE tbl_fasilitas_fasilitas_id_seq RESTART WITH 1";
+    //             $resetQuery = "ALTER SEQUENCE mst_fasilitas_seq RESTART WITH 1";
     //             $this->db->exec($resetQuery);
     //             error_log("FasilitasModel: Sequence direset ke 1 karena tabel kosong");
     //             return true;
@@ -367,14 +367,14 @@ class FasilitasModel
 
     //         // Jika masih ada data, reset sequence ke MAX(id) + 1
     //         // Ini untuk handle jika ada gap ID (misal: 1,2,5,7 -> next akan jadi 8)
-    //         $maxIdQuery = "SELECT MAX(fasilitas_id) as max_id FROM {$this->table_name}";
+    //         $maxIdQuery = "SELECT MAX(id) as max_id FROM {$this->table_name}";
     //         $maxIdStmt = $this->db->prepare($maxIdQuery);
     //         $maxIdStmt->execute();
     //         $maxId = $maxIdStmt->fetch(PDO::FETCH_ASSOC)['max_id'];
 
     //         if ($maxId) {
     //             $nextId = $maxId + 1;
-    //             $resetQuery = "ALTER SEQUENCE tbl_fasilitas_fasilitas_id_seq RESTART WITH {$nextId}";
+    //             $resetQuery = "ALTER SEQUENCE mst_fasilitas_seq RESTART WITH {$nextId}";
     //             $this->db->exec($resetQuery);
     //             error_log("FasilitasModel: Sequence direset ke {$nextId}");
     //             return true;

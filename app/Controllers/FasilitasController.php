@@ -38,23 +38,17 @@ class FasilitasController
      */
     public function getAllFasilitas()
     {
-        // Ambil parameter page & per_page dari $_GET
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
-        // Validasi parameter
         $page = max(1, $page);
-        $perPage = max(1, min(100, $perPage)); // Max 100 per page
+        $perPage = max(1, min(100, $perPage));
 
-        // Generate pagination data
-        // Ambil total records DARI MODEL dengan $countOnly = true
         $paginationData = $this->fasilitasModel->getAllFasilitasPaginated($perPage, 0, true);
         $totalRecords = $paginationData['total'];
 
-        // Gunakan PaginationHelper
         $pagination = PaginationHelper::paginate($totalRecords, $page, $perPage);
 
-        // Panggil model->getAllFasilitasPaginated()
         $result = $this->fasilitasModel->getAllFasilitasPaginated($pagination['per_page'], $pagination['offset']);
 
         return [
@@ -67,13 +61,12 @@ class FasilitasController
      * GET FASILITAS BY ID
      *
      * Fungsi: Mengambil detail 1 fasilitas
-     * @param int $fasilitas_id - ID fasilitas
+     * @param int $id - ID fasilitas
      * @return array - Data Fasilitas
      */
-    public function getFasilitasById($fasilitas_id)
+    public function getFasilitasById($id)
     {
-        // Validasi ID
-        $validation = ValidationHelper::validateId($fasilitas_id, 'ID Fasilitas');
+        $validation = ValidationHelper::validateId($id, 'ID Fasilitas');
         if (!$validation['valid']) {
             return [
                 'success' => false,
@@ -82,10 +75,8 @@ class FasilitasController
             ];
         }
 
-        // Panggil model
-        $result = $this->fasilitasModel->getFasilitasById((int)$fasilitas_id);
+        $result = $this->fasilitasModel->getFasilitasById((int)$id);
 
-        // Return data
         return $result;
     }
 
@@ -94,7 +85,7 @@ class FasilitasController
      *
      * Fungsi: Menambah fasilitas baru
      * Method: POST
-     * Endpoint: /applied-informatics/fasilitas/create
+     * Endpoint: /admin/fasilitas/create
      * Response: JSON
      */
     public function createFasilitas()
@@ -105,14 +96,21 @@ class FasilitasController
             return;
         }
 
-        // Ambil data dari $_POST (sesuai nama field form)
+        // ✅ VALIDASI CSRF TOKEN
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Token keamanan tidak valid. Silakan refresh halaman dan coba lagi.');
+            return;
+        }
+
+        // Ambil data dari $_POST
         $nama = $_POST['nama'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
 
         // Validasi input
         $validationErrors = $this->validateFasilitasInput($nama, $deskripsi);
         if (!empty($validationErrors)) {
-            ResponseHelper::error($validationErrors[0]); // Tampilkan error pertama
+            ResponseHelper::error($validationErrors[0]);
             return;
         }
 
@@ -121,9 +119,9 @@ class FasilitasController
         if (isset($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
             $uploadResult = FileUploadHelper::upload(
                 $_FILES['foto'],
-                'image',           // Tipe upload: image
-                'fasilitas',       // Folder: uploads/fasilitas/
-                2 * 1024 * 1024    // Max size: 2MB
+                'image',
+                'fasilitas',
+                2 * 1024 * 1024
             );
 
             if (!$uploadResult['success']) {
@@ -133,7 +131,6 @@ class FasilitasController
 
             $fotoFileName = $uploadResult['filename'];
         } else {
-            // Foto wajib di mode create (sesuai validasi form.js)
             ResponseHelper::error('Foto fasilitas wajib diisi.');
             return;
         }
@@ -157,6 +154,9 @@ class FasilitasController
             return;
         }
 
+        // ✅ REGENERATE CSRF TOKEN setelah operasi berhasil
+        CsrfHelper::regenerateToken();
+
         // Return success response
         ResponseHelper::success('Data fasilitas berhasil ditambahkan', $result['data']);
     }
@@ -164,7 +164,7 @@ class FasilitasController
     /**
      * UPDATE FASILITAS (Handle Edit Form)
      * 
-     * Endpoint: /applied-informatics/fasilitas/update
+     * Endpoint: /admin/fasilitas/update
      * Fungsi: Update data fasilitas
      * Method: POST
      * Response: JSON
@@ -177,13 +177,20 @@ class FasilitasController
             return;
         }
 
-        // Ambil data dari $_POST (sesuai nama field form)
-        $fasilitas_id = $_POST['fasilitas_id'] ?? '';
+        // ✅ VALIDASI CSRF TOKEN
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Token keamanan tidak valid. Silakan refresh halaman dan coba lagi.');
+            return;
+        }
+
+        // Ambil data dari $_POST
+        $id = $_POST['id'] ?? '';
         $nama = $_POST['nama'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
 
         // Validasi ID
-        $idValidation = ValidationHelper::validateId($fasilitas_id, 'ID Fasilitas');
+        $idValidation = ValidationHelper::validateId($id, 'ID Fasilitas');
         if (!$idValidation['valid']) {
             ResponseHelper::error($idValidation['message']);
             return;
@@ -197,14 +204,14 @@ class FasilitasController
         }
 
         // Ambil data lama untuk mendapatkan nama file foto lama
-        $oldDataResult = $this->fasilitasModel->getFasilitasById((int)$fasilitas_id);
+        $oldDataResult = $this->fasilitasModel->getFasilitasById((int)$id);
         if (!$oldDataResult['success']) {
             ResponseHelper::error('Data fasilitas lama tidak ditemukan.');
             return;
         }
 
         $oldFotoFileName = $oldDataResult['data']['foto'] ?? null;
-        $fotoFileName = $oldFotoFileName; // Default: pakai foto lama
+        $fotoFileName = $oldFotoFileName;
 
         // Handle upload foto baru (opsional di mode edit)
         if (isset($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -236,7 +243,7 @@ class FasilitasController
         ];
 
         // Panggil model->updateFasilitas()
-        $result = $this->fasilitasModel->updateFasilitas((int)$fasilitas_id, $fasilitas_data);
+        $result = $this->fasilitasModel->updateFasilitas((int)$id, $fasilitas_data);
 
         // Jika gagal update dan ada foto baru, hapus foto baru tsb
         if (!$result['success']) {
@@ -247,6 +254,9 @@ class FasilitasController
             return;
         }
 
+        // ✅ REGENERATE CSRF TOKEN setelah operasi berhasil
+        CsrfHelper::regenerateToken();
+
         // Return success response
         ResponseHelper::success('Data fasilitas berhasil diupdate');
     }
@@ -256,19 +266,18 @@ class FasilitasController
      *
      * Fungsi: Hapus fasilitas
      * Method: POST
-     * Endpoint: /applied-informatics/fasilitas/delete/{id}
+     * Endpoint: /admin/fasilitas/delete/{id}
      * Response: JSON
      */
-    public function deleteFasilitasById($fasilitas_id)
+    public function deleteFasilitasById($id)
     {
-        // Validasi request method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             ResponseHelper::error('Invalid request method');
             return;
         }
 
         // Panggil model->deleteFasilitas()
-        $result = $this->fasilitasModel->deleteFasilitas((int)$fasilitas_id);
+        $result = $this->fasilitasModel->deleteFasilitas((int)$id);
 
         if (!$result['success']) {
             ResponseHelper::error($result['message']);
@@ -296,15 +305,12 @@ class FasilitasController
     {
         $errors = [];
 
-        // 1. Validasi nama (wajib, min 3 char, max 150 char)
         $namaValidation = ValidationHelper::validateName($nama, 3, 150);
         if (!$namaValidation['valid']) {
             $errors[] = $namaValidation['message'];
         }
 
-        // 2. Validasi deskripsi (opsional, max 5000 char)
-        // TEXT di PostgreSQL bisa unlimited, tapi kita batasi 5000 untuk UX
-        $deskripsiValidation = ValidationHelper::validateText($deskripsi, 5000, false);
+        $deskripsiValidation = ValidationHelper::validateText($deskripsi, 255, false);
         if (!$deskripsiValidation['valid']) {
             $errors[] = $deskripsiValidation['message'];
         }

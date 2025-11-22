@@ -306,7 +306,7 @@ $router->post('dosen/delete-keahlian', function () {
  * URL: GET /fasilitas?page=1&per_page=10
  * 
  */
-$router->get('fasilitas', function () {
+$router->get('admin/fasilitas', function () {
     $controller = new FasilitasController();
     $result = $controller->getAllFasilitas();
 
@@ -322,7 +322,7 @@ $router->get('fasilitas', function () {
  * 
  * Tidak perlu passing data, form kosong
  */
-$router->get('fasilitas/create', function () {
+$router->get('admin/fasilitas/create', function () {
     require __DIR__ . '/../app/Views/admin/fasilitas/create.php';
 }, [AuthMiddleware::class]);
 
@@ -332,7 +332,7 @@ $router->get('fasilitas/create', function () {
  * 
  * Response JSON dari controller
  */
-$router->post('fasilitas/create', function () {
+$router->post('admin/fasilitas/create', function () {
     $controller = new FasilitasController();
     $controller->createFasilitas();
 }, [AuthMiddleware::class]);
@@ -342,7 +342,7 @@ $router->post('fasilitas/create', function () {
  * URL: GET /fasilitas/detail/{id}
  * 
  */
-$router->get('fasilitas/detail/(\d+)', function ($id) {
+$router->get('admin/fasilitas/detail/(\d+)', function ($id) {
     $controller = new FasilitasController();
     $result = $controller->getFasilitasById($id);
 
@@ -362,7 +362,7 @@ $router->get('fasilitas/detail/(\d+)', function ($id) {
  * URL: GET /fasilitas/edit/{id}
  * 
  */
-$router->get('fasilitas/edit/(\d+)', function ($id) {
+$router->get('admin/fasilitas/edit/(\d+)', function ($id) {
     $controller = new FasilitasController();
     $result = $controller->getFasilitasById($id);
 
@@ -383,7 +383,7 @@ $router->get('fasilitas/edit/(\d+)', function ($id) {
  * 
  * Response JSON dari controller
  */
-$router->post('fasilitas/update', function () {
+$router->post('admin/fasilitas/update', function () {
     $controller = new FasilitasController();
     $controller->updateFasilitas();
 }, [AuthMiddleware::class]);
@@ -394,7 +394,7 @@ $router->post('fasilitas/update', function () {
  * 
  * Response JSON dari controller
  */
-$router->post('fasilitas/delete/(\d+)', function ($id) {
+$router->post('admin/fasilitas/delete/(\d+)', function ($id) {
     $controller = new FasilitasController();
     $controller->deleteFasilitasById($id);
 }, [AuthMiddleware::class]);
