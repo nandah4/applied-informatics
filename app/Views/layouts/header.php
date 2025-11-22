@@ -48,12 +48,12 @@
                             Riset dan Produk
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Publikasi Dosen</a></li>
-                            <li><a class="dropdown-item" href="#">Produk Lab</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('publikasi-dosen') ?>">Publikasi Dosen</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('produk-lab') ?>">Produk Lab</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Aktivitas Lab</a>
+                        <a class="nav-link" href="<?= base_url('aktivitas-laboratorium') ?>">Aktivitas Lab</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Mitra</a>

@@ -1,6 +1,15 @@
+main{
+  background-color: var(--bg-primary);
+}
+
 /*ukuran font header welcome*/
 .header-welcome {
   font-size: 14px;
+}
+
+.visi, .misi{
+  font-size: 22px;
+  color: var(--color-primary-800);
 }
 
 /*Mengatur elemen sambutan yaitu: ukuran font, lebar dan mengatur posisi agar ke tengah*/
@@ -26,10 +35,19 @@
   border: 3px solid var(--color-primary-300) !important;
 }
 
+/*fixed height untuk overflow agar bisa scroll*/
+.fixed-height{
+  max-height: 400px;
+}
+
 /*Mengatur warna button*/
 .btn {
   background-color: var(--color-primary-500) !important;
   color: #ffffff;
+}
+
+.row-angka{
+  white-space: nowrap;
 }
 
 /*Mengatur ukuran font, warna dan posisi angka statistik*/

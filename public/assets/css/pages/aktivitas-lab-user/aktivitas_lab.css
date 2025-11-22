@@ -1,0 +1,21 @@
+main{
+  background-color: var(--bg-primary);
+}
+
+.halaman, .deskripsi, .deskripsi-aktivitas{
+    font-size: 18px;
+}
+
+.judul{
+    font-size: 40px;
+}
+
+.halaman-ini{
+    color: var(--color-primary-500);
+}
+
+.deskripsi{
+    width: 70%;
+    color: #999999;
+}
+
