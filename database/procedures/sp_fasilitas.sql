@@ -1,9 +1,9 @@
 -- =================================================================
--- STORED PROCEDURES FOR TBL_FASILITAS
+-- STORED PROCEDURES FOR MST_FASILITAS
 -- =================================================================
 -- Description: Procedures untuk CRUD operations pada tabel fasilitas
 -- Author: Applied Informatics Lab
--- Version: 2.0 (Fixed & Improved)
+-- Version: 3.0 (Updated for new schema)
 -- =================================================================
 
 -- =================================================================
@@ -11,15 +11,15 @@
 -- =================================================================
 CREATE OR REPLACE PROCEDURE sp_insert_fasilitas(
     p_nama VARCHAR(150),
-    p_deskripsi TEXT,
-    p_foto VARCHAR(255) DEFAULT NULL
+    p_deskripsi VARCHAR(255),
+    p_foto TEXT DEFAULT NULL
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
     -- Validasi nama duplicate (CASE-INSENSITIVE)
     IF EXISTS (
-        SELECT 1 FROM tbl_fasilitas 
+        SELECT 1 FROM mst_fasilitas 
         WHERE LOWER(TRIM(nama)) = LOWER(TRIM(p_nama))
     ) THEN
         RAISE EXCEPTION 'Nama fasilitas sudah terdaftar';
@@ -27,7 +27,7 @@ BEGIN
 
     -- Insert data fasilitas
     -- created_at dan updated_at akan terisi otomatis (DEFAULT NOW())
-    INSERT INTO tbl_fasilitas (nama, deskripsi, foto)
+    INSERT INTO mst_fasilitas (nama, deskripsi, foto)
     VALUES (TRIM(p_nama), p_deskripsi, p_foto);
 
     -- Log untuk debugging (opsional, bisa dihapus di production)
@@ -43,39 +43,39 @@ COMMENT ON PROCEDURE sp_insert_fasilitas IS
 -- PROCEDURE: Update data fasilitas
 -- =================================================================
 CREATE OR REPLACE PROCEDURE sp_update_fasilitas(
-    p_fasilitas_id BIGINT,
+    p_id BIGINT,
     p_nama VARCHAR(150),
-    p_deskripsi TEXT,
-    p_foto VARCHAR(255)
+    p_deskripsi VARCHAR(255),
+    p_foto TEXT
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
     -- Validasi apakah ID fasilitas ada
-    IF NOT EXISTS (SELECT 1 FROM tbl_fasilitas WHERE fasilitas_id = p_fasilitas_id) THEN
-        RAISE EXCEPTION 'Fasilitas dengan ID % tidak ditemukan', p_fasilitas_id;
+    IF NOT EXISTS (SELECT 1 FROM mst_fasilitas WHERE id = p_id) THEN
+        RAISE EXCEPTION 'Fasilitas dengan ID % tidak ditemukan', p_id;
     END IF;
 
     -- Validasi nama duplicate (CASE-INSENSITIVE, exclude ID sendiri)
     IF EXISTS (
-        SELECT 1 FROM tbl_fasilitas
+        SELECT 1 FROM mst_fasilitas
         WHERE LOWER(TRIM(nama)) = LOWER(TRIM(p_nama))
-          AND fasilitas_id <> p_fasilitas_id
+          AND id <> p_id
     ) THEN
         RAISE EXCEPTION 'Nama fasilitas sudah terdaftar';
     END IF;
 
     -- Update data
-    UPDATE tbl_fasilitas
+    UPDATE mst_fasilitas
     SET
         nama = TRIM(p_nama),
         deskripsi = p_deskripsi,
         foto = p_foto,
         updated_at = NOW() -- Selalu perbarui timestamp updated_at
-    WHERE fasilitas_id = p_fasilitas_id;
+    WHERE id = p_id;
 
     -- Log untuk debugging (opsional)
-    RAISE NOTICE 'Fasilitas ID % berhasil diupdate', p_fasilitas_id;
+    RAISE NOTICE 'Fasilitas ID % berhasil diupdate', p_id;
 
 END;
 $$;
@@ -87,7 +87,7 @@ COMMENT ON PROCEDURE sp_update_fasilitas IS
 -- PROCEDURE: Delete data fasilitas
 -- =================================================================
 CREATE OR REPLACE PROCEDURE sp_delete_fasilitas(
-    p_fasilitas_id BIGINT
+    p_id BIGINT
 )
 LANGUAGE plpgsql
 AS $$
@@ -95,18 +95,18 @@ DECLARE
     v_row_count INT;
 BEGIN
     -- Hapus data
-    DELETE FROM tbl_fasilitas
-    WHERE fasilitas_id = p_fasilitas_id;
+    DELETE FROM mst_fasilitas
+    WHERE id = p_id;
 
     -- Cek apakah ada baris yang terhapus
     GET DIAGNOSTICS v_row_count = ROW_COUNT;
 
     IF v_row_count = 0 THEN
-        RAISE EXCEPTION 'Fasilitas dengan ID % tidak ditemukan', p_fasilitas_id;
+        RAISE EXCEPTION 'Fasilitas dengan ID % tidak ditemukan', p_id;
     END IF;
 
     -- Log untuk debugging (opsional)
-    RAISE NOTICE 'Fasilitas ID % berhasil dihapus', p_fasilitas_id;
+    RAISE NOTICE 'Fasilitas ID % berhasil dihapus', p_id;
 
     -- CATATAN PENTING:
     -- Prosedur ini TIDAK mengembalikan nama file foto yang dihapus.

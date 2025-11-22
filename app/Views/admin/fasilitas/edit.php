@@ -9,7 +9,7 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <!-- Base CSS - Must load first -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
@@ -32,7 +32,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('fasilitas') ?>">Data Fasilitas</a>
+                <a href="<?= base_url('admin/fasilitas') ?>">Data Fasilitas</a>
                 <span>/</span>
                 <span>Edit Fasilitas</span>
             </div>
@@ -44,12 +44,15 @@
         <div class="card">
             <div class="card-body">
                 <form id="formFasilitas" method="POST" enctype="multipart/form-data"
-                    data-ajax-url="<?= base_url('fasilitas/update') ?>"
-                    data-redirect-url="<?= base_url('fasilitas') ?>"
+                    data-ajax-url="<?= base_url('admin/fasilitas/update') ?>"
+                    data-redirect-url="<?= base_url('admin/fasilitas') ?>"
                     data-success-message="Data fasilitas berhasil diupdate.">
 
+                    <!-- ✅ CSRF Token Hidden Field -->
+                    <?= CsrfHelper::tokenField() ?>
+
                     <!-- Hidden Field: ID Fasilitas -->
-                    <input type="hidden" id="fasilitas_id" name="fasilitas_id" value="<?= htmlspecialchars($fasilitas['fasilitas_id']) ?>">
+                    <input type="hidden" id="id" name="id" value="<?= htmlspecialchars($fasilitas['id']) ?>">
 
                     <div class="row">
                         <!-- Nama Fasilitas -->
@@ -60,49 +63,41 @@
                             <input type="text" class="form-control" id="nama" name="nama"
                                 placeholder="Masukkan nama fasilitas"
                                 value="<?= htmlspecialchars($fasilitas['nama']) ?>"
-                                required>
+                                maxlength="150">
                             <div id="namaError" class="invalid-feedback"></div>
-                            <div class="helper-text">Berikan nama yang jelas dan deskriptif untuk fasilitas</div>
+                            <div class="helper-text">Maksimal 150 karakter</div>
                         </div>
 
                         <!-- Deskripsi -->
                         <div class="col-12 mb-3">
-                            <label for="deskripsi" class="form-label">
-                                Deskripsi
-                            </label>
+                            <label for="deskripsi" class="form-label">Deskripsi</label>
                             <textarea class="form-control" id="deskripsi" name="deskripsi"
-                                rows="4"
-                                placeholder="Masukkan deskripsi singkat tentang fasilitas"><?= htmlspecialchars($fasilitas['deskripsi'] ?? '') ?></textarea>
+                                rows="3" placeholder="Masukkan deskripsi singkat tentang fasilitas"
+                                maxlength="255"><?= htmlspecialchars($fasilitas['deskripsi'] ?? '') ?></textarea>
                             <div id="deskripsiError" class="invalid-feedback"></div>
-                            <div class="helper-text">Deskripsikan lebih lanjut mengenai fasilitas tersebut</div>
+                            <div class="helper-text">Opsional. Maksimal 255 karakter</div>
                         </div>
 
                         <!-- Foto Fasilitas -->
                         <div class="col-12 mb-3">
-                            <label class="form-label">
-                                Foto Fasilitas
-                            </label>
+                            <label class="form-label">Foto Fasilitas</label>
 
                             <!-- Current Image Display -->
                             <div class="current-image-wrapper mb-3">
                                 <div class="current-image-label">Foto saat ini:</div>
                                 <?php if (!empty($fasilitas['foto'])): ?>
                                     <img src="<?= upload_url('fasilitas/' . $fasilitas['foto']) ?>"
-                                        alt="Current Photo"
-                                        class="current-image"
-                                        id="currentImage">
+                                        alt="Current Photo" class="current-image" id="currentImage">
                                 <?php else: ?>
                                     <img src="<?= upload_url('default/image.png') ?>"
-                                        alt="No Photo"
-                                        class="current-image"
-                                        id="currentImage">
+                                        alt="No Photo" class="current-image" id="currentImage">
                                 <?php endif; ?>
                                 <div class="helper-text mt-2">Klik area upload di bawah untuk mengganti foto</div>
                             </div>
 
                             <!-- Upload Box -->
                             <div class="file-upload-wrapper" id="fileUploadWrapper">
-                                <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="17 8 12 3 7 8"></polyline>
                                     <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -110,12 +105,9 @@
                                 <div class="file-upload-text">
                                     <strong>Klik untuk upload foto baru</strong> atau drag and drop
                                 </div>
-                                <div class="file-upload-hint">
-                                    PNG, JPG, JPEG maksimal 2MB
-                                </div>
+                                <div class="file-upload-hint">PNG, JPG, JPEG maksimal 2MB</div>
                             </div>
 
-                            <!-- File Input -->
                             <input type="file" class="file-upload-input" id="foto" name="foto" accept="image/png,image/jpg,image/jpeg">
                             <div id="fotoError" class="invalid-feedback"></div>
 
@@ -123,7 +115,7 @@
                             <div class="image-preview" id="imagePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
                                 <button type="button" class="btn-remove-preview" id="btnRemovePreview">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
                                     </svg>
@@ -134,7 +126,7 @@
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('fasilitas') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/fasilitas') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -165,7 +157,7 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Helper Scripts (Must load before form.js) -->
+    <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 

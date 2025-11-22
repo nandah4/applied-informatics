@@ -64,7 +64,7 @@
                         // Redirect ke halaman index setelah 2 detik
                         setTimeout(() => {
                             // Redirect ke index, bukan reload
-                            window.location.href = '/applied-informatics/fasilitas';
+                            window.location.href = '/applied-informatics/admin/fasilitas';
                         }, 500);
                     } else {
                         // Tampilkan pesan error dari server
