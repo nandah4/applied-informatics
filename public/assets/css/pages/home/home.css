@@ -46,6 +46,10 @@ main{
   color: #ffffff;
 }
 
+.row-angka{
+  white-space: nowrap;
+}
+
 /*Mengatur ukuran font, warna dan posisi angka statistik*/
 .angka-statistik {
   font-size: 100px;

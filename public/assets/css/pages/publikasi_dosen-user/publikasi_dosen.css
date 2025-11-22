@@ -1,0 +1,35 @@
+main{
+    background-color: var(--bg-primary);
+}
+
+.halaman, .deksripsi, .redirect-link{
+    font-size: 18px;
+}
+
+.judul{
+    font-size: 40px;
+}
+
+.halaman-ini{
+    color: var(--color-primary-500);
+}
+
+.deskripsi{
+    width: 70%;
+    color: #999999;
+}
+
+.judul-riset{
+    font-size: 24px;
+    color: #999999;
+}
+
+
+.form-control{
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
+    margin: auto;
+    padding: auto;
+    font-size: 18px;
+}

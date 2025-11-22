@@ -60,7 +60,7 @@ include __DIR__ . '/../layouts/header.php';
             </div>
 
             <div class="col-md-6">
-                <div class="row">
+                <div class="row row-angka">
                     <div class="col-sl-4 col-md-6 mb-5">
                         <h1 class="angka-statistik">15+</h1>
                         <p class="info-statistik">Publikasi</p>

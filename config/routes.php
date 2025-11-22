@@ -61,6 +61,14 @@ $router->get('aktivitas-laboratorium', function () {
     require __DIR__ . '/../app/Views/client/aktivitas_lab.php';
 });
 
+/**
+ * Publikasi Dosen
+ * URL: /publikasi-dosen
+ */
+$router->get('publikasi-dosen', function () {
+    require __DIR__ . '/../app/Views/client/publikasi_dosen.php';
+});
+
 
 // ============================================================================
 // AUTH ROUTES

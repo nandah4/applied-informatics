@@ -48,7 +48,7 @@
                             Riset dan Produk
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Publikasi Dosen</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('publikasi-dosen') ?>">Publikasi Dosen</a></li>
                             <li><a class="dropdown-item" href="<?= base_url('produk-lab') ?>">Produk Lab</a></li>
                         </ul>
                     </li>
