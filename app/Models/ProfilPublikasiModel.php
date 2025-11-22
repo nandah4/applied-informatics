@@ -152,7 +152,7 @@ class ProfilPublikasiModel extends BaseModel
     public function getByDosenId($dosen_id)
     {
         try {
-            $query = "SELECT * FROM sp_get_profil_by_dosen_id(:dosen_id)";
+            $query = "SELECT id, dosen_id, tipe, url_profil FROM $this->table_name WHERE dosen_id = :dosen_id";
 
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':dosen_id', $dosen_id, PDO::PARAM_INT);

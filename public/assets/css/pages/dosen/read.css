@@ -429,6 +429,31 @@
     opacity: 1;
 }
 
+/* Add Option Button */
+.btn-add-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: var(--color-primary-500);
+    background: rgba(59, 130, 246, 0.1);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+}
+
+.btn-add-option:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.btn-add-option svg {
+    width: 16px;
+    height: 16px;
+}
+
 /* Brand-specific Styles */
 .sinta-card {
     border-color: #e6f4f4;

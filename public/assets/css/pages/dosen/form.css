@@ -573,8 +573,7 @@ textarea.form-control {
    ============================================================ */
 
 .profil-publikasi-row {
-    background: var(--color-neutral-50);
-    border: 1px solid var(--color-neutral-200);
+    border: 1px solid var(--color-primary-600);
     border-radius: 8px;
     transition: all 0.2s;
 }
@@ -593,6 +592,11 @@ textarea.form-control {
     font-size: 0.875rem;
 }
 
+.profil-publikasi-item {
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-primary-500);
+}
+
 .btn-remove-profil {
     display: flex;
     align-items: center;
@@ -600,7 +604,7 @@ textarea.form-control {
     width: 40px;
     height: 40px;
     border: 1px solid var(--color-danger-300);
-    background: white;
+    background: var(--color-danger-600);
     color: var(--color-danger-600);
     border-radius: 6px;
     cursor: pointer;

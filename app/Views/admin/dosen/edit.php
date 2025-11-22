@@ -233,18 +233,55 @@
 
                             <!-- Container untuk list profil publikasi -->
                             <div id="profilPublikasiContainer" class="col-12">
+                                <?php if (empty($listProfilPublikasi)): ?>
+                                    <p class="text-muted">Belum ada profil publikasi.</p>
+                                <?php else: ?>
+                                    <?php
+                                    $tipeLabels = [
+                                        'SINTA' => 'SINTA',
+                                        'SCOPUS' => 'Scopus',
+                                        'GOOGLE_SCHOLAR' => 'Google Scholar',
+                                        'ORCID' => 'ORCID',
+                                        'RESEARCHGATE' => 'ResearchGate'
+                                    ];
 
+                                    foreach ($listProfilPublikasi as $profil):
+                                        $label = $tipeLabels[$profil['tipe']] ?? $profil['tipe'];
+                                    ?>
+                                        <div class="profil-publikasi-item d-flex justify-content-between
+  align-items-center mb-2 p-3 rounded">
+                                            <div>
+                                                <strong><?= htmlspecialchars($label) ?></strong>
+                                                <br>
+                                                <a href="<?= htmlspecialchars($profil['url_profil']) ?>" target="_blank"
+                                                    class="text-truncate small">
+                                                    <?= htmlspecialchars($profil['url_profil']) ?>
+                                                </a>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    onclick="editProfilPublikasi(<?= $profil['id'] ?>, '<?= htmlspecialchars($profil['url_profil'], ENT_QUOTES) ?>', '<?= htmlspecialchars($label) ?>')">
+                                                    Edit
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                                    onclick="deleteProfilPublikasi(<?= $profil['id'] ?>)">
+                                                    Hapus
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
 
                             <!-- Button Tambah Profil -->
                             <div class="col-12 mb-3">
                                 <button type="button" class="btn-add-option" data-bs-toggle="modal" data-bs-target="#modalAddProfilPublikasi">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Tambah Profil Publikasi
-                            </button>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Tambah Profil Publikasi
+                                </button>
                             </div>
                         </div>
 
@@ -311,7 +348,7 @@
         </div>
     </div>
 
-     <!-- Modal Add Profil Publikasi -->
+    <!-- Modal Add Profil Publikasi -->
     <div class="modal fade" id="modalAddProfilPublikasi" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -322,24 +359,50 @@
                 <div class="modal-body">
                     <label for="newProfilPublikasi" class="form-label">Link Profil <span class="required">*</span></label>
                     <input type="text" class="form-control" id="newProfilPublikasi" placeholder="Masukkan link profil publikasi">
-                    <div id="linkPublikasiError" class="invalid-feedback">dasad</div>
+                    <div id="linkPublikasiError" class="invalid-feedback"></div>
 
-                    <label for="newJabatan" class="form-label mt-3">Tipe Profil Publikasi <span class="required">*</span></label>
-                    <select  id="tipeProfilPublikasi" class="form-select" aria-label="Default select example">
-                        <option selected>Pilih Profil Publikasi</option>
+                    <label for="tipeProfilPublikasi" class="form-label mt-3">Tipe Profil Publikasi <span class="required">*</span></label>
+                    <select id="tipeProfilPublikasi" class="form-select" aria-label="Default select example">
+                        <option selected value="">Pilih Profil Publikasi</option>
                         <option value="SINTA">SINTA</option>
                         <option value="SCOPUS">SCOPUS</option>
-                        <option value="GOOGLE_SCHOOLAR">GOOGLE SCHOOLAR</option>
+                        <option value="GOOGLE_SCHOLAR">GOOGLE SCHOLAR</option>
                         <option value="ORCID">ORCID</option>
                         <option value="RESEARCHGATE">RESEARCHGATE</option>
                     </select>
-
-                    <!-- <input type="text" class="form-control" id="newJabatan" placeholder="Masukkan nama jabatan baru">
-                    <div id="jabatanError" class="invalid-feedback"></div> -->
+                    <div id="selectedTipePublikasiError" class="invalid-feedback"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary-custom" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn-primary-custom" id="btn-add-new-profil-publikasi">Tambah</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Profil Publikasi -->
+    <div class="modal fade" id="modalEditProfilPublikasi" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profil Publikasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editProfilId">
+                    <div class="mb-3">
+                        <label class="form-label">Tipe Profil</label>
+                        <input type="text" class="form-control" id="editProfilTipe" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProfilUrl" class="form-label">URL Profil <span class="required">*</span></label>
+                        <input type="url" class="form-control" id="editProfilUrl" placeholder="https://...">
+                        <div id="editProfilUrlError" class="invalid-feedback"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary-custom" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn-primary-custom" id="btn-update-profil-publikasi">Update</button>
                 </div>
             </div>
         </div>
@@ -360,9 +423,6 @@
     <!-- Helper Scripts (Must load before edit.js) -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
-
-    <!-- Profil Publikasi Component (Must load before edit.js) -->
-    <script src="<?= asset_url('js/components/profilPublikasi.js') ?>"></script>
 
     <!-- Setup Edit Mode Data -->
     <script>
