@@ -19,6 +19,181 @@
 (function () {
   "use strict";
 
+  const BASE_URL =
+    $('meta[name="base-url"]').attr("content") || "/applied-informatics";
+
+  // ============================================================
+  // MODUL JABATAN DROPDOWN (Single Selection)
+  // ============================================================
+
+  const JabatanDropdown = {
+    init: function () {
+      const $dropdown = $("#customDropdownJabatan");
+      const $trigger = $("#jabatanTrigger");
+      const $menu = $("#jabatanMenu");
+      const $text = $("#jabatanText");
+      const $hidden = $("#jabatan");
+
+      if ($dropdown.length === 0 || $trigger.length === 0) return;
+
+      // Toggle dropdown
+      $trigger.on("click", (e) => {
+        e.stopPropagation();
+        $dropdown.toggleClass("active");
+      });
+
+      // Tutup saat klik di luar
+      $(document).on("click", (e) => {
+        if (!$dropdown.is(e.target) && $dropdown.has(e.target).length === 0) {
+          $dropdown.removeClass("active");
+        }
+      });
+
+      // Pilih item
+      $menu.on("click", ".custom-dropdown-item", (e) => {
+        if (!$(e.target).closest(".item-delete-btn").length) {
+          this.handleSelect(e, $menu, $hidden, $text, $dropdown);
+        }
+      });
+
+      // Hapus jabatan
+      $menu.on("click", ".item-delete-btn", (e) => {
+        e.stopPropagation();
+        this.handleDelete(e, $hidden, $text, $menu);
+      });
+    },
+
+    handleSelect: function (e, $menu, $hidden, $text, $dropdown) {
+      const $item = $(e.target).closest(".custom-dropdown-item");
+      const value = $item.attr("data-value");
+      const textContent = $item.find(".item-text").text();
+
+      $hidden.val(value);
+      $text.text(textContent);
+
+      $menu.find(".custom-dropdown-item").removeClass("selected");
+      $item.addClass("selected");
+
+      $dropdown.removeClass("active");
+    },
+
+    handleDelete: function (e, $hidden, $text, $menu) {
+      const $btn = $(e.currentTarget);
+      const id = $btn.attr("data-id");
+      const name = $btn.attr("data-name");
+
+      if (!confirm(`Hapus jabatan "${name}"?`)) return;
+
+      $btn.prop("disabled", true);
+
+      jQueryHelpers.makeAjaxRequest({
+        url: `${BASE_URL}/admin/dosen/delete-jabatan`,
+        method: "POST",
+        data: { id: id },
+        onSuccess: (response) => {
+          if (response.success) {
+            const $item = $btn.closest(".custom-dropdown-item");
+            $item.remove();
+
+            if ($menu.find(".custom-dropdown-item").length === 0) {
+              $menu.html(
+                '<div class="custom-dropdown-empty">Belum ada jabatan</div>'
+              );
+            }
+          } else {
+            alert(response.message || "Gagal menghapus");
+            $btn.prop("disabled", false);
+          }
+        },
+        onError: (msg) => {
+          alert("Error: " + msg);
+          $btn.prop("disabled", false);
+        },
+      });
+    },
+
+    addItem: function (data) {
+      const $menu = $("#jabatanMenu");
+      const $empty = $menu.find(".custom-dropdown-empty");
+
+      if ($empty.length) $empty.remove();
+
+      const $item = $("<div>", {
+        class: "custom-dropdown-item",
+        "data-value": data.id,
+        "data-id": data.id,
+      }).html(`
+        <span class="item-text">${data.nama_jabatan}</span>
+        <button type="button" class="item-delete-btn" data-id="${data.id}" data-name="${data.nama_jabatan}" title="Hapus">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      `);
+
+      $menu.append($item);
+    },
+  };
+
+  // ============================================================
+  // MODUL TAMBAH JABATAN
+  // ============================================================
+
+  const AddJabatanModule = {
+    init: function () {
+      $("#btn-add-new-jabatan").on("click", (e) => {
+        e.preventDefault();
+        this.handleSubmit();
+      });
+    },
+
+    handleSubmit: function () {
+      const jabatan = $("#newJabatan").val().trim();
+
+      const validation = validationHelpers.validateName(jabatan, 2, 255);
+      if (!validation.valid) {
+        $("#jabatanError").text(validation.message).show();
+        return;
+      }
+
+      $("#jabatanError").hide();
+      const btnState = jQueryHelpers.disableButton(
+        "btn-add-new-jabatan",
+        "Menyimpan..."
+      );
+
+      jQueryHelpers.makeAjaxRequest({
+        url: `${BASE_URL}/admin/dosen/create-jabatan`,
+        method: "POST",
+        data: { jabatan: jabatan },
+        onSuccess: (response) => {
+          if (response.success) {
+            JabatanDropdown.addItem(response.data);
+            $("#newJabatan").val("");
+            bootstrap.Modal.getInstance($("#modalAddJabatan")[0]).hide();
+            jQueryHelpers.showAlert(
+              "Jabatan baru berhasil ditambahkan!",
+              "success"
+            );
+          } else {
+            $("#jabatanError")
+              .text(response.message || "Gagal")
+              .show();
+          }
+        },
+        onError: (msg) => {
+          $("#jabatanError")
+            .text("Error: " + msg)
+            .show();
+        },
+        onComplete: () => {
+          btnState.enable();
+        },
+      });
+    },
+  };
+
   // ============================================================
   // MODUL KEAHLIAN DROPDOWN (Multiple Selection - Additive)
   // ============================================================
@@ -30,57 +205,83 @@
      * Inisialisasi dropdown untuk edit mode
      */
     init: function () {
-      const $dropdown = $('#customDropdownKeahlian');
-      const $trigger = $('#keahlianTrigger');
-      const $menu = $('#keahlianMenu');
-      const $textElement = $('#keahlianText');
-      const $hiddenInput = $('#keahlian');
-      const $badgesContainer = $('#selectedKeahlianBadges');
+      const $dropdown = $("#customDropdownKeahlian");
+      const $trigger = $("#keahlianTrigger");
+      const $menu = $("#keahlianMenu");
+      const $textElement = $("#keahlianText");
+      const $hiddenInput = $("#keahlian");
+      const $badgesContainer = $("#selectedKeahlianBadges");
 
-      if ($dropdown.length === 0 || $trigger.length === 0 || $menu.length === 0) {
-        console.warn('Keahlian dropdown elements not found');
+      if (
+        $dropdown.length === 0 ||
+        $trigger.length === 0 ||
+        $menu.length === 0
+      ) {
+        console.warn("Keahlian dropdown elements not found");
         return;
       }
 
       // Toggle dropdown
-      $trigger.on('click', (e) => {
+      $trigger.on("click", (e) => {
         e.stopPropagation();
-        $dropdown.toggleClass('active');
+        $dropdown.toggleClass("active");
       });
 
       // Tutup dropdown saat klik di luar
-      $(document).on('click', (e) => {
+      $(document).on("click", (e) => {
         if (!$dropdown.is(e.target) && $dropdown.has(e.target).length === 0) {
-          $dropdown.removeClass('active');
+          $dropdown.removeClass("active");
         }
       });
 
       // Handle klik item - ADDITIVE ONLY
-      $menu.on('click', (e) => {
-        this.handleItemClick(e, $menu, $hiddenInput, $textElement, $badgesContainer);
+      $menu.on("click", (e) => {
+        this.handleItemClick(
+          e,
+          $menu,
+          $hiddenInput,
+          $textElement,
+          $badgesContainer
+        );
       });
 
       // Handle hapus badge
-      $badgesContainer.on('click', (e) => {
-        this.handleBadgeRemove(e, $menu, $hiddenInput, $textElement, $badgesContainer);
+      $badgesContainer.on("click", (e) => {
+        this.handleBadgeRemove(
+          e,
+          $menu,
+          $hiddenInput,
+          $textElement,
+          $badgesContainer
+        );
       });
 
-      console.log('Keahlian dropdown initialized');
+      console.log("Keahlian dropdown initialized");
     },
 
     /**
      * Handle klik item - ADDITIVE ONLY
      */
-    handleItemClick: function (e, $menu, $hiddenInput, $textElement, $badgesContainer) {
-      const $item = $(e.target).closest('.custom-dropdown-item');
+    handleItemClick: function (
+      e,
+      $menu,
+      $hiddenInput,
+      $textElement,
+      $badgesContainer
+    ) {
+      const $item = $(e.target).closest(".custom-dropdown-item");
 
       // Hanya proses jika klik pada item (bukan tombol delete) dan item belum dipilih
-      if ($item.length > 0 && $(e.target).closest('.item-delete-btn').length === 0) {
-        const value = $item.attr('data-value');
-        const text = $item.find('.item-text').text();
+      if (
+        $item.length > 0 &&
+        $(e.target).closest(".item-delete-btn").length === 0
+      ) {
+        const value = $item.attr("data-value");
+        const text = $item.find(".item-text").text();
 
         // Cek apakah item sudah dipilih
-        const alreadySelected = this.selectedItems.findIndex(k => k.id === value) !== -1;
+        const alreadySelected =
+          this.selectedItems.findIndex((k) => k.id === value) !== -1;
 
         // Jika sudah dipilih, tidak perlu melakukan apa-apa
         if (alreadySelected) {
@@ -91,7 +292,7 @@
         this.selectedItems.push({ id: value, name: text });
 
         // Mark item sebagai selected dan disable
-        $item.addClass('selected disabled');
+        $item.addClass("selected disabled");
 
         // Update display
         this.updateDisplay($hiddenInput, $textElement, $badgesContainer);
@@ -101,27 +302,35 @@
     /**
      * Handle hapus badge - SATU-SATUNYA cara untuk unselect keahlian
      */
-    handleBadgeRemove: function (e, $menu, $hiddenInput, $textElement, $badgesContainer) {
-      const $removeBtn = $(e.target).closest('.badge-remove-btn');
+    handleBadgeRemove: function (
+      e,
+      $menu,
+      $hiddenInput,
+      $textElement,
+      $badgesContainer
+    ) {
+      const $removeBtn = $(e.target).closest(".badge-remove-btn");
 
       if ($removeBtn.length > 0) {
         e.stopPropagation();
 
-        const id = $removeBtn.attr('data-id');
+        const id = $removeBtn.attr("data-id");
 
         // Hapus dari selectedItems
-        const index = this.selectedItems.findIndex(k => k.id === id);
+        const index = this.selectedItems.findIndex((k) => k.id === id);
         if (index !== -1) {
           this.selectedItems.splice(index, 1);
         }
 
         // Hapus badge dari DOM
-        $removeBtn.closest('.selected-badge').remove();
+        $removeBtn.closest(".selected-badge").remove();
 
         // Re-enable item di dropdown
-        const $menuItem = $menu.find(`.custom-dropdown-item[data-value="${id}"]`);
+        const $menuItem = $menu.find(
+          `.custom-dropdown-item[data-value="${id}"]`
+        );
         if ($menuItem.length > 0) {
-          $menuItem.removeClass('selected disabled');
+          $menuItem.removeClass("selected disabled");
         }
 
         // Update display
@@ -132,50 +341,70 @@
     /**
      * Handle delete keahlian dari database (tombol trash di dropdown)
      */
-    handleDeleteFromDatabase: function (id, name, $deleteBtn, $hiddenInput, $textElement, $badgesContainer, $menu) {
-      if (confirm(`Apakah Anda yakin ingin menghapus keahlian "${name}" dari database?\n\nCatatan: Ini akan menghapus keahlian dari sistem, bukan hanya dari dosen ini.`)) {
-        $deleteBtn.prop('disabled', true);
+    handleDeleteFromDatabase: function (
+      id,
+      name,
+      $deleteBtn,
+      $hiddenInput,
+      $textElement,
+      $badgesContainer,
+      $menu
+    ) {
+      if (
+        confirm(
+          `Apakah Anda yakin ingin menghapus keahlian "${name}" dari database?\n\nCatatan: Ini akan menghapus keahlian dari sistem, bukan hanya dari dosen ini.`
+        )
+      ) {
+        $deleteBtn.prop("disabled", true);
 
         jQueryHelpers.makeAjaxRequest({
-          url: '/applied-informatics/dosen/delete-keahlian',
-          method: 'POST',
+          url: `${BASE_URL}/admin/dosen/delete-keahlian`,
+          method: "POST",
           data: { id: id },
           onSuccess: (response) => {
             if (response.success) {
               // Hapus dari selectedItems jika sedang dipilih
-              const index = this.selectedItems.findIndex(k => k.id === id);
+              const index = this.selectedItems.findIndex((k) => k.id === id);
               if (index !== -1) {
                 this.selectedItems.splice(index, 1);
               }
 
               // Hapus badge jika ada
-              const $badge = $badgesContainer.find(`.badge-remove-btn[data-id="${id}"]`);
+              const $badge = $badgesContainer.find(
+                `.badge-remove-btn[data-id="${id}"]`
+              );
               if ($badge.length > 0) {
-                $badge.closest('.selected-badge').remove();
+                $badge.closest(".selected-badge").remove();
               }
 
               // Hapus item dari dropdown
-              const $item = $deleteBtn.closest('.custom-dropdown-item');
+              const $item = $deleteBtn.closest(".custom-dropdown-item");
               $item.remove();
 
               // Tampilkan empty state jika tidak ada item tersisa
-              if ($menu.find('.custom-dropdown-item').length === 0) {
-                $menu.html('<div class="custom-dropdown-empty">Belum ada keahlian</div>');
+              if ($menu.find(".custom-dropdown-item").length === 0) {
+                $menu.html(
+                  '<div class="custom-dropdown-empty">Belum ada keahlian</div>'
+                );
               }
 
               // Update display
               this.updateDisplay($hiddenInput, $textElement, $badgesContainer);
 
-              jQueryHelpers.showAlert('Keahlian berhasil dihapus dari database', 'success', 3000);
+              jQueryHelpers.showAlert(
+                "Keahlian berhasil dihapus dari database",
+                "success",
+                3000
+              );
             } else {
-              alert(response.message || 'Gagal menghapus keahlian');
-              $deleteBtn.prop('disabled', false);
+              alert(response.message || "Gagal menghapus keahlian");
+              $deleteBtn.prop("disabled", false);
             }
           },
           onError: (errorMessage) => {
-            alert('Error menghapus keahlian: ' + errorMessage);
-            $deleteBtn.prop('disabled', false);
-          }
+            alert("Error menghapus keahlian: " + errorMessage);
+            $deleteBtn.prop("disabled", false);
+          },
         });
       }
     },
@@ -185,15 +414,8 @@
      */
     updateDisplay: function ($hiddenInput, $textElement, $badgesContainer) {
       // Update hidden input
-      const ids = this.selectedItems.map(k => k.id);
-      $hiddenInput.val(ids.join(','));
-
-      // Update text
-      if (this.selectedItems.length === 0) {
-        $textElement.text('Pilih Keahlian').addClass('placeholder');
-      } else {
-        $textElement.text(`${this.selectedItems.length} keahlian dipilih`).removeClass('placeholder');
-      }
+      const ids = this.selectedItems.map((k) => k.id);
+      $hiddenInput.val(ids.join(","));
 
       // Update badges
       this.updateBadges($badgesContainer);
@@ -205,8 +427,8 @@
     updateBadges: function ($badgesContainer) {
       $badgesContainer.empty();
 
-      this.selectedItems.forEach(item => {
-        const $badge = $('<div>', { class: 'selected-badge' }).html(`
+      this.selectedItems.forEach((item) => {
+        const $badge = $("<div>", { class: "selected-badge" }).html(`
           <span>${item.name}</span>
           <button type="button" class="badge-remove-btn" data-id="${item.id}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -228,32 +450,34 @@
         return;
       }
 
-      const $menu = $('#keahlianMenu');
-      const $hiddenInput = $('#keahlian');
-      const $textElement = $('#keahlianText');
-      const $badgesContainer = $('#selectedKeahlianBadges');
+      const $menu = $("#keahlianMenu");
+      const $hiddenInput = $("#keahlian");
+      const $textElement = $("#keahlianText");
+      const $badgesContainer = $("#selectedKeahlianBadges");
 
       // Clear current selection
       this.selectedItems = [];
 
       // Populate keahlian dari data
-      keahlianList.forEach(k => {
+      keahlianList.forEach((k) => {
         this.selectedItems.push({
           id: k.id.toString(),
-          name: k.keahlian
+          name: k.keahlian,
         });
 
         // Mark dropdown item as selected and disabled
-        const $menuItem = $menu.find(`.custom-dropdown-item[data-value="${k.id}"]`);
+        const $menuItem = $menu.find(
+          `.custom-dropdown-item[data-value="${k.id}"]`
+        );
         if ($menuItem.length > 0) {
-          $menuItem.addClass('selected disabled');
+          $menuItem.addClass("selected disabled");
         }
       });
 
       // Update display
       this.updateDisplay($hiddenInput, $textElement, $badgesContainer);
 
-      console.log('Preselected keahlian:', this.selectedItems);
+      console.log("Preselected keahlian:", this.selectedItems);
     },
 
     /**
@@ -261,8 +485,8 @@
      * @param {Object} data - {id, keahlian}
      */
     addItemToDropdown: function (data) {
-      const $menu = $('#keahlianMenu');
-      const $emptyState = $menu.find('.custom-dropdown-empty');
+      const $menu = $("#keahlianMenu");
+      const $emptyState = $menu.find(".custom-dropdown-empty");
 
       // Hapus empty state jika ada
       if ($emptyState.length > 0) {
@@ -270,13 +494,13 @@
       }
 
       // Buat item baru
-      const $newItem = $('<div>', {
-        class: 'custom-dropdown-item',
-        'data-value': data.id,
-        'data-id': data.id
+      const $newItem = $("<div>", {
+        class: "custom-dropdown-item",
+        "data-value": data.id,
+        "data-id": data.id,
       }).html(`
-        <span class="item-text">${data.keahlian}</span>
-        <button type="button" class="item-delete-btn" data-id="${data.id}" data-name="${data.keahlian}" title="Hapus dari database">
+        <span class="item-text">${data.nama_keahlian}</span>
+        <button type="button" class="item-delete-btn" data-id="${data.id}" data-name="${data.nama_keahlian}" title="Hapus dari database">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -285,8 +509,409 @@
       `);
       $menu.append($newItem);
 
-      console.log('Added new keahlian to dropdown:', data);
-    }
+      console.log("Added new keahlian to dropdown:", data);
+    },
+  };
+
+  // ============================================================
+  // MODUL FILE UPLOAD
+  // ============================================================
+
+  const FileUploadModule = {
+    init: function () {
+      const $wrapper = $("#fileUploadWrapper");
+      const $input = $("#foto_profil");
+      const $preview = $("#imagePreview");
+      const $previewImg = $("#previewImg");
+
+      if ($wrapper.length === 0 || $input.length === 0) return;
+
+      // Klik untuk upload
+      $wrapper.on("click", () => {
+        $input.trigger("click");
+      });
+
+      // Event perubahan file
+      $input.on("change", (e) => {
+        this.handleFileSelect(e.target.files[0], $previewImg, $preview);
+      });
+
+      // Drag and drop
+      this.setupDragAndDrop($wrapper, $input);
+    },
+
+    handleFileSelect: function (file, $previewImg, $preview) {
+      if (!file) return;
+
+      // Validasi ukuran (2MB)
+      const sizeValidation = validationHelpers.validateFileSize(file, 2);
+      if (!sizeValidation.valid) {
+        alert(sizeValidation.message);
+        $("#foto_profil").val("");
+        return;
+      }
+
+      // Validasi tipe
+      const typeValidation = validationHelpers.validateFileType(file, [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+      ]);
+      if (!typeValidation.valid) {
+        alert(typeValidation.message);
+        $("#foto_profil").val("");
+        return;
+      }
+
+      // Preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        $previewImg.attr("src", e.target.result);
+        $preview.show();
+      };
+      reader.readAsDataURL(file);
+    },
+
+    setupDragAndDrop: function ($wrapper, $input) {
+      $wrapper.on("dragover", (e) => {
+        e.preventDefault();
+        $wrapper.addClass("dragover");
+      });
+
+      $wrapper.on("dragleave", () => {
+        $wrapper.removeClass("dragover");
+      });
+
+      $wrapper.on("drop", (e) => {
+        e.preventDefault();
+        $wrapper.removeClass("dragover");
+
+        const files = e.originalEvent.dataTransfer.files;
+        if (files.length > 0) {
+          $input[0].files = files;
+          $input.trigger("change");
+        }
+      });
+    },
+  };
+
+  // ============================================================
+  // MODUL KEAHLIAN DROPDOWN (Multiple Selection - Additive)
+  // ============================================================
+
+  const ProfilPublikasiModule = {
+    selectedItems: [], // Array of {id, name}
+
+    /**
+     * Inisialisasi dropdown untuk edit mode
+     */
+    init: function () {
+      const $dropdown = $("#customDropdownKeahlian");
+      const $trigger = $("#keahlianTrigger");
+      const $menu = $("#keahlianMenu");
+      const $textElement = $("#keahlianText");
+      const $hiddenInput = $("#keahlian");
+      const $badgesContainer = $("#selectedKeahlianBadges");
+
+      if (
+        $dropdown.length === 0 ||
+        $trigger.length === 0 ||
+        $menu.length === 0
+      ) {
+        console.warn("Keahlian dropdown elements not found");
+        return;
+      }
+
+      // Toggle dropdown
+      $trigger.on("click", (e) => {
+        e.stopPropagation();
+        $dropdown.toggleClass("active");
+      });
+
+      // Tutup dropdown saat klik di luar
+      $(document).on("click", (e) => {
+        if (!$dropdown.is(e.target) && $dropdown.has(e.target).length === 0) {
+          $dropdown.removeClass("active");
+        }
+      });
+
+      // Handle klik item - ADDITIVE ONLY
+      $menu.on("click", (e) => {
+        this.handleItemClick(
+          e,
+          $menu,
+          $hiddenInput,
+          $textElement,
+          $badgesContainer
+        );
+      });
+
+      // Handle hapus badge
+      $badgesContainer.on("click", (e) => {
+        this.handleBadgeRemove(
+          e,
+          $menu,
+          $hiddenInput,
+          $textElement,
+          $badgesContainer
+        );
+      });
+
+      console.log("Keahlian dropdown initialized");
+    },
+
+    /**
+     * Handle klik item - ADDITIVE ONLY
+     */
+    handleItemClick: function (
+      e,
+      $menu,
+      $hiddenInput,
+      $textElement,
+      $badgesContainer
+    ) {
+      const $item = $(e.target).closest(".custom-dropdown-item");
+
+      // Hanya proses jika klik pada item (bukan tombol delete) dan item belum dipilih
+      if (
+        $item.length > 0 &&
+        $(e.target).closest(".item-delete-btn").length === 0
+      ) {
+        const value = $item.attr("data-value");
+        const text = $item.find(".item-text").text();
+
+        // Cek apakah item sudah dipilih
+        const alreadySelected =
+          this.selectedItems.findIndex((k) => k.id === value) !== -1;
+
+        // Jika sudah dipilih, tidak perlu melakukan apa-apa
+        if (alreadySelected) {
+          return;
+        }
+
+        // Tambah ke selection (ADDITIVE)
+        this.selectedItems.push({ id: value, name: text });
+
+        // Mark item sebagai selected dan disable
+        $item.addClass("selected disabled");
+
+        // Update display
+        this.updateDisplay($hiddenInput, $textElement, $badgesContainer);
+      }
+    },
+
+    /**
+     * Handle hapus badge - SATU-SATUNYA cara untuk unselect keahlian
+     */
+    handleBadgeRemove: function (
+      e,
+      $menu,
+      $hiddenInput,
+      $textElement,
+      $badgesContainer
+    ) {
+      const $removeBtn = $(e.target).closest(".badge-remove-btn");
+
+      if ($removeBtn.length > 0) {
+        e.stopPropagation();
+
+        const id = $removeBtn.attr("data-id");
+
+        // Hapus dari selectedItems
+        const index = this.selectedItems.findIndex((k) => k.id === id);
+        if (index !== -1) {
+          this.selectedItems.splice(index, 1);
+        }
+
+        // Hapus badge dari DOM
+        $removeBtn.closest(".selected-badge").remove();
+
+        // Re-enable item di dropdown
+        const $menuItem = $menu.find(
+          `.custom-dropdown-item[data-value="${id}"]`
+        );
+        if ($menuItem.length > 0) {
+          $menuItem.removeClass("selected disabled");
+        }
+
+        // Update display
+        this.updateDisplay($hiddenInput, $textElement, $badgesContainer);
+      }
+    },
+
+    /**
+     * Handle delete keahlian dari database (tombol trash di dropdown)
+     */
+    handleDeleteFromDatabase: function (
+      id,
+      name,
+      $deleteBtn,
+      $hiddenInput,
+      $textElement,
+      $badgesContainer,
+      $menu
+    ) {
+      if (
+        confirm(
+          `Apakah Anda yakin ingin menghapus keahlian "${name}" dari database?\n\nCatatan: Ini akan menghapus keahlian dari sistem, bukan hanya dari dosen ini.`
+        )
+      ) {
+        $deleteBtn.prop("disabled", true);
+
+        jQueryHelpers.makeAjaxRequest({
+          url: `${BASE_URL}/admin/dosen/delete-keahlian`,
+          method: "POST",
+          data: { id: id },
+          onSuccess: (response) => {
+            if (response.success) {
+              // Hapus dari selectedItems jika sedang dipilih
+              const index = this.selectedItems.findIndex((k) => k.id === id);
+              if (index !== -1) {
+                this.selectedItems.splice(index, 1);
+              }
+
+              // Hapus badge jika ada
+              const $badge = $badgesContainer.find(
+                `.badge-remove-btn[data-id="${id}"]`
+              );
+              if ($badge.length > 0) {
+                $badge.closest(".selected-badge").remove();
+              }
+
+              // Hapus item dari dropdown
+              const $item = $deleteBtn.closest(".custom-dropdown-item");
+              $item.remove();
+
+              // Tampilkan empty state jika tidak ada item tersisa
+              if ($menu.find(".custom-dropdown-item").length === 0) {
+                $menu.html(
+                  '<div class="custom-dropdown-empty">Belum ada keahlian</div>'
+                );
+              }
+
+              // Update display
+              this.updateDisplay($hiddenInput, $textElement, $badgesContainer);
+
+              jQueryHelpers.showAlert(
+                "Keahlian berhasil dihapus dari database",
+                "success",
+                3000
+              );
+            } else {
+              alert(response.message || "Gagal menghapus keahlian");
+              $deleteBtn.prop("disabled", false);
+            }
+          },
+          onError: (errorMessage) => {
+            alert("Error menghapus keahlian: " + errorMessage);
+            $deleteBtn.prop("disabled", false);
+          },
+        });
+      }
+    },
+
+    /**
+     * Update display (badges, hidden input, text)
+     */
+    updateDisplay: function ($hiddenInput, $textElement, $badgesContainer) {
+      // Update hidden input
+      const ids = this.selectedItems.map((k) => k.id);
+      $hiddenInput.val(ids.join(","));
+
+      // Update badges
+      this.updateBadges($badgesContainer);
+    },
+
+    /**
+     * Update badges display
+     */
+    updateBadges: function ($badgesContainer) {
+      $badgesContainer.empty();
+
+      this.selectedItems.forEach((item) => {
+        const $badge = $("<div>", { class: "selected-badge" }).html(`
+          <span>${item.name}</span>
+          <button type="button" class="badge-remove-btn" data-id="${item.id}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        `);
+        $badgesContainer.append($badge);
+      });
+    },
+
+    /**
+     * Pre-select keahlian dari data dosen
+     * @param {Array} keahlianList - Array of {id, keahlian}
+     */
+    preselectKeahlian: function (keahlianList) {
+      if (!keahlianList || keahlianList.length === 0) {
+        return;
+      }
+
+      const $menu = $("#keahlianMenu");
+      const $hiddenInput = $("#keahlian");
+      const $textElement = $("#keahlianText");
+      const $badgesContainer = $("#selectedKeahlianBadges");
+
+      // Clear current selection
+      this.selectedItems = [];
+
+      // Populate keahlian dari data
+      keahlianList.forEach((k) => {
+        this.selectedItems.push({
+          id: k.id.toString(),
+          name: k.keahlian,
+        });
+
+        // Mark dropdown item as selected and disabled
+        const $menuItem = $menu.find(
+          `.custom-dropdown-item[data-value="${k.id}"]`
+        );
+        if ($menuItem.length > 0) {
+          $menuItem.addClass("selected disabled");
+        }
+      });
+
+      // Update display
+      this.updateDisplay($hiddenInput, $textElement, $badgesContainer);
+
+      console.log("Preselected keahlian:", this.selectedItems);
+    },
+
+    /**
+     * Tambah keahlian baru ke dropdown (dari modal)
+     * @param {Object} data - {id, keahlian}
+     */
+    addItemToDropdown: function (data) {
+      const $menu = $("#keahlianMenu");
+      const $emptyState = $menu.find(".custom-dropdown-empty");
+
+      // Hapus empty state jika ada
+      if ($emptyState.length > 0) {
+        $emptyState.remove();
+      }
+
+      // Buat item baru
+      const $newItem = $("<div>", {
+        class: "custom-dropdown-item",
+        "data-value": data.id,
+        "data-id": data.id,
+      }).html(`
+        <span class="item-text">${data.nama_keahlian}</span>
+        <button type="button" class="item-delete-btn" data-id="${data.id}" data-name="${data.nama_keahlian}" title="Hapus dari database">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      `);
+      $menu.append($newItem);
+
+      console.log("Added new keahlian to dropdown:", data);
+    },
   };
 
   // ============================================================
@@ -298,14 +923,18 @@
      * Inisialisasi edit mode
      */
     init: function () {
+      JabatanDropdown.init();
+      AddJabatanModule.init();
       KeahlianDropdown.init();
+      FileUploadModule.init();
       this.preselectJabatan();
       this.preselectKeahlian();
       this.showExistingPhoto();
       this.loadProfilPublikasi();
       this.setupFormSubmit();
-      this.setupModalHandlers();
+      this.setupModalAddKeahlian();
       this.setupDeleteKeahlianHandlers();
+      this.setUpModalAddProfilPublikasi();
     },
 
     /**
@@ -315,25 +944,49 @@
       const data = window.DOSEN_DATA;
 
       if (data.jabatan_id && data.jabatan_name) {
-        $("#jabatan").val(data.jabatan_id);
-        $("#jabatanText").text(data.jabatan_name).removeClass("placeholder");
+        $("#jabatanText").text(data.jabatan_name);
 
         // Mark dropdown item as selected
-        $(`#jabatanMenu .custom-dropdown-item[data-value="${data.jabatan_id}"]`).addClass("selected");
+        $(
+          `#jabatanMenu .custom-dropdown-item[data-value="${data.jabatan_id}"]`
+        ).addClass("selected");
       }
     },
 
     /**
      * Pre-select keahlian berdasarkan data dosen
+     * Mengkonversi keahlian_list (string) menjadi array untuk dropdown
      */
     preselectKeahlian: function () {
       const data = window.DOSEN_DATA;
 
-      if (!data.keahlian || data.keahlian.length === 0) {
+      if (!data.keahlian_list || data.keahlian_list.trim() === "") {
         return;
       }
 
-      KeahlianDropdown.preselectKeahlian(data.keahlian);
+      // Parse keahlian_list string menjadi array (lowercase untuk matching)
+      const keahlianNames = data.keahlian_list
+        .split(", ")
+        .map((name) => name.trim().toLowerCase());
+      const $menu = $("#keahlianMenu");
+      const keahlianArray = [];
+
+      // Match nama keahlian dengan item di dropdown untuk mendapatkan ID
+      $menu.find(".custom-dropdown-item").each(function () {
+        const $item = $(this);
+        const itemText = $item.find(".item-text").text().trim();
+
+        if (keahlianNames.includes(itemText.toLowerCase())) {
+          keahlianArray.push({
+            id: $item.attr("data-value"),
+            keahlian: itemText,
+          });
+        }
+      });
+
+      if (keahlianArray.length > 0) {
+        KeahlianDropdown.preselectKeahlian(keahlianArray);
+      }
     },
 
     /**
@@ -377,12 +1030,10 @@
       const self = this;
 
       // Override form submit untuk edit mode
-      $("#formDosen")
-        .off("submit")
-        .on("submit", function (e) {
-          e.preventDefault();
-          self.handleFormSubmit();
-        });
+      $("#btn-submit-update-dosen").on("click", function (e) {
+        e.preventDefault();
+        self.handleFormSubmit();
+      });
     },
 
     /**
@@ -417,19 +1068,16 @@
 
       // Submit AJAX
       jQueryHelpers.makeAjaxRequest({
-        url: "/applied-informatics/dosen/update",
+        url: `${BASE_URL}/admin/dosen/update`,
         method: "POST",
         data: submitData,
         processData: false,
         contentType: false,
         onSuccess: (response) => {
           if (response.success) {
-            jQueryHelpers.showAlert(
-              "Data dosen berhasil diupdate!",
-              "success"
-            );
+            jQueryHelpers.showAlert("Data dosen berhasil diupdate!", "success");
             setTimeout(() => {
-              window.location.href = "/applied-informatics/dosen";
+              window.location.href = `${BASE_URL}/admin/dosen`;
             }, 1500);
           } else {
             jQueryHelpers.showAlert(
@@ -459,7 +1107,7 @@
         jabatan_id: $("#jabatan").val().trim(),
         keahlian_ids: $("#keahlian").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
-        foto_profil: $("#photo_profile")[0].files[0],
+        foto_profil: $("#foto_profil")[0]?.files[0] || null,
       };
     },
 
@@ -537,8 +1185,8 @@
         );
         if (!sizeValidation.valid) {
           errors.push({
-            fieldId: "photo_profile",
-            errorId: "photoError",
+            fieldId: "foto_profil",
+            errorId: "fotoProfilError",
             message: sizeValidation.message,
           });
         }
@@ -549,8 +1197,8 @@
         );
         if (!typeValidation.valid) {
           errors.push({
-            fieldId: "photo_profile",
-            errorId: "photoError",
+            fieldId: "foto_profil",
+            errorId: "fotoProfilError",
             message: typeValidation.message,
           });
         }
@@ -564,6 +1212,13 @@
      */
     prepareSubmitData: function (data) {
       const formData = new FormData();
+
+      // Tambahkan CSRF token
+      const csrfToken = $('input[name="csrf_token"]').val();
+      if (csrfToken) {
+        formData.append("csrf_token", csrfToken);
+      }
+
       formData.append("id", data.id);
       formData.append("full_name", data.full_name);
       formData.append("email", data.email);
@@ -588,52 +1243,56 @@
     /**
      * Setup handlers untuk modal Tambah Keahlian Baru
      */
-    setupModalHandlers: function () {
-      const $btnAddKeahlian = $('#btn-add-new-keahlian');
-      const $newKeahlianInput = $('#newKeahlian');
-      const $modalKeahlian = $('#modalAddKeahlian');
+    setupModalAddKeahlian: function () {
+      const $btnAddKeahlian = $("#btn-add-new-keahlian");
+      const $newKeahlianInput = $("#newKeahlian");
+      const $modalKeahlian = $("#modalAddKeahlian");
 
       if ($btnAddKeahlian.length > 0 && $newKeahlianInput.length > 0) {
-        $btnAddKeahlian.on('click', () => {
+        $btnAddKeahlian.on("click", () => {
           const keahlianName = $newKeahlianInput.val().trim();
 
           if (!keahlianName) {
-            alert('Nama keahlian tidak boleh kosong');
+            alert("Nama keahlian tidak boleh kosong");
             return;
           }
 
           // Disable button
-          $btnAddKeahlian.prop('disabled', true).text('Menyimpan...');
+          $btnAddKeahlian.prop("disabled", true).text("Menyimpan...");
 
           // Submit ke server
           jQueryHelpers.makeAjaxRequest({
-            url: '/applied-informatics/dosen/create-keahlian',
-            method: 'POST',
+            url: `${BASE_URL}/admin/dosen/create-keahlian`,
+            method: "POST",
             data: { keahlian: keahlianName },
             onSuccess: (response) => {
               if (response.success) {
                 // Tambahkan ke dropdown
                 KeahlianDropdown.addItemToDropdown({
                   id: response.data.id,
-                  keahlian: response.data.keahlian
+                  keahlian: response.data.keahlian,
                 });
 
                 // Reset input dan tutup modal
-                $newKeahlianInput.val('');
+                $newKeahlianInput.val("");
                 bootstrap.Modal.getInstance($modalKeahlian[0]).hide();
 
-                jQueryHelpers.showAlert('Keahlian baru berhasil ditambahkan', 'success', 3000);
+                jQueryHelpers.showAlert(
+                  "Keahlian baru berhasil ditambahkan",
+                  "success",
+                  3000
+                );
               } else {
-                alert(response.message || 'Gagal menambahkan keahlian');
+                alert(response.message || "Gagal menambahkan keahlian");
               }
 
               // Re-enable button
-              $btnAddKeahlian.prop('disabled', false).text('Tambah');
+              $btnAddKeahlian.prop("disabled", false).text("Tambah");
             },
             onError: (errorMessage) => {
-              alert('Error: ' + errorMessage);
-              $btnAddKeahlian.prop('disabled', false).text('Tambah');
-            }
+              alert("Error: " + errorMessage);
+              $btnAddKeahlian.prop("disabled", false).text("Tambah");
+            },
           });
         });
       }
@@ -643,18 +1302,18 @@
      * Setup handlers untuk delete keahlian dari database
      */
     setupDeleteKeahlianHandlers: function () {
-      const $menu = $('#keahlianMenu');
-      const $hiddenInput = $('#keahlian');
-      const $textElement = $('#keahlianText');
-      const $badgesContainer = $('#selectedKeahlianBadges');
+      const $menu = $("#keahlianMenu");
+      const $hiddenInput = $("#keahlian");
+      const $textElement = $("#keahlianText");
+      const $badgesContainer = $("#selectedKeahlianBadges");
 
       // Delegated event untuk tombol delete keahlian
-      $menu.on('click', '.item-delete-btn', (e) => {
+      $menu.on("click", ".item-delete-btn", (e) => {
         e.stopPropagation();
 
         const $deleteBtn = $(e.currentTarget);
-        const id = $deleteBtn.attr('data-id');
-        const name = $deleteBtn.attr('data-name');
+        const id = $deleteBtn.attr("data-id");
+        const name = $deleteBtn.attr("data-name");
 
         KeahlianDropdown.handleDeleteFromDatabase(
           id,
@@ -666,7 +1325,27 @@
           $menu
         );
       });
-    }
+    },
+
+    /**
+     * Setup handlers untuk modal Tambah Profil Publikasi Baru
+     */
+
+    setUpModalAddProfilPublikasi: function () {
+      const btnAddProfilPublikasi = $("#btn-add-new-profil-publikasi");
+      const modalProfilPublikasi = $("#modalAddProfilPublikasi");
+
+      btnAddProfilPublikasi.on("click", (e) => {
+        const $inputUrl = $("#newProfilPublikasi");
+        const urlProfil = $inputUrl.val().trim();
+        const selectedTipeProfil = $("#tipeProfilPublikasi").val().trim();
+
+        const validateUrl = validationHelpers.validateUrl(urlProfil, true);
+        if (!validateUrl.valid) {
+          jQueryHelpers.showError($inputUrl, errorUrlText, validateUrl.message);
+        }
+      });
+    },
   };
 
   // ============================================================

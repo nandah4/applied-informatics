@@ -15,18 +15,16 @@
 
 class DosenController
 {
-    private $jabatanModel;
-    private $keahlianModel;
     private $dosenModel;
+    private $profilPublikasiModel;
 
     /**
      * Constructor: Inisialisasi models
      */
     public function __construct()
     {
-        $this->jabatanModel = new JabatanModel();
-        $this->keahlianModel = new KeahlianModel();
         $this->dosenModel = new DosenModel();
+        $this->profilPublikasiModel = new ProfilPublikasiModel();
     }
 
     // ========================================
@@ -36,7 +34,7 @@ class DosenController
     /**
      * Handle request untuk create dosen baru
      * Method: POST
-     * Endpoint: /applied-informatics/dosen/create
+     * Endpoint: /applied-informatics/admin/dosen/create
      *
      * @return void - Mengembalikan JSON response
      */
@@ -45,6 +43,12 @@ class DosenController
         // 1. Validasi request method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             ResponseHelper::error('Invalid request method');
+            return;
+        }
+        // Validate CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
             return;
         }
 
@@ -94,7 +98,7 @@ class DosenController
             'email' => $email,
             'nidn' => $nidn,
             'jabatan_id' => (int)$jabatan_id,
-            'keahlian_ids' => $keahlianArray, // Array untuk stored procedure
+            'keahlian_ids' => $keahlianArray,
             'foto_profil' => $fotoFileName,
             'deskripsi' => $deskripsi
         ];
@@ -130,17 +134,16 @@ class DosenController
 
         // Validasi input
         $page = max(1, $page);
-        $perPage = max(1, min(100, $perPage)); // Max 100 per page
+        $perPage = max(1, min(100, $perPage));
 
-        // Generate pagination data
-        // Kita perlu get total dulu untuk pagination
-        $allDataResult = $this->dosenModel->getAllDosen();
-        $totalRecords = count($allDataResult['data']);
-
-        $pagination = PaginationHelper::paginate($totalRecords, $page, $perPage);
+        // Hitung offset untuk query
+        $offset = ($page - 1) * $perPage;
 
         // Get data dengan pagination
-        $result = $this->dosenModel->getAllDosenPaginated($pagination['per_page'], $pagination['offset']);
+        $result = $this->dosenModel->getAllDosenPaginated($perPage, $offset);
+
+        // Generate pagination dari total yang dikembalikan model
+        $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
         return [
             'data' => $result['data'],
@@ -204,177 +207,6 @@ class DosenController
     }
 
     // ========================================
-    // JABATAN OPERATIONS
-    // ========================================
-
-    /**
-     * Handle create jabatan dari AJAX request
-     * Method: POST
-     *
-     * @return void - Mengembalikan JSON response
-     */
-    public function createJabatan()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            ResponseHelper::error('Invalid request method');
-            return;
-        }
-
-        $jabatan = $_POST['jabatan'] ?? '';
-
-        // Validasi menggunakan ValidationHelper
-        $validation = ValidationHelper::validateName($jabatan, 2, 255);
-        if (!$validation['valid']) {
-            ResponseHelper::error($validation['message']);
-            return;
-        }
-
-        // Panggil model untuk create jabatan
-        $result = $this->jabatanModel->createJabatan($jabatan);
-
-        // Kirim response
-        if ($result['success']) {
-            ResponseHelper::success($result['message'], $result['data']);
-        } else {
-            ResponseHelper::error($result['message']);
-        }
-    }
-
-    /**
-     * Get semua data jabatan
-     *
-     * @return array - Data jabatan
-     */
-    public function getAllJabatan()
-    {
-        $result = $this->jabatanModel->getAllJabatan();
-        return $result;
-    }
-
-    /**
-     * Handle delete jabatan from AJAX request
-     * Method: POST
-     *
-     * @return void - Mengembalikan JSON response
-     */
-    public function deleteJabatan()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            ResponseHelper::error('Invalid request method');
-            return;
-        }
-
-        $id = $_POST['id'] ?? '';
-
-        // Validasi ID
-        $validation = ValidationHelper::validateId($id, 'ID jabatan');
-        if (!$validation['valid']) {
-            ResponseHelper::error($validation['message']);
-            return;
-        }
-
-        // Call model to delete jabatan
-        $result = $this->jabatanModel->deleteJabatan((int)$id);
-
-        // Send response
-        if ($result['success']) {
-            ResponseHelper::success($result['message']);
-        } else {
-            ResponseHelper::error($result['message']);
-        }
-    }
-
-    // ========================================
-    // KEAHLIAN OPERATIONS
-    // ========================================
-
-    /**
-     * Get semua data keahlian
-     *
-     * @return array - Data keahlian
-     */
-    public function getKeahlianByDosenID($id)
-    {
-        $result = $this->keahlianModel->getKeahlianByDosenID($id);
-        return $result;
-    }
-
-    /**
-     * Get semua data keahlian by Dosen ID
-     *
-     * @return array - Data keahlian
-     */
-    public function getAllKeahlian()
-    {
-        $result = $this->keahlianModel->getAllKeahlian();
-        return $result;
-    }
-
-    /**
-     * Handle create keahlian dari AJAX request
-     * Method: POST
-     *
-     * @return void - Mengembalikan JSON response
-     */
-    public function createKeahlian()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            ResponseHelper::error('Invalid request method');
-            return;
-        }
-
-        $keahlian = $_POST['keahlian'] ?? '';
-
-        // Validasi menggunakan ValidationHelper
-        $validation = ValidationHelper::validateName($keahlian, 1, 255);
-        if (!$validation['valid']) {
-            ResponseHelper::error($validation['message']);
-            return;
-        }
-
-        $result = $this->keahlianModel->createKeahlian($keahlian);
-
-        if ($result['success']) {
-            ResponseHelper::success($result['message'], $result['data']);
-        } else {
-            ResponseHelper::error($result['message']);
-        }
-    }
-
-    /**
-     * Handle delete keahlian from AJAX request
-     * Method: POST
-     *
-     * @return void - Mengembalikan JSON response
-     */
-    public function deleteKeahlian()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            ResponseHelper::error('Invalid request method');
-            return;
-        }
-
-        $id = $_POST['id'] ?? '';
-
-        // Validasi ID
-        $validation = ValidationHelper::validateId($id, 'ID keahlian');
-        if (!$validation['valid']) {
-            ResponseHelper::error($validation['message']);
-            return;
-        }
-
-        // Call model to delete keahlian
-        $result = $this->keahlianModel->deleteKeahlian((int)$id);
-
-        // Send response
-        if ($result['success']) {
-            ResponseHelper::success($result['message']);
-        } else {
-            ResponseHelper::error($result['message']);
-        }
-    }
-
-    // ========================================
     // EDIT DOSEN
     // ========================================
 
@@ -394,7 +226,7 @@ class DosenController
     /**
      * Handle request untuk update dosen
      * Method: POST
-     * Endpoint: /applied-informatics/dosen/update
+     * Endpoint: /admin/dosen/update
      *
      * @return void - Mengembalikan JSON response
      */
@@ -406,7 +238,14 @@ class DosenController
             return;
         }
 
-        // 2. Ambil data dari POST
+        // 2. Validasi CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
+        // 3. Ambil data dari POST
         $id = $_POST['id'] ?? '';
         $full_name = $_POST['full_name'] ?? '';
         $email = $_POST['email'] ?? '';
@@ -424,23 +263,9 @@ class DosenController
 
         // 3. Validasi input
         $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $jabatan_id, $keahlian_ids, $deskripsi);
-
         if (!empty($validationErrors)) {
             ResponseHelper::error($validationErrors[0]);
             return;
-        }
-
-        // 3b. Validasi khusus: Cek apakah jabatan "Kepala Lab" sudah ada (exclude dosen ini)
-        $jabatanName = $this->dosenModel->getJabatanNameById((int)$jabatan_id);
-
-        if ($jabatanName && stripos($jabatanName, 'kepala') !== false && stripos($jabatanName, 'laboratorium') !== false) {
-            // Cek apakah ada dosen lain dengan jabatan ini (exclude current dosen)
-            $checkExists = $this->dosenModel->isJabatanExists((int)$jabatan_id, (int)$id);
-
-            if ($checkExists['exists']) {
-                ResponseHelper::error('Kepala Lab sudah ada (' . $checkExists['dosen_name'] . '). Hanya boleh ada 1 Kepala Lab. ' . $id);
-                return;
-            }
         }
 
         // 4. Handle upload foto profil (jika ada file baru)
@@ -475,12 +300,13 @@ class DosenController
             'email' => $email,
             'nidn' => $nidn,
             'jabatan_id' => (int)$jabatan_id,
+            'keahlian_ids' => $keahlian_ids,
             'foto_profil' => $fotoFileName,
             'deskripsi' => $deskripsi
         ];
 
         // 6. Update data dosen
-        $result = $this->dosenModel->updateDosen((int)$id, $dosenData);
+        $result = $this->dosenModel->update((int)$id, $dosenData);
 
         if (!$result['success']) {
             // Jika gagal dan ada foto baru yang sudah diupload, hapus fotonya
@@ -492,16 +318,6 @@ class DosenController
             return;
         }
 
-        // 7. Update keahlian dosen
-        if (!empty($keahlian_ids)) {
-            $keahlianArray = array_map('intval', explode(',', $keahlian_ids));
-            $keahlianResult = $this->dosenModel->updateDosenKeahlian((int)$id, $keahlianArray);
-
-            if (!$keahlianResult['success']) {
-                error_log('Gagal update keahlian untuk dosen ID ' . $id . ': ' . $keahlianResult['message']);
-            }
-        }
-
         // 8. Return success response
         ResponseHelper::success('Data dosen berhasil diupdate');
     }
@@ -509,19 +325,34 @@ class DosenController
     /**
      * Handle request untuk delete dosen
      * Method: POST
-     * Endpoint: /applied-informatics/dosen/delete/{id}
+     * Endpoint: /admin/dosen/delete/{id}
      *
      * @return void - Mengembalikan JSON response
      */
     public function deleteDosenByID($id)
     {
+        // 1. Validasi request method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             ResponseHelper::error('Invalid request method');
             return;
         }
 
-        // Panggil method deleteDosen (bukan deleteDosenByID)
-        $result = $this->dosenModel->deleteDosen($id);
+        // 2. Validasi CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
+        // 3. Validasi ID
+        $idValidation = ValidationHelper::validateId($id, 'ID Dosen');
+        if (!$idValidation['valid']) {
+            ResponseHelper::error($idValidation['message']);
+            return;
+        }
+
+        // 4. Proses delete dosen
+        $result = $this->dosenModel->deleteDosen((int)$id);
 
         if (!$result['success']) {
             ResponseHelper::error($result['message']);
@@ -534,5 +365,188 @@ class DosenController
         }
 
         ResponseHelper::success($result['message']);
+    }
+
+    // ========================================
+    // PROFIL PUBLIKASI DOSEN
+    // ========================================
+
+    /**
+     * Handle request untuk create profil publikasi
+     * Method: POST
+     * Endpoint: /admin/dosen/{id}/profil-publikasi/create
+     *
+     * @param int $dosen_id - ID dosen
+     * @return void - Mengembalikan JSON response
+     */
+    public function createProfilPublikasi($dosen_id)
+    {
+        // 1. Validasi request method
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            ResponseHelper::error('Invalid request method');
+            return;
+        }
+
+        // 2. Validasi CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
+        // 3. Validasi dosen_id
+        $idValidation = ValidationHelper::validateId($dosen_id, 'ID Dosen');
+        if (!$idValidation['valid']) {
+            ResponseHelper::error($idValidation['message']);
+            return;
+        }
+
+        // 4. Ambil data dari POST
+        $tipe = $_POST['tipe'] ?? '';
+        $url_profil = $_POST['url_profil'] ?? '';
+
+        // 5. Validasi input
+        if (empty($tipe)) {
+            ResponseHelper::error('Tipe profil harus dipilih');
+            return;
+        }
+
+        $validTipes = ['SINTA', 'SCOPUS', 'GOOGLE_SCHOLAR', 'ORCID', 'RESEARCHGATE'];
+        if (!in_array($tipe, $validTipes)) {
+            ResponseHelper::error('Tipe profil tidak valid');
+            return;
+        }
+
+        if (empty($url_profil)) {
+            ResponseHelper::error('URL profil harus diisi');
+            return;
+        }
+
+        if (!filter_var($url_profil, FILTER_VALIDATE_URL)) {
+            ResponseHelper::error('Format URL tidak valid');
+            return;
+        }
+
+        // 6. Insert ke database
+        $result = $this->profilPublikasiModel->insert([
+            'dosen_id' => (int)$dosen_id,
+            'tipe' => $tipe,
+            'url_profil' => $url_profil
+        ]);
+
+        if (!$result['success']) {
+            ResponseHelper::error($result['message']);
+            return;
+        }
+
+        ResponseHelper::success($result['message']);
+    }
+
+    /**
+     * Handle request untuk update profil publikasi
+     * Method: POST
+     * Endpoint: /admin/dosen/profil-publikasi/update
+     *
+     * @return void - Mengembalikan JSON response
+     */
+    public function updateProfilPublikasi()
+    {
+        // 1. Validasi request method
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            ResponseHelper::error('Invalid request method');
+            return;
+        }
+
+        // 2. Validasi CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
+        // 3. Ambil data dari POST
+        $id = $_POST['id'] ?? '';
+        $url_profil = $_POST['url_profil'] ?? '';
+
+        // 4. Validasi input
+        $idValidation = ValidationHelper::validateId($id, 'ID Profil');
+        if (!$idValidation['valid']) {
+            ResponseHelper::error($idValidation['message']);
+            return;
+        }
+
+        if (empty($url_profil)) {
+            ResponseHelper::error('URL profil harus diisi');
+            return;
+        }
+
+        if (!filter_var($url_profil, FILTER_VALIDATE_URL)) {
+            ResponseHelper::error('Format URL tidak valid');
+            return;
+        }
+
+        // 5. Update ke database
+        $result = $this->profilPublikasiModel->update((int)$id, $url_profil);
+
+        if (!$result['success']) {
+            ResponseHelper::error($result['message']);
+            return;
+        }
+
+        ResponseHelper::success($result['message']);
+    }
+
+    /**
+     * Handle request untuk delete profil publikasi
+     * Method: POST
+     * Endpoint: /admin/dosen/profil-publikasi/delete/{id}
+     *
+     * @param int $id - ID profil publikasi
+     * @return void - Mengembalikan JSON response
+     */
+    public function deleteProfilPublikasi($id)
+    {
+        // 1. Validasi request method
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            ResponseHelper::error('Invalid request method');
+            return;
+        }
+
+        // 2. Validasi CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
+        // 3. Validasi ID
+        $idValidation = ValidationHelper::validateId($id, 'ID Profil');
+        if (!$idValidation['valid']) {
+            ResponseHelper::error($idValidation['message']);
+            return;
+        }
+
+        // 4. Delete dari database
+        $result = $this->profilPublikasiModel->delete((int)$id);
+
+        if (!$result['success']) {
+            ResponseHelper::error($result['message']);
+            return;
+        }
+
+        ResponseHelper::success($result['message']);
+    }
+
+    /**
+     * Get semua profil publikasi milik dosen
+     * Method: GET
+     * Endpoint: /admin/dosen/{id}/profil-publikasi
+     *
+     * @param int $dosen_id - ID dosen
+     * @return array - Data profil publikasi
+     */
+    public function getProfilPublikasi($dosen_id)
+    {
+        return $this->profilPublikasiModel->getByDosenId((int)$dosen_id);
     }
 }

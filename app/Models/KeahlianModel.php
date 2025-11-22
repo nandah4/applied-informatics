@@ -2,15 +2,14 @@
 
 /**
  * File: Models/KeahlianModel.php
- * Description: Handle database operations for Keahlian.php
+ * Description: Handle database operations for Keahlian
  */
 
 class KeahlianModel
 {
     private $db;
-    private $table_name = "tbl_keahlian";
-    private $table_dosen = "tbl_dosen";
-    private $table_junc = "tbl_dosen_keahlian";
+    private $table_name = "ref_keahlian";
+    private $table_junc = "map_dosen_keahlian";
 
     public function __construct()
     {
@@ -18,27 +17,18 @@ class KeahlianModel
         $this->db = $database->getConnection();
     }
 
-    // POST : membuat keahlian baru
+    /**
+     * Tambah keahlian baru
+     *
+     * @param string $keahlian - Nama keahlian
+     * @return array - Response dengan data {id, nama_keahlian}
+     */
     public function createKeahlian($keahlian)
     {
 
         try {
-            // Cek apakah jabatan sudah ada
-            $checkQuery = "SELECT id FROM {$this->table_name} WHERE keahlian = :keahlian LIMIT 1";
-            $stmt = $this->db->prepare($checkQuery);
-            $stmt->bindParam(":keahlian", $keahlian);
-            $stmt->execute();
-
-            // Jika SUDAH ada (fetch berhasil), return error
-            if ($stmt->fetch(PDO::FETCH_ASSOC)) {
-                return [
-                    'success' => false,
-                    'message' => 'Keahlian sudah ada dalam database'
-                ];
-            }
-
             // Insert keahlian baru dengan RETURNING untuk mendapatkan ID
-            $query = "INSERT INTO {$this->table_name}(keahlian) VALUES(:keahlian) RETURNING id";
+            $query = "INSERT INTO {$this->table_name}(nama_keahlian) VALUES(:keahlian) RETURNING id";
             $insertStmt = $this->db->prepare($query);
             $insertStmt->bindParam(':keahlian', $keahlian);
             $insertStmt->execute();
@@ -50,11 +40,20 @@ class KeahlianModel
                 'message' => 'Keahlian berhasil ditambahkan',
                 'data' => [
                     'id' => $result['id'],
-                    'keahlian' => $keahlian
+                    'nama_keahlian' => $keahlian
                 ]
             ];
         } catch (PDOException $e) {
             error_log("Keahlian Model create error: " . $e->getMessage());
+
+            // Cek error duplicate (constraint unique)
+            if (strpos($e->getMessage(), 'ref_keahlian_nama_keahlian_key') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Nama keahlian sudah ada'
+                ];
+            }
+
             return [
                 'success' => false,
                 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
@@ -62,55 +61,55 @@ class KeahlianModel
         }
     }
 
-    // GET : mendapatkan semua data keahlian
+    /**
+     * Ambil semua data keahlian
+     *
+     * @return array - Response dengan data [{id, nama_keahlian}]
+     */
     public function getAllKeahlian()
     {
         try {
-            $query = "SELECT * FROM {$this->table_name} ORDER BY keahlian ASC";
+            $query = "SELECT id, nama_keahlian FROM {$this->table_name} ORDER BY nama_keahlian ASC";
             $stmt = $this->db->prepare($query);
             $stmt->execute();
 
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return [
                 'success' => true,
-                'message' => 'Berhasil mendapatkan data keahlian',
-                'data' => $result
-
+                'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
             ];
         } catch (PDOException $e) {
-            error_log("Keahlian Model getAll error: " . $e->getMessage());
+            error_log("KeahlianModel getAll error: " . $e->getMessage());
             return [
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+                'message' => 'Gagal mengambil data keahlian',
                 'data' => []
             ];
         }
     }
 
     /**
-     * Delete keahlian by ID
-     * @param int $id
-     * @return array
+     * Hapus keahlian berdasarkan ID
+     *
+     * @param int $id - ID keahlian
+     * @return array - Response success/error
      */
     public function deleteKeahlian($id)
     {
         try {
-            // Check if keahlian exists
-            $checkQuery = "SELECT keahlian FROM {$this->table_name} WHERE id = :id LIMIT 1";
+            // Cek apakah keahlian ada
+            $checkQuery = "SELECT id FROM {$this->table_name} WHERE id = :id LIMIT 1";
             $checkStmt = $this->db->prepare($checkQuery);
             $checkStmt->bindParam(':id', $id, PDO::PARAM_INT);
             $checkStmt->execute();
 
-            $keahlian = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$keahlian) {
+            if (!$checkStmt->fetch()) {
                 return [
                     'success' => false,
                     'message' => 'Keahlian tidak ditemukan'
                 ];
             }
 
-            // Delete keahlian
+            // Hapus keahlian
             $deleteQuery = "DELETE FROM {$this->table_name} WHERE id = :id";
             $deleteStmt = $this->db->prepare($deleteQuery);
             $deleteStmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -122,28 +121,38 @@ class KeahlianModel
             ];
         } catch (PDOException $e) {
             error_log("KeahlianModel delete error: " . $e->getMessage());
+
+            // Handle foreign key constraint error (jika FK bukan CASCADE)
+            if (strpos($e->getMessage(), 'foreign key') !== false ||
+                strpos($e->getMessage(), 'violates') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Keahlian tidak bisa dihapus karena masih digunakan'
+                ];
+            }
+
             return [
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => 'Gagal menghapus keahlian'
             ];
         }
     }
 
     /**
-     * Get keahlian by ID Dosen
+     * Ambil keahlian by ID Dosen
      * @param int $id
      * @return array
      */
 
-    public function getKeahlianByDosenId($id)
+    public function getKeahlianByDosenID($id)
     {
         try {
-            $query = "SELECT k.id, k.keahlian FROM $this->table_name k
+            $query = "SELECT k.id, k.nama_keahlian FROM $this->table_name k
             JOIN $this->table_junc tdk ON tdk.keahlian_id = k.id
             WHERE tdk.dosen_id = :p_dosen_id";
 
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':p_dosen_id', $id);
+            $stmt->bindParam(':p_dosen_id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

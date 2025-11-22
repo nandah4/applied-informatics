@@ -98,23 +98,23 @@ abstract class BaseModel
      *     [':email' => $email]
      * );
      */
-    protected function executeQuery($query, $params = [])
-    {
-        try {
-            $stmt = $this->db->prepare($query);
+    // protected function executeQuery($query, $params = [])
+    // {
+    //     try {
+    //         $stmt = $this->db->prepare($query);
 
-            // Bind parameters
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
+    //         // Bind parameters
+    //         foreach ($params as $key => $value) {
+    //             $stmt->bindValue($key, $value);
+    //         }
 
-            $stmt->execute();
-            return $stmt;
-        } catch (PDOException $e) {
-            error_log("Database Error: " . $e->getMessage());
-            throw $e;
-        }
-    }
+    //         $stmt->execute();
+    //         return $stmt;
+    //     } catch (PDOException $e) {
+    //         error_log("Database Error: " . $e->getMessage());
+    //         throw $e;
+    //     }
+    // }
 
     /**
      * Find single record by condition
@@ -125,22 +125,22 @@ abstract class BaseModel
      * Contoh:
      * $user = $this->findOne(['email' => 'test@example.com']);
      */
-    protected function findOne($conditions = [])
-    {
-        $whereClauses = [];
-        $params = [];
+    // protected function findOne($conditions = [])
+    // {
+    //     $whereClauses = [];
+    //     $params = [];
 
-        foreach ($conditions as $column => $value) {
-            $whereClauses[] = "$column = :$column";
-            $params[":$column"] = $value;
-        }
+    //     foreach ($conditions as $column => $value) {
+    //         $whereClauses[] = "$column = :$column";
+    //         $params[":$column"] = $value;
+    //     }
 
-        $whereString = empty($whereClauses) ? '1=1' : implode(' AND ', $whereClauses);
-        $query = "SELECT * FROM {$this->table_name} WHERE $whereString LIMIT 1";
+    //     $whereString = empty($whereClauses) ? '1=1' : implode(' AND ', $whereClauses);
+    //     $query = "SELECT * FROM {$this->table_name} WHERE $whereString LIMIT 1";
 
-        $stmt = $this->executeQuery($query, $params);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-    }
+    //     $stmt = $this->executeQuery($query, $params);
+    //     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    // }
 
     /**
      * Find multiple records by condition
@@ -153,30 +153,30 @@ abstract class BaseModel
      * Contoh:
      * $users = $this->find(['status' => 'active'], 'created_at DESC', 10);
      */
-    protected function find($conditions = [], $orderBy = '', $limit = null)
-    {
-        $whereClauses = [];
-        $params = [];
+    // protected function find($conditions = [], $orderBy = '', $limit = null)
+    // {
+    //     $whereClauses = [];
+    //     $params = [];
 
-        foreach ($conditions as $column => $value) {
-            $whereClauses[] = "$column = :$column";
-            $params[":$column"] = $value;
-        }
+    //     foreach ($conditions as $column => $value) {
+    //         $whereClauses[] = "$column = :$column";
+    //         $params[":$column"] = $value;
+    //     }
 
-        $whereString = empty($whereClauses) ? '1=1' : implode(' AND ', $whereClauses);
-        $query = "SELECT * FROM {$this->table_name} WHERE $whereString";
+    //     $whereString = empty($whereClauses) ? '1=1' : implode(' AND ', $whereClauses);
+    //     $query = "SELECT * FROM {$this->table_name} WHERE $whereString";
 
-        if (!empty($orderBy)) {
-            $query .= " ORDER BY $orderBy";
-        }
+    //     if (!empty($orderBy)) {
+    //         $query .= " ORDER BY $orderBy";
+    //     }
 
-        if ($limit !== null) {
-            $query .= " LIMIT $limit";
-        }
+    //     if ($limit !== null) {
+    //         $query .= " LIMIT $limit";
+    //     }
 
-        $stmt = $this->executeQuery($query, $params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    //     $stmt = $this->executeQuery($query, $params);
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
 
     /**
      * Count records by condition
@@ -184,24 +184,24 @@ abstract class BaseModel
      * @param array $conditions - Conditions ['column' => 'value']
      * @return int
      */
-    protected function count($conditions = [])
-    {
-        $whereClauses = [];
-        $params = [];
+    // protected function count($conditions = [])
+    // {
+    //     $whereClauses = [];
+    //     $params = [];
 
-        foreach ($conditions as $column => $value) {
-            $whereClauses[] = "$column = :$column";
-            $params[":$column"] = $value;
-        }
+    //     foreach ($conditions as $column => $value) {
+    //         $whereClauses[] = "$column = :$column";
+    //         $params[":$column"] = $value;
+    //     }
 
-        $whereString = empty($whereClauses) ? '1=1' : implode(' AND ', $whereClauses);
-        $query = "SELECT COUNT(*) as total FROM {$this->table_name} WHERE $whereString";
+    //     $whereString = empty($whereClauses) ? '1=1' : implode(' AND ', $whereClauses);
+    //     $query = "SELECT COUNT(*) as total FROM {$this->table_name} WHERE $whereString";
 
-        $stmt = $this->executeQuery($query, $params);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    //     $stmt = $this->executeQuery($query, $params);
+    //     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return (int) $result['total'];
-    }
+    //     return (int) $result['total'];
+    // }
 
     /**
      * Check if record exists
@@ -209,10 +209,10 @@ abstract class BaseModel
      * @param array $conditions - Conditions ['column' => 'value']
      * @return bool
      */
-    protected function exists($conditions = [])
-    {
-        return $this->count($conditions) > 0;
-    }
+    // protected function exists($conditions = [])
+    // {
+    //     return $this->count($conditions) > 0;
+    // }
 
     /**
      * Begin transaction

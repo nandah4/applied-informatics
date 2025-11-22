@@ -89,9 +89,14 @@ $router->get('admin/logout', function () {
     // Hapus session cookie
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
         );
     }
 
@@ -130,7 +135,7 @@ $router->get('admin/dashboard', function () {
  * Dosen - List/Index (dengan Pagination)
  * URL: GET /dosen?page=1&per_page=10
  */
-$router->get('dosen', function () {
+$router->get('admin/dosen', function () {
     $controller = new DosenController();
     $result = $controller->getAllDosen();
 
@@ -142,30 +147,23 @@ $router->get('dosen', function () {
 
 /**
  * Dosen - Detail Page
- * URL: GET /dosen/detail/{id}
+ * URL: GET /admin/dosen/detail/{id}
  */
-$router->get('dosen/detail/(\d+)', function ($id) {
+$router->get('admin/dosen/detail/(\d+)', function ($id) {
     $controller = new DosenController();
 
     // Get data dosen by ID
-    $dosenData = $controller->getDosenById((int)$id);
+    $response = $controller->getDosenById((int)$id);
+    $dosenData = $response["data"];
 
-    if (!$dosenData['success']) {
-        header("Location: " . base_url('dosen'));
+    if (!$response['success']) {
+        header("Location: " . base_url('admin/dosen'));
         exit;
     }
 
-    $dosen = $dosenData['data'];
-
-    // Get dropdown data
-    $jabatanData = $controller->getAllJabatan();
-    $listJabatan = [];
-    foreach ($jabatanData['data'] ?? [] as $jab) {
-        $listJabatan[$jab['id']] = $jab['jabatan'];
-    }
-
-    $keahlianData = $controller->getKeahlianByDosenID($id);
-    $listKeahlian = $keahlianData['data'] ?? [];
+    // Get profil publikasi dosen
+    $profilPublikasiResponse = $controller->getProfilPublikasi((int)$id);
+    $profilPublikasi = $profilPublikasiResponse['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/dosen/read.php';
 }, [AuthMiddleware::class]);
@@ -178,13 +176,15 @@ $router->get('dosen/detail/(\d+)', function ($id) {
  * Dosen - Create Page (Form)
  * URL: GET /dosen/create
  */
-$router->get('dosen/create', function () {
+$router->get('admin/dosen/create', function () {
     $controller = new DosenController();
+    $jabatanController = new JabatanController();
+    $keahlianController = new KeahlianController();
 
-    $jabatanData = $controller->getAllJabatan();
+    $jabatanData = $jabatanController->getAllJabatan();
     $listJabatan = $jabatanData['data'] ?? [];
 
-    $keahlianData = $controller->getAllKeahlian();
+    $keahlianData = $keahlianController->getAllKeahlian();
     $listKeahlian = $keahlianData['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/dosen/create.php';
@@ -194,7 +194,7 @@ $router->get('dosen/create', function () {
  * Dosen - Create (Handle Submit)
  * URL: POST /dosen/create
  */
-$router->post('dosen/create', function () {
+$router->post('admin/dosen/create', function () {
     $controller = new DosenController();
     $controller->createDosen();
 }, [AuthMiddleware::class]);
@@ -205,26 +205,28 @@ $router->post('dosen/create', function () {
 
 /**
  * Dosen - Edit Page (Form)
- * URL: GET /dosen/edit/{id}
+ * URL: GET /admin/dosen/edit/{id}
  */
-$router->get('dosen/edit/(\d+)', function ($id) {
+$router->get('admin/dosen/edit/(\d+)', function ($id) {
     $controller = new DosenController();
+    $keahlianController = new KeahlianController();
+    $jabatanController = new JabatanController();
 
     // Get data dosen by ID
     $dosenData = $controller->getDosenById((int)$id);
 
     if (!$dosenData['success']) {
-        header("Location: " . base_url('dosen'));
+        header("Location: " . base_url('admin/dosen'));
         exit;
     }
 
     $dosen = $dosenData['data'];
 
     // Get dropdown data
-    $jabatanData = $controller->getAllJabatan();
+    $jabatanData = $jabatanController->getAllJabatan();
     $listJabatan = $jabatanData['data'] ?? [];
 
-    $keahlianData = $controller->getAllKeahlian();
+    $keahlianData = $keahlianController->getAllKeahlian();
     $listKeahlian = $keahlianData['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/dosen/edit.php';
@@ -232,9 +234,9 @@ $router->get('dosen/edit/(\d+)', function ($id) {
 
 /**
  * Dosen - Update (Handle Submit)
- * URL: POST /dosen/update
+ * URL: POST /admin/dosen/update
  */
-$router->post('dosen/update', function () {
+$router->post('admin/dosen/update', function () {
     $controller = new DosenController();
     $controller->updateDosen();
 }, [AuthMiddleware::class]);
@@ -247,7 +249,7 @@ $router->post('dosen/update', function () {
  * Dosen - Delete
  * URL: POST /dosen/delete/{id}
  */
-$router->post('dosen/delete/(\d+)', function ($id) {
+$router->post('admin/dosen/delete/(\d+)', function ($id) {
     $controller = new DosenController();
     $controller->deleteDosenByID($id);
 }, [AuthMiddleware::class]);
@@ -260,8 +262,8 @@ $router->post('dosen/delete/(\d+)', function ($id) {
  * Jabatan - Create
  * URL: POST /dosen/create-jabatan
  */
-$router->post('dosen/create-jabatan', function () {
-    $controller = new DosenController();
+$router->post('admin/dosen/create-jabatan', function () {
+    $controller = new JabatanController();
     $controller->createJabatan();
 }, [AuthMiddleware::class]);
 
@@ -269,8 +271,8 @@ $router->post('dosen/create-jabatan', function () {
  * Jabatan - Delete
  * URL: POST /dosen/delete-jabatan
  */
-$router->post('dosen/delete-jabatan', function () {
-    $controller = new DosenController();
+$router->post('admin/dosen/delete-jabatan', function () {
+    $controller = new JabatanController();
     $controller->deleteJabatan();
 }, [AuthMiddleware::class]);
 
@@ -282,8 +284,8 @@ $router->post('dosen/delete-jabatan', function () {
  * Keahlian - Create
  * URL: POST /dosen/create-keahlian
  */
-$router->post('dosen/create-keahlian', function () {
-    $controller = new DosenController();
+$router->post('admin/dosen/create-keahlian', function () {
+    $controller = new KeahlianController();
     $controller->createKeahlian();
 }, [AuthMiddleware::class]);
 
@@ -291,9 +293,50 @@ $router->post('dosen/create-keahlian', function () {
  * Keahlian - Delete
  * URL: POST /dosen/delete-keahlian
  */
-$router->post('dosen/delete-keahlian', function () {
-    $controller = new DosenController();
+$router->post('admin/dosen/delete-keahlian', function () {
+    $controller = new KeahlianController();
     $controller->deleteKeahlian();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// PROFIL PUBLIKASI Management (Sub-feature dari Dosen)
+// ----------------------------------------
+
+/**
+ * Profil Publikasi - Create
+ * URL: POST /admin/dosen/{id}/profil-publikasi/create
+ */
+$router->post('admin/dosen/(\d+)/profil-publikasi/create', function ($dosen_id) {
+    $controller = new DosenController();
+    $controller->createProfilPublikasi($dosen_id);
+}, [AuthMiddleware::class]);
+
+/**
+ * Profil Publikasi - Update
+ * URL: POST /admin/dosen/profil-publikasi/update
+ */
+$router->post('admin/dosen/profil-publikasi/update', function () {
+    $controller = new DosenController();
+    $controller->updateProfilPublikasi();
+}, [AuthMiddleware::class]);
+
+/**
+ * Profil Publikasi - Delete
+ * URL: POST /admin/dosen/profil-publikasi/delete/{id}
+ */
+$router->post('admin/dosen/profil-publikasi/delete/(\d+)', function ($id) {
+    $controller = new DosenController();
+    $controller->deleteProfilPublikasi($id);
+}, [AuthMiddleware::class]);
+
+/**
+ * Profil Publikasi - Get by Dosen ID
+ * URL: GET /admin/dosen/{id}/profil-publikasi
+ */
+$router->get('admin/dosen/(\d+)/profil-publikasi', function ($dosen_id) {
+    $controller = new DosenController();
+    $result = $controller->getProfilPublikasi($dosen_id);
+    ResponseHelper::success('Data profil publikasi', $result['data'] ?? []);
 }, [AuthMiddleware::class]);
 
 // ============================================================================
@@ -451,7 +494,7 @@ $router->get('produk/detail/(\d+)', function ($id) {
  */
 $router->get('produk/create', function () {
     $controller = new ProdukController();
-    
+
     // Get list dosen untuk dropdown
     $dosenData = $controller->getAllDosen();
     $listDosen = $dosenData['data'] ?? [];
@@ -489,7 +532,7 @@ $router->get('produk/edit/(\d+)', function ($id) {
     }
 
     $produk = $result['data'];  // Variable untuk view edit.php
-    
+
     // Get list dosen untuk dropdown
     $dosenData = $controller->getAllDosen();
     $listDosen = $dosenData['data'] ?? [];

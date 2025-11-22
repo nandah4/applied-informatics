@@ -4,14 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta name="base-url" content="/applied-informatics">
     <title>Tambah Dosen - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-
-    <!-- Select2 CSS for multi-select -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
     <!-- Base CSS - Must load first -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
@@ -38,7 +35,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('dosen') ?>">Data Dosen</a>
+                <a href="<?= base_url('admin/dosen') ?>">Data Dosen</a>
                 <span>/</span>
                 <span>Tambah Dosen</span>
             </div>
@@ -50,11 +47,14 @@
         <div class="card">
             <div class="card-body">
                 <form id="formDosen" method="POST" enctype="multipart/form-data">
+
+                    <?= CsrfHelper::tokenField() ?>
+
                     <div class="row">
                         <!-- Nama Lengkap -->
                         <div class="col-md-6 mb-3">
                             <label for="full_name" class="form-label">
-                                Nama Lengkap <span class="required">*</span>
+                                Nama Lengkap dan Gelar<span class="required">*</span>
                             </label>
                             <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Masukkan nama lengkap" required>
                             <!-- Error Message -->
@@ -105,8 +105,8 @@
                                     <?php else: ?>
                                         <?php foreach ($listJabatan as $jab): ?>
                                             <div class="custom-dropdown-item" data-value="<?= $jab['id'] ?>" data-id="<?= $jab['id'] ?>">
-                                                <span class="item-text"><?= htmlspecialchars($jab['jabatan']) ?></span>
-                                                <button type="button" class="item-delete-btn" data-id="<?= $jab['id'] ?>" data-name="<?= htmlspecialchars($jab['jabatan']) ?>" title="Hapus">
+                                                <span class="item-text"><?= htmlspecialchars($jab['nama_jabatan']) ?></span>
+                                                <button type="button" class="item-delete-btn" data-id="<?= $jab['id'] ?>" data-name="<?= htmlspecialchars($jab['nama_jabatan']) ?>" title="Hapus">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <polyline points="3 6 5 6 21 6"></polyline>
                                                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -155,8 +155,8 @@
                                     <?php else: ?>
                                         <?php foreach ($listKeahlian as $skill): ?>
                                             <div class="custom-dropdown-item" data-value="<?= $skill['id'] ?>" data-id="<?= $skill['id'] ?>">
-                                                <span class="item-text"><?= htmlspecialchars($skill['keahlian']) ?></span>
-                                                <button type="button" class="item-delete-btn" data-id="<?= $skill['id'] ?>" data-name="<?= htmlspecialchars($skill['keahlian']) ?>" title="Hapus">
+                                                <span class="item-text"><?= htmlspecialchars($skill['nama_keahlian']) ?></span>
+                                                <button type="button" class="item-delete-btn" data-id="<?= $skill['id'] ?>" data-name="<?= htmlspecialchars($skill['nama_keahlian']) ?>" title="Hapus">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <polyline points="3 6 5 6 21 6"></polyline>
                                                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -212,42 +212,11 @@
                             <div class="helper-text">Deskripsikan pengalaman, spesialisasi, dan pencapaian dosen</div>
                         </div>
 
-                        <!-- Divider -->
-                        <div class="col-12 mb-3">
-                            <hr class="form-divider">
-                        </div>
-
-                        <!-- Section: Profil Publikasi -->
-                        <div class="col-12">
-                            <div class="col-12 mb-3">
-                                <div class="section-header">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                                    </svg>
-                                    <h5 class="section-title-form">Profil Publikasi</h5>
-                                </div>
-                                <p class="section-subtitle-form">Link ke profil publikasi dosen</p>
-                            </div>
-
-                            <!-- Container untuk list profil publikasi -->
-                            <div id="profilPublikasiContainer" class="col-12"></div>
-
-                            <!-- Button Tambah Profil -->
-                            <div class="col-12 mb-3">
-                                <button type="button" class="btn-add-option" id="btnAddProfilPublikasi">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                    Tambah Profil Publikasi
-                                </button>
-                            </div>
-                        </div>
+                       
 
                         <!-- Form Actions -->
                         <div class="form-actions">
-                            <a href="<?= base_url("dosen") ?>" class="btn-secondary-custom">
+                            <a href="<?= base_url("admin/dosen") ?>" class="btn-secondary-custom">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -314,9 +283,6 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
     <!-- Feather Icons -->
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
@@ -326,9 +292,6 @@
     <!-- Helper Scripts (Must load before form.js) -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
-
-    <!-- Profil Publikasi Component (Must load before form.js) -->
-    <script src="<?= asset_url('js/components/profilPublikasi.js') ?>"></script>
 
     <!-- Data Dosen Form Page JS -->
     <script src="<?= asset_url('js/pages/dosen/form.js') ?>"></script>

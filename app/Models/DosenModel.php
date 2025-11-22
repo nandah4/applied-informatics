@@ -5,14 +5,13 @@
  * Deskripsi: Model untuk menangani operasi database terkait data dosen
  *
  * Tabel yang digunakan:
- * - tbl_dosen: Data utama dosen
+ * - mst_dosen: Data utama dosen
  * - tbl_dosen_keahlian: Junction table untuk relasi many-to-many dosen-keahlian
  * - tbl_jabatan: Data jabatan dosen
  * - tbl_keahlian: Data keahlian dosen
  *
  * Fungsi utama:
- * - insertDosen(): Insert data dosen baru
- * - insertDosenKeahlian(): Insert keahlian dosen (junction table)
+ * - insert(): Insert data dosen baru menggunakan stored procedure
  * - getAllDosen(): Ambil semua data dosen dengan JOIN
  * - getDosenById(): Ambil detail dosen berdasarkan ID
  * - updateDosen(): Update data dosen
@@ -21,7 +20,7 @@
 
 class DosenModel extends BaseModel
 {
-    protected $table_name = 'tbl_dosen';
+    protected $table_name = 'mst_dosen';
 
     /**
      * Insert data dosen baru ke database menggunakan stored procedure
@@ -56,7 +55,7 @@ class DosenModel extends BaseModel
 
             // Query CALL stored procedure
             // Format: CALL sp_name(param1, param2, ...)
-            $query = "CALL sp_insert_dosen_with_keahlian(
+            $query = "CALL sp_insert_dosen(
                 :full_name,
                 :email,
                 :nidn,
@@ -73,7 +72,7 @@ class DosenModel extends BaseModel
             $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
             $stmt->bindParam(':nidn', $data['nidn'], PDO::PARAM_STR);
             $stmt->bindParam(':jabatan_id', $data['jabatan_id'], PDO::PARAM_INT);
-            $stmt->bindParam(':keahlian_ids', $keahlianIds, PDO::PARAM_STR); // Array sebagai string
+            $stmt->bindParam(':keahlian_ids', $keahlianIds, PDO::PARAM_STR);
             $stmt->bindParam(':foto_profil', $data['foto_profil'], PDO::PARAM_STR);
             $stmt->bindParam(':deskripsi', $data['deskripsi'], PDO::PARAM_STR);
 
@@ -106,121 +105,10 @@ class DosenModel extends BaseModel
                 ];
             }
 
-            // // Error dari database constraint
-            // if (strpos($errorMessage, 'tbl_dosen_email_key') !== false) {
-            //     return [
-            //         'success' => false,
-            //         'message' => 'Email sudah terdaftar dalam sistem'
-            //     ];
-            // }
-
-            // if (strpos($errorMessage, 'tbl_dosen_nidn_key') !== false) {
-            //     return [
-            //         'success' => false,
-            //         'message' => 'NIDN sudah terdaftar dalam sistem'
-            //     ];
-            // }
-
             // Error lainnya
             return [
                 'success' => false,
                 'message' => 'Gagal menambahkan data dosen: ' . $errorMessage
-            ];
-        }
-    }
-
-    /**
-     * Insert keahlian dosen ke junction table (tbl_dosen_keahlian)
-     * Mendukung multiple keahlian untuk satu dosen
-     *
-     * @param int $dosen_id - ID dosen
-     * @param array $keahlian_ids - Array of keahlian IDs, contoh: [1, 3, 5]
-     * @return array - Format: ['success' => bool, 'message' => string]
-     */
-    public function insertDosenKeahlian($dosen_id, $keahlian_ids)
-    {
-        try {
-            // Mulai transaction untuk memastikan atomicity
-            // Semua insert berhasil atau semua rollback
-            $this->db->beginTransaction();
-
-            $query = "INSERT INTO tbl_dosen_keahlian (dosen_id, keahlian_id)
-                      VALUES (:dosen_id, :keahlian_id)";
-            $stmt = $this->db->prepare($query);
-
-            // Loop dan insert setiap keahlian
-            foreach ($keahlian_ids as $keahlian_id) {
-                $stmt->bindParam(':dosen_id', $dosen_id, PDO::PARAM_INT);
-                $stmt->bindParam(':keahlian_id', $keahlian_id, PDO::PARAM_INT);
-                $stmt->execute();
-            }
-
-            // Commit transaction jika semua berhasil
-            $this->db->commit();
-
-            return [
-                'success' => true,
-                'message' => 'Keahlian dosen berhasil ditambahkan'
-            ];
-        } catch (PDOException $e) {
-            // Rollback jika ada error
-            $this->db->rollBack();
-
-            error_log("DosenModel insertDosenKeahlian error: " . $e->getMessage());
-            return [
-                'success' => false,
-                'message' => 'Gagal menambahkan keahlian dosen'
-            ];
-        }
-    }
-
-    /**
-     * Ambil semua data dosen dengan JOIN ke tabel terkait
-     *
-     * Query ini akan mengambil:
-     * - Data dosen (dari tbl_dosen)
-     * - Nama jabatan (dari tbl_jabatan)
-     * - List keahlian dalam satu string (dari tbl_keahlian via junction table)
-     *
-     * @return array - Format: ['success' => bool, 'message' => string, 'data' => array]
-     */
-    public function getAllDosen()
-    {
-        try {
-            // Query dengan JOIN dan STRING_AGG untuk menggabungkan keahlian
-            $query = "SELECT
-                        d.id,
-                        d.full_name,
-                        d.email,
-                        d.nidn,
-                        d.foto_profil,
-                        d.deskripsi,
-                        d.jabatan_id,
-                        j.jabatan as jabatan_name,
-                        STRING_AGG(k.keahlian, ', ') as keahlian_list
-                      FROM {$this->table_name} d
-                      LEFT JOIN tbl_jabatan j ON d.jabatan_id = j.id
-                      LEFT JOIN tbl_dosen_keahlian dk ON d.id = dk.dosen_id
-                      LEFT JOIN tbl_keahlian k ON dk.keahlian_id = k.id
-                      GROUP BY d.id, d.full_name, d.email, d.nidn, d.foto_profil, d.deskripsi, d.jabatan_id, j.jabatan
-                      ORDER BY d.id DESC";
-
-            $stmt = $this->db->prepare($query);
-            $stmt->execute();
-
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            return [
-                'success' => true,
-                'message' => 'Berhasil mendapatkan data dosen',
-                'data' => $result
-            ];
-        } catch (PDOException $e) {
-            error_log("DosenModel getAllDosen error: " . $e->getMessage());
-            return [
-                'success' => false,
-                'message' => 'Gagal mendapatkan data dosen',
-                'data' => []
             ];
         }
     }
@@ -236,28 +124,14 @@ class DosenModel extends BaseModel
     {
         try {
             // Query untuk hitung total records
-            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
+            $countQuery = "SELECT COUNT(*) as total FROM vw_show_dosen";
             $countStmt = $this->db->prepare($countQuery);
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Query dengan pagination
-            $query = "SELECT
-                      d.id,
-                      d.full_name,
-                      d.email,
-                      d.nidn,
-                      d.foto_profil,
-                      d.deskripsi,
-                      d.jabatan_id,
-                      j.jabatan as jabatan_name,
-                      STRING_AGG(k.keahlian, ', ') as keahlian_list
-                    FROM {$this->table_name} d
-                    LEFT JOIN tbl_jabatan j ON d.jabatan_id = j.id
-                    LEFT JOIN tbl_dosen_keahlian dk ON d.id = dk.dosen_id
-                    LEFT JOIN tbl_keahlian k ON dk.keahlian_id = k.id
-                    GROUP BY d.id, d.full_name, d.email, d.nidn, d.foto_profil, d.deskripsi, d.jabatan_id, j.jabatan
-                    ORDER BY d.id DESC
+            $query = "SELECT * FROM vw_show_dosen
+                    ORDER BY created_at DESC
                     LIMIT :limit OFFSET :offset";
 
             $stmt = $this->db->prepare($query);
@@ -269,7 +143,6 @@ class DosenModel extends BaseModel
 
             return [
                 'success' => true,
-                'message' => 'Berhasil mendapatkan data dosen',
                 'data' => $result,
                 'total' => (int)$totalRecords
             ];
@@ -295,18 +168,8 @@ class DosenModel extends BaseModel
     {
         try {
             // Query untuk ambil data dosen beserta jabatan
-            $query = "SELECT
-                        d.id,
-                        d.full_name,
-                        d.email,
-                        d.nidn,
-                        d.foto_profil,
-                        d.deskripsi,
-                        d.jabatan_id,
-                        j.jabatan as jabatan_name
-                      FROM {$this->table_name} d
-                      LEFT JOIN tbl_jabatan j ON d.jabatan_id = j.id
-                      WHERE d.id = :id
+            $query = "SELECT * FROM vw_show_dosen
+                      WHERE id = :id
                       LIMIT 1";
 
             $stmt = $this->db->prepare($query);
@@ -315,7 +178,6 @@ class DosenModel extends BaseModel
 
             $dosen = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Jika dosen tidak ditemukan
             if (!$dosen) {
                 return [
                     'success' => false,
@@ -323,19 +185,6 @@ class DosenModel extends BaseModel
                     'data' => null
                 ];
             }
-
-            // Ambil keahlian dosen
-            $queryKeahlian = "SELECT k.id, k.keahlian
-                              FROM tbl_keahlian k
-                              INNER JOIN tbl_dosen_keahlian dk ON k.id = dk.keahlian_id
-                              WHERE dk.dosen_id = :id
-                              ORDER BY k.keahlian ASC";
-
-            $stmtKeahlian = $this->db->prepare($queryKeahlian);
-            $stmtKeahlian->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmtKeahlian->execute();
-
-            $dosen['keahlian'] = $stmtKeahlian->fetchAll(PDO::FETCH_ASSOC);
 
             return [
                 'success' => true,
@@ -359,25 +208,38 @@ class DosenModel extends BaseModel
      * @param array $data - Data yang akan diupdate
      * @return array - Format: ['success' => bool, 'message' => string]
      */
-    public function updateDosen($id, $data)
+    public function update($id, $data)
     {
         try {
-            $query = "UPDATE {$this->table_name}
-                      SET full_name = :full_name,
-                          email = :email,
-                          nidn = :nidn,
-                          jabatan_id = :jabatan_id,
-                          foto_profil = :foto_profil,
-                          deskripsi = :deskripsi
-                      WHERE id = :id";
+           $query = "CALL sp_update_dosen(
+                :id,
+                :full_name,
+                :email,
+                :nidn,
+                :jabatan_id,
+                :keahlian_ids,
+                :foto_profil,
+                :deskripsi
+            )";
 
             $stmt = $this->db->prepare($query);
+
+            // Konversi keahlian_ids ke format PostgreSQL array
+            $keahlianIds = '{}'; // Default empty array
+            if (!empty($data['keahlian_ids'])) {
+                if (is_array($data['keahlian_ids'])) {
+                    $keahlianIds = '{' . implode(',', $data['keahlian_ids']) . '}';
+                } else {
+                    $keahlianIds = '{' . $data['keahlian_ids'] . '}';
+                }
+            }
 
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->bindParam(':full_name', $data['full_name']);
             $stmt->bindParam(':email', $data['email']);
             $stmt->bindParam(':nidn', $data['nidn']);
             $stmt->bindParam(':jabatan_id', $data['jabatan_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':keahlian_ids', $keahlianIds);
             $stmt->bindParam(':foto_profil', $data['foto_profil']);
             $stmt->bindParam(':deskripsi', $data['deskripsi']);
 
@@ -391,14 +253,14 @@ class DosenModel extends BaseModel
             error_log("DosenModel updateDosen error: " . $e->getMessage());
 
             // Cek duplicate constraints
-            if (strpos($e->getMessage(), 'tbl_dosen_email_key') !== false) {
+            if (strpos($e->getMessage(), 'mst_dosen_email_key') !== false) {
                 return [
                     'success' => false,
                     'message' => 'Email sudah terdaftar dalam sistem'
                 ];
             }
 
-            if (strpos($e->getMessage(), 'tbl_dosen_nidn_key') !== false) {
+            if (strpos($e->getMessage(), 'mst_dosen_nidn_key') !== false) {
                 return [
                     'success' => false,
                     'message' => 'NIDN sudah terdaftar dalam sistem'
@@ -407,56 +269,7 @@ class DosenModel extends BaseModel
 
             return [
                 'success' => false,
-                'message' => 'Gagal mengupdate data dosen'
-            ];
-        }
-    }
-
-    /**
-     * Update keahlian dosen
-     * Metode: Hapus semua keahlian lama, lalu insert yang baru
-     *
-     * @param int $dosen_id - ID dosen
-     * @param array $keahlian_ids - Array of keahlian IDs baru
-     * @return array - Format: ['success' => bool, 'message' => string]
-     */
-    public function updateDosenKeahlian($dosen_id, $keahlian_ids)
-    {
-        try {
-            $this->db->beginTransaction();
-
-            // 1. Hapus semua keahlian lama
-            $deleteQuery = "DELETE FROM tbl_dosen_keahlian WHERE dosen_id = :dosen_id";
-            $deleteStmt = $this->db->prepare($deleteQuery);
-            $deleteStmt->bindParam(':dosen_id', $dosen_id, PDO::PARAM_INT);
-            $deleteStmt->execute();
-
-            // 2. Insert keahlian baru
-            if (!empty($keahlian_ids)) {
-                $insertQuery = "INSERT INTO tbl_dosen_keahlian (dosen_id, keahlian_id)
-                                VALUES (:dosen_id, :keahlian_id)";
-                $insertStmt = $this->db->prepare($insertQuery);
-
-                foreach ($keahlian_ids as $keahlian_id) {
-                    $insertStmt->bindParam(':dosen_id', $dosen_id, PDO::PARAM_INT);
-                    $insertStmt->bindParam(':keahlian_id', $keahlian_id, PDO::PARAM_INT);
-                    $insertStmt->execute();
-                }
-            }
-
-            $this->db->commit();
-
-            return [
-                'success' => true,
-                'message' => 'Keahlian dosen berhasil diupdate'
-            ];
-        } catch (PDOException $e) {
-            $this->db->rollBack();
-
-            error_log("DosenModel updateDosenKeahlian error: " . $e->getMessage());
-            return [
-                'success' => false,
-                'message' => 'Gagal mengupdate keahlian dosen'
+                'message' =>  "Gagal mengupdate dosen!"
             ];
         }
     }
@@ -507,91 +320,46 @@ class DosenModel extends BaseModel
             ];
         }
     }
-
-    /**
-     * Cek apakah sudah ada dosen dengan jabatan tertentu
-     * Digunakan untuk validasi jabatan yang bersifat unik (contoh: Ketua Lab)
-     *
-     * @param int $jabatan_id - ID jabatan yang akan dicek
-     * @param int|null $exclude_dosen_id - ID dosen yang akan dikecualikan dari pengecekan (untuk update)
-     * @return array - Format: ['exists' => bool, 'dosen_name' => string|null, 'jabatan_name' => string|null]
-     */
-    public function isJabatanExists($jabatan_id, $exclude_dosen_id = null)
-    {
-        try {
-            // Query mencari dosen lain dengan jabatan yang sama
-            $query = "
-            SELECT d.id AS dosen_id, d.full_name, j.jabatan
-            FROM {$this->table_name} d
-            INNER JOIN tbl_jabatan j ON d.jabatan_id = j.id
-            WHERE d.jabatan_id = :jabatan_id
-        ";
-
-            // Jika exclude diberikan (angka > 0), tambahkan kondisi exclude
-            if ($exclude_dosen_id !== null && (int)$exclude_dosen_id > 0) {
-                $query .= " AND d.id <> :exclude_id";
-            }
-
-            $query .= " LIMIT 1";
-
-            $stmt = $this->db->prepare($query);
-            $stmt->bindValue(':jabatan_id', (int)$jabatan_id, PDO::PARAM_INT);
-
-            if ($exclude_dosen_id !== null && (int)$exclude_dosen_id > 0) {
-                // bindValue aman untuk nilai literal
-                $stmt->bindValue(':exclude_id', (int)$exclude_dosen_id, PDO::PARAM_INT);
-            }
-
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($result) {
-                return [
-                    'exists' => true,
-                    'dosen_id' => (int)$result['dosen_id'],
-                    'dosen_name' => $result['full_name'],
-                    'jabatan_name' => $result['jabatan']
-                ];
-            }
-
-            return [
-                'exists' => false,
-                'dosen_id' => null,
-                'dosen_name' => null,
-                'jabatan_name' => null
-            ];
-        } catch (PDOException $e) {
-            error_log("DosenModel isJabatanExists error: " . $e->getMessage());
-            return [
-                'exists' => false,
-                'dosen_id' => null,
-                'dosen_name' => null,
-                'jabatan_name' => null
-            ];
-        }
-    }
-
-
-    /**
-     * Ambil nama jabatan berdasarkan ID
-     *
-     * @param int $jabatan_id - ID jabatan
-     * @return string|null - Nama jabatan atau null jika tidak ditemukan
-     */
-    public function getJabatanNameById($jabatan_id)
-    {
-        try {
-            $query = "SELECT jabatan FROM tbl_jabatan WHERE id = :id LIMIT 1";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id', $jabatan_id, PDO::PARAM_INT);
-            $stmt->execute();
-
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return $result ? $result['jabatan'] : null;
-        } catch (PDOException $e) {
-            error_log("DosenModel getJabatanNameById error: " . $e->getMessage());
-            return null;
-        }
-    }
 }
+
+
+
+/**
+ * ============================
+ *  TRASH CODE
+ * ============================
+ */
+
+/**
+ * Ambil semua data dosen dengan JOIN ke tabel terkait
+ *
+ * Query ini akan mengambil:
+ * - Data dosen (dari mst_dosen)
+ * - Nama jabatan (dari ref_jabatan)
+ * - List keahlian dalam satu string (dari ref_keahlian via junction table)
+ *
+ * @return array - Format: ['success' => bool, 'message' => string, 'data' => array]
+ */
+    // public function getAll()
+    // {
+    //     try {
+    //         $query = "SELECT * FROM vw_show_dosen";
+
+    //         $stmt = $this->db->prepare($query);
+    //         $stmt->execute();
+
+    //         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    //         return [
+    //             'success' => true,
+    //             'data' => $result
+    //         ];
+    //     } catch (PDOException $e) {
+    //         error_log("DosenModel getAllDosen error: " . $e->getMessage());
+    //         return [
+    //             'success' => false,
+    //             'message' => 'Gagal mendapatkan data dosen',
+    //             'data' => []
+    //         ];
+    //     }
+    // }
