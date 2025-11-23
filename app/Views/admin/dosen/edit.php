@@ -259,11 +259,11 @@
                                                 </a>
                                             </div>
                                             <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                <button type="button" class="btn-primary-custom"
                                                     onclick="editProfilPublikasi(<?= $profil['id'] ?>, '<?= htmlspecialchars($profil['url_profil'], ENT_QUOTES) ?>', '<?= htmlspecialchars($label) ?>')">
                                                     Edit
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                                <button type="button" class="btn-danger-custom"
                                                     onclick="deleteProfilPublikasi(<?= $profil['id'] ?>)">
                                                     Hapus
                                                 </button>

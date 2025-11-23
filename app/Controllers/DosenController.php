@@ -352,7 +352,7 @@ class DosenController
         }
 
         // 4. Proses delete dosen
-        $result = $this->dosenModel->deleteDosen((int)$id);
+        $result = $this->dosenModel->delete((int)$id);
 
         if (!$result['success']) {
             ResponseHelper::error($result['message']);

@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="/applied-informatics">
     <title>Detail Mitra - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
     <!-- Base CSS - Must load first -->
-    <link rel="stylesheet" href="<?= asset_url('css/base/variables.css') ?>">
-    <link rel="stylesheet" href="<?= asset_url('css/base/reset.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
@@ -25,7 +24,10 @@
 <body>
     <!-- Alert Placeholder untuk notifikasi -->
     <div id="liveAlertPlaceholder"></div>
-    
+
+    <!-- CSRF Token untuk AJAX requests -->
+    <?= CsrfHelper::tokenField() ?>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -34,7 +36,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('mitra') ?>">Data Mitra</a>
+                <a href="<?= base_url('admin/mitra') ?>">Data Mitra</a>
                 <span>/</span>
                 <span>Detail Mitra</span>
             </div>
@@ -66,8 +68,8 @@
                 $statusBadge = $mitra['status'] === 'aktif' ? 'badge-success' : 'badge-warning';
                 $statusLabel = $mitra['status'] === 'aktif' ? 'Mitra Aktif' : 'Mitra Non-Aktif';
 
-                $kategoriClass = getKategoriClassDetail($mitra['kategori_mitra']);
-                $kategoriLabel = ucwords($mitra['kategori_mitra']);
+                $kategoriClass = getKategoriClassDetail($mitra['kategori']);
+                $kategoriLabel = ucwords($mitra['kategori']);
                 ?>
 
                 <!-- Mitra Header with Logo -->
@@ -159,14 +161,14 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="<?= base_url('mitra') ?>" class="btn-secondary-custom">
+                    <a href="<?= base_url('admin/mitra') ?>" class="btn-secondary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
                         Kembali
                     </a>
-                    <a href="<?= base_url('mitra/edit/' . $mitra['id']) ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/mitra/edit/' . $mitra['id']) ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                         </svg>

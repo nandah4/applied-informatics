@@ -303,7 +303,7 @@ class ProdukController
         ];
 
         // Panggil model->updateProduk()
-        $result = $this->produkModel->updateProduk((int)$id, $produk_data);
+        $result = $this->produkModel->update((int)$id, $produk_data);
 
         // Jika gagal update dan ada foto baru, hapus foto baru tsb
         if (!$result['success']) {
@@ -335,7 +335,7 @@ class ProdukController
         }
 
         // Panggil model->deleteProduk()
-        $result = $this->produkModel->deleteProduk((int)$id);
+        $result = $this->produkModel->delete((int)$id);
 
         if (!$result['success']) {
             ResponseHelper::error($result['message']);

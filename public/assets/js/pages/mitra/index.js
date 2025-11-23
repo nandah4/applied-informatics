@@ -1,5 +1,20 @@
+/**
+ * File: pages/mitra/index.js
+ * Deskripsi: Script untuk halaman index/list data mitra
+ *
+ * Fitur:
+ * - Delete mitra dengan konfirmasi
+ * - Pagination controls
+ *
+ * Dependencies:
+ * - jQuery
+ * - jQueryHelpers.js
+ */
+
 (function () {
   "use strict";
+
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
   // MODUL DELETE MITRA
@@ -11,11 +26,17 @@
       // Tidak perlu event binding di sini
     },
 
+    /**
+     * Konfirmasi dan proses hapus mitra
+     *
+     * @param {number} id - ID mitra yang akan dihapus
+     * @param {string} name - Nama mitra untuk konfirmasi
+     */
     confirmDelete: function (id, name) {
       // Confirm dengan user
       if (
         !confirm(
-          `Apakah Anda yakin ingin menghapus mitra "${name}"?\n\nData yang dihapus tidak dapat dikembalikan.`
+          `Apakah Anda yakin ingin menghapus mitra ini?\n\nData yang dihapus tidak dapat dikembalikan.`
         )
       ) {
         return;
@@ -24,10 +45,14 @@
       // Disable semua delete buttons sementara
       $(".btn-delete").prop("disabled", true);
 
+      // Ambil CSRF token
+      const csrfToken = $('input[name="csrf_token"]').val();
+
       // AJAX delete request
       $.ajax({
-        url: "/applied-informatics/mitra/delete/" + id,
+        url: `${BASE_URL}/admin/mitra/delete/${id}`,
         method: "POST",
+        data: { csrf_token: csrfToken },
         dataType: "json",
         success: function (response) {
           if (response.success) {
@@ -49,10 +74,9 @@
             $(".btn-delete").prop("disabled", false);
           }
         },
-        error: function (xhr) {
-          const response = xhr.responseJSON;
+        error: function (error) {
           jQueryHelpers.showAlert(
-            response?.message || "Terjadi kesalahan saat menghapus data",
+            "Terjadi kesalahan saat menghapus data",
             "danger",
             5000
           );

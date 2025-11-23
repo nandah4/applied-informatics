@@ -36,7 +36,7 @@ function hasActiveChild($urls, $current)
 
             <!-- Dashboard -->
             <li class="nav-item">
-                <a href="<?= base_url('dashboard') ?>" class="nav-link parent-dashboard <?= isActive('dashboard', $current_url) ?>">
+                <a href="<?= base_url('admin/dashboard') ?>" class="nav-link parent-dashboard <?= isActive('admin/dashboard', $current_url) ?>">
                     <i data-feather="home"></i>
                     <span class="nav-text">Dashboard</span>
                 </a>
@@ -64,7 +64,7 @@ function hasActiveChild($urls, $current)
 
             <!-- Konten Laboratorium -->
             <li class="nav-item">
-                <a class="nav-link parent-menu <?= hasActiveChild(['fasilitas', 'produk', 'mitra'], $current_url) ?>">
+                <a class="nav-link parent-menu <?= hasActiveChild(['fasilitas', 'produk', 'admin/mitra'], $current_url) ?>">
                     <i data-feather="grid"></i>
                     <span class="nav-text">Konten Laboratorium</span>
                 </a>
@@ -80,7 +80,7 @@ function hasActiveChild($urls, $current)
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?= base_url('mitra') ?>" class="nav-link <?= isActive('mitra', $current_url) ?>">
+                        <a href="<?= base_url('admin/mitra') ?>" class="nav-link <?= isActive('admin/mitra', $current_url) ?>">
                             <span class="nav-text">Kelola Mitra Kerjasama</span>
                         </a>
                     </li>

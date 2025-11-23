@@ -245,11 +245,11 @@
                                         </div>
                                     </a>
                                     <div class="publication-actions mt-3 d-flex gap-2">
-                                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                        <button type="button" class="btn-primary-custom"
                                             onclick="editProfilPublikasi(<?= $profil['id'] ?>, '<?= htmlspecialchars($profil['url_profil'], ENT_QUOTES) ?>', '<?= htmlspecialchars($label) ?>')">
                                             Edit
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                        <button type="button" class="btn-danger-custom"
                                             onclick="deleteProfilPublikasi(<?= $profil['id'] ?>)">
                                             Hapus
                                         </button>
@@ -262,13 +262,18 @@
 
                 <!-- Modal Add Profil Publikasi -->
                 <div class="modal fade" id="addProfilModal" tabindex="-1" aria-labelledby="addProfilModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addProfilModalLabel">Tambah Profil Publikasi</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="url_profil" class="form-label">URL Profil <span class="required">*</span></label>
+                                    <input type="url" class="form-control" id="url_profil" placeholder="https://...">
+                                    <div id="urlProfilError" class="invalid-feedback"></div>
+                                </div>
                                 <div class="mb-3">
                                     <label for="tipe" class="form-label">Tipe Profil <span class="required">*</span></label>
                                     <select class="form-select" id="tipe">
@@ -281,15 +286,10 @@
                                     </select>
                                     <div id="tipeError" class="invalid-feedback"></div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="url_profil" class="form-label">URL Profil <span class="required">*</span></label>
-                                    <input type="url" class="form-control" id="url_profil" placeholder="https://...">
-                                    <div id="urlProfilError" class="invalid-feedback"></div>
-                                </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                <button type="button" class="btn btn-primary" id="btn-add-profil-publikasi">Simpan</button>
+                                <button type="button" class="btn-secondary-custom" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn-primary-custom" id="btn-add-profil-publikasi">Simpan</button>
                             </div>
                         </div>
                     </div>
@@ -297,7 +297,7 @@
 
                 <!-- Modal Edit Profil Publikasi -->
                 <div class="modal fade" id="editProfilModal" tabindex="-1" aria-labelledby="editProfilModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="editProfilModalLabel">Edit Profil Publikasi</h5>
@@ -306,18 +306,18 @@
                             <div class="modal-body">
                                 <input type="hidden" id="edit_profil_id">
                                 <div class="mb-3">
-                                    <label class="form-label">Tipe Profil</label>
-                                    <input type="text" class="form-control" id="edit_profil_tipe" readonly>
-                                </div>
-                                <div class="mb-3">
                                     <label for="edit_url_profil" class="form-label">URL Profil <span class="required">*</span></label>
                                     <input type="url" class="form-control" id="edit_url_profil" placeholder="https://...">
                                     <div id="editUrlProfilError" class="invalid-feedback"></div>
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tipe Profil</label>
+                                    <input type="text" class="form-control" id="edit_profil_tipe" readonly>
+                                </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                <button type="button" class="btn btn-primary" id="btn-update-profil-publikasi">Update</button>
+                                <button type="button" class="btn-secondary-custom" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn-primary-custom" id="btn-update-profil-publikasi">Update</button>
                             </div>
                         </div>
                     </div>

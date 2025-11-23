@@ -17,70 +17,41 @@
 
 class MitraModel extends BaseModel
 {
-    protected $table_name = 'tbl_mitra';
-
-    /**
-     * Hitung total semua data mitra
-     * @return int
-     */
-    public function getTotalRecords()
-    {
-        return $this->count(); // Panggil count() dari BaseModel
-    }
+    protected $table_name = "mst_mitra";
 
     /**
      * Ambil semua data mitra
      * @return array
      */
-    public function getAll()
+    public function getAllMitraWithPagination($limit = 10, $offset = 0)
     {
         try {
-            $query = "SELECT * FROM {$this->table_name} ORDER BY created_at DESC";
-            $stmt = $this->executeQuery($query);
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $countQuery = "SELECT COUNT(*) as total FROM vw_show_mitra";
+            $countStmt = $this->db->prepare($countQuery);
+            $countStmt->execute();
+            $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-            return [
-                'success' => true,
-                'data' => $data,
-                'message' => 'Data berhasil diambil'
-            ];
-        } catch (PDOException $e) {
-            return [
-                'success' => false,
-                'message' => 'Gagal mengambil data: ' . $e->getMessage()
-            ];
-        }
-    }
-
-    /**
-     * Ambil data mitra dengan limit dan offset untuk pagination
-     * @param int $limit - Jumlah data per halaman
-     * @param int $offset - Data dimulai dari baris ke berapa
-     * @return array
-     */
-    public function getAllWithLimit($limit, $offset)
-    {
-        try {
-            $query = "SELECT * FROM {$this->table_name}
-                      ORDER BY created_at DESC
-                      LIMIT :limit OFFSET :offset";
+            $query = "SELECT * FROM vw_show_mitra ORDER BY created_at DESC
+                    LIMIT :limit OFFSET :offset";
 
             $stmt = $this->db->prepare($query);
-            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return [
                 'success' => true,
-                'data' => $data,
-                'message' => 'Data berhasil diambil'
+                'data' => $result,
+                'total' => (int)$totalRecords
             ];
         } catch (PDOException $e) {
             return [
                 'success' => false,
-                'message' => 'Gagal mengambil data: ' . $e->getMessage()
+                'message' => 'Gagal mengambil data: ' . $e->getMessage(),
+                'data' => [],
+                'total' => 0
             ];
         }
     }
@@ -94,11 +65,14 @@ class MitraModel extends BaseModel
     public function getById($id)
     {
         try {
-            $query = "SELECT * FROM {$this->table_name} WHERE id = :id";
-            $stmt = $this->executeQuery($query, [':id' => $id]);
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            $query = "SELECT * FROM vw_show_mitra WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
 
-            if (!$data) {
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$result) {
                 return [
                     'success' => false,
                     'message' => 'Mitra tidak ditemukan'
@@ -107,8 +81,7 @@ class MitraModel extends BaseModel
 
             return [
                 'success' => true,
-                'data' => $data,
-                'message' => 'Data berhasil diambil'
+                'data' => $result,
             ];
         } catch (PDOException $e) {
             return [
@@ -126,34 +99,37 @@ class MitraModel extends BaseModel
     public function insert($data)
     {
         try {
-            $query = "INSERT INTO {$this->table_name}
-                      (nama, status, kategori_mitra, logo_mitra, tanggal_mulai, tanggal_akhir, deskripsi)
-                      VALUES
-                      (:nama, :status, :kategori_mitra, :logo_mitra, :tanggal_mulai, :tanggal_akhir, :deskripsi)";
+            $query = "CALL sp_insert_mitra (:nama, :status, :kategori_mitra, :logo_mitra, :tanggal_mulai, :tanggal_akhir, :deskripsi)";
+            $stmt = $this->db->prepare($query);
 
-            $params = [
-                ':nama' => $data['nama'],
-                ':status' => $data['status'],
-                ':kategori_mitra' => $data['kategori_mitra'] ?? 'industri',
-                ':logo_mitra' => $data['logo_mitra'],
-                ':tanggal_mulai' => $data['tanggal_mulai'],
-                ':tanggal_akhir' => $data['tanggal_akhir'] ?? null,
-                ':deskripsi' => $data['deskripsi'] ?? null
-            ];
+            $stmt->bindParam(':nama', $data['nama']);
+            $stmt->bindParam(':status', $data['status']);
+            $stmt->bindParam(':kategori_mitra', $data['kategori_mitra']);
+            $stmt->bindParam(':logo_mitra', $data['logo_mitra']);
+            $stmt->bindParam(':tanggal_mulai', $data['tanggal_mulai']);
+            $stmt->bindParam(':tanggal_akhir', $data['tanggal_akhir']);
+            $stmt->bindParam(':deskripsi', $data['deskripsi']);
 
-            $this->executeQuery($query, $params);
-
-            // // Get last insert ID
-            // $lastId = $this->db->lastInsertId();
+            $stmt->execute();
 
             return [
                 'success' => true,
                 'message' => 'Data mitra berhasil ditambahkan'
             ];
         } catch (PDOException $e) {
+            // Cek apakah error dari RAISE EXCEPTION di procedure
+            $errorMessage = $e->getMessage();
+
+            // Error dari procedure (RAISE EXCEPTION)
+            if (strpos($errorMessage, 'Tanggal mulai tidak boleh lebih dari tanggal akhir') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Tanggal mulai tidak boleh lebih dari tanggal akhir'
+                ];
+            }
             return [
                 'success' => false,
-                'message' => 'Gagal menambah data: ' . $e->getMessage()
+                'message' => 'Gagal menambahkan data mitra: ' . $e->getMessage()
             ];
         }
     }
@@ -167,35 +143,44 @@ class MitraModel extends BaseModel
     public function update($id, $data)
     {
         try {
-            $query = "UPDATE {$this->table_name}
-                      SET nama = :nama,
-                          status = :status,
-                          kategori_mitra = :kategori_mitra,
-                          logo_mitra = :logo_mitra,
-                          tanggal_mulai = :tanggal_mulai,
-                          tanggal_akhir = :tanggal_akhir,
-                          deskripsi = :deskripsi,
-                          updated_at = NOW()
-                      WHERE id = :id";
+            $query = "CALL sp_update_mitra (:id, :nama, :status, :kategori_mitra, :logo_mitra, :tanggal_mulai, :tanggal_akhir, :deskripsi)";
+            $stmt = $this->db->prepare($query);
 
-            $params = [
-                ':id' => $id,
-                ':nama' => $data['nama'],
-                ':status' => $data['status'],
-                ':kategori_mitra' => $data['kategori_mitra'] ?? 'industri',
-                ':logo_mitra' => $data['logo_mitra'],
-                ':tanggal_mulai' => $data['tanggal_mulai'],
-                ':tanggal_akhir' => $data['tanggal_akhir'] ?? null,
-                ':deskripsi' => $data['deskripsi'] ?? null
-            ];
 
-            $this->executeQuery($query, $params);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':nama', $data['nama']);
+            $stmt->bindParam(':status', $data['status']);
+            $stmt->bindParam(':kategori_mitra', $data['kategori_mitra']);
+            $stmt->bindParam(':logo_mitra', $data['logo_mitra']);
+            $stmt->bindParam(':tanggal_mulai', $data['tanggal_mulai']);
+            $stmt->bindParam(':tanggal_akhir', $data['tanggal_akhir']);
+            $stmt->bindParam(':deskripsi', $data['deskripsi']);
+
+            $stmt->execute();
 
             return [
                 'success' => true,
                 'message' => 'Data berhasil diupdate'
             ];
         } catch (PDOException $e) {
+            // Cek apakah error dari RAISE EXCEPTION di procedure
+            $errorMessage = $e->getMessage();
+
+            // Error dari procedure (RAISE EXCEPTION)
+            if (strpos($errorMessage, 'Tanggal mulai tidak boleh lebih dari tanggal akhir') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Tanggal mulai tidak boleh lebih dari tanggal akhir'
+                ];
+            }
+
+            if (strpos($errorMessage, 'tidak ditemukan') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Data mitra tidak ditemukan (ID mungkin salah).'
+                ];
+            }
+            
             return [
                 'success' => false,
                 'message' => 'Gagal update data: ' . $e->getMessage()
@@ -211,10 +196,10 @@ class MitraModel extends BaseModel
     public function delete($id)
     {
         try {
-            // Get mitra data first (untuk return logo path)
-            $mitra = $this->findOne(['id' => $id]);
 
-            if (!$mitra) {
+            $mitra = $this->getById($id);
+
+            if (!$mitra || !$mitra['success']) {
                 return [
                     'success' => false,
                     'message' => 'Mitra tidak ditemukan'
@@ -222,11 +207,13 @@ class MitraModel extends BaseModel
             }
 
             $query = "DELETE FROM {$this->table_name} WHERE id = :id";
-            $this->executeQuery($query, [':id' => $id]);
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
 
             return [
                 'success' => true,
-                'data' => ['logo_mitra' => $mitra['logo_mitra']],
+                'data' => ['logo_mitra' => $mitra['data']['logo_mitra'] ?? null],
                 'message' => 'Data berhasil dihapus'
             ];
         } catch (PDOException $e) {

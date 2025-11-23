@@ -307,7 +307,7 @@ class ProdukModel extends BaseModel
      * @param array $data - Data yang akan diupdate
      * @return array - ['success' => bool, 'message' => string]
      */
-    public function updateProduk($id, $data)
+    public function update($id, $data)
     {
         try {
             // Gunakan CALL
@@ -396,7 +396,7 @@ class ProdukModel extends BaseModel
      * @param int $id - ID produk yang akan dihapus
      * @return array - ['success' => bool, 'message' => string, 'data' => ['foto_produk' => string]]
      */
-    public function deleteProduk($id)
+    public function delete($id)
     {
         try {
             // Ambil data foto SEBELUM delete

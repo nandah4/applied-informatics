@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="/applied-informatics">
     <title>Edit Mitra - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
@@ -32,7 +33,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('mitra') ?>">Data Mitra</a>
+                <a href="<?= base_url('admin/mitra') ?>">Data Mitra</a>
                 <span>/</span>
                 <span>Edit Mitra</span>
             </div>
@@ -49,7 +50,8 @@
                     : upload_url('default/image.png');
                 ?>
 
-                <form id="formUpdateMitra" method="POST" action="<?= base_url('mitra/update') ?>" enctype="multipart/form-data">
+                <form id="formUpdateMitra" method="POST" action="<?= base_url('admin/mitra/update') ?>" enctype="multipart/form-data">
+                    <?= CsrfHelper::tokenField() ?>
                     <input type="hidden" name="id" value="<?= htmlspecialchars($mitra['id']) ?>">
 
                     <div class="row">
@@ -60,6 +62,7 @@
                             </label>
                             <input type="text" class="form-control" id="nama_mitra" name="nama" value="<?= htmlspecialchars($mitra['nama']) ?>" placeholder="Masukkan nama mitra" required>
                             <div class="helper-text">Berikan nama lengkap mitra</div>
+                            <div id="namaMitraError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Status Mitra -->
@@ -80,13 +83,14 @@
                             </label>
                             <select class="form-select" id="kategori_mitra" name="kategori_mitra" required>
                                 <option value="" disabled>Pilih Kategori Mitra</option>
-                                <option value="industri" <?= $mitra['kategori_mitra'] === 'industri' ? 'selected' : '' ?>>Industri</option>
-                                <option value="internasional" <?= $mitra['kategori_mitra'] === 'internasional' ? 'selected' : '' ?>>Internasional</option>
-                                <option value="institusi pemerintah" <?= $mitra['kategori_mitra'] === 'institusi pemerintah' ? 'selected' : '' ?>>Institusi Pemerintah</option>
-                                <option value="institusi pendidikan" <?= $mitra['kategori_mitra'] === 'institusi pendidikan' ? 'selected' : '' ?>>Institusi Pendidikan</option>
-                                <option value="komunitas" <?= $mitra['kategori_mitra'] === 'komunitas' ? 'selected' : '' ?>>Komunitas</option>
+                                <option value="industri" <?= $mitra['kategori'] === 'industri' ? 'selected' : '' ?>>Industri</option>
+                                <option value="internasional" <?= $mitra['kategori'] === 'internasional' ? 'selected' : '' ?>>Internasional</option>
+                                <option value="institusi pemerintah" <?= $mitra['kategori'] === 'institusi pemerintah' ? 'selected' : '' ?>>Institusi Pemerintah</option>
+                                <option value="institusi pendidikan" <?= $mitra['kategori'] === 'institusi pendidikan' ? 'selected' : '' ?>>Institusi Pendidikan</option>
+                                <option value="komunitas" <?= $mitra['kategori'] === 'komunitas' ? 'selected' : '' ?>>Komunitas</option>
                             </select>
                             <div class="helper-text">Pilih kategori yang sesuai dengan jenis mitra</div>
+                            <div id="kategoriMitraError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Tanggal Mulai Kerjasama -->
@@ -96,6 +100,7 @@
                             </label>
                             <input type="date" class="form-control date-input-native" id="tanggal_mulai" name="tanggal_mulai" value="<?= $mitra["tanggal_mulai"] ?>" required>
                             <div class="helper-text">Tanggal dimulainya kerjasama dengan mitra</div>
+                            <div id="tanggalMulaiError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Tanggal Akhir Kerjasama -->
@@ -105,6 +110,7 @@
                             </label>
                             <input type="date" class="form-control date-input-native" id="tanggal_akhir" name="tanggal_akhir" value="<?= $mitra["tanggal_akhir"] ?>">
                             <div class="helper-text">Kosongkan jika kerjasama masih berlangsung</div>
+                            <div id="tanggalAkhirError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Logo Mitra -->
@@ -138,6 +144,7 @@
                                 <img id="previewImg" src="" alt="Preview">
                                 <div class="helper-text" id="helper-text-preview">Klik preview untuk hapus logo baru mitra</div>
                             </div>
+                            <div id="logoMitraError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Deskripsi (Optional) -->
@@ -152,14 +159,14 @@
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('mitra') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/mitra') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                             Batal
                         </a>
-                        <button type="submit" class="btn-primary-custom">
+                        <button type="submit" class="btn-primary-custom" id="btn-update-mitra">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
