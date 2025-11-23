@@ -97,10 +97,10 @@ CREATE TYPE mitra_kategori_enum AS ENUM ('industri', 'internasional', 'institusi
 
 CREATE TABLE mst_mitra (
     id              BIGSERIAL PRIMARY KEY,
-    nama            VARCHAR(150) NOT NULL,
+    nama            VARCHAR(200) NOT NULL,
     status          mitra_status_enum NOT NULL DEFAULT 'non-aktif',
     deskripsi       TEXT,
-    logo_mitra      VARCHAR(255),
+    logo_mitra      TEXT
     kategori        mitra_kategori_enum NOT NULL DEFAULT 'industri',
     tanggal_mulai   DATE,
     tanggal_akhir   DATE,
@@ -147,11 +147,11 @@ CREATE TABLE map_produk_dosen (
 -- ==========================================
 
 -- Mengganti tbl_aktivitas_lab menjadi trx_aktivitas
-CREATE TABLE trx_aktivitas (
+CREATE TABLE trx_aktivitas_lab(
     id              BIGSERIAL PRIMARY KEY,
     judul_aktivitas VARCHAR(255) NOT NULL,
     deskripsi       TEXT,
-    foto_aktivitas  VARCHAR(255), 
+    foto_aktivitas  TEXT, 
     tanggal_kegiatan DATE, 
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW()

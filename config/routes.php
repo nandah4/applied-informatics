@@ -718,7 +718,7 @@ $router->post('admin/mitra/delete/(\d+)', function ($id) {
  * Aktivitas - List/Index dengan Pagination
  * URL: GET /aktivitas?page={number}&per_page={number}
  */
-$router->get('aktivitas-lab', function () {
+$router->get('admin/aktivitas-lab', function () {
     $controller = new AktivitasController();
 
     // Ambil parameter dari query string
@@ -738,14 +738,14 @@ $router->get('aktivitas-lab', function () {
  * Aktivitas - Detail Page
  * URL: GET /aktivitas/detail/{id}
  */
-$router->get('aktivitas-lab/detail/(\\d+)', function ($id) {
+$router->get('admin/aktivitas-lab/detail/(\\d+)', function ($id) {
     $controller = new AktivitasController();
 
     // Get data aktivitas by ID
     $aktivitasData = $controller->getAktivitasById((int)$id);
 
     if (!$aktivitasData['success']) {
-        header("Location: " . base_url('aktivitas-lab'));
+        header("Location: " . base_url('admin/aktivitas-lab'));
         exit;
     }
 
@@ -760,17 +760,17 @@ $router->get('aktivitas-lab/detail/(\\d+)', function ($id) {
 
 /**
  * Aktivitas - Create Page (Form)
- * URL: GET /aktivitas/create
+ * URL: GET /admin/aktivitas-lab/create
  */
-$router->get('aktivitas-lab/create', function () {
+$router->get('admin/aktivitas-lab/create', function () {
     require __DIR__ . '/../app/Views/admin/aktivitas-lab/create.php';
 }, [AuthMiddleware::class]);
 
 /**
  * Aktivitas - Create (Handle Submit)
- * URL: POST /aktivitas/create
+ * URL: POST /admin/aktivitas-lab/create
  */
-$router->post('aktivitas-lab/create', function () {
+$router->post('admin/aktivitas-lab/create', function () {
     $controller = new AktivitasController();
     $controller->createAktivitas();
 }, [AuthMiddleware::class]);
@@ -781,16 +781,16 @@ $router->post('aktivitas-lab/create', function () {
 
 /**
  * Aktivitas - Edit Page (Form)
- * URL: GET /aktivitas/edit/{id}
+ * URL: GET /admin/aktivitas-lab/edit/{id}
  */
-$router->get('aktivitas-lab/edit/(\\d+)', function ($id) {
+$router->get('admin/aktivitas-lab/edit/(\\d+)', function ($id) {
     $controller = new AktivitasController();
 
     // Get data aktivitas by ID
     $aktivitasData = $controller->getAktivitasById((int)$id);
 
     if (!$aktivitasData['success']) {
-        header("Location: " . base_url('aktivitas-lab'));
+        header("Location: " . base_url('admin/aktivitas-lab'));
         exit;
     }
 
@@ -801,9 +801,9 @@ $router->get('aktivitas-lab/edit/(\\d+)', function ($id) {
 
 /**
  * Aktivitas - Update (Handle Submit)
- * URL: POST /aktivitas/update
+ * URL: POST /admin/aktivitas-lab/update
  */
-$router->post('aktivitas-lab/update', function () {
+$router->post('admin/aktivitas-lab/update', function () {
     $controller = new AktivitasController();
     $controller->updateAktivitas();
 }, [AuthMiddleware::class]);
@@ -814,9 +814,9 @@ $router->post('aktivitas-lab/update', function () {
 
 /**
  * Aktivitas - Delete
- * URL: POST /aktivitas/delete/{id}
+ * URL: POST /admin/aktivitas-lab/delete/{id}
  */
-$router->post('aktivitas-lab/delete/(\\d+)', function ($id) {
+$router->post('admin/aktivitas-lab/delete/(\\d+)', function ($id) {
     $controller = new AktivitasController();
     $controller->deleteAktivitas($id);
 }, [AuthMiddleware::class]);

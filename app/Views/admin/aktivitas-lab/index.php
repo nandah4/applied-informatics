@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aktivitas Lab - Applied Informatics Laboratory</title>
+    <meta name="base-url" content="/applied-informatics">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -23,6 +24,9 @@
 <body>
     <!-- Alert Placeholder untuk notifikasi -->
     <div id="liveAlertPlaceholder"></div>
+
+    <!-- CSRF Token untuk AJAX requests -->
+    <?= CsrfHelper::tokenField() ?>
 
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
@@ -60,7 +64,7 @@
                     </div>
 
                     <!-- Add Button -->
-                    <a href="<?= base_url('aktivitas-lab/create') ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/aktivitas-lab/create') ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -100,13 +104,13 @@
                                     <td class="col-tanggal"><?= formatTanggal ($aktivitas['tanggal_kegiatan']); ?></td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
-                                            <a href="<?= base_url('aktivitas-lab/detail/' . $aktivitas['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
+                                            <a href="<?= base_url('admin/aktivitas-lab/detail/' . $aktivitas['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                                     <circle cx="12" cy="12" r="3"></circle>
                                                 </svg>
                                             </a>
-                                            <a href="<?= base_url('aktivitas-lab/edit/' . $aktivitas['id']) ?>" class="btn-action btn-edit" title="Edit">
+                                            <a href="<?= base_url('admin/aktivitas-lab/edit/' . $aktivitas['id']) ?>" class="btn-action btn-edit" title="Edit">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                                                 </svg>
@@ -157,7 +161,7 @@
                             <!-- Previous Button -->
                             <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                   href="<?= $pagination['has_prev'] ? base_url('aktivitas-lab?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>"
+                                   href="<?= $pagination['has_prev'] ? base_url('admin/aktivitas-lab?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>"
                                    tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
                                     Previous
                                 </a>
@@ -171,7 +175,7 @@
                                     </li>
                                 <?php else : ?>
                                     <li class="page-item <?= $pageData['number'] == $pagination['current_page'] ? 'active' : '' ?>">
-                                        <a class="page-link" href="<?= base_url('aktivitas-lab?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
+                                        <a class="page-link" href="<?= base_url('admin/aktivitas-lab?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
                                             <?= $pageData['number'] ?>
                                         </a>
                                     </li>
@@ -181,7 +185,7 @@
                             <!-- Next Button -->
                             <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                   href="<?= $pagination['has_next'] ? base_url('aktivitas-lab?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>">
+                                   href="<?= $pagination['has_next'] ? base_url('admin/aktivitas-lab?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>">
                                     Next
                                 </a>
                             </li>

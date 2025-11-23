@@ -1,5 +1,22 @@
+/**
+ * File: pages/aktivitas-lab/edit.js
+ * Deskripsi: Script untuk halaman edit aktivitas laboratorium
+ *
+ * Fitur:
+ * - File upload dengan preview
+ * - Validasi form (judul, deskripsi, tanggal, file)
+ * - Submit form update via AJAX
+ *
+ * Dependencies:
+ * - jQuery
+ * - jQueryHelpers.js
+ * - validationHelpers.js
+ */
+
 (function () {
   "use strict";
+
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
   // MODUL FILE UPLOAD
@@ -100,7 +117,7 @@
 
   const FormUpdateAktivitas = {
     init: function () {
-      $("#formUpdateAktivitas").on("submit", (e) => {
+      $("#btn-submit-update-aktivitas").on("click", (e) => {
         e.preventDefault();
         this.handleSubmit();
       });
@@ -128,7 +145,7 @@
       submitButton.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...');
 
       jQueryHelpers.makeAjaxRequest({
-        url: "/applied-informatics/aktivitas-lab/update",
+        url: `${BASE_URL}/admin/aktivitas-lab/update`,
         method: "POST",
         data: submitData,
         processData: false,
@@ -140,7 +157,7 @@
               "success"
             );
             setTimeout(() => {
-              window.location.href = "/applied-informatics/aktivitas-lab";
+              window.location.href = `${BASE_URL}/admin/aktivitas-lab`;
             }, 500);
           } else {
             jQueryHelpers.showAlert(
@@ -167,6 +184,7 @@
         deskripsi: $("#deskripsi").val().trim(),
         foto_aktivitas: $("#foto_aktivitas")[0].files[0],
         tanggal_kegiatan: $("#tanggal_kegiatan").val().trim(),
+        csrf_token: $("input[name='csrf_token']").val(),
       };
     },
 
@@ -239,6 +257,7 @@
       formData.append("judul", data.judul);
       formData.append("deskripsi", data.deskripsi);
       formData.append("tanggal_kegiatan", data.tanggal_kegiatan);
+      formData.append("csrf_token", data.csrf_token);
 
       if (data.foto_aktivitas) {
         formData.append("foto_aktivitas", data.foto_aktivitas);

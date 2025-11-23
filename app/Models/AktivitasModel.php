@@ -4,12 +4,17 @@
  * File: Models/AktivitasModel.php
  * Deskripsi: Model untuk menangani operasi database terkait data aktivitas laboratorium
  *
- * Tabel yang digunakan:
- * - tbl_aktivitas_lab: Data aktivitas laboratorium
+ * Tabel/View yang digunakan:
+ * - trx_aktivitas_lab: Data aktivitas laboratorium
+ * - vw_show_aktivitas_lab: View untuk menampilkan data
+ *
+ * Stored Procedures:
+ * - sp_insert_aktivitas_lab: Insert aktivitas baru
+ * - sp_update_aktivitas_lab: Update aktivitas
  *
  * Fungsi utama:
  * - insert(): Insert data aktivitas baru
- * - getAll(): Ambil semua data aktivitas
+ * - getAllWithPagination(): Ambil data dengan pagination
  * - getById(): Ambil detail aktivitas berdasarkan ID
  * - update(): Update data aktivitas
  * - delete(): Hapus aktivitas
@@ -17,57 +22,31 @@
 
 class AktivitasModel extends BaseModel
 {
-    protected $table_name = 'tbl_aktivitas_lab';
+    protected $table_name = 'trx_aktivitas_lab';
+
 
     /**
-     * Hitung total semua data aktivitas
-     * @return int
-     */
-    public function getTotalRecords()
-    {
-        return $this->count(); // Panggil count() dari BaseModel
-    }
-
-    /**
-     * Ambil semua data aktivitas
-     * @return array
-     */
-    public function getAll()
-    {
-        try {
-            $query = "SELECT * FROM {$this->table_name} ORDER BY tanggal_kegiatan DESC, created_at DESC";
-            $stmt = $this->executeQuery($query);
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            return [
-                'success' => true,
-                'data' => $data,
-                'message' => 'Data berhasil diambil'
-            ];
-        } catch (PDOException $e) {
-            return [
-                'success' => false,
-                'message' => 'Gagal mengambil data: ' . $e->getMessage()
-            ];
-        }
-    }
-
-    /**
-     * Ambil data aktivitas dengan limit dan offset untuk pagination
+     * Ambil semua data aktivitas dengan pagination
+     * Menggunakan view vw_show_aktivitas_lab
+     *
      * @param int $limit - Jumlah data per halaman
      * @param int $offset - Data dimulai dari baris ke berapa
      * @return array
      */
-    public function getAllWithLimit($limit, $offset)
+    public function getAllWithPagination($limit = 10, $offset = 0)
     {
         try {
-            $query = "SELECT * FROM {$this->table_name}
-                      ORDER BY tanggal_kegiatan DESC, created_at DESC
-                      LIMIT :limit OFFSET :offset";
+            // Hitung total records
+            $countQuery = "SELECT COUNT(*) as total FROM vw_show_aktivitas_lab";
+            $countStmt = $this->db->prepare($countQuery);
+            $countStmt->execute();
+            $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
+            // Ambil data dengan pagination
+            $query = "SELECT * FROM vw_show_aktivitas_lab LIMIT :limit OFFSET :offset";
             $stmt = $this->db->prepare($query);
-            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -75,26 +54,32 @@ class AktivitasModel extends BaseModel
             return [
                 'success' => true,
                 'data' => $data,
-                'message' => 'Data berhasil diambil'
+                'total' => (int) $totalRecords
             ];
         } catch (PDOException $e) {
             return [
                 'success' => false,
-                'message' => 'Gagal mengambil data: ' . $e->getMessage()
+                'message' => 'Gagal mengambil data: ' . $e->getMessage(),
+                'data' => [],
+                'total' => 0
             ];
         }
     }
 
     /**
      * Get aktivitas by ID
+     * Menggunakan view vw_show_aktivitas_lab
+     *
      * @param int $id
      * @return array
      */
     public function getById($id)
     {
         try {
-            $query = "SELECT * FROM {$this->table_name} WHERE id = :id";
-            $stmt = $this->executeQuery($query, [':id' => $id]);
+            $query = "SELECT * FROM vw_show_aktivitas_lab WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$data) {
@@ -106,8 +91,7 @@ class AktivitasModel extends BaseModel
 
             return [
                 'success' => true,
-                'data' => $data,
-                'message' => 'Data berhasil diambil'
+                'data' => $data
             ];
         } catch (PDOException $e) {
             return [
@@ -119,40 +103,50 @@ class AktivitasModel extends BaseModel
 
     /**
      * Insert new aktivitas
+     * Menggunakan stored procedure sp_insert_aktivitas_lab
+     *
      * @param array $data
      * @return array
      */
     public function insert($data)
     {
         try {
-            $query = "INSERT INTO {$this->table_name}
-                      (judul_aktivitas, deskripsi, foto_aktivitas, tanggal_kegiatan)
-                      VALUES
-                      (:judul_aktivitas, :deskripsi, :foto_aktivitas, :tanggal_kegiatan)";
+            $query = "CALL sp_insert_aktivitas_lab(:judul_aktivitas, :deskripsi, :foto_aktivitas, :tanggal_kegiatan)";
+            $stmt = $this->db->prepare($query);
 
-            $params = [
-                ':judul_aktivitas' => $data['judul_aktivitas'],
-                ':deskripsi' => $data['deskripsi'] ?? null,
-                ':foto_aktivitas' => $data['foto_aktivitas'],
-                ':tanggal_kegiatan' => $data['tanggal_kegiatan']
-            ];
+            $stmt->bindParam(':judul_aktivitas', $data['judul_aktivitas']);
+            $stmt->bindParam(':deskripsi', $data['deskripsi']);
+            $stmt->bindParam(':foto_aktivitas', $data['foto_aktivitas']);
+            $stmt->bindParam(':tanggal_kegiatan', $data['tanggal_kegiatan']);
 
-            $this->executeQuery($query, $params);
+            $stmt->execute();
 
             return [
                 'success' => true,
                 'message' => 'Data aktivitas berhasil ditambahkan'
             ];
         } catch (PDOException $e) {
+            $errorMessage = $e->getMessage();
+
+            // Handle error dari stored procedure
+            if (strpos($errorMessage, 'Judul aktivitas tidak boleh kosong') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Judul aktivitas tidak boleh kosong'
+                ];
+            }
+
             return [
                 'success' => false,
-                'message' => 'Gagal menambah data: ' . $e->getMessage()
+                'message' => 'Gagal menambah data: ' . $errorMessage
             ];
         }
     }
 
     /**
      * Update aktivitas
+     * Menggunakan stored procedure sp_update_aktivitas_lab
+     *
      * @param int $id
      * @param array $data
      * @return array
@@ -160,32 +154,42 @@ class AktivitasModel extends BaseModel
     public function update($id, $data)
     {
         try {
-            $query = "UPDATE {$this->table_name}
-                      SET judul_aktivitas = :judul_aktivitas,
-                          deskripsi = :deskripsi,
-                          foto_aktivitas = :foto_aktivitas,
-                          tanggal_kegiatan = :tanggal_kegiatan,
-                          updated_at = NOW()
-                      WHERE id = :id";
+            $query = "CALL sp_update_aktivitas_lab(:id, :judul_aktivitas, :deskripsi, :foto_aktivitas, :tanggal_kegiatan)";
+            $stmt = $this->db->prepare($query);
 
-            $params = [
-                ':id' => $id,
-                ':judul_aktivitas' => $data['judul_aktivitas'],
-                ':deskripsi' => $data['deskripsi'] ?? null,
-                ':foto_aktivitas' => $data['foto_aktivitas'],
-                ':tanggal_kegiatan' => $data['tanggal_kegiatan']
-            ];
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':judul_aktivitas', $data['judul_aktivitas']);
+            $stmt->bindParam(':deskripsi', $data['deskripsi']);
+            $stmt->bindParam(':foto_aktivitas', $data['foto_aktivitas']);
+            $stmt->bindParam(':tanggal_kegiatan', $data['tanggal_kegiatan']);
 
-            $this->executeQuery($query, $params);
+            $stmt->execute();
 
             return [
                 'success' => true,
                 'message' => 'Data berhasil diupdate'
             ];
         } catch (PDOException $e) {
+            $errorMessage = $e->getMessage();
+
+            // Handle error dari stored procedure
+            if (strpos($errorMessage, 'tidak ditemukan') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Aktivitas tidak ditemukan'
+                ];
+            }
+
+            if (strpos($errorMessage, 'Judul aktivitas tidak boleh kosong') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Judul aktivitas tidak boleh kosong'
+                ];
+            }
+
             return [
                 'success' => false,
-                'message' => 'Gagal update data: ' . $e->getMessage()
+                'message' => 'Gagal update data: ' . $errorMessage
             ];
         }
     }
@@ -199,9 +203,9 @@ class AktivitasModel extends BaseModel
     {
         try {
             // Get aktivitas data first (untuk return foto path)
-            $aktivitas = $this->findOne(['id' => $id]);
+            $aktivitas = $this->getById($id);
 
-            if (!$aktivitas) {
+            if (!$aktivitas || !$aktivitas['success']) {
                 return [
                     'success' => false,
                     'message' => 'Aktivitas tidak ditemukan'
@@ -209,11 +213,13 @@ class AktivitasModel extends BaseModel
             }
 
             $query = "DELETE FROM {$this->table_name} WHERE id = :id";
-            $this->executeQuery($query, [':id' => $id]);
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
 
             return [
                 'success' => true,
-                'data' => ['foto_aktivitas' => $aktivitas['foto_aktivitas']],
+                'data' => ['foto_aktivitas' => $aktivitas['data']['foto_aktivitas'] ?? null],
                 'message' => 'Data berhasil dihapus'
             ];
         } catch (PDOException $e) {
