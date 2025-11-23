@@ -1,5 +1,20 @@
+/**
+ * File: pages/aktivitas-lab/index.js
+ * Deskripsi: Script untuk halaman index/list data aktivitas laboratorium
+ *
+ * Fitur:
+ * - Delete aktivitas dengan konfirmasi
+ * - Pagination controls
+ *
+ * Dependencies:
+ * - jQuery
+ * - jQueryHelpers.js
+ */
+
 (function () {
   "use strict";
+
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
   // MODUL DELETE AKTIVITAS
@@ -7,15 +22,19 @@
 
   const DeleteAktivitasModule = {
     init: function () {
-      // Function sudah dipanggil dari HTML onclick
-      // Tidak perlu event binding di sini
     },
 
+    /**
+     * Konfirmasi dan proses hapus aktivitas
+     *
+     * @param {number} id - ID aktivitas yang akan dihapus
+     * @param {string} judul - Judul aktivitas untuk konfirmasi
+     */
     confirmDelete: function (id, judul) {
       // Confirm dengan user
       if (
         !confirm(
-          `Apakah Anda yakin ingin menghapus aktivitas "${judul}"?\n\nData yang dihapus tidak dapat dikembalikan.`
+          `Apakah Anda yakin ingin menghapus aktivitas ini?\n\nData yang dihapus tidak dapat dikembalikan.`
         )
       ) {
         return;
@@ -24,10 +43,14 @@
       // Disable semua delete buttons sementara
       $(".btn-delete").prop("disabled", true);
 
+      // Ambil CSRF token
+      const csrfToken = $('input[name="csrf_token"]').val();
+
       // AJAX delete request
       $.ajax({
-        url: "/applied-informatics/aktivitas-lab/delete/" + id,
+        url: `${BASE_URL}/admin/aktivitas-lab/delete/${id}`,
         method: "POST",
+        data: { csrf_token: csrfToken },
         dataType: "json",
         success: function (response) {
           if (response.success) {

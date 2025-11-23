@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Aktivitas - Applied Informatics Laboratory</title>
+    <meta name="base-url" content="/applied-informatics">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -32,7 +33,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('aktivitas-lab') ?>">Aktivitas Laboratorium</a>
+                <a href="<?= base_url('admin/aktivitas-lab') ?>">Aktivitas Laboratorium</a>
                 <span>/</span>
                 <span>Edit Aktivitas</span>
             </div>
@@ -48,7 +49,8 @@
                 $fotoUrl = $aktivitas['foto_aktivitas'] ? upload_url('aktivitas-lab/' . $aktivitas['foto_aktivitas']) : upload_url('default/image.png');
                 ?>
 
-                <form id="formUpdateAktivitas" method="POST" action="<?= base_url('aktivitas/update') ?>" enctype="multipart/form-data">
+                <form id="formUpdateAktivitas" method="POST" action="<?= base_url('admin/aktivitas-lab/update') ?>" enctype="multipart/form-data">
+                    <?= CsrfHelper::tokenField() ?>
                     <input type="hidden" name="id" value="<?= htmlspecialchars($aktivitas['id']) ?>">
 
                     <div class="row">
@@ -121,14 +123,14 @@
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('aktivitas-lab') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/aktivitas-lab') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                             Batal
                         </a>
-                        <button type="submit" class="btn-primary-custom">
+                        <button type="submit" class="btn-primary-custom" id="btn-submit-update-aktivitas">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>

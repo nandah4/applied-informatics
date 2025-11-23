@@ -32,7 +32,7 @@
                 <span>/</span>
                 <span>Detail Fasilitas</span>
             </div>
-            <h1 class="page-title"><?= htmlspecialchars($fasilitas['nama']) ?></h1>
+            <h1 class="page-title">Detail Fasilitas</h1>
             <p class="page-subtitle">Informasi lengkap tentang fasilitas</p>
         </div>
 

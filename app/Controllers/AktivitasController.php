@@ -24,17 +24,6 @@ class AktivitasController
     // ========================================
 
     /**
-     * Get all aktivitas for index page
-     * Method: GET
-     *
-     * @return array
-     */
-    public function getAllAktivitas()
-    {
-        return $this->aktivitasModel->getAll();
-    }
-
-    /**
      * Ambil semua data aktivitas dengan pagination
      * Method: GET
      *
@@ -44,18 +33,18 @@ class AktivitasController
      */
     public function getAllAktivitasWithPagination($page = 1, $perPage = 10)
     {
-        // Hitung total data
-        $totalRecords = $this->aktivitasModel->getTotalRecords();
+        // Hitung offset
+        $offset = ($page - 1) * $perPage;
+
+        // Ambil data dengan pagination dari model
+        $result = $this->aktivitasModel->getAllWithPagination($perPage, $offset);
 
         // Generate pagination data
-        $pagination = PaginationHelper::paginate($totalRecords, $page, $perPage);
-
-        // Ambil data dengan limit dan offset
-        $aktivitas = $this->aktivitasModel->getAllWithLimit($pagination['per_page'], $pagination['offset']);
+        $pagination = PaginationHelper::paginate($result['total'] ?? 0, $page, $perPage);
 
         return [
             'success' => true,
-            'data' => $aktivitas['data'] ?? [],
+            'data' => $result['data'] ?? [],
             'pagination' => $pagination
         ];
     }
@@ -84,6 +73,13 @@ class AktivitasController
         // 1. Validasi request method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             ResponseHelper::error('Invalid request method');
+            return;
+        }
+
+        // 1A. Validasi CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
             return;
         }
 
@@ -197,14 +193,21 @@ class AktivitasController
             return;
         }
 
+        // 1A. Validasi CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
         // 2. Ambil data dari POST
         $id = $_POST['id'] ?? null;
         $judul_aktivitas = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $tanggal_kegiatan = $_POST['tanggal_kegiatan'] ?? '';
 
-        // 3. Validasi ID
-        if (!$id) {
+        // 3. Validasi ID (harus numeric)
+        if (!$id || !is_numeric($id)) {
             ResponseHelper::error('ID aktivitas tidak valid');
             return;
         }
@@ -282,6 +285,13 @@ class AktivitasController
         // 1. Validasi request method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             ResponseHelper::error('Invalid request method');
+            return;
+        }
+
+        // 1A. Validasi CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
             return;
         }
 

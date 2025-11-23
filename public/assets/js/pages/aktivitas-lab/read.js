@@ -13,6 +13,8 @@
 (function () {
   "use strict";
 
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
+
   // ============================================================
   // MODUL DELETE AKTIVITAS
   // ============================================================
@@ -53,11 +55,14 @@
         '<span class="spinner-border spinner-border-sm me-2"></span>Menghapus...'
       );
 
+      // Ambil CSRF token
+      const csrfToken = $('input[name="csrf_token"]').val();
+
       // Request AJAX menggunakan jQueryHelpers
       jQueryHelpers.makeAjaxRequest({
-        url: `/applied-informatics/aktivitas-lab/delete/${id}`,
+        url: `${BASE_URL}/admin/aktivitas-lab/delete/${id}`,
         method: "POST",
-        data: {},
+        data: { csrf_token: csrfToken },
         onSuccess: (response) => {
           if (response.success) {
             // Tampilkan notifikasi success
@@ -69,7 +74,7 @@
 
             // Redirect ke halaman index setelah delay
             setTimeout(() => {
-              window.location.href = "/applied-informatics/aktivitas-lab";
+              window.location.href = `${BASE_URL}/admin/aktivitas-lab`;
             }, 500);
           } else {
             // Tampilkan pesan error dari server
