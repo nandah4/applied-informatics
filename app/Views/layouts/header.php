@@ -56,7 +56,7 @@
                         <a class="nav-link" href="<?= base_url('aktivitas-laboratorium') ?>">Aktivitas Lab</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Mitra</a>
+                        <a class="nav-link" href="<?= base_url('mitra-lab') ?>">Mitra</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Rekrutment</a>

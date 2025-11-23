@@ -1,0 +1,87 @@
+main {
+  background-color: var(--bg-primary);
+}
+
+.halaman, .deskripsi, .nama-mitra-international, .nama-mitra-national{
+    font-size: 18px;
+}
+
+.halaman-ini{
+  color: var(--color-primary-500);
+}
+
+.judul{
+    font-size: 40px;
+}
+
+.cakupan-wilayah{
+    font-size: 35px;
+}
+
+.international-container{
+    gap: 70px !important;
+}
+
+.logo-container-international {
+  height: 250px;
+  width: 250px;
+  border-radius: 10px;
+  background-color: #d9d9d9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.national-container{
+    gap: 70px !important;
+}
+
+.logo-container-national {
+  height: 250px;
+  width: 250px;
+  border-radius: 10px;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.national-scrollbar {
+    position: relative;
+    background: none;
+    border-radius: 10px;
+}
+
+.national-scrollbar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-primary-500);
+    opacity: 0.1;
+    z-index: 0;
+    border-radius: inherit;
+}
+
+.national-scrollbar > * {
+    position: relative;
+    z-index: 1;
+}
+
+.logo-container-national {
+    position: relative;
+    background: none;
+}
+
+.logo-container-national::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--bg-primary);
+    opacity: 0.5;
+    z-index: 0;
+}
+
+.logo-container-national > * {
+    position: relative;
+    z-index: 1;
+}
