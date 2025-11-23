@@ -70,14 +70,14 @@ abstract class BaseModel
      * @param array $data - Data to update
      * @return array Response format: ['success' => bool, 'message' => string]
      */
-    // abstract public function update($id, $data);
+    abstract public function update($id, $data);
 
     /**
      * Delete record
      * @param int $id - ID record
      * @return array Response format: ['success' => bool, 'message' => string]
      */
-    // abstract public function delete($id);
+    abstract public function delete($id);
 
     /**
      * ========================================================================

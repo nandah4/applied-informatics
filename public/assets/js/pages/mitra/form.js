@@ -1,5 +1,22 @@
+/**
+ * File: pages/mitra/form.js
+ * Deskripsi: Script untuk halaman create mitra
+ *
+ * Fitur:
+ * - File upload dengan preview
+ * - Validasi form (nama, kategori, tanggal, file)
+ * - Submit form via AJAX
+ *
+ * Dependencies:
+ * - jQuery
+ * - jQueryHelpers.js
+ * - validationHelpers.js
+ */
+
 (function () {
   "use strict";
+
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
   // MODUL FILE UPLOAD
@@ -27,7 +44,8 @@
           e.target.files[0],
           previewImg,
           imagePreview,
-          fileUploadWrapper
+          fileUploadWrapper,
+          fileInput
         );
       });
 
@@ -123,7 +141,7 @@
       );
 
       jQueryHelpers.makeAjaxRequest({
-        url: "/applied-informatics/mitra/create",
+        url: `${BASE_URL}/admin/mitra/create`,
         method: "POST",
         data: submitData,
         processData: false,
@@ -135,7 +153,7 @@
               "success"
             );
             setTimeout(() => {
-              window.location.href = "/applied-informatics/mitra";
+              window.location.href = `${BASE_URL}/admin/mitra`;
             }, 500);
           } else {
             jQueryHelpers.showAlert(
@@ -161,11 +179,19 @@
         tanggal_mulai: $("#tanggal_mulai").val().trim(),
         tanggal_akhir: $("#tanggal_akhir").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
+        csrf_token: $("input[name='csrf_token']").val(),
       };
     },
+    /**
+     * Validasi data form sebelum submit
+     *
+     * @param {Object} data - Data form yang akan divalidasi
+     * @returns {Array} - Array of error objects
+     */
     validateFormData: (data) => {
       const errors = [];
 
+      // Validasi nama mitra
       const nameValidation = validationHelpers.validateName(data.nama, 1, 255);
       if (!nameValidation.valid) {
         errors.push({
@@ -175,11 +201,21 @@
         });
       }
 
+      // Validasi kategori mitra
+      if (!data.kategori_mitra || data.kategori_mitra === "") {
+        errors.push({
+          fieldId: "kategori_mitra",
+          errorId: "kategoriMitraError",
+          message: "Kategori mitra wajib dipilih",
+        });
+      }
+
+      // Validasi tanggal mulai
       if (!data.tanggal_mulai || data.tanggal_mulai.length < 1) {
         errors.push({
           fieldId: "tanggal_mulai",
           errorId: "tanggalMulaiError",
-          message: "Tanggal mulai wajib Diisi",
+          message: "Tanggal mulai wajib diisi",
         });
       }
 
@@ -227,6 +263,7 @@
       formData.append("status", data.status);
       formData.append("kategori_mitra", data.kategori_mitra);
       formData.append("tanggal_mulai", data.tanggal_mulai);
+      formData.append("csrf_token", data.csrf_token)
 
       // Hanya append tanggal_akhir jika ada value
       if (data.tanggal_akhir && data.tanggal_akhir !== "") {

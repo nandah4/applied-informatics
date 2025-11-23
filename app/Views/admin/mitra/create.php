@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="/applied-informatics">
     <title>Tambah Mitra - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
@@ -32,7 +33,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('mitra') ?>">Data Mitra</a>
+                <a href="<?= base_url('admin/mitra') ?>">Data Mitra</a>
                 <span>/</span>
                 <span>Tambah Mitra</span>
             </div>
@@ -44,6 +45,9 @@
         <div class="card">
             <div class="card-body">
                 <form id="formMitra" method="POST" enctype="multipart/form-data">
+
+                    <?= CsrfHelper::tokenField() ?>
+
                     <div class="row">
                         <!-- Nama Mitra -->
                         <div class="col-md-6 mb-3">
@@ -142,7 +146,7 @@
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('mitra') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/mitra') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>

@@ -194,7 +194,7 @@
                             <!-- Previous Button -->
                             <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_prev'] ? base_url('dosen?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'])
+                                    href="<?= $pagination['has_prev'] ? base_url('admin/dosen?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'])
                                                 : '#' ?>"
                                     tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
                                     Previous
@@ -212,7 +212,7 @@
                                     <!-- Page Number -->
                                     <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
                                         <a class="page-link"
-                                            href="<?= base_url('dosen?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
+                                            href="<?= base_url('admin/dosen?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
                                             <?= $pageData['number'] ?>
                                         </a>
                                     </li>
@@ -222,7 +222,7 @@
                             <!-- Next Button -->
                             <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_next'] ? base_url('dosen?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'])
+                                    href="<?= $pagination['has_next'] ? base_url('admin/dosen?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'])
                                                 : '#' ?>">
                                     Next
                                 </a>

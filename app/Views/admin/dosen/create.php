@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <meta name="base-url" content="/applied-informatics">
+    <meta name="base-url" content="/applied-informatics">
     <title>Tambah Dosen - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->

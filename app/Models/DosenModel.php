@@ -281,7 +281,7 @@ class DosenModel extends BaseModel
      * @param int $id - ID dosen yang akan dihapus
      * @return array - Format: ['success' => bool, 'message' => string]
      */
-    public function deleteDosen($id)
+    public function delete($id)
     {
         try {
             // Cek apakah dosen exists

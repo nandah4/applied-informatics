@@ -266,6 +266,26 @@ textarea.form-control {
     color: var(--color-gray-700);
 }
 
+.btn-danger-custom {
+    background: white;
+    color: #ef4444;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid #ef4444;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.btn-danger-custom:hover {
+    background: #ef4444;
+    color: white;
+}
+
 /* Select2 Custom Styles */
 .select2-container--bootstrap-5 .select2-selection {
     padding: 0.625rem 1rem;

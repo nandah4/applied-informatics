@@ -1,5 +1,22 @@
+/**
+ * File: pages/mitra/edit.js
+ * Deskripsi: Script untuk halaman edit mitra
+ *
+ * Fitur:
+ * - File upload dengan preview
+ * - Validasi form (nama, kategori, tanggal, file)
+ * - Submit form update via AJAX
+ *
+ * Dependencies:
+ * - jQuery
+ * - jQueryHelpers.js
+ * - validationHelpers.js
+ */
+
 (function () {
   "use strict";
+
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
   // MODUL FILE UPLOAD
@@ -98,7 +115,7 @@
 
   const FormUpdateMitra = {
     init: function () {
-      $("#formUpdateMitra").on("submit", (e) => {
+      $("#btn-update-mitra").on("click", (e) => {
         e.preventDefault();
         this.handleSubmit();
       });
@@ -126,7 +143,7 @@
       submitButton.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...');
 
       jQueryHelpers.makeAjaxRequest({
-        url: "/applied-informatics/mitra/update",
+        url: `${BASE_URL}/admin/mitra/update`,
         method: "POST",
         data: submitData,
         processData: false,
@@ -138,7 +155,7 @@
               "success"
             );
             setTimeout(() => {
-              window.location.href = "/applied-informatics/mitra";
+              window.location.href = `${BASE_URL}/admin/mitra`;
             }, 500);
           } else {
             jQueryHelpers.showAlert(
@@ -167,6 +184,7 @@
         tanggal_mulai: $("#tanggal_mulai").val().trim(),
         tanggal_akhir: $("#tanggal_akhir").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
+        csrf_token: $("input[name='csrf_token']").val(),
       };
     },
     validateFormData: (data) => {
@@ -181,11 +199,19 @@
         });
       }
 
+      if (!data.kategori_mitra || data.kategori_mitra === "") {
+        errors.push({
+          fieldId: "kategori_mitra",
+          errorId: "kategoriMitraError",
+          message: "Kategori mitra wajib dipilih",
+        });
+      }
+
       if (!data.tanggal_mulai || data.tanggal_mulai.length < 1) {
         errors.push({
           fieldId: "tanggal_mulai",
           errorId: "tanggalMulaiError",
-          message: "Tanggal Mulai Wajib Diisi",
+          message: "Tanggal mulai wajib diisi",
         });
       }
 
@@ -234,6 +260,7 @@
       formData.append("status", data.status);
       formData.append("kategori_mitra", data.kategori_mitra);
       formData.append("tanggal_mulai", data.tanggal_mulai);
+      formData.append("csrf_token", data.csrf_token)
 
       // Hanya append tanggal_akhir jika ada value
       if (data.tanggal_akhir && data.tanggal_akhir !== "") {

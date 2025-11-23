@@ -29,31 +29,25 @@ class MitraController
      */
     public function getAllMitra()
     {
-        return $this->mitraModel->getAll();
-    }
+        // Ambil parameter dari GET request
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
-    /**
-     * Ambil semua data mitra dengan pagination
-     * Method: GET
-     *
-     * @param int $page - Halaman saat ini
-     * @param int $perPage - Item per halaman (default 10)
-     * @return array - ['success', 'data', 'pagination']
-     */
-    public function getAllMitraWithPagination($page = 1, $perPage = 10)
-    {
-        // Hitung total data
-        $totalRecords = $this->mitraModel->getTotalRecords();
+        // Validasi input
+        $page = max(1, $page);
+        $perPage = max(1, min(100, $perPage));
 
-        // Generate pagination data
-        $pagination = PaginationHelper::paginate($totalRecords, $page, $perPage);
+        // Hitung offset untuk query
+        $offset = ($page - 1) * $perPage;
 
-        // Ambil data dengan limit dan offset
-        $mitras = $this->mitraModel->getAllWithLimit($pagination['per_page'], $pagination['offset']);
+        // Ambil data dengan pagination
+        $result = $this->mitraModel->getAllMitraWithPagination($perPage, $offset);
+
+        // Generate pagination dari total yang dikembalikan model
+        $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
         return [
-            'success' => true,
-            'data' => $mitras['data'] ?? [],
+            'data' => $result['data'],
             'pagination' => $pagination
         ];
     }
@@ -85,6 +79,13 @@ class MitraController
             return;
         }
 
+        // 1A. Validasi csrf token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
         // 2. Ambil data dari POST
         $nama = $_POST['nama'] ?? '';
         $status = $_POST['status'] ?? 'aktif';
@@ -92,6 +93,13 @@ class MitraController
         $tanggal_mulai = $_POST['tanggal_mulai'];
         $tanggal_akhir = $_POST['tanggal_akhir'] ?? null;
         $deskripsi = $_POST['deskripsi'] ?? '';
+
+        // 2A. Validasi status
+        $allowedStatus = ['aktif', 'non-aktif'];
+        if (!in_array($status, $allowedStatus)) {
+            ResponseHelper::error('Status mitra tidak valid');
+            return;
+        }
 
         // 3. Validasi input
         $validationErrors = $this->validateMitraInput($nama, $kategori_mitra, $tanggal_mulai, $tanggal_akhir);
@@ -143,11 +151,7 @@ class MitraController
             return;
         }
 
-        // 7. Return success response
-        $mitra_id = $result['data']['id'] ?? null;
-        ResponseHelper::success('Data mitra berhasil ditambahkan', [
-            'id' => $mitra_id
-        ]);
+        ResponseHelper::success('Data mitra berhasil ditambahkan');
     }
 
     /**
@@ -211,6 +215,13 @@ class MitraController
             return;
         }
 
+        // 1A. Validasi csrf token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
+            return;
+        }
+
         // 2. Ambil data dari POST
         $id = $_POST['id'] ?? null;
         $nama = $_POST['nama'] ?? '';
@@ -220,9 +231,16 @@ class MitraController
         $tanggal_akhir = $_POST['tanggal_akhir'] ?? null;
         $deskripsi = $_POST['deskripsi'] ?? '';
 
-        // 3. Validasi ID
-        if (!$id) {
+        // 3. Validasi ID (harus numeric)
+        if (!$id || !is_numeric($id)) {
             ResponseHelper::error('ID mitra tidak valid');
+            return;
+        }
+
+        // 3A. Validasi status
+        $allowedStatus = ['aktif', 'non-aktif'];
+        if (!in_array($status, $allowedStatus)) {
+            ResponseHelper::error('Status mitra tidak valid');
             return;
         }
 
@@ -327,5 +345,4 @@ class MitraController
         // 5. Return success response
         ResponseHelper::success('Data mitra berhasil dihapus');
     }
-
 }

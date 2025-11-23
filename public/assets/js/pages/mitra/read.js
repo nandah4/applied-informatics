@@ -1,5 +1,19 @@
+/**
+ * File: pages/mitra/read.js
+ * Deskripsi: Script untuk halaman detail/read data mitra
+ *
+ * Fitur:
+ * - Delete mitra dengan konfirmasi
+ *
+ * Dependencies:
+ * - jQuery
+ * - jQueryHelpers.js
+ */
+
 (function () {
   "use strict";
+
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
   // MODUL DELETE MITRA (Detail Page)
@@ -11,11 +25,16 @@
       // Tidak perlu event binding di sini
     },
 
-    confirmDelete: function (id, name) {
+    /**
+     * Konfirmasi dan proses hapus mitra
+     *
+     * @param {number} id - ID mitra yang akan dihapus
+     */
+    confirmDelete: function (id) {
       // Confirm dengan user
       if (
         !confirm(
-          `Apakah Anda yakin ingin menghapus mitra "${name}"?\n\nData yang dihapus tidak dapat dikembalikan.`
+          `Apakah Anda yakin ingin menghapus mitra ini?\n\nData yang dihapus tidak dapat dikembalikan.`
         )
       ) {
         return;
@@ -28,10 +47,14 @@
           '<span class="spinner-border spinner-border-sm me-2"></span>Menghapus...'
         );
 
+      // Ambil CSRF token
+      const csrfToken = $('input[name="csrf_token"]').val();
+
       // AJAX delete request
       $.ajax({
-        url: "/applied-informatics/mitra/delete/" + id,
+        url: `${BASE_URL}/admin/mitra/delete/${id}`,
         method: "POST",
+        data: { csrf_token: csrfToken },
         dataType: "json",
         success: function (response) {
           if (response.success) {
@@ -43,7 +66,7 @@
 
             // Redirect ke list page setelah .05 detik
             setTimeout(function () {
-              window.location.href = "/applied-informatics/mitra";
+              window.location.href = `${BASE_URL}/admin/mitra`;
             }, 500);
           } else {
             jQueryHelpers.showAlert(
@@ -60,10 +83,9 @@
               );
           }
         },
-        error: function (xhr) {
-          const response = xhr.responseJSON;
+        error: function (error) {
           jQueryHelpers.showAlert(
-            response?.message || "Terjadi kesalahan saat menghapus data",
+            "Terjadi kesalahan saat menghapus data",
             "danger",
             5000
           );

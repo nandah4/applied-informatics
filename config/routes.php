@@ -583,15 +583,9 @@ $router->post('produk/delete/(\d+)', function ($id) {
  * Mitra - List/Index dengan Pagination
  * URL: GET /mitra?page={number}&per_page={number}
  */
-$router->get('mitra', function () {
+$router->get('admin/mitra', function () {
     $controller = new MitraController();
-
-    // Ambil parameter dari query string
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
-
-    // Ambil data dengan pagination
-    $result = $controller->getAllMitraWithPagination($page, $perPage);
+    $result = $controller->getAllMitra();
 
     $listMitra = $result['data'] ?? [];
     $pagination = $result['pagination'] ?? null;
@@ -603,14 +597,14 @@ $router->get('mitra', function () {
  * Mitra - Detail Page
  * URL: GET /mitra/detail/{id}
  */
-$router->get('mitra/detail/(\d+)', function ($id) {
+$router->get('admin/mitra/detail/(\d+)', function ($id) {
     $controller = new MitraController();
 
     // Get data mitra by ID
     $mitraData = $controller->getMitraById((int)$id);
 
     if (!$mitraData['success']) {
-        header("Location: " . base_url('mitra'));
+        header("Location: " . base_url('admin/mitra'));
         exit;
     }
 
@@ -627,7 +621,7 @@ $router->get('mitra/detail/(\d+)', function ($id) {
  * Mitra - Create Page (Form)
  * URL: GET /mitra/create
  */
-$router->get('mitra/create', function () {
+$router->get('admin/mitra/create', function () {
     require __DIR__ . '/../app/Views/admin/mitra/create.php';
 }, [AuthMiddleware::class]);
 
@@ -635,7 +629,7 @@ $router->get('mitra/create', function () {
  * Mitra - Create (Handle Submit)
  * URL: POST /mitra/create
  */
-$router->post('mitra/create', function () {
+$router->post('admin/mitra/create', function () {
     $controller = new MitraController();
     $controller->createMitra();
 }, [AuthMiddleware::class]);
@@ -648,14 +642,14 @@ $router->post('mitra/create', function () {
  * Mitra - Edit Page (Form)
  * URL: GET /mitra/edit/{id}
  */
-$router->get('mitra/edit/(\d+)', function ($id) {
+$router->get('admin/mitra/edit/(\d+)', function ($id) {
     $controller = new MitraController();
 
     // Get data mitra by ID
     $mitraData = $controller->getMitraById((int)$id);
 
     if (!$mitraData['success']) {
-        header("Location: " . base_url('mitra'));
+        header("Location: " . base_url('admin/mitra'));
         exit;
     }
 
@@ -668,7 +662,7 @@ $router->get('mitra/edit/(\d+)', function ($id) {
  * Mitra - Update (Handle Submit)
  * URL: POST /mitra/update
  */
-$router->post('mitra/update', function () {
+$router->post('admin/mitra/update', function () {
     $controller = new MitraController();
     $controller->updateMitra();
 }, [AuthMiddleware::class]);
@@ -681,7 +675,7 @@ $router->post('mitra/update', function () {
  * Mitra - Delete
  * URL: POST /mitra/delete/{id}
  */
-$router->post('mitra/delete/(\d+)', function ($id) {
+$router->post('admin/mitra/delete/(\d+)', function ($id) {
     $controller = new MitraController();
     $controller->deleteMitra($id);
 }, [AuthMiddleware::class]);
