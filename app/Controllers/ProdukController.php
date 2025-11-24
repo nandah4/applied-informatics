@@ -9,10 +9,10 @@
  * Deskripsi: Controller untuk menangani request terkait data produk
  * 
  * Fungsi utama:
- * - createProduk(): Handle request create produk baru
+ * - createProduk(): Handle request create produk baru (dengan CSRF)
  * - getAllProduk(): Get semua data produk dengan pagination
  * - getProdukById(): Get detail produk berdasarkan ID
- * - updateProduk(): Handle request update produk
+ * - updateProduk(): Handle request update produk (dengan CSRF)
  * - deleteProdukById(): Handle request delete produk
  * - getAllDosen(): Get semua dosen untuk dropdown
  */
@@ -103,9 +103,9 @@ class ProdukController
     /**
      * CREATE PRODUK (Handle Form Submit)
      *
-     * Fungsi: Menambah produk baru
+     * Fungsi: Menambah produk baru dengan CSRF protection dan multiple dosen
      * Method: POST
-     * Endpoint: /applied-informatics/produk/create
+     * Endpoint: /admin/produk/create
      * Response: JSON
      */
     public function createProduk()
@@ -115,14 +115,27 @@ class ProdukController
             ResponseHelper::error('Invalid request method');
             return;
         }
+        
+        // ✅ VALIDASI CSRF TOKEN
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Token keamanan tidak valid. Silakan refresh halaman dan coba lagi.');
+            return;
+        }
 
         // Ambil data dari $_POST
         $nama_produk = $_POST['nama_produk'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $link_produk = $_POST['link_produk'] ?? '';
         $author_type = $_POST['author_type'] ?? 'dosen'; // Default: dosen
-        $author_dosen_id = $_POST['author_dosen_id'] ?? null;
-        $author_mahasiswa_nama = $_POST['author_mahasiswa_nama'] ?? null;
+        $dosen_ids = $_POST['dosen_ids'] ?? null; // Comma-separated string
+        $tim_mahasiswa = $_POST['tim_mahasiswa'] ?? null;
+
+        // Convert dosen_ids string to array
+        $dosenIdsArray = [];
+        if (!empty($dosen_ids)) {
+            $dosenIdsArray = array_map('intval', explode(',', $dosen_ids));
+        }
 
         // Validasi input
         $validationErrors = $this->validateProdukInput(
@@ -130,8 +143,8 @@ class ProdukController
             $deskripsi, 
             $link_produk,
             $author_type,
-            $author_dosen_id,
-            $author_mahasiswa_nama
+            $dosenIdsArray,
+            $tim_mahasiswa
         );
 
         if (!empty($validationErrors)) {
@@ -161,27 +174,14 @@ class ProdukController
             return;
         }
 
-        // Siapkan data author berdasarkan author_type
-        $finalAuthorDosenId = null;
-        $finalAuthorMahasiswaNama = null;
-
-        if ($author_type === 'dosen') {
-            $finalAuthorDosenId = $author_dosen_id;
-        } elseif ($author_type === 'mahasiswa') {
-            $finalAuthorMahasiswaNama = $author_mahasiswa_nama;
-        } elseif ($author_type === 'kolaborasi') {
-            $finalAuthorDosenId = $author_dosen_id;
-            $finalAuthorMahasiswaNama = $author_mahasiswa_nama;
-        }
-
         // Siapkan data untuk insert
         $produk_data = [
             'nama_produk' => $nama_produk,
             'deskripsi' => $deskripsi,
             'foto_produk' => $fotoFileName,
             'link_produk' => $link_produk,
-            'author_dosen_id' => $finalAuthorDosenId,
-            'author_mahasiswa_nama' => $finalAuthorMahasiswaNama
+            'dosen_ids' => $dosenIdsArray, // Array of IDs
+            'tim_mahasiswa' => $tim_mahasiswa
         ];
 
         // Panggil model->insert()
@@ -196,6 +196,9 @@ class ProdukController
             return;
         }
 
+        // ✅ REGENERATE CSRF TOKEN setelah operasi berhasil
+        CsrfHelper::regenerateToken();
+
         // Return success response
         ResponseHelper::success('Data produk berhasil ditambahkan', $result['data']);
     }
@@ -203,8 +206,8 @@ class ProdukController
     /**
      * UPDATE PRODUK (Handle Edit Form)
      * 
-     * Endpoint: /applied-informatics/produk/update
-     * Fungsi: Update data produk
+     * Endpoint: /admin/produk/update
+     * Fungsi: Update data produk dengan CSRF protection dan multiple dosen
      * Method: POST
      * Response: JSON
      */
@@ -216,14 +219,27 @@ class ProdukController
             return;
         }
 
+        // ✅ VALIDASI CSRF TOKEN
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Token keamanan tidak valid. Silakan refresh halaman dan coba lagi.');
+            return;
+        }
+
         // Ambil data dari $_POST
         $id = $_POST['id'] ?? '';
         $nama_produk = $_POST['nama_produk'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $link_produk = $_POST['link_produk'] ?? '';
         $author_type = $_POST['author_type'] ?? 'dosen';
-        $author_dosen_id = $_POST['author_dosen_id'] ?? null;
-        $author_mahasiswa_nama = $_POST['author_mahasiswa_nama'] ?? null;
+        $dosen_ids = $_POST['dosen_ids'] ?? null;
+        $tim_mahasiswa = $_POST['tim_mahasiswa'] ?? null;
+
+        // Convert dosen_ids string to array
+        $dosenIdsArray = [];
+        if (!empty($dosen_ids)) {
+            $dosenIdsArray = array_map('intval', explode(',', $dosen_ids));
+        }
 
         // Validasi ID
         $idValidation = ValidationHelper::validateId($id, 'ID Produk');
@@ -238,8 +254,8 @@ class ProdukController
             $deskripsi, 
             $link_produk,
             $author_type,
-            $author_dosen_id,
-            $author_mahasiswa_nama
+            $dosenIdsArray,
+            $tim_mahasiswa
         );
 
         if (!empty($validationErrors)) {
@@ -279,30 +295,17 @@ class ProdukController
             }
         }
 
-        // Siapkan data author berdasarkan author_type
-        $finalAuthorDosenId = null;
-        $finalAuthorMahasiswaNama = null;
-
-        if ($author_type === 'dosen') {
-            $finalAuthorDosenId = $author_dosen_id;
-        } elseif ($author_type === 'mahasiswa') {
-            $finalAuthorMahasiswaNama = $author_mahasiswa_nama;
-        } elseif ($author_type === 'kolaborasi') {
-            $finalAuthorDosenId = $author_dosen_id;
-            $finalAuthorMahasiswaNama = $author_mahasiswa_nama;
-        }
-
         // Siapkan data untuk update
         $produk_data = [
             'nama_produk' => $nama_produk,
             'deskripsi' => $deskripsi,
             'foto_produk' => $fotoFileName,
             'link_produk' => $link_produk,
-            'author_dosen_id' => $finalAuthorDosenId,
-            'author_mahasiswa_nama' => $finalAuthorMahasiswaNama
+            'dosen_ids' => $dosenIdsArray, // Array of IDs
+            'tim_mahasiswa' => $tim_mahasiswa
         ];
 
-        // Panggil model->updateProduk()
+        // Panggil model->update()
         $result = $this->produkModel->update((int)$id, $produk_data);
 
         // Jika gagal update dan ada foto baru, hapus foto baru tsb
@@ -314,6 +317,9 @@ class ProdukController
             return;
         }
 
+        // ✅ REGENERATE CSRF TOKEN setelah operasi berhasil
+        CsrfHelper::regenerateToken();
+
         // Return success response
         ResponseHelper::success('Data produk berhasil diupdate');
     }
@@ -323,7 +329,7 @@ class ProdukController
      *
      * Fungsi: Hapus produk
      * Method: POST
-     * Endpoint: /applied-informatics/produk/delete/{id}
+     * Endpoint: /admin/produk/delete/{id}
      * Response: JSON
      */
     public function deleteProdukById($id)
@@ -334,7 +340,14 @@ class ProdukController
             return;
         }
 
-        // Panggil model->deleteProduk()
+        // ✅ VALIDASI CSRF TOKEN
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Token keamanan tidak valid. Silakan refresh halaman dan coba lagi.');
+            return;
+        }
+
+        // Panggil model->delete()
         $result = $this->produkModel->delete((int)$id);
 
         if (!$result['success']) {
@@ -346,6 +359,9 @@ class ProdukController
         if (!empty($result['data']['foto_produk'])) {
             FileUploadHelper::delete($result['data']['foto_produk'], 'produk');
         }
+
+        // ✅ REGENERATE CSRF TOKEN setelah operasi berhasil
+        CsrfHelper::regenerateToken();
 
         // Return success response
         ResponseHelper::success($result['message']);
@@ -359,8 +375,8 @@ class ProdukController
      * @param string $deskripsi - Deskripsi produk
      * @param string $link_produk - Link produk
      * @param string $author_type - Tipe author (dosen/mahasiswa/kolaborasi)
-     * @param mixed $author_dosen_id - ID dosen
-     * @param mixed $author_mahasiswa_nama - Nama mahasiswa
+     * @param array $dosen_ids - Array ID dosen
+     * @param mixed $tim_mahasiswa - Tim mahasiswa
      * @return array - Array error messages
      */
     private function validateProdukInput(
@@ -368,8 +384,8 @@ class ProdukController
         $deskripsi, 
         $link_produk,
         $author_type,
-        $author_dosen_id,
-        $author_mahasiswa_nama
+        $dosen_ids,
+        $tim_mahasiswa
     ) {
         $errors = [];
 
@@ -379,48 +395,53 @@ class ProdukController
             $errors[] = $namaValidation['message'];
         }
 
-        // 2. Validasi deskripsi (opsional, max 5000 char)
-        $deskripsiValidation = ValidationHelper::validateText($deskripsi, 5000, false);
+        // 2. ✅ FIXED: Validasi deskripsi (opsional, max 255 char) - SESUAI SCHEMA
+        $deskripsiValidation = ValidationHelper::validateText($deskripsi, 255, false);
         if (!$deskripsiValidation['valid']) {
             $errors[] = $deskripsiValidation['message'];
         }
 
-        // 3. Validasi link produk (opsional, jika diisi harus valid URL)
+        // 3. Validasi link produk (opsional, max 255 char, jika diisi harus valid URL)
         if (!empty($link_produk)) {
-            $linkValidation = ValidationHelper::validateUrl($link_produk, false);
-            if (!$linkValidation['valid']) {
-                $errors[] = $linkValidation['message'];
+            // Validasi panjang link sesuai schema
+            if (strlen($link_produk) > 255) {
+                $errors[] = 'Link produk maksimal 255 karakter';
+            } else {
+                $linkValidation = ValidationHelper::validateUrl($link_produk, false);
+                if (!$linkValidation['valid']) {
+                    $errors[] = $linkValidation['message'];
+                }
             }
         }
 
         // 4. Validasi author berdasarkan author_type
         if ($author_type === 'dosen') {
-            // Jika tipe dosen, author_dosen_id wajib diisi
-            if (empty($author_dosen_id)) {
-                $errors[] = 'Dosen harus dipilih';
+            // Jika tipe dosen, minimal 1 dosen harus dipilih
+            if (empty($dosen_ids) || !is_array($dosen_ids) || count($dosen_ids) === 0) {
+                $errors[] = 'Minimal pilih satu dosen';
             }
         } elseif ($author_type === 'mahasiswa') {
-            // Jika tipe mahasiswa, author_mahasiswa_nama wajib diisi
-            if (empty($author_mahasiswa_nama)) {
-                $errors[] = 'Nama mahasiswa harus diisi';
+            // Jika tipe mahasiswa, tim_mahasiswa wajib diisi
+            if (empty($tim_mahasiswa)) {
+                $errors[] = 'Tim mahasiswa harus diisi';
             } else {
-                // Validasi nama mahasiswa (min 3 char, max 255 char)
-                $mahasiswaValidation = ValidationHelper::validateName($author_mahasiswa_nama, 3, 255);
+                // Validasi tim mahasiswa (min 3 char, max 255 char)
+                $mahasiswaValidation = ValidationHelper::validateName($tim_mahasiswa, 3, 255);
                 if (!$mahasiswaValidation['valid']) {
-                    $errors[] = 'Nama mahasiswa: ' . $mahasiswaValidation['message'];
+                    $errors[] = 'Tim mahasiswa: ' . $mahasiswaValidation['message'];
                 }
             }
         } elseif ($author_type === 'kolaborasi') {
             // Jika tipe kolaborasi, keduanya wajib diisi
-            if (empty($author_dosen_id)) {
-                $errors[] = 'Dosen harus dipilih untuk kolaborasi';
+            if (empty($dosen_ids) || !is_array($dosen_ids) || count($dosen_ids) === 0) {
+                $errors[] = 'Minimal pilih satu dosen untuk kolaborasi';
             }
-            if (empty($author_mahasiswa_nama)) {
-                $errors[] = 'Nama mahasiswa harus diisi untuk kolaborasi';
+            if (empty($tim_mahasiswa)) {
+                $errors[] = 'Tim mahasiswa harus diisi untuk kolaborasi';
             } else {
-                $mahasiswaValidation = ValidationHelper::validateName($author_mahasiswa_nama, 3, 255);
+                $mahasiswaValidation = ValidationHelper::validateName($tim_mahasiswa, 3, 255);
                 if (!$mahasiswaValidation['valid']) {
-                    $errors[] = 'Nama mahasiswa: ' . $mahasiswaValidation['message'];
+                    $errors[] = 'Tim mahasiswa: ' . $mahasiswaValidation['message'];
                 }
             }
         } else {

@@ -9,55 +9,39 @@
  * Deskripsi: Model untuk menangani operasi database terkait data produk
  * 
  * Tabel yang digunakan:
- * - tbl_produk: Data utama produk
- * - tbl_dosen: Data dosen (untuk join author)
+ * - mst_produk: Data utama produk
+ * - mst_dosen: Data dosen (untuk join author)
+ * - map_produk_dosen: Mapping many-to-many produk-dosen
  * 
  * Fungsi utama:
- * - insert(): Insert data produk baru (via SP)
+ * - insert(): Insert data produk baru (via SP) dengan multiple dosen
  * - getAllProduk(): Ambil semua data produk
  * - getAllProdukPaginated(): Ambil data dengan pagination
  * - getProdukById(): Ambil detail produk berdasarkan ID (dengan join dosen)
- * - updateProduk(): Update data produk (via SP)
+ * - updateProduk(): Update data produk (via SP) dengan multiple dosen
  * - deleteProduk(): Hapus produk (via SP)
  * - getAllDosen(): Ambil semua dosen untuk dropdown
  */
 
 class ProdukModel extends BaseModel
 {
-    protected $table_name = 'tbl_produk';
+    protected $table_name = 'mst_produk';
+    protected $view_name = 'vw_show_produk'; // ✅ Tambahkan view
 
-    /**
-     * CONSTRUCTOR
-     * Inisialisasi koneksi database via BaseModel
-     */
     public function __construct()
     {
         parent::__construct();
     }
 
     /**
-     * GET ALL PRODUK
-     * Fungsi: Mengambil semua data produk dengan join ke tbl_dosen untuk nama author
-     * @return array
+     * ✅ GET ALL PRODUK - Gunakan VIEW
      */
     public function getAllProduk()
     {
         try {
-            $query = "SELECT 
-                        p.id,
-                        p.nama_produk,
-                        p.deskripsi,
-                        p.foto_produk,
-                        p.link_produk,
-                        p.author_dosen_id,
-                        p.author_mahasiswa_nama,
-                        p.created_at,
-                        p.updated_at,
-                        d.full_name as dosen_name
-                      FROM {$this->table_name} p
-                      LEFT JOIN tbl_dosen d ON p.author_dosen_id = d.id
-                      ORDER BY p.id DESC";
-
+            // ✅ Query dari VIEW (lebih simple & konsisten)
+            $query = "SELECT * FROM {$this->view_name} ORDER BY created_at DESC";
+            
             $stmt = $this->db->prepare($query);
             $stmt->execute();
 
@@ -79,24 +63,17 @@ class ProdukModel extends BaseModel
     }
 
     /**
-     * GET ALL PRODUK (PAGINATION)
-     *
-     * Fungsi: Mengambil data dengan batasan per halaman + join dosen
-     * @param int $limit - Jumlah data per halaman
-     * @param int $offset - Mulai dari data ke berapa
-     * @param bool $countOnly - Jika true, hanya kembalikan total
-     * @return array - ['success' => bool, 'data' => array, 'total' => int]
+     * ✅ GET ALL PRODUK (PAGINATION) - Gunakan VIEW
      */
     public function getAllProdukPaginated($limit = 10, $offset = 0, $countOnly = false)
     {
         try {
-            // 1. Hitung total records
-            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
+            // 1. Hitung total records dari VIEW
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->view_name}";
             $countStmt = $this->db->prepare($countQuery);
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-            // Jika $countOnly true, kembalikan total saja
             if ($countOnly) {
                 return [
                     'success' => true,
@@ -105,21 +82,9 @@ class ProdukModel extends BaseModel
                 ];
             }
 
-            // 2. Ambil data dengan pagination + join dosen
-            $query = "SELECT 
-                        p.id,
-                        p.nama_produk,
-                        p.deskripsi,
-                        p.foto_produk,
-                        p.link_produk,
-                        p.author_dosen_id,
-                        p.author_mahasiswa_nama,
-                        p.created_at,
-                        p.updated_at,
-                        d.full_name as dosen_name
-                      FROM {$this->table_name} p
-                      LEFT JOIN tbl_dosen d ON p.author_dosen_id = d.id
-                      ORDER BY p.id DESC
+            // 2. Ambil data dengan pagination dari VIEW
+            $query = "SELECT * FROM {$this->view_name}
+                      ORDER BY created_at DESC
                       LIMIT :limit OFFSET :offset";
 
             $stmt = $this->db->prepare($query);
@@ -147,31 +112,13 @@ class ProdukModel extends BaseModel
     }
 
     /**
-     * GET PRODUK BY ID
-     * 
-     * Fungsi: Mengambil detail 1 produk berdasarkan ID (dengan join dosen)
-     * @param int $id - ID produk
-     * @return array - ['success' => bool, 'message' => string, 'data' => array|null]
+     * ✅ GET PRODUK BY ID - Ambil dari mst_produk + manual join
      */
     public function getProdukById($id)
     {
         try {
-            $query = "SELECT 
-                        p.id,
-                        p.nama_produk,
-                        p.deskripsi,
-                        p.foto_produk,
-                        p.link_produk,
-                        p.author_dosen_id,
-                        p.author_mahasiswa_nama,
-                        p.created_at,
-                        p.updated_at,
-                        d.full_name as dosen_name
-                      FROM {$this->table_name} p
-                      LEFT JOIN tbl_dosen d ON p.author_dosen_id = d.id
-                      WHERE p.id = :id 
-                      LIMIT 1";
-
+            // Ambil data produk
+            $query = "SELECT * FROM {$this->view_name} WHERE id = :id LIMIT 1";
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -185,6 +132,24 @@ class ProdukModel extends BaseModel
                     'data' => null
                 ];
             }
+
+            // Ambil dosen yang terkait dengan produk ini
+            $dosenQuery = "SELECT d.id, d.full_name
+                          FROM map_produk_dosen mpd
+                          JOIN mst_dosen d ON mpd.dosen_id = d.id
+                          WHERE mpd.produk_id = :produk_id
+                          ORDER BY d.full_name";
+
+            $dosenStmt = $this->db->prepare($dosenQuery);
+            $dosenStmt->bindParam(':produk_id', $id, PDO::PARAM_INT);
+            $dosenStmt->execute();
+
+            $dosenList = $dosenStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Tambahkan dosen list ke produk data
+            $produk['dosen_list'] = $dosenList;
+            $produk['dosen_ids'] = array_column($dosenList, 'id');
+            $produk['dosen_names'] = implode(', ', array_column($dosenList, 'full_name'));
 
             return [
                 'success' => true,
@@ -204,21 +169,27 @@ class ProdukModel extends BaseModel
     /**
      * INSERT PRODUK (Implement dari BaseModel)
      * 
-     * Fungsi: Insert data produk baru menggunakan stored procedure
-     * @param array $data - Data produk ['nama_produk', 'deskripsi', 'foto_produk', 'link_produk', 'author_dosen_id', 'author_mahasiswa_nama']
+     * Fungsi: Insert data produk baru menggunakan stored procedure dengan multiple dosen
+     * @param array $data - Data produk ['nama_produk', 'deskripsi', 'foto_produk', 'link_produk', 'dosen_ids' => array, 'tim_mahasiswa']
      * @return array - ['success' => bool, 'message' => string, 'data' => ['id' => int]]
      */
     public function insert($data)
     {
         try {
+            // Convert dosen_ids array ke PostgreSQL array format
+            $dosenIdsArray = null;
+            if (!empty($data['dosen_ids']) && is_array($data['dosen_ids'])) {
+                $dosenIdsArray = '{' . implode(',', $data['dosen_ids']) . '}';
+            }
+
             // Gunakan CALL untuk stored procedure
             $query = "CALL sp_insert_produk(
                 :nama_produk,
                 :deskripsi,
                 :foto_produk,
                 :link_produk,
-                :author_dosen_id,
-                :author_mahasiswa_nama
+                :tim_mahasiswa,
+                :dosen_ids
             )";
 
             $stmt = $this->db->prepare($query);
@@ -228,32 +199,31 @@ class ProdukModel extends BaseModel
             $stmt->bindParam(':deskripsi', $data['deskripsi'], PDO::PARAM_STR);
             $stmt->bindParam(':foto_produk', $data['foto_produk'], PDO::PARAM_STR);
 
-            // Handle NULL values untuk link_produk
+            // Handle NULL values
             if (empty($data['link_produk'])) {
                 $stmt->bindValue(':link_produk', null, PDO::PARAM_NULL);
             } else {
                 $stmt->bindParam(':link_produk', $data['link_produk'], PDO::PARAM_STR);
             }
 
-            // Handle NULL values untuk author_dosen_id
-            if (empty($data['author_dosen_id'])) {
-                $stmt->bindValue(':author_dosen_id', null, PDO::PARAM_NULL);
+            if (empty($data['tim_mahasiswa'])) {
+                $stmt->bindValue(':tim_mahasiswa', null, PDO::PARAM_NULL);
             } else {
-                $stmt->bindParam(':author_dosen_id', $data['author_dosen_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':tim_mahasiswa', $data['tim_mahasiswa'], PDO::PARAM_STR);
             }
 
-            // Handle NULL values untuk author_mahasiswa_nama
-            if (empty($data['author_mahasiswa_nama'])) {
-                $stmt->bindValue(':author_mahasiswa_nama', null, PDO::PARAM_NULL);
+            // Bind dosen_ids array
+            if ($dosenIdsArray === null) {
+                $stmt->bindValue(':dosen_ids', null, PDO::PARAM_NULL);
             } else {
-                $stmt->bindParam(':author_mahasiswa_nama', $data['author_mahasiswa_nama'], PDO::PARAM_STR);
+                $stmt->bindParam(':dosen_ids', $dosenIdsArray, PDO::PARAM_STR);
             }
 
             // Execute procedure
             $stmt->execute();
 
             // Ambil ID baru yang baru saja diinsert
-            $lastIdQuery = "SELECT CURRVAL(pg_get_serial_sequence('tbl_produk', 'id')) as last_id";
+            $lastIdQuery = "SELECT CURRVAL(pg_get_serial_sequence('mst_produk', 'id')) as last_id";
             $lastIdStmt = $this->db->prepare($lastIdQuery);
             $lastIdStmt->execute();
             $result = $lastIdStmt->fetch(PDO::FETCH_ASSOC);
@@ -278,17 +248,10 @@ class ProdukModel extends BaseModel
                 ];
             }
 
-            if (strpos($errorMessage, 'Minimal salah satu author') !== false) {
-                return [
-                    'success' => false,
-                    'message' => 'Minimal salah satu author (dosen atau mahasiswa) harus diisi'
-                ];
-            }
-
             if (strpos($errorMessage, 'tidak ditemukan') !== false) {
                 return [
                     'success' => false,
-                    'message' => 'Dosen yang dipilih tidak ditemukan'
+                    'message' => 'Salah satu dosen yang dipilih tidak ditemukan'
                 ];
             }
 
@@ -302,7 +265,7 @@ class ProdukModel extends BaseModel
     /**
      * UPDATE PRODUK
      * 
-     * Fungsi: Update data produk menggunakan stored procedure
+     * Fungsi: Update data produk menggunakan stored procedure dengan multiple dosen
      * @param int $id - ID produk yang akan diupdate
      * @param array $data - Data yang akan diupdate
      * @return array - ['success' => bool, 'message' => string]
@@ -310,6 +273,12 @@ class ProdukModel extends BaseModel
     public function update($id, $data)
     {
         try {
+            // Convert dosen_ids array ke PostgreSQL array format
+            $dosenIdsArray = null;
+            if (!empty($data['dosen_ids']) && is_array($data['dosen_ids'])) {
+                $dosenIdsArray = '{' . implode(',', $data['dosen_ids']) . '}';
+            }
+
             // Gunakan CALL
             $query = "CALL sp_update_produk(
                 :id,
@@ -317,8 +286,8 @@ class ProdukModel extends BaseModel
                 :deskripsi,
                 :foto_produk,
                 :link_produk,
-                :author_dosen_id,
-                :author_mahasiswa_nama
+                :tim_mahasiswa,
+                :dosen_ids
             )";
 
             $stmt = $this->db->prepare($query);
@@ -336,16 +305,17 @@ class ProdukModel extends BaseModel
                 $stmt->bindParam(':link_produk', $data['link_produk'], PDO::PARAM_STR);
             }
 
-            if (empty($data['author_dosen_id'])) {
-                $stmt->bindValue(':author_dosen_id', null, PDO::PARAM_NULL);
+            if (empty($data['tim_mahasiswa'])) {
+                $stmt->bindValue(':tim_mahasiswa', null, PDO::PARAM_NULL);
             } else {
-                $stmt->bindParam(':author_dosen_id', $data['author_dosen_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':tim_mahasiswa', $data['tim_mahasiswa'], PDO::PARAM_STR);
             }
 
-            if (empty($data['author_mahasiswa_nama'])) {
-                $stmt->bindValue(':author_mahasiswa_nama', null, PDO::PARAM_NULL);
+            // Bind dosen_ids array
+            if ($dosenIdsArray === null) {
+                $stmt->bindValue(':dosen_ids', null, PDO::PARAM_NULL);
             } else {
-                $stmt->bindParam(':author_mahasiswa_nama', $data['author_mahasiswa_nama'], PDO::PARAM_STR);
+                $stmt->bindParam(':dosen_ids', $dosenIdsArray, PDO::PARAM_STR);
             }
 
             // Execute procedure
@@ -371,14 +341,7 @@ class ProdukModel extends BaseModel
             if (strpos($errorMessage, 'tidak ditemukan') !== false) {
                 return [
                     'success' => false,
-                    'message' => 'Data produk tidak ditemukan'
-                ];
-            }
-
-            if (strpos($errorMessage, 'Minimal salah satu author') !== false) {
-                return [
-                    'success' => false,
-                    'message' => 'Minimal salah satu author (dosen atau mahasiswa) harus diisi'
+                    'message' => 'Data produk atau dosen tidak ditemukan'
                 ];
             }
 
@@ -400,7 +363,6 @@ class ProdukModel extends BaseModel
     {
         try {
             // Ambil data foto SEBELUM delete
-            // Karena stored procedure tidak return nilai foto
             $checkQuery = "SELECT foto_produk FROM {$this->table_name} WHERE id = :id LIMIT 1";
             $checkStmt = $this->db->prepare($checkQuery);
             $checkStmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -455,7 +417,7 @@ class ProdukModel extends BaseModel
     public function getAllDosen()
     {
         try {
-            $query = "SELECT id, full_name FROM tbl_dosen ORDER BY full_name ASC";
+            $query = "SELECT id, full_name FROM mst_dosen ORDER BY full_name ASC";
             $stmt = $this->db->prepare($query);
             $stmt->execute();
 

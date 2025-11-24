@@ -484,7 +484,7 @@ $router->post('admin/fasilitas/delete/(\d+)', function ($id) {
  * Produk - List/Index (dengan Pagination)
  * URL: GET /produk?page=1&per_page=10
  */
-$router->get('produk', function () {
+$router->get('admin/produk', function () {
     $controller = new ProdukController();
     $result = $controller->getAllProduk();
 
@@ -498,7 +498,7 @@ $router->get('produk', function () {
  * Produk - Detail Page
  * URL: GET /produk/detail/{id}
  */
-$router->get('produk/detail/(\d+)', function ($id) {
+$router->get('admin/produk/detail/(\d+)', function ($id) {
     $controller = new ProdukController();
     $result = $controller->getProdukById($id);
 
@@ -521,7 +521,7 @@ $router->get('produk/detail/(\d+)', function ($id) {
  * Produk - Create Page (Form)
  * URL: GET /produk/create
  */
-$router->get('produk/create', function () {
+$router->get('admin/produk/create', function () {
     $controller = new ProdukController();
 
     // Get list dosen untuk dropdown
@@ -537,7 +537,7 @@ $router->get('produk/create', function () {
  * 
  * Response JSON dari controller
  */
-$router->post('produk/create', function () {
+$router->post('admin/produk/create', function () {
     $controller = new ProdukController();
     $controller->createProduk();
 }, [AuthMiddleware::class]);
@@ -550,7 +550,7 @@ $router->post('produk/create', function () {
  * Produk - Edit Page (Form)
  * URL: GET /produk/edit/{id}
  */
-$router->get('produk/edit/(\d+)', function ($id) {
+$router->get('admin/produk/edit/(\d+)', function ($id) {
     $controller = new ProdukController();
     $result = $controller->getProdukById($id);
 
@@ -575,7 +575,7 @@ $router->get('produk/edit/(\d+)', function ($id) {
  * 
  * Response JSON dari controller
  */
-$router->post('produk/update', function () {
+$router->post('admin/produk/update', function () {
     $controller = new ProdukController();
     $controller->updateProduk();
 }, [AuthMiddleware::class]);
@@ -590,7 +590,7 @@ $router->post('produk/update', function () {
  * 
  * Response JSON dari controller
  */
-$router->post('produk/delete/(\d+)', function ($id) {
+$router->post('admin/produk/delete/(\d+)', function ($id) {
     $controller = new ProdukController();
     $controller->deleteProdukById($id);
 }, [AuthMiddleware::class]);

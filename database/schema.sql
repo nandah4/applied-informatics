@@ -100,7 +100,7 @@ CREATE TABLE mst_mitra (
     nama            VARCHAR(200) NOT NULL,
     status          mitra_status_enum NOT NULL DEFAULT 'non-aktif',
     deskripsi       TEXT,
-    logo_mitra      TEXT
+    logo_mitra      TEXT,
     kategori        mitra_kategori_enum NOT NULL DEFAULT 'industri',
     tanggal_mulai   DATE,
     tanggal_akhir   DATE,

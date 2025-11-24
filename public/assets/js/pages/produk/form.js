@@ -1,18 +1,8 @@
 /**
  * File: pages/produk/form.js
- * Deskripsi: Menangani interaksi form produk (create & edit)
- *
- * Dependencies:
- * - jQuery
- * - Bootstrap 5
- * - jQueryHelpers.js
- * - validationHelpers.js
- *
- * Fitur:
- * - Upload file dengan preview (dukungan drag & drop)
- * - Toggle author fields (Dosen/Mahasiswa/Kolaborasi)
- * - Validasi dan submit form (create & edit)
- * - Error handling per-field
+ * Deskripsi: Menangani interaksi form produk (create & edit) dengan multiple dosen
+ * 
+ * ✅ FIXED VERSION - Sesuai dengan referensi dosen/edit.js
  */
 
 (function () {
@@ -22,9 +12,6 @@
   // MODUL FILE UPLOAD
   // ============================================================
   const FileUploadModule = {
-    /**
-     * Inisialisasi fungsionalitas upload file
-     */
     init: function () {
       const fileUploadWrapper = document.getElementById("fileUploadWrapper");
       const fileInput = document.getElementById("foto_produk");
@@ -35,12 +22,10 @@
 
       if (!fileUploadWrapper || !fileInput) return;
 
-      // Klik untuk upload
       fileUploadWrapper.addEventListener("click", () => {
         fileInput.click();
       });
 
-      // Event perubahan file input
       fileInput.addEventListener("change", (e) => {
         this.handleFileSelect(
           e.target.files[0],
@@ -52,7 +37,6 @@
         );
       });
 
-      // Cek apakah btnRemovePreview ada (untuk edit mode)
       if (btnRemovePreview) {
         btnRemovePreview.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -60,27 +44,15 @@
         });
       }
 
-      // Untuk create mode, hapus preview dengan klik pada gambar preview
       if (!btnRemovePreview && imagePreview) {
         imagePreview.addEventListener("click", () => {
           this.removePreview(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper);
         });
       }
 
-      // Event drag and drop
       this.setupDragAndDrop(fileUploadWrapper, fileInput);
     },
 
-    /**
-     * Handle pemilihan file dan preview
-     *
-     * @param {File} file - File yang dipilih
-     * @param {HTMLElement} previewImg - Element preview gambar
-     * @param {HTMLElement} imagePreview - Element container preview
-     * @param {HTMLElement} fileInput - Input file element
-     * @param {HTMLElement} fileUploadWrapper - Wrapper upload box
-     * @param {HTMLElement} currentImageWrapper - Wrapper untuk gambar lama (edit mode)
-     */
     handleFileSelect: function (
       file,
       previewImg,
@@ -91,7 +63,6 @@
     ) {
       if (!file) return;
 
-      // Validasi ukuran file (2MB)
       const sizeValidation = validationHelpers.validateFileSize(file, 2);
       if (!sizeValidation.valid) {
         jQueryHelpers.showError("foto_produk", "fotoProdukError", sizeValidation.message);
@@ -99,7 +70,6 @@
         return;
       }
 
-      // Validasi tipe file
       const typeValidation = validationHelpers.validateFileType(file, [
         "image/jpeg",
         "image/jpg",
@@ -111,10 +81,8 @@
         return;
       }
 
-      // Clear error jika valid
       jQueryHelpers.clearError("foto_produk", "fotoProdukError");
 
-      // Tampilkan preview
       const reader = new FileReader();
       reader.onload = (e) => {
         previewImg.src = e.target.result;
@@ -127,14 +95,6 @@
       reader.readAsDataURL(file);
     },
 
-    /**
-     * Hapus preview dan reset file input
-     *
-     * @param {HTMLElement} fileInput - Input file element
-     * @param {HTMLElement} imagePreview - Element container preview
-     * @param {HTMLElement} fileUploadWrapper - Wrapper upload box
-     * @param {HTMLElement} currentImageWrapper - Wrapper untuk gambar lama (edit mode)
-     */
     removePreview: function (fileInput, imagePreview, fileUploadWrapper, currentImageWrapper) {
       fileInput.value = "";
       imagePreview.style.display = "none";
@@ -144,12 +104,6 @@
       }
     },
 
-    /**
-     * Setup fungsionalitas drag and drop
-     *
-     * @param {HTMLElement} wrapper - Element wrapper upload
-     * @param {HTMLElement} fileInput - Element file input
-     */
     setupDragAndDrop: function (wrapper, fileInput) {
       wrapper.addEventListener("dragover", (e) => {
         e.preventDefault();
@@ -174,12 +128,173 @@
   };
 
   // ============================================================
+  // ✅ MODUL MULTIPLE DOSEN SELECTION - FIXED VERSION
+  // ============================================================
+  const DosenSelectionModule = {
+    selectedDosen: [],
+
+    init: function () {
+      const $dropdown = $("#customDropdownDosen");
+      const $trigger = $("#dosenTrigger");
+      const $menu = $("#dosenMenu");
+      const $text = $("#dosenText");
+      const $hiddenInput = $("#dosen_ids");
+      const $badgesContainer = $("#selectedDosenBadges");
+
+      if ($dropdown.length === 0 || $trigger.length === 0) {
+        console.warn("Dosen dropdown elements not found");
+        return;
+      }
+
+      // ✅ FIX: Toggle dropdown dengan class 'active' sesuai CSS
+      $trigger.on("click", (e) => {
+        e.stopPropagation();
+        $dropdown.toggleClass("active");
+      });
+
+      // Tutup dropdown saat klik di luar
+      $(document).on("click", (e) => {
+        if (!$dropdown.is(e.target) && $dropdown.has(e.target).length === 0) {
+          $dropdown.removeClass("active");
+        }
+      });
+
+      // ✅ Handle klik item - ADDITIVE ONLY (seperti dosen/edit.js)
+      $menu.on("click", ".custom-dropdown-item", (e) => {
+        // Jangan proses jika sudah selected/disabled
+        const $item = $(e.target).closest(".custom-dropdown-item");
+        if ($item.hasClass("selected") || $item.hasClass("disabled")) {
+          return;
+        }
+
+        const value = $item.attr("data-value");
+        const text = $item.find(".item-text").text();
+
+        // Tambah ke selection (ADDITIVE)
+        this.selectedDosen.push({ id: value, name: text });
+
+        // Mark item sebagai selected dan disabled
+        $item.addClass("selected disabled");
+
+        // Update display
+        this.updateDisplay($hiddenInput, $text, $badgesContainer);
+      });
+
+      // ✅ Handle hapus badge - SATU-SATUNYA cara untuk unselect
+      $badgesContainer.on("click", ".badge-remove-btn", (e) => {
+        e.stopPropagation();
+
+        const $removeBtn = $(e.target).closest(".badge-remove-btn");
+        const id = $removeBtn.attr("data-id");
+
+        // Hapus dari selectedDosen
+        const index = this.selectedDosen.findIndex((d) => d.id === id);
+        if (index !== -1) {
+          this.selectedDosen.splice(index, 1);
+        }
+
+        // Hapus badge dari DOM
+        $removeBtn.closest(".selected-badge").remove();
+
+        // Re-enable item di dropdown
+        const $menuItem = $menu.find(`.custom-dropdown-item[data-value="${id}"]`);
+        if ($menuItem.length > 0) {
+          $menuItem.removeClass("selected disabled");
+        }
+
+        // Update display
+        this.updateDisplay($hiddenInput, $text, $badgesContainer);
+      });
+
+      // Load selected dosen dari edit mode (jika ada)
+      this.loadSelectedDosenFromEdit();
+
+      console.log("Dosen selection module initialized");
+    },
+
+    loadSelectedDosenFromEdit: function () {
+      const hiddenInput = document.getElementById("dosen_ids");
+      if (!hiddenInput || !hiddenInput.value) return;
+
+      const selectedIds = hiddenInput.value.split(",").map((id) => parseInt(id.trim()));
+      const $menu = $("#dosenMenu");
+
+      selectedIds.forEach((id) => {
+        const item = document.querySelector(`.custom-dropdown-item[data-id="${id}"]`);
+        if (item) {
+          const name = item.querySelector(".item-text").textContent;
+          this.selectedDosen.push({ id: id.toString(), name });
+          
+          // Mark dropdown item as selected and disabled
+          $(item).addClass("selected disabled");
+        }
+      });
+
+      this.renderSelectedBadges();
+      this.updateHiddenInput();
+      this.updateDropdownText();
+
+      console.log("Loaded selected dosen from edit mode:", this.selectedDosen);
+    },
+
+    updateDisplay: function ($hiddenInput, $text, $badgesContainer) {
+      this.updateHiddenInput();
+      this.renderSelectedBadges();
+      this.updateDropdownText();
+    },
+
+    renderSelectedBadges: function () {
+      const badgesContainer = document.getElementById("selectedDosenBadges");
+      if (!badgesContainer) return;
+
+      if (this.selectedDosen.length === 0) {
+        badgesContainer.innerHTML = "";
+        badgesContainer.style.display = "none";
+        return;
+      }
+
+      badgesContainer.style.display = "flex";
+      badgesContainer.innerHTML = this.selectedDosen
+        .map(
+          (dosen) => `
+        <span class="selected-badge">
+          ${dosen.name}
+          <button type="button" class="badge-remove-btn" data-id="${dosen.id}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </span>
+      `
+        )
+        .join("");
+    },
+
+    updateHiddenInput: function () {
+      const hiddenInput = document.getElementById("dosen_ids");
+      if (!hiddenInput) return;
+
+      const ids = this.selectedDosen.map((d) => d.id).join(",");
+      hiddenInput.value = ids;
+    },
+
+    updateDropdownText: function () {
+      const dosenText = document.getElementById("dosenText");
+      if (dosenText) {
+        if (this.selectedDosen.length === 0) {
+          dosenText.textContent = "Pilih Dosen";
+        } else {
+          dosenText.textContent = `${this.selectedDosen.length} dosen dipilih`;
+        }
+      }
+    },
+  };
+
+  // ============================================================
   // MODUL AUTHOR TYPE TOGGLE
   // ============================================================
   const AuthorTypeModule = {
-    /**
-     * Inisialisasi toggle author fields
-     */
     init: function () {
       const authorTypeDosen = document.getElementById("author_type_dosen");
       const authorTypeMahasiswa = document.getElementById("author_type_mahasiswa");
@@ -195,42 +310,38 @@
         authorTypeKolaborasi.addEventListener("change", this.toggleAuthorFields);
       }
 
-      // Initial toggle saat load halaman
       this.toggleAuthorFields();
     },
 
-    /**
-     * Toggle visibility author fields berdasarkan tipe yang dipilih
-     */
     toggleAuthorFields: function () {
       const authorTypeDosen = document.getElementById("author_type_dosen");
       const authorTypeMahasiswa = document.getElementById("author_type_mahasiswa");
       const authorTypeKolaborasi = document.getElementById("author_type_kolaborasi");
       const authorDosenWrapper = document.getElementById("author_dosen_wrapper");
       const authorMahasiswaWrapper = document.getElementById("author_mahasiswa_wrapper");
-      const authorDosenSelect = document.getElementById("author_dosen_id");
-      const authorMahasiswaInput = document.getElementById("author_mahasiswa_nama");
+      const dosenIdsInput = document.getElementById("dosen_ids");
+      const timMahasiswaInput = document.getElementById("tim_mahasiswa");
 
-      if (authorTypeDosen.checked) {
-        // Hanya Dosen
+      if (authorTypeDosen && authorTypeDosen.checked) {
         authorDosenWrapper.style.display = "block";
         authorMahasiswaWrapper.style.display = "none";
-        authorDosenSelect.required = true;
-        authorMahasiswaInput.required = false;
-        authorMahasiswaInput.value = ""; // Clear mahasiswa input
-      } else if (authorTypeMahasiswa.checked) {
-        // Hanya Mahasiswa
+        dosenIdsInput.required = true;
+        timMahasiswaInput.required = false;
+        timMahasiswaInput.value = "";
+      } else if (authorTypeMahasiswa && authorTypeMahasiswa.checked) {
         authorDosenWrapper.style.display = "none";
         authorMahasiswaWrapper.style.display = "block";
-        authorDosenSelect.required = false;
-        authorMahasiswaInput.required = true;
-        authorDosenSelect.value = ""; // Clear dosen select
-      } else if (authorTypeKolaborasi.checked) {
-        // Kolaborasi - tampilkan keduanya
+        dosenIdsInput.required = false;
+        timMahasiswaInput.required = true;
+        dosenIdsInput.value = "";
+        DosenSelectionModule.selectedDosen = [];
+        DosenSelectionModule.renderSelectedBadges();
+        DosenSelectionModule.updateDropdownText();
+      } else if (authorTypeKolaborasi && authorTypeKolaborasi.checked) {
         authorDosenWrapper.style.display = "block";
         authorMahasiswaWrapper.style.display = "block";
-        authorDosenSelect.required = true;
-        authorMahasiswaInput.required = true;
+        dosenIdsInput.required = true;
+        timMahasiswaInput.required = true;
       }
     },
   };
@@ -239,57 +350,40 @@
   // MODUL SUBMIT FORM PRODUK (Create & Edit)
   // ============================================================
   const FormSubmissionModule = {
-    /**
-     * Inisialisasi form submission
-     */
     init: function () {
-      // Binding ke 'submit' form, bukan 'click' tombol
       $("#formProduk").on("submit", (e) => {
         e.preventDefault();
         this.handleSubmit(e.currentTarget);
       });
     },
 
-
-    /**
-     * Handle submit form
-     *
-     * @param {HTMLFormElement} formElement - Element form yang disubmit
-     */
     handleSubmit: function (formElement) {
       const $form = $(formElement);
 
-      // Get form action URL
       const ajaxUrl = $form.data("ajax-url");
       const redirectUrl = $form.data("redirect-url");
       const successMessage = $form.data("success-message");
 
-      // Clear semua error messages
       jQueryHelpers.clearAllErrors("formProduk");
 
-      // Ambil data form
       const formData = this.getFormData();
-
-      // Validasi form
       const validationErrors = this.validateFormData(formData);
 
       if (validationErrors.length > 0) {
-        // Tampilkan error di bawah field yang sesuai
         validationErrors.forEach((error) => {
           jQueryHelpers.showError(error.fieldId, error.errorId, error.message);
         });
         return;
       }
 
-      // Siapkan FormData untuk AJAX (support file upload)
       const submitData = this.prepareFormData(formData);
 
-      // Disable tombol submit
       const submitButton = $form.find('button[type="submit"]');
       const buttonState = jQueryHelpers.disableButton(
-        submitButton.attr('id') || 'submit-btn', "Menyimpan...");
+        submitButton.attr("id") || "submit-btn",
+        "Menyimpan..."
+      );
 
-      // Kirim AJAX request
       jQueryHelpers.makeAjaxRequest({
         url: ajaxUrl,
         method: "POST",
@@ -314,11 +408,6 @@
       });
     },
 
-    /**
-     * Ambil data dari form
-     *
-     * @return {Object} Data form
-     */
     getFormData: function () {
       return {
         nama_produk: $("#nama_produk").val().trim(),
@@ -326,23 +415,25 @@
         link_produk: $("#link_produk").val().trim(),
         foto_produk: $("#foto_produk")[0].files[0] || null,
         author_type: $('input[name="author_type"]:checked').val(),
-        author_dosen_id: $("#author_dosen_id").val() || null,
-        author_mahasiswa_nama: $("#author_mahasiswa_nama").val().trim() || null,
+        dosen_ids: $("#dosen_ids").val() || null,
+        tim_mahasiswa: $("#tim_mahasiswa").val().trim() || null,
         id: $("#id").val() || null,
+        csrf_token: $('input[name="csrf_token"]').val() || null,
       };
     },
 
-    /**
-     * Validasi data form
-     *
-     * @param {Object} data - Data form yang akan divalidasi
-     * @return {Array} Array of error objects
-     */
     validateFormData: function (data) {
       const errors = [];
       const isCreateMode = data.id === null;
 
-      // Validasi Nama Produk (wajib, min 3 char, max 255 char)
+      if (!data.csrf_token) {
+        errors.push({
+          fieldId: "csrf_token",
+          errorId: "csrfError",
+          message: "Token keamanan tidak ditemukan. Silakan refresh halaman.",
+        });
+      }
+
       const nameValidation = validationHelpers.validateName(data.nama_produk, 3, 255, "Nama produk");
       if (!nameValidation.valid) {
         errors.push({
@@ -352,8 +443,7 @@
         });
       }
 
-      // Validasi Deskripsi (opsional, max 5000 char)
-      const deskripsiValidation = validationHelpers.validateText(data.deskripsi, 5000, false);
+      const deskripsiValidation = validationHelpers.validateText(data.deskripsi, 255, false);
       if (!deskripsiValidation.valid) {
         errors.push({
           fieldId: "deskripsi",
@@ -362,19 +452,25 @@
         });
       }
 
-      // Validasi Link Produk (opsional, jika diisi harus valid URL)
       if (data.link_produk) {
-        const linkValidation = validationHelpers.validateUrl(data.link_produk);
-        if (!linkValidation.valid) {
+        if (data.link_produk.length > 255) {
           errors.push({
             fieldId: "link_produk",
             errorId: "linkProdukError",
-            message: linkValidation.message,
+            message: "Link produk maksimal 255 karakter",
           });
+        } else {
+          const linkValidation = validationHelpers.validateUrl(data.link_produk);
+          if (!linkValidation.valid) {
+            errors.push({
+              fieldId: "link_produk",
+              errorId: "linkProdukError",
+              message: linkValidation.message,
+            });
+          }
         }
       }
 
-      // Validasi Foto (wajib di mode Create, opsional di mode Edit)
       if (isCreateMode && !data.foto_produk) {
         errors.push({
           fieldId: "foto_produk",
@@ -383,9 +479,8 @@
         });
       }
 
-      // Validasi Foto (jika file baru di-upload)
       if (data.foto_produk) {
-        const sizeValidation = validationHelpers.validateFileSize(data.foto_produk, 2); // 2MB
+        const sizeValidation = validationHelpers.validateFileSize(data.foto_produk, 2);
         if (!sizeValidation.valid) {
           errors.push({
             fieldId: "foto_produk",
@@ -408,71 +503,69 @@
         }
       }
 
-      // Validasi author_type (wajib)
       if (!data.author_type) {
         errors.push({
-          fieldId: "author_type", // Bisa di salah satu radio button
+          fieldId: "author_type",
           errorId: "authorTypeError",
           message: "Tipe author harus dipilih",
         });
       }
 
-      // Validasi Author berdasarkan author_type
       if (data.author_type === "dosen") {
-        if (!data.author_dosen_id) {
+        if (!data.dosen_ids) {
           errors.push({
-            fieldId: "author_dosen_id",
-            errorId: "authorDosenError",
-            message: "Dosen harus dipilih",
+            fieldId: "dosen_ids",
+            errorId: "dosenError",
+            message: "Minimal pilih satu dosen",
           });
         }
       } else if (data.author_type === "mahasiswa") {
-        if (!data.author_mahasiswa_nama) {
+        if (!data.tim_mahasiswa) {
           errors.push({
-            fieldId: "author_mahasiswa_nama",
-            errorId: "authorMahasiswaError",
-            message: "Nama mahasiswa harus diisi",
+            fieldId: "tim_mahasiswa",
+            errorId: "timMahasiswaError",
+            message: "Tim mahasiswa harus diisi",
           });
         } else {
           const mahasiswaValidation = validationHelpers.validateName(
-            data.author_mahasiswa_nama,
+            data.tim_mahasiswa,
             3,
             255,
-            "Nama mahasiswa"
+            "Tim mahasiswa"
           );
           if (!mahasiswaValidation.valid) {
             errors.push({
-              fieldId: "author_mahasiswa_nama",
-              errorId: "authorMahasiswaError",
+              fieldId: "tim_mahasiswa",
+              errorId: "timMahasiswaError",
               message: mahasiswaValidation.message,
             });
           }
         }
       } else if (data.author_type === "kolaborasi") {
-        if (!data.author_dosen_id) {
+        if (!data.dosen_ids) {
           errors.push({
-            fieldId: "author_dosen_id",
-            errorId: "authorDosenError",
-            message: "Dosen harus dipilih untuk kolaborasi",
+            fieldId: "dosen_ids",
+            errorId: "dosenError",
+            message: "Minimal pilih satu dosen untuk kolaborasi",
           });
         }
-        if (!data.author_mahasiswa_nama) {
+        if (!data.tim_mahasiswa) {
           errors.push({
-            fieldId: "author_mahasiswa_nama",
-            errorId: "authorMahasiswaError",
-            message: "Nama mahasiswa harus diisi untuk kolaborasi",
+            fieldId: "tim_mahasiswa",
+            errorId: "timMahasiswaError",
+            message: "Tim mahasiswa harus diisi untuk kolaborasi",
           });
         } else {
           const mahasiswaValidation = validationHelpers.validateName(
-            data.author_mahasiswa_nama,
+            data.tim_mahasiswa,
             3,
             255,
-            "Nama mahasiswa"
+            "Tim mahasiswa"
           );
           if (!mahasiswaValidation.valid) {
             errors.push({
-              fieldId: "author_mahasiswa_nama",
-              errorId: "authorMahasiswaError",
+              fieldId: "tim_mahasiswa",
+              errorId: "timMahasiswaError",
               message: mahasiswaValidation.message,
             });
           }
@@ -482,36 +575,27 @@
       return errors;
     },
 
-    /**
-     * Siapkan FormData untuk submit AJAX
-     *
-     * @param {Object} data - Data form
-     * @return {FormData} FormData object
-     */
     prepareFormData: function (data) {
       const formData = new FormData();
 
+      formData.append("csrf_token", data.csrf_token);
       formData.append("nama_produk", data.nama_produk);
       formData.append("deskripsi", data.deskripsi);
       formData.append("link_produk", data.link_produk);
       formData.append("author_type", data.author_type);
 
-      // Tambahkan author_dosen_id jika ada
-      if (data.author_dosen_id) {
-        formData.append("author_dosen_id", data.author_dosen_id);
+      if (data.dosen_ids) {
+        formData.append("dosen_ids", data.dosen_ids);
       }
 
-      // Tambahkan author_mahasiswa_nama jika ada
-      if (data.author_mahasiswa_nama) {
-        formData.append("author_mahasiswa_nama", data.author_mahasiswa_nama);
+      if (data.tim_mahasiswa) {
+        formData.append("tim_mahasiswa", data.tim_mahasiswa);
       }
 
-      // Tambahkan foto jika ada
       if (data.foto_produk) {
         formData.append("foto_produk", data.foto_produk);
       }
 
-      // Tambahkan ID jika ini mode edit
       if (data.id) {
         formData.append("id", data.id);
       }
@@ -525,6 +609,7 @@
   // ============================================================
   $(document).ready(function () {
     FileUploadModule.init();
+    DosenSelectionModule.init();
     AuthorTypeModule.init();
     FormSubmissionModule.init();
   });

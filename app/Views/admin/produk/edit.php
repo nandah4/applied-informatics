@@ -29,18 +29,21 @@
 
     <?php
     // Generate foto URL
-    $fotoUrl = !empty($produk['foto_produk']) 
-        ? upload_url('produk/' . $produk['foto_produk']) 
+    $fotoUrl = !empty($produk['foto_produk'])
+        ? upload_url('produk/' . $produk['foto_produk'])
         : upload_url('default/image.png');
 
     // Tentukan author type berdasarkan data yang ada
-    if (!empty($produk['author_dosen_id']) && !empty($produk['author_mahasiswa_nama'])) {
+    if (!empty($produk['dosen_ids']) && count($produk['dosen_ids']) > 0 && !empty($produk['tim_mahasiswa'])) {
         $authorType = 'kolaborasi';
-    } elseif (!empty($produk['author_dosen_id'])) {
+    } elseif (!empty($produk['dosen_ids']) && count($produk['dosen_ids']) > 0) {
         $authorType = 'dosen';
     } else {
         $authorType = 'mahasiswa';
     }
+
+    // Untuk dropdown dosen, convert dosen_ids ke comma-separated string
+    $selectedDosenIds = !empty($produk['dosen_ids']) ? implode(',', $produk['dosen_ids']) : '';
     ?>
 
     <!-- Main Content Area -->
@@ -48,7 +51,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('produk') ?>">Data Produk</a>
+                <a href="<?= base_url('admin/produk') ?>">Data Produk</a>
                 <span>/</span>
                 <span>Edit Produk</span>
             </div>
@@ -59,11 +62,14 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formProduk" method="POST" enctype="multipart/form-data" 
-                    data-ajax-url="<?= base_url('produk/update') ?>"
-                    data-redirect-url="<?= base_url('produk') ?>"
+                <form id="formProduk" method="POST" enctype="multipart/form-data"
+                    data-ajax-url="<?= base_url('admin/produk/update') ?>"
+                    data-redirect-url="<?= base_url('admin/produk') ?>"
                     data-success-message="Data produk berhasil diupdate.">
-                    
+
+                    <!-- âœ… CSRF Token Hidden Field -->
+                    <?= CsrfHelper::tokenField() ?>
+
                     <input type="hidden" id="id" name="id" value="<?= htmlspecialchars($produk['id']) ?>">
 
                     <div class="row">
@@ -83,8 +89,8 @@
                                 Link Produk
                             </label>
                             <input type="url" class="form-control" id="link_produk" name="link_produk" value="<?= htmlspecialchars($produk['link_produk'] ?? '') ?>" placeholder="https://example.com">
-                            <div class="helper-text">URL lengkap produk (opsional)</div>
-                            <div id="linkProdukError" class="invalid-feedback"></div>
+                            <div class="helperdeskripsi singkat produk (Ppsional)</div>
+                            <div id=" linkProdukError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Foto Produk -->
@@ -157,39 +163,56 @@
                             <div class="helper-text">Pilih apakah author adalah Dosen, Mahasiswa, atau Kolaborasi keduanya</div>
                         </div>
 
-                        <!-- Author Dosen (Dropdown) -->
+                        <!-- Pilih Dosen (Multiple Selection with Custom Dropdown) -->
                         <div class="col-md-6 mb-3" id="author_dosen_wrapper" style="display: <?= ($authorType === 'dosen' || $authorType === 'kolaborasi') ? 'block' : 'none' ?>;">
-                            <label for="author_dosen_id" class="form-label">
+                            <label for="dosen_ids" class="form-label">
                                 Pilih Dosen <span class="required" id="dosen_required">*</span>
                             </label>
-                            <select class="form-select" id="author_dosen_id" name="author_dosen_id" <?= ($authorType === 'dosen' || $authorType === 'kolaborasi') ? 'required' : '' ?>>
-                                <option value="">Pilih Dosen</option>
-                                <?php
-                                if (!empty($listDosen)) :
-                                    foreach ($listDosen as $dosen) :
-                                ?>
-                                        <option value="<?= $dosen['id'] ?>" <?= $produk['author_dosen_id'] == $dosen['id'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($dosen['full_name']) ?>
-                                        </option>
-                                    <?php
-                                    endforeach;
-                                else :
-                                    ?>
-                                    <option value="" disabled>Tidak ada data dosen</option>
-                                <?php endif; ?>
-                            </select>
-                            <div class="helper-text">Pilih dosen sebagai author produk</div>
-                            <div id="authorDosenError" class="invalid-feedback"></div>
+
+                            <!-- ✅ HANYA SATU hidden input dengan pre-filled value -->
+                            <input type="hidden" id="dosen_ids" name="dosen_ids" value="<?= htmlspecialchars($selectedDosenIds) ?>">
+
+                            <!-- Selected Dosen Badges (will be populated by JS) -->
+                            <div class="selected-badges" id="selectedDosenBadges"></div>
+
+                            <!-- Custom Dropdown -->
+                            <div class="custom-dropdown" id="customDropdownDosen">
+                                <div class="custom-dropdown-trigger" id="dosenTrigger">
+                                    <span class="custom-dropdown-text" id="dosenText">Pilih Dosen</span>
+                                    <svg class="custom-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+
+                                <div class="custom-dropdown-menu" id="dosenMenu">
+                                    <?php if (empty($listDosen)): ?>
+                                        <div class="custom-dropdown-empty">Tidak ada data dosen</div>
+                                    <?php else: ?>
+                                        <?php foreach ($listDosen as $dosen): ?>
+                                            <div class="custom-dropdown-item" data-value="<?= $dosen['id'] ?>" data-id="<?= $dosen['id'] ?>">
+                                                <span class="item-text"><?= htmlspecialchars($dosen['full_name']) ?></span>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="helper-text">Pilih satu atau lebih dosen</div>
+                            <div id="dosenError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Author Mahasiswa (Text Input) -->
+                        <!-- Tim Mahasiswa -->
                         <div class="col-md-6 mb-3" id="author_mahasiswa_wrapper" style="display: <?= ($authorType === 'mahasiswa' || $authorType === 'kolaborasi') ? 'block' : 'none' ?>;">
-                            <label for="author_mahasiswa_nama" class="form-label">
-                                Nama Mahasiswa <span class="required" id="mahasiswa_required">*</span>
+                            <label for="tim_mahasiswa" class="form-label">
+                                Tim Mahasiswa <span class="required" id="mahasiswa_required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="author_mahasiswa_nama" name="author_mahasiswa_nama" value="<?= htmlspecialchars($produk['author_mahasiswa_nama'] ?? '') ?>" placeholder="Masukkan nama mahasiswa" <?= ($authorType === 'mahasiswa' || $authorType === 'kolaborasi') ? 'required' : '' ?>>
-                            <div class="helper-text">Masukkan nama lengkap mahasiswa</div>
-                            <div id="authorMahasiswaError" class="invalid-feedback"></div>
+                            <input type="text"
+                                class="form-control"
+                                id="tim_mahasiswa"
+                                name="tim_mahasiswa"
+                                value="<?= htmlspecialchars($produk['tim_mahasiswa'] ?? '') ?>"
+                                placeholder="Contoh: Ahmad, Budi, Citra">
+                            <div class="helper-text">Nama anggota tim mahasiswa (pisahkan dengan koma)</div>
+                            <div id="timMahasiswaError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Deskripsi -->
@@ -198,14 +221,14 @@
                                 Deskripsi Produk
                             </label>
                             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi produk"><?= htmlspecialchars($produk['deskripsi'] ?? '') ?></textarea>
-                            <div class="helper-text">Jelaskan fitur dan kegunaan produk (opsional)</div>
+                            <div class="helper-text">Jelaskan deskripsi singkat produk (Ppsional)</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
                     </div>
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('produk') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/produk') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>

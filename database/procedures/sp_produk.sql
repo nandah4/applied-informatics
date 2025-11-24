@@ -1,136 +1,155 @@
 -- =================================================================
--- STORED PROCEDURES FOR TBL_PRODUK
+-- STORED PROCEDURES FOR MST_PRODUK (Sesuai Schema.sql)
 -- =================================================================
--- Description: Procedures untuk CRUD operations pada tabel produk
--- Author: Applied Informatics Lab
--- Version: 1.0
+-- Description: Procedures untuk CRUD operations pada tabel mst_produk
+-- Dependencies: mst_produk, mst_dosen, map_produk_dosen
 -- =================================================================
 
 -- =================================================================
--- PROCEDURE: Insert data produk baru
+-- 1. PROCEDURE: Insert Produk
 -- =================================================================
 CREATE OR REPLACE PROCEDURE sp_insert_produk(
-    p_nama_produk VARCHAR(255),
-    p_deskripsi TEXT,
-    p_foto_produk VARCHAR(255),
-    p_link_produk VARCHAR(255) DEFAULT NULL,
-    p_author_dosen_id BIGINT DEFAULT NULL,
-    p_author_mahasiswa_nama VARCHAR(255) DEFAULT NULL
+    p_nama_produk   VARCHAR(255),
+    p_deskripsi     VARCHAR(255), -- Sesuai schema VARCHAR(255)
+    p_foto_produk   TEXT,
+    p_link_produk   VARCHAR(255) DEFAULT NULL,
+    p_tim_mahasiswa VARCHAR(255) DEFAULT NULL, -- Sesuai nama kolom di schema
+    p_dosen_ids     BIGINT[] DEFAULT NULL      -- Array ID Dosen untuk tabel map
 )
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_produk_id BIGINT;
+    v_dosen_id  BIGINT;
 BEGIN
-    -- Validasi nama produk duplicate (CASE-INSENSITIVE)
+    -- 1. Validasi nama produk duplicate (CASE-INSENSITIVE)
+    -- Meskipun schema tidak ada UNIQUE constraint, validasi logic tetap disarankan
     IF EXISTS (
-        SELECT 1 FROM tbl_produk 
+        SELECT 1 FROM mst_produk 
         WHERE LOWER(TRIM(nama_produk)) = LOWER(TRIM(p_nama_produk))
     ) THEN
-        RAISE EXCEPTION 'Nama produk sudah terdaftar';
+        RAISE EXCEPTION 'Nama produk "%" sudah terdaftar dalam sistem.', p_nama_produk;
     END IF;
 
-    -- Validasi: Minimal salah satu author harus diisi
-    IF p_author_dosen_id IS NULL AND p_author_mahasiswa_nama IS NULL THEN
-        RAISE EXCEPTION 'Minimal salah satu author (dosen atau mahasiswa) harus diisi';
+    -- 2. Validasi Keberadaan Dosen (Jika ada input dosen)
+    IF p_dosen_ids IS NOT NULL AND array_length(p_dosen_ids, 1) > 0 THEN
+        FOREACH v_dosen_id IN ARRAY p_dosen_ids
+        LOOP
+            IF NOT EXISTS (SELECT 1 FROM mst_dosen WHERE id = v_dosen_id) THEN
+                RAISE EXCEPTION 'Dosen dengan ID % tidak ditemukan.', v_dosen_id;
+            END IF;
+        END LOOP;
     END IF;
 
-    -- Validasi: Jika author_dosen_id diisi, pastikan dosen ada
-    IF p_author_dosen_id IS NOT NULL THEN
-        IF NOT EXISTS (SELECT 1 FROM tbl_dosen WHERE id = p_author_dosen_id) THEN
-            RAISE EXCEPTION 'Dosen dengan ID % tidak ditemukan', p_author_dosen_id;
-        END IF;
-    END IF;
-
-    -- Insert data produk
-    INSERT INTO tbl_produk (
+    -- 3. Insert ke tabel mst_produk
+    INSERT INTO mst_produk (
         nama_produk, 
         deskripsi, 
         foto_produk, 
         link_produk,
-        author_dosen_id, 
-        author_mahasiswa_nama
+        tim_mahasiswa,
+        created_at,
+        updated_at
     )
     VALUES (
         TRIM(p_nama_produk), 
         p_deskripsi, 
         p_foto_produk, 
         p_link_produk,
-        p_author_dosen_id, 
-        TRIM(p_author_mahasiswa_nama)
-    );
+        TRIM(p_tim_mahasiswa),
+        NOW(),
+        NOW()
+    )
+    RETURNING id INTO v_produk_id;
 
-    -- Log untuk debugging (opsional, bisa dihapus di production)
-    RAISE NOTICE 'Produk "%" berhasil ditambahkan', p_nama_produk;
+    -- 4. Insert ke tabel map_produk_dosen (Many-to-Many)
+    IF p_dosen_ids IS NOT NULL AND array_length(p_dosen_ids, 1) > 0 THEN
+        FOREACH v_dosen_id IN ARRAY p_dosen_ids
+        LOOP
+            INSERT INTO map_produk_dosen (produk_id, dosen_id)
+            VALUES (v_produk_id, v_dosen_id)
+            ON CONFLICT (produk_id, dosen_id) DO NOTHING; -- Mencegah duplikasi pair
+        END LOOP;
+    END IF;
 
+    RAISE NOTICE 'Produk berhasil ditambahkan dengan ID %', v_produk_id;
 END;
 $$;
 
-COMMENT ON PROCEDURE sp_insert_produk IS 
-'Procedure untuk insert produk baru. Validasi nama unik (case-insensitive) dan minimal salah satu author terisi.';
 
 -- =================================================================
--- PROCEDURE: Update data produk
+-- 2. PROCEDURE: Update Produk
 -- =================================================================
 CREATE OR REPLACE PROCEDURE sp_update_produk(
-    p_id BIGINT,
-    p_nama_produk VARCHAR(255),
-    p_deskripsi TEXT,
-    p_foto_produk VARCHAR(255),
-    p_link_produk VARCHAR(255),
-    p_author_dosen_id BIGINT,
-    p_author_mahasiswa_nama VARCHAR(255)
+    p_id            BIGINT,
+    p_nama_produk   VARCHAR(255),
+    p_deskripsi     VARCHAR(255),
+    p_foto_produk   TEXT,
+    p_link_produk   VARCHAR(255),
+    p_tim_mahasiswa VARCHAR(255),
+    p_dosen_ids     BIGINT[] DEFAULT NULL
 )
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_dosen_id BIGINT;
 BEGIN
-    -- Validasi apakah ID produk ada
-    IF NOT EXISTS (SELECT 1 FROM tbl_produk WHERE id = p_id) THEN
-        RAISE EXCEPTION 'Produk dengan ID % tidak ditemukan', p_id;
+    -- 1. Validasi ID Produk
+    IF NOT EXISTS (SELECT 1 FROM mst_produk WHERE id = p_id) THEN
+        RAISE EXCEPTION 'Produk dengan ID % tidak ditemukan.', p_id;
     END IF;
 
-    -- Validasi nama duplicate (CASE-INSENSITIVE, exclude ID sendiri)
+    -- 2. Validasi Nama Duplicate (Exclude ID sendiri)
     IF EXISTS (
-        SELECT 1 FROM tbl_produk
+        SELECT 1 FROM mst_produk
         WHERE LOWER(TRIM(nama_produk)) = LOWER(TRIM(p_nama_produk))
           AND id <> p_id
     ) THEN
-        RAISE EXCEPTION 'Nama produk sudah terdaftar';
+        RAISE EXCEPTION 'Nama produk "%" sudah digunakan oleh data lain.', p_nama_produk;
     END IF;
 
-    -- Validasi: Minimal salah satu author harus diisi
-    IF p_author_dosen_id IS NULL AND p_author_mahasiswa_nama IS NULL THEN
-        RAISE EXCEPTION 'Minimal salah satu author (dosen atau mahasiswa) harus diisi';
+    -- 3. Validasi Keberadaan Dosen
+    IF p_dosen_ids IS NOT NULL AND array_length(p_dosen_ids, 1) > 0 THEN
+        FOREACH v_dosen_id IN ARRAY p_dosen_ids
+        LOOP
+            IF NOT EXISTS (SELECT 1 FROM mst_dosen WHERE id = v_dosen_id) THEN
+                RAISE EXCEPTION 'Dosen dengan ID % tidak ditemukan.', v_dosen_id;
+            END IF;
+        END LOOP;
     END IF;
 
-    -- Validasi: Jika author_dosen_id diisi, pastikan dosen ada
-    IF p_author_dosen_id IS NOT NULL THEN
-        IF NOT EXISTS (SELECT 1 FROM tbl_dosen WHERE id = p_author_dosen_id) THEN
-            RAISE EXCEPTION 'Dosen dengan ID % tidak ditemukan', p_author_dosen_id;
-        END IF;
-    END IF;
-
-    -- Update data
-    UPDATE tbl_produk
+    -- 4. Update tabel mst_produk
+    UPDATE mst_produk
     SET
-        nama_produk = TRIM(p_nama_produk),
-        deskripsi = p_deskripsi,
-        foto_produk = p_foto_produk,
-        link_produk = p_link_produk,
-        author_dosen_id = p_author_dosen_id,
-        author_mahasiswa_nama = TRIM(p_author_mahasiswa_nama),
-        updated_at = NOW() -- Selalu perbarui timestamp updated_at
+        nama_produk   = TRIM(p_nama_produk),
+        deskripsi     = p_deskripsi,
+        foto_produk   = p_foto_produk,
+        link_produk   = p_link_produk,
+        tim_mahasiswa = TRIM(p_tim_mahasiswa),
+        updated_at    = NOW()
     WHERE id = p_id;
 
-    -- Log untuk debugging (opsional)
-    RAISE NOTICE 'Produk ID % berhasil diupdate', p_id;
+    -- 5. Reset Mapping Dosen
+    -- Hapus mapping lama
+    DELETE FROM map_produk_dosen WHERE produk_id = p_id;
 
+    -- Insert mapping baru
+    IF p_dosen_ids IS NOT NULL AND array_length(p_dosen_ids, 1) > 0 THEN
+        FOREACH v_dosen_id IN ARRAY p_dosen_ids
+        LOOP
+            INSERT INTO map_produk_dosen (produk_id, dosen_id)
+            VALUES (p_id, v_dosen_id)
+            ON CONFLICT (produk_id, dosen_id) DO NOTHING;
+        END LOOP;
+    END IF;
+
+    RAISE NOTICE 'Produk ID % berhasil diperbarui.', p_id;
 END;
 $$;
 
-COMMENT ON PROCEDURE sp_update_produk IS 
-'Procedure untuk update produk. Validasi nama unik (case-insensitive), ID, dan minimal salah satu author terisi.';
 
 -- =================================================================
--- PROCEDURE: Delete data produk
+-- 3. PROCEDURE: Delete Produk
 -- =================================================================
 CREATE OR REPLACE PROCEDURE sp_delete_produk(
     p_id BIGINT
@@ -140,69 +159,19 @@ AS $$
 DECLARE
     v_row_count INT;
 BEGIN
-    -- Hapus data
-    DELETE FROM tbl_produk
-    WHERE id = p_id;
+    -- 1. Hapus data produk
+    -- Catatan: Tidak perlu hapus map_produk_dosen secara manual
+    -- karena di schema.sql sudah didefinisikan ON DELETE CASCADE
+    
+    DELETE FROM mst_produk WHERE id = p_id;
 
-    -- Cek apakah ada baris yang terhapus
+    -- 2. Cek apakah ada data yang terhapus
     GET DIAGNOSTICS v_row_count = ROW_COUNT;
 
     IF v_row_count = 0 THEN
-        RAISE EXCEPTION 'Produk dengan ID % tidak ditemukan', p_id;
+        RAISE EXCEPTION 'Produk dengan ID % tidak ditemukan atau sudah dihapus.', p_id;
     END IF;
 
-    -- Log untuk debugging (opsional)
-    RAISE NOTICE 'Produk ID % berhasil dihapus', p_id;
-
-    -- CATATAN PENTING:
-    -- Prosedur ini TIDAK mengembalikan nama file foto yang dihapus.
-    -- Model PHP HARUS SELECT nama foto terlebih dahulu
-    -- sebelum memanggil prosedur ini untuk menghapus file dari server.
-
+    RAISE NOTICE 'Produk ID % berhasil dihapus beserta data mappingnya.', p_id;
 END;
 $$;
-
-COMMENT ON PROCEDURE sp_delete_produk IS 
-'Procedure untuk hapus produk berdasarkan ID. File foto harus dihapus manual di PHP.';
-
--- =================================================================
--- TEST PROCEDURES (Run untuk testing)
--- =================================================================
-
--- Test 1: Insert produk baru (Author: Dosen)
--- CALL sp_insert_produk('Aplikasi E-Learning', 'Platform pembelajaran online', 'elearning.jpg', 'https://elearning.com', 1, NULL);
-
--- Test 2: Insert produk baru (Author: Mahasiswa)
--- CALL sp_insert_produk('IoT Monitoring', 'Sistem monitoring IoT', 'iot.jpg', 'https://iot.com', NULL, 'Ahmad Hidayat');
-
--- Test 3: Insert produk baru (Author: Kolaborasi)
--- CALL sp_insert_produk('Smart Home', 'Aplikasi smart home', 'smarthome.jpg', NULL, 1, 'Siti Nurhaliza');
-
--- Test 4: Insert duplicate (harus error)
--- CALL sp_insert_produk('APLIKASI E-LEARNING', 'Test duplicate', 'test.jpg', NULL, 1, NULL);
--- Expected: ERROR: Nama produk sudah terdaftar
-
--- Test 5: Insert tanpa author (harus error)
--- CALL sp_insert_produk('Test Produk', 'Test', 'test.jpg', NULL, NULL, NULL);
--- Expected: ERROR: Minimal salah satu author harus diisi
-
--- Test 6: Update produk
--- CALL sp_update_produk(1, 'Aplikasi E-Learning Pro', 'Platform upgraded', 'elearning_new.jpg', 'https://elearning.com', 1, NULL);
-
--- Test 7: Update dengan nama duplicate (harus error)
--- CALL sp_update_produk(2, 'Aplikasi E-Learning Pro', 'Test', 'test.jpg', NULL, NULL, 'Ahmad');
--- Expected: ERROR: Nama produk sudah terdaftar
-
--- Test 8: Delete produk
--- CALL sp_delete_produk(1);
-
--- Test 9: Delete produk yang tidak ada (harus error)
--- CALL sp_delete_produk(999);
--- Expected: ERROR: Produk dengan ID 999 tidak ditemukan
-
--- =================================================================
--- ROLLBACK PROCEDURES (Jika perlu menghapus)
--- =================================================================
--- DROP PROCEDURE IF EXISTS sp_insert_produk;
--- DROP PROCEDURE IF EXISTS sp_update_produk;
--- DROP PROCEDURE IF EXISTS sp_delete_produk;

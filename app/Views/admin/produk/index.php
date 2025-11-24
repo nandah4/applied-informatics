@@ -24,6 +24,9 @@
     <!-- Alert Placeholder -->
     <div id="liveAlertPlaceholder"></div>
 
+    <!-- ✅ CSRF Token Hidden Field -->
+    <?= CsrfHelper::tokenField() ?>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -60,7 +63,7 @@
                     </div>
 
                     <!-- Add Button -->
-                    <a href="<?= base_url('produk/create') ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/produk/create') ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -76,7 +79,7 @@
                     <thead>
                         <tr>
                             <th class="col-id">ID</th>
-                            <th class="col-foto">Foto</th>
+                            <th class="col-logo">Foto</th>
                             <th class="col-name">Nama Produk</th>
                             <th class="col-author">Author</th>
                             <th class="col-link">Link Produk</th>
@@ -87,23 +90,26 @@
                         <?php
                         if (!empty($listProduk)) :
                             foreach ($listProduk as $produk) :
-                                // Generate author display berdasarkan data
+                                // âœ… GENERATE AUTHOR DISPLAY DENGAN STRUKTUR BARU
                                 $authorDisplay = '';
-                                if (!empty($produk['author_dosen_id']) && !empty($produk['author_mahasiswa_nama'])) {
-                                    // Kolaborasi
-                                    $authorDisplay = htmlspecialchars($produk['dosen_name']) . ' & ' . htmlspecialchars($produk['author_mahasiswa_nama']);
-                                } elseif (!empty($produk['author_dosen_id'])) {
-                                    // Dosen only
-                                    $authorDisplay = htmlspecialchars($produk['dosen_name']);
-                                } elseif (!empty($produk['author_mahasiswa_nama'])) {
-                                    // Mahasiswa only
-                                    $authorDisplay = htmlspecialchars($produk['author_mahasiswa_nama']);
+                                $hasDosen = !empty($produk['dosen_names']);
+                                $hasMahasiswa = !empty($produk['tim_mahasiswa']);
+
+                                if ($hasDosen && $hasMahasiswa) {
+                                    // Kolaborasi: Dosen & Mahasiswa
+                                    $authorDisplay = htmlspecialchars($produk['dosen_names']) . ' & ' . htmlspecialchars($produk['tim_mahasiswa']);
+                                } elseif ($hasDosen) {
+                                    // Hanya Dosen
+                                    $authorDisplay = htmlspecialchars($produk['dosen_names']);
+                                } elseif ($hasMahasiswa) {
+                                    // Hanya Mahasiswa
+                                    $authorDisplay = htmlspecialchars($produk['tim_mahasiswa']);
                                 } else {
                                     $authorDisplay = '-';
                                 }
 
-                                $fotoUrl = !empty($produk['foto_produk']) 
-                                    ? upload_url('produk/' . $produk['foto_produk']) 
+                                $fotoUrl = !empty($produk['foto_produk'])
+                                    ? upload_url('produk/' . $produk['foto_produk'])
                                     : upload_url('default/image.png');
                         ?>
                                 <tr>
@@ -115,7 +121,74 @@
                                         <div class="product-name"><?= htmlspecialchars($produk['nama_produk']) ?></div>
                                     </td>
                                     <td class="col-author">
-                                        <div class="author-info"><?= $authorDisplay ?></div>
+                                        <?php
+                                        // ✅ GENERATE AUTHOR DISPLAY DENGAN BADGE LABELS & PROPER SPACING
+                                        $hasDosen = !empty($produk['dosen_names']);
+                                        $hasMahasiswa = !empty($produk['tim_mahasiswa']);
+
+                                        if ($hasDosen && $hasMahasiswa): ?>
+                                            <!-- ✅ Kolaborasi: Dosen & Mahasiswa dengan spacing -->
+                                            <div class="author-badges-wrapper">
+                                                <!-- Dosen Section -->
+                                                    <span class="author-badge author-dosen"> Dosen
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                            <circle cx="12" cy="7" r="4"></circle>
+                                                        </svg>
+                                                        
+                                                        <?= htmlspecialchars($produk['dosen_names']) ?>
+                                                    </span>
+
+                                                <!-- Mahasiswa Section (dengan spacing top) -->
+                                                
+                                                    <span class="author-badge author-mahasiswa"> Mahasiswa
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                            <circle cx="9" cy="7" r="4"></circle>
+                                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                                        </svg>
+                                                        
+                                                        <?= htmlspecialchars($produk['tim_mahasiswa']) ?>
+                                                    </span>
+                                                
+                                            </div>
+
+                                        <?php elseif ($hasDosen): ?>
+                                            <!-- ✅ Hanya Dosen -->
+                                            <div class="author-badges-wrapper">
+                                                
+                                                    <span class="author-badge author-dosen"> Dosen
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                            <circle cx="12" cy="7" r="4"></circle>
+                                                        </svg>
+                                                        
+                                                        <?= htmlspecialchars($produk['dosen_names']) ?>
+                                                    </span>
+                                                
+                                            </div>
+
+                                        <?php elseif ($hasMahasiswa): ?>
+                                            <!-- ✅ Hanya Mahasiswa -->
+                                            <div class="author-badges-wrapper">
+                                                
+                                                    <span class="author-badge author-mahasiswa"> Mahasiswa
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                            <circle cx="9" cy="7" r="4"></circle>
+                                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                                        </svg>
+                                                        
+                                                        <?= htmlspecialchars($produk['tim_mahasiswa']) ?>
+                                                    </span>
+                                                
+                                            </div>
+
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td class="col-link">
                                         <?php if (!empty($produk['link_produk'])) : ?>
@@ -133,22 +206,22 @@
                                     </td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
-                                            <a href="<?= base_url('produk/detail/' . $produk['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
+                                            <a href="<?= base_url('admin/produk/detail/' . $produk['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                                     <circle cx="12" cy="12" r="3"></circle>
                                                 </svg>
                                             </a>
-                                            <a href="<?= base_url('produk/edit/' . $produk['id']) ?>" class="btn-action btn-edit" title="Edit">
+                                            <a href="<?= base_url('admin/produk/edit/' . $produk['id']) ?>" class="btn-action btn-edit" title="Edit">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                                                 </svg>
                                             </a>
-                                            <button 
-                                                class="btn-action btn-delete" 
+                                            <button
+                                                class="btn-action btn-delete"
                                                 title="Hapus"
                                                 data-produk-id="<?= $produk['id'] ?>"
-                                                onclick="confirmDelete(<?= $produk['id'] ?>, '<?= base_url('produk/delete/' . $produk['id']) ?>')">
+                                                onclick="confirmDelete(<?= $produk['id'] ?>, '<?= base_url('admin/produk/delete/' . $produk['id']) ?>')">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <polyline points="3 6 5 6 21 6"></polyline>
                                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -194,7 +267,7 @@
                             <!-- Previous Button -->
                             <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_prev'] ? base_url('produk?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>"
+                                    href="<?= $pagination['has_prev'] ? base_url('admin/produk?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>"
                                     tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
                                     Previous
                                 </a>
@@ -207,7 +280,7 @@
                                 <?php else: ?>
                                     <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
                                         <a class="page-link"
-                                            href="<?= base_url('produk?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
+                                            href="<?= base_url('admin/produk?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
                                             <?= $pageData['number'] ?>
                                         </a>
                                     </li>
@@ -217,7 +290,7 @@
                             <!-- Next Button -->
                             <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_next'] ? base_url('produk?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>">
+                                    href="<?= $pagination['has_next'] ? base_url('admin/produk?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>">
                                     Next
                                 </a>
                             </li>

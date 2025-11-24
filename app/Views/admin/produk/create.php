@@ -32,7 +32,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('produk') ?>">Data Produk</a>
+                <a href="<?= base_url('admin/produk') ?>">Data Produk</a>
                 <span>/</span>
                 <span>Tambah Produk</span>
             </div>
@@ -44,17 +44,21 @@
         <div class="card">
             <div class="card-body">
                 <form id="formProduk" method="POST" enctype="multipart/form-data"
-                    data-ajax-url="<?= base_url('produk/create') ?>"
-                    data-redirect-url="<?= base_url('produk') ?>"
+                    data-ajax-url="<?= base_url('admin/produk/create') ?>"
+                    data-redirect-url="<?= base_url('admin/produk') ?>"
                     data-success-message="Data produk berhasil ditambahkan.">
+
+                    <!-- ✅ CSRF Token Hidden Field -->
+                    <?= CsrfHelper::tokenField() ?>
+
                     <div class="row">
                         <!-- Nama Produk -->
                         <div class="col-12 mb-3">
                             <label for="nama_produk" class="form-label">
-                                Nama Produk <span class="required">*</span>
+                                Nama Produk <span class="required"></span>
                             </label>
                             <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Masukkan nama produk">
-                            <div class="helper-text">Berikan nama yang jelas dan deskriptif</div>
+                            <div class="helper-text">Berikan nama yang jelas dan deskriptif (3-255 karakter)</div>
                             <div id="namaProdukError" class="invalid-feedback"></div>
                         </div>
 
@@ -64,14 +68,14 @@
                                 Link Produk
                             </label>
                             <input type="url" class="form-control" id="link_produk" name="link_produk" placeholder="https://example.com">
-                            <div class="helper-text">URL lengkap produk (Opsional)</div>
+                            <div class="helper-text">URL lengkap produk (Opsional, maksimal 255 karakter)</div>
                             <div id="linkProdukError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Foto Produk -->
                         <div class="col-12 mb-3">
                             <label class="form-label">
-                                Foto Produk <span class="required">*</span>
+                                Foto Produk <span class="required"></span>
                             </label>
 
                             <!-- File Upload -->
@@ -101,7 +105,7 @@
                         <!-- Author Type Selection -->
                         <div class="col-12 mb-3">
                             <label class="form-label">
-                                Tipe Author <span class="required">*</span>
+                                Tipe Author <span class="required"></span>
                             </label>
                             <div class="author-type-selection">
                                 <div class="form-check">
@@ -127,38 +131,53 @@
                             <div id="authorTypeError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Author Dosen (Dropdown) -->
+                        <!-- Pilih Dosen (Multiple Selection with Custom Dropdown) -->
                         <div class="col-md-6 mb-3" id="author_dosen_wrapper" style="display: none;">
-                            <label for="author_dosen_id" class="form-label">
-                                Pilih Dosen <span class="required">*</span>
+                            <label for="dosen_ids" class="form-label">
+                                Pilih Dosen <span class="required" id="dosen_required">*</span>
                             </label>
-                            <select class="form-select" id="author_dosen_id" name="author_dosen_id">
-                                <option value="">Pilih Dosen</option>
-                                <?php
-                                if (!empty($listDosen)) :
-                                    foreach ($listDosen as $dosen) :
-                                ?>
-                                        <option value="<?= $dosen['id'] ?>"><?= htmlspecialchars($dosen['full_name']) ?></option>
-                                    <?php
-                                    endforeach;
-                                else :
-                                    ?>
-                                    <option value="" disabled>Tidak ada data dosen</option>
-                                <?php endif; ?>
-                            </select>
-                            <div class="helper-text">Pilih dosen sebagai author produk</div>
-                            <div id="authorDosenError" class="invalid-feedback"></div>
+
+                            <!-- Hidden input for form submission -->
+                            <input type="hidden" id="dosen_ids" name="dosen_ids">
+
+                            <!-- Selected Dosen Badges -->
+                            <div class="selected-badges" id="selectedDosenBadges"></div>
+
+                            <!-- Custom Dropdown -->
+                            <div class="custom-dropdown" id="customDropdownDosen">
+                                <div class="custom-dropdown-trigger" id="dosenTrigger">
+                                    <span class="custom-dropdown-text" id="dosenText">Pilih Dosen</span>
+                                    <svg class="custom-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+
+                                <div class="custom-dropdown-menu" id="dosenMenu">
+                                    <?php if (empty($listDosen)): ?>
+                                        <div class="custom-dropdown-empty">Tidak ada data dosen</div>
+                                    <?php else: ?>
+                                        <?php foreach ($listDosen as $dosen): ?>
+                                            <div class="custom-dropdown-item" data-value="<?= $dosen['id'] ?>" data-id="<?= $dosen['id'] ?>">
+                                                <span class="item-text"><?= htmlspecialchars($dosen['full_name']) ?></span>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="helper-text">Pilih satu atau lebih dosen sebagai author produk</div>
+                            <div id="dosenError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Author Mahasiswa (Text Input) -->
+                        <!-- Tim Mahasiswa -->
                         <div class="col-md-6 mb-3" id="author_mahasiswa_wrapper" style="display: none;">
-                            <label for="author_mahasiswa_nama" class="form-label">
-                                Nama Mahasiswa <span class="required" id="mahasiswa_required">*</span>
+                            <label for="tim_mahasiswa" class="form-label">
+                                Tim Mahasiswa <span class="required" id="mahasiswa_required"></span>
                             </label>
-                            <input type="text" class="form-control" id="author_mahasiswa_nama" name="author_mahasiswa_nama" placeholder="Masukkan nama mahasiswa">
-                            <div class="helper-text">Masukkan nama lengkap mahasiswa</div>
-                            <div id="authorMahasiswaError" class="invalid-feedback"></div>
+                            <input type="text" class="form-control" id="tim_mahasiswa" name="tim_mahasiswa" placeholder="Contoh: Ahmad, Budi, Citra">
+                            <div class="helper-text">Masukkan nama anggota tim mahasiswa (3-255 karakter)</div>
+                            <div id="timMahasiswaError" class="invalid-feedback"></div>
                         </div>
+
 
                         <!-- Deskripsi -->
                         <div class="col-12 mb-3">
@@ -166,14 +185,15 @@
                                 Deskripsi Produk
                             </label>
                             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi produk"></textarea>
-                            <div class="helper-text">Jelaskan fitur dan kegunaan produk (opsional)</div>
+                            <!-- ✅ FIXED: Helper text sesuai schema (255 char) -->
+                            <div class="helper-text">Jelaskan deskripsi singkat produk (Opsional, maksimal 255 karakter)</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
                     </div>
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('produk') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/produk') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
