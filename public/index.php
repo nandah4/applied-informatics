@@ -41,6 +41,7 @@ require_once __DIR__ . '/../app/Helpers/CsrfHelper.php';
 require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';
 
 // Load Models
+require_once __DIR__ . '/../app/Models/DashboardModel.php';
 require_once __DIR__ . '/../app/Models/AuthModel.php';
 require_once __DIR__ . '/../app/Models/JabatanModel.php';
 require_once __DIR__ . '/../app/Models/KeahlianModel.php';

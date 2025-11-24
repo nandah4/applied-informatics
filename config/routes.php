@@ -141,9 +141,27 @@ $router->get('admin/logout', function () {
 
 /**
  * Admin Dashboard
- * URL: /dashboard
+ * URL: /admin/dashboard
+ *
+ * Load statistik dashboard dari database dan tampilkan ke view
  */
 $router->get('admin/dashboard', function () {
+    // Load dashboard model
+    $dashboardModel = new DashboardModel();
+
+    // Ambil statistik dashboard dari view v_dashboard_count
+    $statsResult = $dashboardModel->getDashboardStats();
+    $stats = $statsResult['success'] ? $statsResult['data'] : [];
+
+    // Ambil publikasi terbaru
+    $publikasiResult = $dashboardModel->getRecentPublikasi(5);
+    $recentPublikasi = $publikasiResult['success'] ? $publikasiResult['data'] : [];
+
+    // Ambil statistik publikasi per tipe
+    $publikasiByTipeResult = $dashboardModel->getPublikasiByTipe();
+    $publikasiByTipe = $publikasiByTipeResult['success'] ? $publikasiByTipeResult['data'] : [];
+
+    // Load view dengan data
     require __DIR__ . '/../app/Views/admin/index.php';
 }, [AuthMiddleware::class]);
 
