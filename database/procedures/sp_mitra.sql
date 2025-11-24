@@ -16,7 +16,7 @@ BEGIN
         RAISE EXCEPTION 'Tanggal mulai tidak boleh lebih dari tanggal akhir';
     END IF;
 
-    INSERT INTO mst_mitra (nama, status, kategori_mitra, logo_mitra, tanggal_mulai, tanggal_akhir, deskripsi)
+    INSERT INTO mst_mitra (nama, status, kategori, logo_mitra, tanggal_mulai, tanggal_akhir, deskripsi)
     VALUES (p_nama, p_status, p_kategori, p_logo_mitra, p_tanggal_mulai, p_tanggal_akhir, p_deskripsi);
 
 END;

@@ -89,7 +89,8 @@ BEGIN
         nidn        = p_nidn,
         jabatan_id  = p_jabatan_id,
         foto_profil = p_foto_profil,
-        deskripsi   = p_deskripsi
+        deskripsi   = p_deskripsi,
+        updated_at = NOW()
     WHERE id = p_id
     RETURNING id INTO v_dosen_id;
 

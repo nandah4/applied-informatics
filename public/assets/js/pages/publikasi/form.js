@@ -17,14 +17,14 @@
 (function () {
   "use strict";
 
+const BASE_URL =
+    $('meta[name="base-url"]').attr("content") || "/applied-informatics";
+
   // ============================================================
   // MODUL SELECT2 INITIALIZATION
   // ============================================================
 
   const Select2Module = {
-    /**
-     * Inisialisasi Select2 untuk dropdown dosen
-     */
     init: function () {
       // Initialize Select2 untuk dropdown dosen
       $("#dosen_id").select2({
@@ -32,15 +32,6 @@
         placeholder: "Pilih Dosen",
         allowClear: true,
         width: "100%",
-      });
-
-      // Initialize Select2 untuk dropdown tipe publikasi (optional, tapi lebih baik UX)
-      $("#tipe_publikasi").select2({
-        theme: "bootstrap-5",
-        placeholder: "Pilih Tipe Publikasi",
-        allowClear: true,
-        width: "100%",
-        minimumResultsForSearch: -1, // Disable search karena opsi sedikit
       });
     },
   };
@@ -77,9 +68,11 @@
       );
 
       jQueryHelpers.makeAjaxRequest({
-        url: "/applied-informatics/publikasi/create",
+        url: `${BASE_URL}/admin/publikasi-akademik/create`,
         method: "POST",
         data: submitData,
+        processData: false,
+        contentType: false,
         onSuccess: (response) => {
           if (response.success) {
             jQueryHelpers.showAlert(
@@ -87,7 +80,7 @@
               "success"
             );
             setTimeout(() => {
-              window.location.href = "/applied-informatics/publikasi";
+              window.location.href = `${BASE_URL}/admin/publikasi-akademik`;
             }, 500);
           } else {
             jQueryHelpers.showAlert("Gagal: " + response.message, "danger");
@@ -109,6 +102,7 @@
         tipe_publikasi: $("#tipe_publikasi").val(),
         tahun_publikasi: $("#tahun_publikasi").val().trim(),
         url_publikasi: $("#url_publikasi").val().trim(),
+        csrf_token: $("input[name='csrf_token']").val()
       };
     },
 
@@ -158,24 +152,23 @@
       if (data.tahun_publikasi && data.tahun_publikasi.length > 0) {
         const tahun = parseInt(data.tahun_publikasi);
         const currentYear = new Date().getFullYear();
-        if (isNaN(tahun) || tahun < 1900 || tahun > currentYear + 10) {
+        if (isNaN(tahun) || tahun < 1900 || tahun > (currentYear + 1)) {
           errors.push({
             fieldId: "tahun_publikasi",
             errorId: "tahunPublikasiError",
-            message: `Tahun publikasi harus antara 1900 dan ${currentYear + 10}`,
+            message: `Tahun publikasi harus antara 1900 dan ${currentYear + 1}`,
           });
         }
       }
 
-      // Validate url_publikasi (optional, but if provided must be URL)
+      // Validate url_publikasi
       if (data.url_publikasi && data.url_publikasi.length > 0) {
-        const urlPattern = /^https?:\/\/.+/i;
-        if (!urlPattern.test(data.url_publikasi)) {
+        const result = validationHelpers.validateUrl(data.url_publikasi, false);
+        if (!result.valid) {
           errors.push({
             fieldId: "url_publikasi",
             errorId: "urlPublikasiError",
-            message:
-              "URL publikasi harus berupa URL yang valid (dimulai dengan http:// atau https://)",
+            message: result.message,
           });
         }
       }
@@ -184,13 +177,15 @@
     },
 
     prepareFormData: function (data) {
-      return {
-        dosen_id: data.dosen_id,
-        judul: data.judul,
-        tipe_publikasi: data.tipe_publikasi,
-        tahun_publikasi: data.tahun_publikasi || null,
-        url_publikasi: data.url_publikasi || null,
-      };
+      const formData = new FormData();
+      formData.append("dosen_id", data.dosen_id);
+      formData.append("judul", data.judul);
+      formData.append("tahun_publikasi", data.tahun_publikasi);
+      formData.append("tipe_publikasi", data.tipe_publikasi);
+      formData.append("url_publikasi", data.url_publikasi);
+      formData.append("csrf_token", data.csrf_token);
+
+      return formData;
     },
   };
 

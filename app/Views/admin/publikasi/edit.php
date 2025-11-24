@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="/applied-informatics">
     <title>Edit Publikasi - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
@@ -38,7 +39,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('publikasi') ?>">Data Publikasi</a>
+                <a href="<?= base_url('admin/publikasi-akademik') ?>">Data Publikasi</a>
                 <span>/</span>
                 <span>Edit Publikasi</span>
             </div>
@@ -50,6 +51,7 @@
         <div class="card">
             <div class="card-body">
                 <form id="formPublikasi" method="POST">
+                    <?= CsrfHelper::tokenField(); ?>
                     <!-- Hidden Field: ID Publikasi -->
                     <input type="hidden" id="publikasi_id" name="id" value="<?= htmlspecialchars($publikasi['id']) ?>">
 
@@ -157,20 +159,6 @@
     <!-- Helper Scripts (Must load before form.js) -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
-
-    <!-- Setup Edit Mode Data -->
-    <script>
-        // Data publikasi untuk edit mode (dari PHP)
-        window.EDIT_MODE = true;
-        window.PUBLIKASI_DATA = {
-            id: <?= json_encode($publikasi['id']) ?>,
-            dosen_id: <?= json_encode($publikasi['dosen_id']) ?>,
-            judul: <?= json_encode($publikasi['judul']) ?>,
-            url_publikasi: <?= json_encode($publikasi['url_publikasi'] ?? '') ?>,
-            tahun_publikasi: <?= json_encode($publikasi['tahun_publikasi'] ?? '') ?>,
-            tipe_publikasi: <?= json_encode($publikasi['tipe_publikasi']) ?>
-        };
-    </script>
 
     <!-- Data Publikasi Form Page JS (shared logic) -->
     <script src="<?= asset_url('js/pages/publikasi/form.js') ?>"></script>
