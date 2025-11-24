@@ -175,13 +175,12 @@ CREATE TABLE trx_rekrutmen (
 
 CREATE TYPE publikasi_tipe_enum AS ENUM ('Riset', 'Kekayaan Intelektual', 'PPM');
 
--- Mengganti tbl_publikasi menjadi trx_publikasi
--- Bisa jadi Master atau Transaksi. Masuk Transaksi karena merupakan output kegiatan tahunan.
+-- TABLE : trx_publikasi
 CREATE TABLE trx_publikasi (
     id            BIGSERIAL PRIMARY KEY,
     dosen_id      BIGINT NOT NULL, 
     judul         TEXT NOT NULL,
-    url_publikasi VARCHAR(255),
+    url_publikasi TEXT,
     tahun_publikasi INT,
     tipe_publikasi publikasi_tipe_enum NOT NULL, 
     created_at    TIMESTAMP NOT NULL DEFAULT NOW(),

@@ -23,8 +23,11 @@
 </head>
 
 <body>
+    <div id="liveAlertPlaceholder"></div>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
+    <?= CsrfHelper::tokenField(); ?>
 
     <!-- Main Content Area -->
     <div class="main-content">
@@ -121,7 +124,13 @@
                         <div class="info-label">Tahun Publikasi</div>
                         <div class="info-value"><?= htmlspecialchars($publikasi['tahun_publikasi'] ?? '-') ?></div>
                     </div>
-                    <?php if (!empty($publikasi['url_publikasi'])): ?>
+                    <?php if (empty($publikasi['url_publikasi']) || $publikasi['url_publikasi'] === "null"): ?>
+                        <div class="info-row">
+                            <div class="info-label">URL Publikasi</div>
+                            <div class="info-value">URL tidak tersedia</div>
+                        </div>
+
+                    <?php else: ?>
                         <div class="info-row">
                             <div class="info-label">URL Publikasi</div>
                             <div class="info-value">
@@ -138,30 +147,30 @@
                     <?php endif; ?>
                     <div class="info-row">
                         <div class="info-label">Ditambahkan Pada</div>
-                        <div class="info-value"><?= date('d F Y, H:i', strtotime($publikasi['created_at'])) ?> WIB</div>
+                        <div class="info-value"><?= formatTanggal($publikasi['created_at']) ?> </div>
                     </div>
                     <div class="info-row">
                         <div class="info-label">Terakhir Diperbarui</div>
-                        <div class="info-value"><?= date('d F Y, H:i', strtotime($publikasi['updated_at'])) ?> WIB</div>
+                        <div class="info-value"><?= formatTanggal($publikasi['updated_at']) ?></div>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="<?= base_url('publikasi') ?>" class="btn-secondary-custom">
+                    <a href="<?= base_url('admin/publikasi-akademik') ?>" class="btn-secondary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
                         Kembali
                     </a>
-                    <a href="<?= base_url('publikasi/edit/' . $publikasi['id']) ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/publikasi-akademik/edit/' . $publikasi['id']) ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                         </svg>
                         Edit Data
                     </a>
-                    <button class="btn-danger-custom" onclick="confirmDelete()">
+                    <button class="btn-danger-custom" onclick="confirmDelete(<?= $publikasi['id'] ?>)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -185,8 +194,12 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
+    <!-- jQuery Helpers (required for AJAX operations) -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+
     <!-- Data Publikasi Read Page JS -->
     <script src="<?= asset_url('js/pages/publikasi/read.js') ?>"></script>
+    <script src="<?= asset_url('js/pages/publikasi/index.js') ?>"></script>
 </body>
 
 </html>

@@ -21,8 +21,6 @@
   // ============================================================
 
   const DeleteAktivitasModule = {
-    init: function () {
-    },
 
     /**
      * Konfirmasi dan proses hapus aktivitas
