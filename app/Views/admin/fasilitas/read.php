@@ -23,6 +23,9 @@
 <body>
     <div id="liveAlertPlaceholder"></div>
 
+    <!-- ✅ CSRF Token Hidden Field -->
+    <?= CsrfHelper::tokenField() ?>
+
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
     <div class="main-content">

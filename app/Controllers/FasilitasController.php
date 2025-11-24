@@ -276,6 +276,12 @@ class FasilitasController
             return;
         }
 
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!CsrfHelper::validateToken($csrfToken)) {
+            ResponseHelper::error('Token keamanan tidak valid. Silakan refresh halaman dan coba lagi.');
+            return;
+        }
+
         // Panggil model->deleteFasilitas()
         $result = $this->fasilitasModel->deleteFasilitas((int)$id);
 
@@ -288,6 +294,9 @@ class FasilitasController
         if (!empty($result['data']['foto'])) {
             FileUploadHelper::delete($result['data']['foto'], 'fasilitas');
         }
+
+        // ✅ REGENERATE CSRF TOKEN setelah operasi berhasil
+        CsrfHelper::regenerateToken();
 
         // Return success response
         ResponseHelper::success($result['message']);

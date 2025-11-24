@@ -73,10 +73,12 @@
     font-weight: 600;
     color: var(--color-gray-700);
     margin-bottom: 0.5rem;
+    display: block;
 }
 
 .form-label .required {
     color: var(--color-error);
+    margin-left: 2px;
 }
 
 .form-control,
@@ -86,6 +88,7 @@
     border-radius: 8px;
     font-size: 0.875rem;
     transition: all 0.2s;
+    width: 100%;
 }
 
 .form-control:focus,
@@ -95,9 +98,69 @@
     box-shadow: 0 0 0 3px rgba(1, 181, 185, 0.1);
 }
 
+/* ✅ ERROR STATE */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--color-error);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.invalid-feedback {
+    display: none;
+    font-size: 0.75rem;
+    color: var(--color-error);
+    margin-top: 0.25rem;
+}
+
+.invalid-feedback.d-block {
+    display: block;
+}
+
 textarea.form-control {
     min-height: 120px;
     resize: vertical;
+}
+
+/* ✅ AUTHOR TYPE SELECTION */
+.author-type-selection {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.5rem;
+    margin-top: 0;
+    cursor: pointer;
+    border: 2px solid var(--color-gray-300);
+}
+
+.form-check-input:checked {
+    background-color: var(--color-primary-500);
+    border-color: var(--color-primary-500);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(1, 181, 185, 0.1);
+}
+
+.form-check-label {
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    cursor: pointer;
+    user-select: none;
 }
 
 /* File Upload */
@@ -137,6 +200,11 @@ textarea.form-control {
     margin-bottom: 0.5rem;
 }
 
+.file-upload-text strong {
+    color: var(--color-primary-500);
+    font-weight: 600;
+}
+
 .file-upload-hint {
     color: var(--color-gray-400);
     font-size: 0.75rem;
@@ -146,10 +214,13 @@ textarea.form-control {
     display: none;
 }
 
+/* ✅ IMAGE PREVIEW */
 .image-preview {
     margin-top: 1rem;
     position: relative;
     display: inline-block;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .image-preview img {
@@ -160,6 +231,7 @@ textarea.form-control {
     border-radius: 8px;
     border: 2px solid var(--color-gray-200);
     object-fit: cover;
+    display: block;
 }
 
 .btn-remove-preview {
@@ -183,6 +255,11 @@ textarea.form-control {
 .btn-remove-preview:hover {
     background: var(--color-error-dark);
     transform: scale(1.1);
+}
+
+.btn-remove-preview svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* Current Image (Edit Page) */
@@ -237,10 +314,15 @@ textarea.form-control {
     cursor: pointer;
 }
 
-.btn-primary-custom:hover {
+.btn-primary-custom:hover:not(:disabled) {
     background: var(--color-primary-600);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(1, 181, 185, 0.3);
+}
+
+.btn-primary-custom:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .btn-secondary-custom {
@@ -271,6 +353,219 @@ textarea.form-control {
     margin-top: 0.25rem;
 }
 
+/* ✅ CUSTOM DROPDOWN (untuk multiple selection) */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.custom-dropdown-trigger:hover {
+    border-color: var(--color-primary-500);
+}
+
+.custom-dropdown.active .custom-dropdown-trigger,
+.custom-dropdown-trigger:focus {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(1, 181, 185, 0.1);
+}
+
+.custom-dropdown-text {
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    flex: 1;
+}
+
+.custom-dropdown-arrow {
+    width: 16px;
+    height: 16px;
+    color: var(--color-gray-400);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.custom-dropdown.active .custom-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.custom-dropdown.active .custom-dropdown-menu {
+    display: block;
+}
+
+.custom-dropdown-empty {
+    padding: 1rem;
+    text-align: center;
+    color: var(--color-gray-400);
+    font-size: 0.875rem;
+}
+
+.custom-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-gray-100);
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.custom-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.custom-dropdown-item:hover {
+    background: var(--color-gray-50);
+}
+
+.custom-dropdown-item.selected {
+    background: rgba(1, 181, 185, 0.05);
+}
+
+.custom-dropdown-item .item-text {
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    flex: 1;
+}
+
+.custom-dropdown-item.selected .item-text {
+    color: var(--color-primary-600);
+    font-weight: 600;
+}
+
+/* ✅ SELECTED BADGES (untuk multiple selection) - SESUAI DOSEN */
+.selected-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    min-height: 0;
+}
+
+.selected-badges:empty {
+    display: none;
+}
+
+.selected-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-primary-500);
+    color: white;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.selected-badge:hover {
+    background: var(--color-primary-600);
+}
+
+.badge-remove-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.badge-remove-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.badge-remove-btn svg {
+    width: 12px;
+    height: 12px;
+    color: white;
+}
+
+/* ✅ CUSTOM DROPDOWN ITEM - Tambah visual untuk selected state */
+.custom-dropdown-item.selected {
+    background: rgba(1, 181, 185, 0.05);
+}
+
+.custom-dropdown-item.selected .item-text {
+    color: var(--color-primary-600);
+    font-weight: 600;
+}
+
+/* ✅ Disabled state untuk item yang sudah dipilih */
+.custom-dropdown-item.disabled {
+    background: var(--color-gray-100);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.custom-dropdown-item.disabled:hover {
+    background: var(--color-gray-100);
+}
+
+.custom-dropdown-item.disabled .item-text {
+    color: var(--color-gray-400);
+}
+
+/* ✅ Tambah checkmark icon untuk selected items (optional) */
+.custom-dropdown-item.selected::before {
+    content: '✓';
+    color: var(--color-primary-600);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+/* ✅ SCROLLBAR UNTUK DROPDOWN */
+.custom-dropdown-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-track {
+    background: var(--color-gray-100);
+    border-radius: 4px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400);
+    border-radius: 4px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-500);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-actions {
@@ -287,4 +582,47 @@ textarea.form-control {
     .current-image {
         max-width: 100%;
     }
+
+    .author-type-selection {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .selected-badges {
+        max-width: 100%;
+    }
+}
+
+/* ✅ LOADING STATE (untuk button submit) */
+.btn-primary-custom.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-primary-custom.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ✅ FOCUS VISIBLE (Accessibility) */
+.custom-dropdown-trigger:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+}
+
+/* ✅ REQUIRED FIELD INDICATOR */
+.form-label .required::after {
+    content: ' *';
 }

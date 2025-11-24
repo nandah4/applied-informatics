@@ -46,12 +46,14 @@
             // Gunakan selector yang lebih spesifik dengan data attribute
             const deleteBtn = $(`button[data-fasilitas-id="${id}"]`);
             deleteBtn.prop('disabled', true);
+            // ✅ Ambil CSRF token
+            const csrfToken = $('input[name="csrf_token"]').val();
 
             // Request AJAX menggunakan jQueryHelpers
             jQueryHelpers.makeAjaxRequest({
                 url: deleteUrl,
                 method: 'POST',
-                data: {},
+                data: { csrf_token: csrfToken },
                 onSuccess: (response) => {
                     if (response.success) {
                         // Tampilkan notifikasi success

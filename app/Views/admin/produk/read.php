@@ -24,6 +24,9 @@
     <!-- Alert Placeholder -->
     <div id="liveAlertPlaceholder"></div>
 
+    <!-- ✅ CSRF Token Hidden Field -->
+    <?= CsrfHelper::tokenField() ?>
+
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
     <?php
@@ -31,13 +34,17 @@
     $fotoUrl = !empty($produk['foto_produk']) 
         ? upload_url('produk/' . $produk['foto_produk']) 
         : upload_url('default/image.png');
+    
+    // TENTUKAN AUTHOR TYPE BERDASARKAN DATA
+    $hasDosen = !empty($produk['dosen_list']) && count($produk['dosen_list']) > 0;
+    $hasMahasiswa = !empty($produk['tim_mahasiswa']);
     ?>
 
     <div class="main-content">
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('produk') ?>">Data Produk</a>
+                <a href="<?= base_url('admin/produk') ?>">Data Produk</a>
                 <span>/</span>
                 <span>Detail Produk</span>
             </div>
@@ -49,12 +56,12 @@
         <div class="card">
             <div class="card-body">
                 <!-- Foto Produk -->
-                <div class="produk-photo-container">
-                    <img src="<?= $fotoUrl ?>" alt="Foto <?= htmlspecialchars($produk['nama_produk']) ?>" class="produk-photo">
+                <div class="product-photo-container">
+                    <img src="<?= $fotoUrl ?>" alt="Foto <?= htmlspecialchars($produk['nama_produk']) ?>" class="product-photo">
                 </div>
 
                 <!-- Informasi Produk -->
-                <div class="produk-info-section">
+                <div class="product-info-section">
                     <h3 class="section-title">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -74,44 +81,58 @@
                         <div class="info-value"><?= htmlspecialchars($produk['nama_produk']) ?></div>
                     </div>
 
+                    <!-- AMPILKAN AUTHOR BERDASARKAN STRUKTUR BARU -->
                     <div class="info-row">
                         <div class="info-label">Author</div>
                         <div class="info-value">
-                            <?php if (!empty($produk['author_dosen_id']) && !empty($produk['author_mahasiswa_nama'])) : ?>
+                            <?php if ($hasDosen && $hasMahasiswa) : ?>
                                 <!-- Kolaborasi: Dosen & Mahasiswa -->
                                 <div class="author-badges-wrapper">
-                                    <span class="author-badge author-dosen">
+                                    <?php foreach ($produk['dosen_list'] as $dosen) : ?>
+                                        <span class="author-badge author-dosen"> Dosen
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            <?= htmlspecialchars($dosen['full_name']) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                    
+                                    <span class="author-badge author-mahasiswa"> Mahasiswa
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                                         </svg>
-                                        <?= htmlspecialchars($produk['dosen_name']) ?> (Dosen)
-                                    </span>
-                                    <span class="author-badge author-mahasiswa" style="margin-left: 8px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                        <?= htmlspecialchars($produk['author_mahasiswa_nama']) ?> (Mahasiswa)
+                                        <?= htmlspecialchars($produk['tim_mahasiswa']) ?>
                                     </span>
                                 </div>
-                            <?php elseif (!empty($produk['author_dosen_id'])) : ?>
+                                
+                            <?php elseif ($hasDosen) : ?>
                                 <!-- Hanya Dosen -->
-                                <span class="author-badge author-dosen">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="12" cy="7" r="4"></circle>
-                                    </svg>
-                                    <?= htmlspecialchars($produk['dosen_name']) ?> (Dosen)
-                                </span>
-                            <?php elseif (!empty($produk['author_mahasiswa_nama'])) : ?>
+                                <div class="author-badges-wrapper">
+                                    <?php foreach ($produk['dosen_list'] as $dosen) : ?>
+                                        <span class="author-badge author-dosen"> Dosen
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            <?= htmlspecialchars($dosen['full_name']) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                                
+                            <?php elseif ($hasMahasiswa) : ?>
                                 <!-- Hanya Mahasiswa -->
-                                <span class="author-badge author-mahasiswa">
+                                <span class="author-badge author-mahasiswa"> Mahasiswa
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="12" cy="7" r="4"></circle>
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                                     </svg>
-                                    <?= htmlspecialchars($produk['author_mahasiswa_nama']) ?> (Mahasiswa)
+                                    <?= htmlspecialchars($produk['tim_mahasiswa']) ?>
                                 </span>
                             <?php else : ?>
                                 <span class="text-muted">-</span>
@@ -122,6 +143,7 @@
                     <div class="info-row">
                         <div class="info-label">Link Produk</div>
                         <div class="info-value">
+                            <div class="product-url-display">
                             <?php if (!empty($produk['link_produk'])) : ?>
                                 <a href="<?= htmlspecialchars($produk['link_produk']) ?>" target="_blank" class="info-link">
                                     <?= htmlspecialchars($produk['link_produk']) ?>
@@ -134,6 +156,7 @@
                             <?php else : ?>
                                 <span class="text-muted">-</span>
                             <?php endif; ?>
+                            </div>
                         </div>
                     </div>
 
@@ -174,14 +197,14 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="<?= base_url('produk') ?>" class="btn-secondary-custom">
+                    <a href="<?= base_url('admin/produk') ?>" class="btn-secondary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
                         Kembali
                     </a>
-                    <a href="<?= base_url('produk/edit/' . $produk['id']) ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/produk/edit/' . $produk['id']) ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                         </svg>
@@ -190,7 +213,7 @@
                     <button 
                         class="btn-danger-custom" 
                         data-produk-id="<?= $produk['id'] ?>"
-                        onclick="confirmDelete(<?= $produk['id'] ?>, '<?= base_url('produk/delete/' . $produk['id']) ?>')">
+                        onclick="confirmDelete(<?= $produk['id'] ?>, '<?= base_url('admin/produk/delete/' . $produk['id']) ?>')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
