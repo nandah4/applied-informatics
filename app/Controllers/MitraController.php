@@ -67,7 +67,7 @@ class MitraController
     /**
      * Handle request untuk create mitra baru
      * Method: POST
-     * Endpoint: /applied-informatics/mitra/create
+     * Endpoint: /applied-informatics/admin/mitra/create
      *
      * @return void - Mengembalikan JSON response
      */

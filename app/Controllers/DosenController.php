@@ -9,8 +9,7 @@
  * - getAllDosen(): Get semua data dosen
  * - updateDosen(): Handle request update dosen
  * - deleteDosen(): Handle request delete dosen
- * - createJabatan(), deleteJabatan(), getAllJabatan(): Manage jabatan
- * - createKeahlian(), deleteKeahlian(), getAllKeahlian(): Manage keahlian
+ * - createProfilPublikasi(), updateProfilPublikasi(), deleteProfilPublikasi()
  */
 
 class DosenController

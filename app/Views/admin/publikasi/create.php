@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="/applied-informatics">
     <title>Tambah Publikasi - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
@@ -38,7 +39,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('publikasi') ?>">Data Publikasi</a>
+                <a href="<?= base_url('admin/publikasi-akademik') ?>">Data Publikasi</a>
                 <span>/</span>
                 <span>Tambah Publikasi</span>
             </div>
@@ -50,11 +51,13 @@
         <div class="card">
             <div class="card-body">
                 <form id="formPublikasi" method="POST">
+                    <?= CsrfHelper::tokenField(); ?>
+
                     <div class="row">
                         <!-- Dosen -->
                         <div class="col-md-6 mb-3">
                             <label for="dosen_id" class="form-label">
-                                Dosen <span class="required">*</span>
+                                Dosen (Penulis Pertama) <span class="required">*</span>
                             </label>
                             <select class="form-control" id="dosen_id" name="dosen_id" required>
                                 <option value="">Pilih Dosen</option>

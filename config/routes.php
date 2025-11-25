@@ -491,7 +491,7 @@ $router->post('admin/fasilitas/delete/(\d+)', function ($id) {
  * Produk - List/Index (dengan Pagination)
  * URL: GET /produk?page=1&per_page=10
  */
-$router->get('produk', function () {
+$router->get('admin/produk', function () {
     $controller = new ProdukController();
     $result = $controller->getAllProduk();
 
@@ -505,7 +505,7 @@ $router->get('produk', function () {
  * Produk - Detail Page
  * URL: GET /produk/detail/{id}
  */
-$router->get('produk/detail/(\d+)', function ($id) {
+$router->get('admin/produk/detail/(\d+)', function ($id) {
     $controller = new ProdukController();
     $result = $controller->getProdukById($id);
 
@@ -528,7 +528,7 @@ $router->get('produk/detail/(\d+)', function ($id) {
  * Produk - Create Page (Form)
  * URL: GET /produk/create
  */
-$router->get('produk/create', function () {
+$router->get('admin/produk/create', function () {
     $controller = new ProdukController();
 
     // Get list dosen untuk dropdown
@@ -544,7 +544,7 @@ $router->get('produk/create', function () {
  * 
  * Response JSON dari controller
  */
-$router->post('produk/create', function () {
+$router->post('admin/produk/create', function () {
     $controller = new ProdukController();
     $controller->createProduk();
 }, [AuthMiddleware::class]);
@@ -557,7 +557,7 @@ $router->post('produk/create', function () {
  * Produk - Edit Page (Form)
  * URL: GET /produk/edit/{id}
  */
-$router->get('produk/edit/(\d+)', function ($id) {
+$router->get('admin/produk/edit/(\d+)', function ($id) {
     $controller = new ProdukController();
     $result = $controller->getProdukById($id);
 
@@ -582,7 +582,7 @@ $router->get('produk/edit/(\d+)', function ($id) {
  * 
  * Response JSON dari controller
  */
-$router->post('produk/update', function () {
+$router->post('admin/produk/update', function () {
     $controller = new ProdukController();
     $controller->updateProduk();
 }, [AuthMiddleware::class]);
@@ -597,7 +597,7 @@ $router->post('produk/update', function () {
  * 
  * Response JSON dari controller
  */
-$router->post('produk/delete/(\d+)', function ($id) {
+$router->post('admin/produk/delete/(\d+)', function ($id) {
     $controller = new ProdukController();
     $controller->deleteProdukById($id);
 }, [AuthMiddleware::class]);
@@ -957,23 +957,18 @@ $router->post('recruitment/delete/(\\d+)', function ($id) {
  * Publikasi - List/Index dengan Pagination
  * URL: GET /publikasi?page={number}&per_page={number}
  */
-$router->get('publikasi', function () {
-    // $controller = new PublikasiController();
+$router->get('admin/publikasi-akademik', function () {
+    $controller = new PublikasiAkademikController();
 
-    // // Ambil parameter dari query string
-    // $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    // $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+    // Ambil parameter dari query string
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
-    // // Ambil data dengan pagination
-    // $result = $controller->getAllPublikasiWithPagination($page, $perPage);
+    // Ambil data dengan pagination
+    $result = $controller->getAllPublikasiWithPagination($page, $perPage);
 
-    // $listPublikasi = $result['data'] ?? [];
-    // $pagination = $result['pagination'] ?? null;
-
-    // // Ambil data dosen untuk dropdown
-    // $dosenController = new DosenController();
-    // $dosenResult = $dosenController->getAllDosen();
-    // $listDosen = $dosenResult['data'] ?? [];
+    $listPublikasi = $result['data'] ?? [];
+    $pagination = $result['pagination'] ?? null;
 
     require __DIR__ . '/../app/Views/admin/publikasi/index.php';
 }, [AuthMiddleware::class]);
@@ -982,18 +977,18 @@ $router->get('publikasi', function () {
  * Publikasi - Detail Page
  * URL: GET /publikasi/detail/{id}
  */
-$router->get('publikasi/detail/(\\d+)', function ($id) {
-    // $controller = new PublikasiController();
+$router->get('admin/publikasi-akademik/read/(\\d+)', function ($id) {
+    $controller = new PublikasiAkademikController();
 
-    // // Get data publikasi by ID
-    // $publikasiData = $controller->getPublikasiById((int)$id);
+    // Get data publikasi by ID
+    $publikasiData = $controller->getPublikasiById((int)$id);
 
-    // if (!$publikasiData['success']) {
-    //     header("Location: " . base_url('publikasi'));
-    //     exit;
-    // }
+    if (!$publikasiData['success']) {
+        header("Location: " . base_url('admin/publikasi-akademik'));
+        exit;
+    }
 
-    // $publikasi = $publikasiData['data'];
+    $publikasi = $publikasiData['data'];
 
     require __DIR__ . '/../app/Views/admin/publikasi/read.php';
 }, [AuthMiddleware::class]);
@@ -1006,11 +1001,11 @@ $router->get('publikasi/detail/(\\d+)', function ($id) {
  * Publikasi - Create Page (Form)
  * URL: GET /publikasi/create
  */
-$router->get('publikasi/create', function () {
+$router->get('admin/publikasi-akademik/create', function () {
     // // Get list dosen untuk dropdown
-    // $dosenController = new DosenController();
-    // $dosenResult = $dosenController->getAllDosen();
-    // $listDosen = $dosenResult['data'] ?? [];
+    $dosenController = new DosenController();
+    $dosenResult = $dosenController->getAllDosen();
+    $listDosen = $dosenResult['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/publikasi/create.php';
 }, [AuthMiddleware::class]);
@@ -1019,9 +1014,9 @@ $router->get('publikasi/create', function () {
  * Publikasi - Create (Handle Submit)
  * URL: POST /publikasi/create
  */
-$router->post('publikasi/create', function () {
-    // $controller = new PublikasiController();
-    // $controller->createPublikasi();
+$router->post('admin/publikasi-akademik/create', function () {
+    $controller = new PublikasiAkademikController();
+    $controller->createPublikasi();
 }, [AuthMiddleware::class]);
 
 // ----------------------------------------
@@ -1032,23 +1027,23 @@ $router->post('publikasi/create', function () {
  * Publikasi - Edit Page (Form)
  * URL: GET /publikasi/edit/{id}
  */
-$router->get('publikasi/edit/(\\d+)', function ($id) {
-    // $controller = new PublikasiController();
+$router->get('admin/publikasi-akademik/edit/(\\d+)', function ($id) {
+    $controller = new PublikasiAkademikController();
 
-    // // Get data publikasi by ID
-    // $publikasiData = $controller->getPublikasiById((int)$id);
+    // Get data publikasi by ID
+    $publikasiData = $controller->getPublikasiById((int)$id);
 
-    // if (!$publikasiData['success']) {
-    //     header("Location: " . base_url('publikasi'));
-    //     exit;
-    // }
+    if (!$publikasiData['success']) {
+        header("Location: " . base_url('admin/publikasi-akademik'));
+        exit;
+    }
 
-    // $publikasi = $publikasiData['data'];
+    $publikasi = $publikasiData['data'];
 
-    // // Get list dosen untuk dropdown
-    // $dosenController = new DosenController();
-    // $dosenResult = $dosenController->getAllDosen();
-    // $listDosen = $dosenResult['data'] ?? [];
+    // Get list dosen untuk dropdown
+    $dosenController = new DosenController();
+    $dosenResult = $dosenController->getAllDosen();
+    $listDosen = $dosenResult['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/publikasi/edit.php';
 }, [AuthMiddleware::class]);
@@ -1057,9 +1052,9 @@ $router->get('publikasi/edit/(\\d+)', function ($id) {
  * Publikasi - Update (Handle Submit)
  * URL: POST /publikasi/update
  */
-$router->post('publikasi/update', function () {
-    // $controller = new PublikasiController();
-    // $controller->updatePublikasi();
+$router->post('admin/publikasi-akademik/update', function () {
+    $controller = new PublikasiAkademikController();
+    $controller->updatePublikasi();
 }, [AuthMiddleware::class]);
 
 // ----------------------------------------
@@ -1070,9 +1065,9 @@ $router->post('publikasi/update', function () {
  * Publikasi - Delete
  * URL: POST /publikasi/delete/{id}
  */
-$router->post('publikasi/delete/(\\d+)', function ($id) {
-    // $controller = new PublikasiController();
-    // $controller->deletePublikasi($id);
+$router->post('admin/publikasi-akademik/delete/(\\d+)', function ($id) {
+    $controller = new PublikasiAkademikController();
+    $controller->deletePublikasiAkademik((int)$id);
 }, [AuthMiddleware::class]);
 
 // ============================================================================

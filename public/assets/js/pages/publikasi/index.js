@@ -15,6 +15,7 @@
 (function() {
     'use strict';
 
+    const BASE_URL = $('meta[name="base-url"]').attr('content') || '/applied-informatics';
     // ============================================================
     // MODUL SEARCH/FILTER
     // ============================================================
@@ -115,11 +116,14 @@
             const deleteBtn = $(`button[onclick="confirmDelete(${id})"]`);
             deleteBtn.prop('disabled', true);
 
+            // Ambil CSRF token
+            const csrfToken = $('input[name="csrf_token"]').val();
+
             // Request AJAX menggunakan jQueryHelpers
             jQueryHelpers.makeAjaxRequest({
-                url: `/applied-informatics/publikasi/delete/${id}`,
+                url: `${BASE_URL}/admin/publikasi-akademik/delete/${id}`,
                 method: 'POST',
-                data: {},
+                data: { csrf_token: csrfToken },
                 onSuccess: (response) => {
                     if (response.success) {
                         // Tampilkan notifikasi success
@@ -132,7 +136,7 @@
                         // Reload page setelah 2 detik untuk refresh data
                         setTimeout(() => {
                             window.location.reload();
-                        }, 2000);
+                        }, 500);
                     } else {
                         // Tampilkan pesan error dari server
                         jQueryHelpers.showAlert(
@@ -148,7 +152,7 @@
                 onError: (errorMessage) => {
                     // Tampilkan error notifikasi
                     jQueryHelpers.showAlert(
-                        'Terjadi kesalahan sistem. Silakan coba lagi.',
+                        errorMessage || 'Terjadi kesalahan sistem. Silakan coba lagi.',
                         'danger',
                         5000
                     );
@@ -163,30 +167,6 @@
         }
     };
 
-    // ============================================================
-    // MODUL MOBILE MENU (Optional - untuk future development)
-    // ============================================================
-
-    const MobileMenuModule = {
-        /**
-         * Inisialisasi mobile menu toggle
-         */
-        init: function() {
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-
-            if (mobileMenuBtn) {
-                mobileMenuBtn.addEventListener('click', this.toggleMenu);
-            }
-        },
-
-        /**
-         * Toggle mobile menu visibility
-         */
-        toggleMenu: function() {
-            console.log('Mobile menu toggled');
-            // TODO: Implementasi toggle menu untuk mobile
-        }
-    };
 
     // ============================================================
     // INISIALISASI
@@ -201,9 +181,6 @@
 
         // Inisialisasi pagination
         PaginationModule.init();
-
-        // Inisialisasi mobile menu
-        MobileMenuModule.init();
 
         // Expose confirmDelete ke global scope untuk dipanggil dari HTML
         window.confirmDelete = function(id) {

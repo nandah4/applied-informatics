@@ -46,12 +46,14 @@
             // Gunakan selector yang lebih spesifik dengan data attribute
             const deleteBtn = $(`button[data-produk-id="${id}"]`);
             deleteBtn.prop('disabled', true);
+            // ✅ Ambil CSRF token
+            const csrfToken = $('input[name="csrf_token"]').val();
 
             // Request AJAX menggunakan jQueryHelpers
             jQueryHelpers.makeAjaxRequest({
                 url: deleteUrl,
                 method: 'POST',
-                data: {},
+                data: { csrf_token: csrfToken },
                 onSuccess: (response) => {
                     if (response.success) {
                         // Tampilkan notifikasi success
@@ -64,7 +66,7 @@
                         // Redirect ke halaman index setelah 2 detik
                         setTimeout(() => {
                             // Redirect ke index, bukan reload
-                            window.location.href = '/applied-informatics/produk';
+                            window.location.href = '/applied-informatics/admin/produk';
                         }, 500);
                     } else {
                         // Tampilkan pesan error dari server

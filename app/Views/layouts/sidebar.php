@@ -64,7 +64,7 @@ function hasActiveChild($urls, $current)
 
             <!-- Konten Laboratorium -->
             <li class="nav-item">
-                <a class="nav-link parent-menu <?= hasActiveChild(['fasilitas', 'produk', 'admin/mitra'], $current_url) ?>">
+                <a class="nav-link parent-menu <?= hasActiveChild(['admin/fasilitas', 'admin/produk', 'admin/mitra'], $current_url) ?>">
                     <i data-feather="grid"></i>
                     <span class="nav-text">Konten Laboratorium</span>
                 </a>
@@ -75,7 +75,7 @@ function hasActiveChild($urls, $current)
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?= base_url('produk') ?>" class="nav-link <?= isActive('produk', $current_url) ?>">
+                        <a href="<?= base_url('admin/produk') ?>" class="nav-link <?= isActive('produk', $current_url) ?>">
                             <span class="nav-text">Kelola Produk</span>
                         </a>
                     </li>
@@ -89,11 +89,16 @@ function hasActiveChild($urls, $current)
 
             <!-- Manajemen Aktivitas -->
             <li class="nav-item">
-                <a class="nav-link parent-menu <?= hasActiveChild(['admin/aktivitas-lab', 'penelitian', 'pengabdian', 'kekayaan'], $current_url) ?>">
+                <a class="nav-link parent-menu <?= hasActiveChild(['admin/aktivitas-lab', 'admin/publikasi-akademik', 'pengabdian', 'kekayaan'], $current_url) ?>">
                     <i data-feather="activity"></i>
                     <span class="nav-text">Manajemen Aktivitas</span>
                 </a>
                 <ul class="nav flex-column submenu">
+                    <li class="nav-item">
+                        <a href="<?= base_url('admin/publikasi-akademik') ?>" class="nav-link <?= isActive('admin/publikasi-akademik', $current_url) ?>">
+                            <span class="nav-text">Publikasi Akademik</span>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a href="<?= base_url('admin/aktivitas-lab') ?>" class="nav-link <?= isActive('admin/aktivitas-lab', $current_url) ?>">
                             <span class="nav-text">Kelola Aktivitas Lab</span>
@@ -102,11 +107,6 @@ function hasActiveChild($urls, $current)
                     <li class="nav-item">
                         <a href="<?= base_url('recruitment') ?>" class="nav-link <?= isActive('recruitment', $current_url) ?>">
                             <span class="nav-text">Kelola Informasi Rekrutment</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?= base_url('publikasi') ?>" class="nav-link <?= isActive('publikasi', $current_url) ?>">
-                            <span class="nav-text">Publikasi Akademik</span>
                         </a>
                     </li>
                     <!-- <li class="nav-item">
