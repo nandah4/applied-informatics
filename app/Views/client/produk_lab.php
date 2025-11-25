@@ -66,7 +66,7 @@ include __DIR__ . '/../layouts/header.php';
                 <p class="fw-bold nama-produk">Crowdfunding</p>
             </div>
 
-            <div class="col-sm-6 col-md-6 produk-item mb-3">
+            <div class="col-sm-6 col-md-3 produk-item mb-3">
                 <div class="card-container-owncloud mx-auto mb-1">
                     <div class="logo-container">
                         <img src="<?= asset_url('images/produk/owncloud.png') ?>" class="img-fluid mx-auto d-block gambar-produk">
@@ -77,7 +77,7 @@ include __DIR__ . '/../layouts/header.php';
                 <p class="fw-bold nama-produk">Owncloud Server</p>
             </div>
 
-            <div class="col-sm-6 col-md-6 produk-item mb-3">
+            <div class="col-sm-6 col-md-3 produk-item mb-3">
                 <div class="card-container-gitea mx-auto mb-1">
                     <div class="container-bg"></div>
                     <div class="logo-container">
