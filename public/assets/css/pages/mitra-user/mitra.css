@@ -2,7 +2,7 @@ main {
   background-color: var(--bg-primary);
 }
 
-.halaman, .deskripsi, .nama-mitra-international, .nama-mitra-national{
+.halaman, .deskripsi, .nama-mitra{
     font-size: 18px;
 }
 
