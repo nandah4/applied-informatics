@@ -20,116 +20,112 @@ include __DIR__ . '/../layouts/header.php';
 
         <!-- internasional -->
         <h1 class="mb-4 cakupan-wilayah">International</h1>
-        <div class="mb-5 p-3">
-            
-
-            <div class="d-flex overflow-auto international-container">
-                <!-- card -->
-                <div class="mitra-international text-center">
-                    <div class="logo-container-international mb-1">
+        <div class="row mb-5">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-international">Gitea</p>
                 </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
+            </div>
 
-                <div class="mitra-international text-center">
-                    <div class="logo-container-international mb-1">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-international">Gitea</p>
                 </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
+            </div>
 
-                <div class="mitra-international text-center">
-                    <div class="logo-container-international mb-1">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-international">Gitea</p>
                 </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
+            </div>
 
-                <div class="mitra-international text-center">
-                    <div class="logo-container-international mb-1">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-international">Gitea</p>
                 </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
+            </div>
 
-                <div class="mitra-international text-center">
-                    <div class="logo-container-international mb-1">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-international">Gitea</p>
                 </div>
-
-                <div class="mitra-international text-center">
-                    <div class="logo-container-international mb-1">
-                        <img src="<?= asset_url('images/produk/gitea.png') ?>"
-                            class="img-fluid mx-auto d-block gambar-produk">
-                    </div>
-                    <p class="fw-bold nama-mitra-international">Gitea</p>
-                </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
             </div>
         </div>
+
 
         <h1 class="mb-4 cakupan-wilayah">National</h1>
-        <div class="mb-5 p-3 national-scrollbar">
-           
-
-            <div class="d-flex overflow-auto national-container">
-                <!-- card -->
-                <div class="mitra-national text-center">
-                    <div class="logo-container-national mb-1">
+        <div class="row mb-5">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-national">Gitea</p>
                 </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
+            </div>
 
-                <div class="mitra-national text-center">
-                    <div class="logo-container-national mb-1">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-national">Gitea</p>
                 </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
+            </div>
 
-                <div class="mitra-national text-center">
-                    <div class="logo-container-national mb-1">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-national">Gitea</p>
                 </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
+            </div>
 
-                <div class="mitra-national text-center">
-                    <div class="logo-container-national mb-1">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-national">Gitea</p>
                 </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
+            </div>
 
-                <div class="mitra-national text-center">
-                    <div class="logo-container-national mb-1">
+            <div class="col-sm-6 col-md-3 text-center">
+                <div class="card-container mx-auto mb-1">
+                    <div class="logo-container">
                         <img src="<?= asset_url('images/produk/gitea.png') ?>"
                             class="img-fluid mx-auto d-block gambar-produk">
                     </div>
-                    <p class="fw-bold nama-mitra-national">Gitea</p>
                 </div>
-
-                <div class="mitra-national text-center">
-                    <div class="logo-container-national mb-1">
-                        <img src="<?= asset_url('images/produk/gitea.png') ?>"
-                            class="img-fluid mx-auto d-block gambar-produk">
-                    </div>
-                    <p class="fw-bold nama-mitra-national">Gitea</p>
-                </div>
+                <p class="fw-bold nama-mitra">Gitea</p>
             </div>
         </div>
+
     </div>
 
 

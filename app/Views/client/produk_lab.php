@@ -24,7 +24,7 @@ include __DIR__ . '/../layouts/header.php';
             <div class="col-sm-6 col-md-3 produk-item mb-3">
                 <div class="card-container mx-auto mb-1">
                     <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/amati.png') ?>" class="img-fluid mx-auto d-block gambar-produk">
+                        <img src="<?= asset_url('images/produk/amati.png') ?>" class="mx-auto d-block gambar-produk">
                     </div>
                     <!-- Teks hover -->
                     <div class="hover-text">Klik untuk melihat</div>
@@ -36,7 +36,7 @@ include __DIR__ . '/../layouts/header.php';
             <div class="col-sm-6 col-md-3 produk-item mb-3">
                 <div class="card-container mx-auto mb-1">
                     <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/agrilink.png') ?>" class="img-fluid mx-auto d-block gambar-produk">
+                        <img src="<?= asset_url('images/produk/agrilink.png') ?>" class="mx-auto d-block gambar-produk">
                     </div>
                     <div class="hover-text">Klik untuk melihat</div>
                 </div>
@@ -47,7 +47,7 @@ include __DIR__ . '/../layouts/header.php';
             <div class="col-sm-6 col-md-3 produk-item mb-3">
                 <div class="card-container mx-auto mb-1">
                     <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/seals.png') ?>" class="img-fluid mx-auto d-block gambar-produk">
+                        <img src="<?= asset_url('images/produk/seals.png') ?>" class="mx-auto d-block gambar-produk">
                     </div>
                     <div class="hover-text">Klik untuk melihat</div>
                 </div>
@@ -58,7 +58,7 @@ include __DIR__ . '/../layouts/header.php';
             <div class="col-sm-6 col-md-3 produk-item mb-3">
                 <div class="card-container mx-auto mb-1">
                     <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/crowdfunding.png') ?>" class="img-fluid mx-auto d-block gambar-produk">
+                        <img src="<?= asset_url('images/produk/crowdfunding.png') ?>" class="mx-auto d-block gambar-produk">
                     </div>
                     <div class="hover-text">Klik untuk melihat</div>
                 </div>
@@ -67,9 +67,9 @@ include __DIR__ . '/../layouts/header.php';
             </div>
 
             <div class="col-sm-6 col-md-3 produk-item mb-3">
-                <div class="card-container-owncloud mx-auto mb-1">
+                <div class="card-container mx-auto mb-1">
                     <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/owncloud.png') ?>" class="img-fluid mx-auto d-block gambar-produk">
+                        <img src="<?= asset_url('images/produk/owncloud.png') ?>" class="mx-auto d-block gambar-produk">
                     </div>
                     <div class="hover-text">Klik untuk melihat</div>
                 </div>
@@ -78,10 +78,9 @@ include __DIR__ . '/../layouts/header.php';
             </div>
 
             <div class="col-sm-6 col-md-3 produk-item mb-3">
-                <div class="card-container-gitea mx-auto mb-1">
-                    <div class="container-bg"></div>
+                <div class="card-container mx-auto mb-1">
                     <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/gitea.png') ?>" class="img-fluid mx-auto d-block gambar-produk">
+                        <img src="<?= asset_url('images/produk/gitea.png') ?>" class="mx-auto d-block gambar-produk">
                     </div>
                     <div class="hover-text">Klik untuk melihat</div>
                 </div>

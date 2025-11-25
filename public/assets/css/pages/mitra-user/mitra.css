@@ -18,70 +18,29 @@ main {
     font-size: 35px;
 }
 
-.international-container{
-    gap: 70px !important;
-}
-
-.logo-container-international {
+.card-container {
   height: 250px;
-  width: 250px;
+  width: 100%;
+  max-width: 250px;
   border-radius: 10px;
-  background-color: #d9d9d9;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
-.national-container{
-    gap: 70px !important;
-}
-
-.logo-container-national {
-  height: 250px;
-  width: 250px;
-  border-radius: 10px;
-  background-color: var(--bg-primary);
+.logo-container {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 
-.national-scrollbar {
-    position: relative;
-    background: none;
-    border-radius: 10px;
-}
-
-.national-scrollbar::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-color: var(--color-primary-500);
-    opacity: 0.1;
-    z-index: 0;
-    border-radius: inherit;
-}
-
-.national-scrollbar > * {
-    position: relative;
-    z-index: 1;
-}
-
-.logo-container-national {
-    position: relative;
-    background: none;
-}
-
-.logo-container-national::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-color: var(--bg-primary);
-    opacity: 0.5;
-    z-index: 0;
-}
-
-.logo-container-national > * {
-    position: relative;
-    z-index: 1;
+.gambar-produk {
+  width: 100%; /* UBAH: Paksa gambar mengikuti lebar container */
+  height: 100%; /* UBAH: Paksa gambar mengikuti tinggi container */
+  object-fit: contain; /* Jaga proporsi gambar */
 }
