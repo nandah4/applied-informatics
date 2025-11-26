@@ -69,6 +69,13 @@ $router->get('publikasi-dosen', function () {
     require __DIR__ . '/../app/Views/client/publikasi_dosen.php';
 });
 
+/**
+ * Mitra Laboratorium
+ * URL: /mitra-lab
+ */
+$router->get('mitra-lab', function () {
+    require __DIR__ . '/../app/Views/client/mitra.php';
+});
 
 // ============================================================================
 // AUTH ROUTES
