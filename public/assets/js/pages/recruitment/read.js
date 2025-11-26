@@ -1,98 +1,125 @@
 /**
  * File: pages/recruitment/read.js
- * Deskripsi: Script untuk halaman detail recruitment
+ * Deskripsi: Script untuk halaman detail/read data recruitment
  *
  * Fitur:
- * - Delete recruitment dengan konfirmasi dari detail page
+ * - Delete recruitment dengan konfirmasi
  *
  * Dependencies:
  * - jQuery
  * - jQueryHelpers.js
  */
 
-(function() {
-    'use strict';
+(function () {
+  "use strict";
 
-    // ============================================================
-    // DELETE MODULE
-    // ============================================================
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
-    const DeleteModule = {
-        /**
-         * Konfirmasi dan hapus recruitment
-         * Dipanggil dari tombol delete di halaman detail
-         */
-        confirmDelete: function() {
-            // Ambil ID dari URL atau dari element tersembunyi
-            const pathArray = window.location.pathname.split('/');
-            const id = pathArray[pathArray.length - 1];
+  // ============================================================
+  // MODUL DELETE RECRUITMENT (Detail Page)
+  // ============================================================
 
-            if (!id || isNaN(id)) {
-                alert('ID recruitment tidak valid');
-                return;
-            }
+  const DeleteRecruitmentModule = {
+    init: function () {
+      // Function sudah dipanggil dari HTML onclick
+      // Tidak perlu event binding di sini
+    },
 
-            // Tampilkan konfirmasi
-            if (!confirm('Apakah Anda yakin ingin menghapus data recruitment ini?\n\nData yang dihapus tidak dapat dikembalikan.')) {
-                return;
-            }
+    /**
+     * Konfirmasi dan proses hapus recruitment
+     *
+     * @param {number} id - ID recruitment yang akan dihapus
+     */
+    confirmDelete: function (id) {
+      // Confirm dengan user
+      if (
+        !confirm(
+          `Apakah Anda yakin ingin menghapus recruitment ini?\n\nData yang dihapus tidak dapat dikembalikan.`
+        )
+      ) {
+        return;
+      }
 
-            // Proses delete
-            this.deleteRecruitment(id);
+      // Disable delete button dengan loading spinner
+      $(".btn-danger-custom")
+        .prop("disabled", true)
+        .html(
+          '<span class="spinner-border spinner-border-sm me-2"></span>Menghapus...'
+        );
+
+      // Ambil CSRF token
+      const csrfToken = $('input[name="csrf_token"]').val();
+
+      // AJAX delete request
+      $.ajax({
+        url: `${BASE_URL}/admin/recruitment/delete/${id}`,
+        method: "POST",
+        data: { csrf_token: csrfToken },
+        dataType: "json",
+        success: function (response) {
+          if (response.success) {
+            jQueryHelpers.showAlert(
+              "Data recruitment berhasil dihapus",
+              "success",
+              1500
+            );
+
+            // Redirect ke list page setelah 0.5 detik
+            setTimeout(function () {
+              window.location.href = `${BASE_URL}/admin/recruitment`;
+            }, 500);
+          } else {
+            jQueryHelpers.showAlert(
+              response.message || "Gagal menghapus data recruitment",
+              "danger",
+              5000
+            );
+
+            // Re-enable button dengan icon delete
+            $(".btn-danger-custom")
+              .prop("disabled", false)
+              .html(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Hapus Data'
+              );
+          }
         },
+        error: function (error) {
+          jQueryHelpers.showAlert(
+            "Terjadi kesalahan saat menghapus data",
+            "danger",
+            5000
+          );
 
-        /**
-         * Proses delete recruitment via AJAX
-         * @param {number} id - ID recruitment yang akan dihapus
-         */
-        deleteRecruitment: function(id) {
-            // Disable tombol delete
-            const deleteBtn = $('.btn-danger-custom');
-            deleteBtn.prop('disabled', true);
+          // Re-enable button dengan icon delete
+          $(".btn-danger-custom")
+            .prop("disabled", false)
+            .html(
+              '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Hapus Data'
+            );
+        },
+      });
+    },
+  };
 
-            // Request AJAX menggunakan jQueryHelpers
-            jQueryHelpers.makeAjaxRequest({
-                url: `/applied-informatics/recruitment/delete/${id}`,
-                method: 'POST',
-                data: {},
-                onSuccess: (response) => {
-                    if (response.success) {
-                        // Tampilkan notifikasi success
-                        alert('Data recruitment berhasil dihapus!');
+  // ============================================================
+  // EXPOSE FUNCTION KE GLOBAL SCOPE
+  // ============================================================
 
-                        // Redirect ke halaman list
-                        window.location.href = '/applied-informatics/recruitment';
-                    } else {
-                        // Tampilkan pesan error
-                        alert(response.message || 'Gagal menghapus data recruitment');
+  // Agar bisa dipanggil dari HTML onclick
+  window.confirmDelete = function (id) {
+    DeleteRecruitmentModule.confirmDelete(id);
+  };
 
-                        // Re-enable tombol delete
-                        deleteBtn.prop('disabled', false);
-                    }
-                },
-                onError: (errorMessage) => {
-                    // Tampilkan error
-                    alert('Terjadi kesalahan sistem. Silakan coba lagi.');
+  // ============================================================
+  // INISIALISASI
+  // ============================================================
 
-                    // Log error untuk debugging
-                    console.error('Delete recruitment error:', errorMessage);
+  $(document).ready(function () {
+    DeleteRecruitmentModule.init();
 
-                    // Re-enable tombol delete
-                    deleteBtn.prop('disabled', false);
-                }
-            });
-        }
-    };
-
-    // ============================================================
-    // INISIALISASI
-    // ============================================================
-
-    $(document).ready(function() {
-        // Expose confirmDelete ke global scope
-        window.confirmDelete = function() {
-            DeleteModule.confirmDelete();
-        };
-    });
-
+    // Initialize feather icons
+    if (typeof feather !== "undefined") {
+      feather.replace();
+    }
+  });
 })();

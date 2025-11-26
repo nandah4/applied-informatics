@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= base_url() ?>">
     <title>Detail Recruitment - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
     <!-- Base CSS - Must load first -->
-    <link rel="stylesheet" href="<?= asset_url('css/base/variables.css') ?>">
-    <link rel="stylesheet" href="<?= asset_url('css/base/reset.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
@@ -23,6 +22,12 @@
 </head>
 
 <body>
+    <!-- Alert Placeholder untuk notifikasi -->
+    <div id="liveAlertPlaceholder"></div>
+
+    <!-- CSRF Token untuk AJAX requests -->
+    <?= CsrfHelper::tokenField() ?>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -31,7 +36,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('recruitment') ?>">Data Recruitment</a>
+                <a href="<?= base_url('admin/recruitment') ?>">Data Recruitment</a>
                 <span>/</span>
                 <span>Detail Recruitment</span>
             </div>
@@ -39,173 +44,191 @@
             <p class="page-subtitle">Informasi lengkap tentang recruitment</p>
         </div>
 
-        <!-- Profile Card -->
+        <!-- Detail Card -->
         <div class="card">
             <div class="card-body">
-                <!-- Banner Image (if exists) -->
-                <?php if (!empty($recruitment['gambar_banner'])): ?>
-                    <div class="banner-container">
-                        <img src="<?= upload_url('recruitment/' . $recruitment['gambar_banner']) ?>" alt="Banner Recruitment" class="banner-image-detail">
+                <?php
+                // Helper untuk status badge
+                $statusBadge = $recruitment['status'] === 'buka' ? 'badge-success' : 'badge-danger';
+                $statusLabel = $recruitment['status'] === 'buka' ? 'Recruitment Buka' : 'Recruitment Tutup';
+                
+                // Calculate days remaining
+                $today = new DateTime();
+                $endDate = new DateTime($recruitment['tanggal_tutup']);
+                $daysRemaining = $today->diff($endDate)->days;
+                $isPast = $today > $endDate;
+                ?>
+
+                <!-- Status Alert -->
+                <?php if ($recruitment['status'] === 'buka' && !$isPast): ?>
+                    <div class="status-alert success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Recruitment ini sedang aktif. Masih tersisa <strong><?= $daysRemaining ?> hari</strong> lagi.</span>
+                    </div>
+                <?php elseif ($isPast): ?>
+                    <div class="status-alert warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>Periode recruitment ini telah berakhir.</span>
                     </div>
                 <?php endif; ?>
 
                 <!-- Recruitment Header -->
                 <div class="recruitment-header">
-                    <div class="recruitment-info">
-                        <h2 class="recruitment-title"><?= htmlspecialchars($recruitment['posisi']) ?></h2>
+                    <div class="recruitment-header-info">
+                        <h2 class="recruitment-title"><?= htmlspecialchars($recruitment['judul']) ?></h2>
                         <div class="recruitment-meta">
+                            <!-- Status -->
                             <div class="meta-item">
-                                <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                                <div>
-                                    <div class="meta-label">Periode</div>
-                                    <div class="meta-value">
-                                        <?= date('d M Y', strtotime($recruitment['tanggal_mulai'])) ?> -
-                                        <?= date('d M Y', strtotime($recruitment['tanggal_berakhir'])) ?>
-                                    </div>
+                                <div class="meta-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
                                 </div>
-                            </div>
-                            <div class="meta-item">
-                                <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                </svg>
-                                <div>
+                                <div class="meta-content">
                                     <div class="meta-label">Status</div>
                                     <div class="meta-value">
-                                        <?php if ($recruitment['status'] === 'aktif'): ?>
-                                            <span class="badge-custom badge-success">Aktif</span>
-                                        <?php else: ?>
-                                            <span class="badge-custom badge-secondary">Nonaktif</span>
-                                        <?php endif; ?>
+                                        <span class="badge-custom <?= $statusBadge ?>"><?= $statusLabel ?></span>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Tanggal Buka -->
+                            <div class="meta-item">
+                                <div class="meta-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
+                                <div class="meta-content">
+                                    <div class="meta-label">Tanggal Buka</div>
+                                    <div class="meta-value"><?= formatTanggal($recruitment['tanggal_buka']) ?></div>
+                                </div>
+                            </div>
+
+                            <!-- Tanggal Tutup -->
+                            <div class="meta-item">
+                                <div class="meta-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        <line x1="8" y1="14" x2="16" y2="14"></line>
+                                    </svg>
+                                </div>
+                                <div class="meta-content">
+                                    <div class="meta-label">Tanggal Tutup</div>
+                                    <div class="meta-value"><?= formatTanggal($recruitment['tanggal_tutup']) ?></div>
+                                </div>
+                            </div>
+
+                            <!-- Lokasi -->
+                            <div class="meta-item">
+                                <div class="meta-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                </div>
+                                <div class="meta-content">
+                                    <div class="meta-label">Lokasi</div>
+                                    <div class="meta-value"><?= htmlspecialchars($recruitment['lokasi'] ?? 'Belum ditentukan') ?></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Basic Information -->
-                <div style="margin-bottom: 2rem;">
+                <!-- Recruitment Information -->
+                <div class="recruitment-info-section">
                     <h3 class="section-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        Informasi Dasar
+                        Informasi Detail
                     </h3>
+
                     <div class="info-row">
                         <div class="info-label">ID Recruitment</div>
-                        <div class="info-value"><?= htmlspecialchars($recruitment['id']) ?></div>
+                        <div class="info-value"><?= $recruitment['id']; ?></div>
                     </div>
+
                     <div class="info-row">
-                        <div class="info-label">Posisi</div>
-                        <div class="info-value"><?= htmlspecialchars($recruitment['posisi']) ?></div>
+                        <div class="info-label">Judul</div>
+                        <div class="info-value"><?= htmlspecialchars($recruitment['judul']) ?></div>
                     </div>
+
                     <div class="info-row">
-                        <div class="info-label">Tanggal Mulai</div>
-                        <div class="info-value"><?= date('d F Y', strtotime($recruitment['tanggal_mulai'])) ?></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Tanggal Berakhir</div>
-                        <div class="info-value"><?= date('d F Y', strtotime($recruitment['tanggal_berakhir'])) ?></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Status</div>
+                        <div class="info-label">Durasi</div>
                         <div class="info-value">
-                            <?php if ($recruitment['status'] === 'aktif'): ?>
-                                <span class="badge-custom badge-success">Aktif</span>
-                            <?php else: ?>
-                                <span class="badge-custom badge-secondary">Nonaktif</span>
-                            <?php endif; ?>
+                            <?php
+                            $start = new DateTime($recruitment['tanggal_buka']);
+                            $end = new DateTime($recruitment['tanggal_tutup']);
+                            $duration = $start->diff($end)->days;
+                            echo $duration . ' hari';
+                            ?>
                         </div>
                     </div>
-                    <?php if (!empty($recruitment['link_pendaftaran'])): ?>
-                        <div class="info-row">
-                            <div class="info-label">Link Pendaftaran</div>
-                            <div class="info-value">
-                                <a href="<?= htmlspecialchars($recruitment['link_pendaftaran']) ?>" target="_blank" style="color: var(--color-primary-500); text-decoration: none;">
-                                    <?= htmlspecialchars($recruitment['link_pendaftaran']) ?>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline; margin-left: 4px;">
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                        <polyline points="15 3 21 3 21 9"></polyline>
-                                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    <?php endif; ?>
+
+                    <div class="info-row">
+                        <div class="info-label">Terakhir Diperbarui</div>
+                        <div class="info-value"><?= formatTanggal($recruitment['updated_at'], true) ?></div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Tanggal Ditambahkan</div>
+                        <div class="info-value"><?= formatTanggal($recruitment['created_at'], true) ?></div>
+                    </div>
                 </div>
 
-                <!-- Description -->
-                <div style="margin-bottom: 2rem;">
-                    <h3 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                        Deskripsi
-                    </h3>
-
-                    <p class="description-text">
-                        <?= empty($recruitment['deskripsi']) ? "Deskripsi recruitment belum ditambahkan." : nl2br(htmlspecialchars($recruitment['deskripsi'])); ?>
-                    </p>
-                </div>
-
-                <!-- Requirements -->
-                <?php if (!empty($recruitment['persyaratan'])): ?>
-                    <div style="margin-bottom: 2rem;">
+                <!-- Description Section -->
+                <?php if (!empty($recruitment['deskripsi'])): ?>
+                    <div class="description-section">
                         <h3 class="section-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 11 12 14 22 4"></polyline>
-                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
                             </svg>
-                            Persyaratan
+                            Deskripsi
                         </h3>
-                        <div class="requirements-list">
-                            <?php
-                            $persyaratanArray = explode("\n", $recruitment['persyaratan']);
-                            foreach ($persyaratanArray as $item):
-                                $trimmedItem = trim($item);
-                                if (!empty($trimmedItem)):
-                            ?>
-                                    <div class="requirement-item">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                        </svg>
-                                        <span><?= htmlspecialchars($trimmedItem) ?></span>
-                                    </div>
-                            <?php
-                                endif;
-                            endforeach;
-                            ?>
-                        </div>
+                        <p class="description-text">
+                            <?= nl2br(htmlspecialchars($recruitment['deskripsi'])) ?>
+                        </p>
                     </div>
                 <?php endif; ?>
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="<?= base_url('recruitment') ?>" class="btn-secondary-custom">
+                    <a href="<?= base_url('admin/recruitment') ?>" class="btn-secondary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
                         Kembali
                     </a>
-                    <a href="<?= base_url('recruitment/edit/' . $recruitment['id']) ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/recruitment/edit/' . $recruitment['id']) ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                         </svg>
                         Edit Data
                     </a>
-                    <button class="btn-danger-custom" onclick="confirmDelete()">
+                    <button class="btn-danger-custom" onclick="confirmDelete(<?= $recruitment['id'] ?>)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -229,7 +252,10 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Data Recruitment Read Page JS -->
+    <!-- Helper Scripts -->
+    <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
+
+    <!-- Page Specific Scripts -->
     <script src="<?= asset_url('js/pages/recruitment/read.js') ?>"></script>
 </body>
 
