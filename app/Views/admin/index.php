@@ -1,64 +1,56 @@
 <?php
+
+/**
+ * File: Views/admin/index.php
+ * Deskripsi: Dashboard admin dengan statistik dinamis dari database
+ *
+ * Data yang diterima dari routes:
+ * - $stats: Statistik dari v_dashboard_count
+ * - $recentPublikasi: 5 publikasi terbaru dari vw_show_publikasi
+ * - $publikasiByTipe: Jumlah publikasi per tipe (Riset, Kekayaan Intelektual, PPM)
+ */
+
 // Get user data from session
-$userFullname = $_SESSION['user_fullname'] ?? 'User';
+// $userFullname = $_SESSION['user_fullname'] ?? 'User';
 $userEmail = $_SESSION['user_email'] ?? '';
 
-// Sample static data untuk statistik dashboard
-$stats = [
-    'total_dosen' => 12,
-    'total_publikasi' => 48,
-    'total_mitra_aktif' => 8,
-    'total_produk' => 15,
-    'total_fasilitas' => 6,
-    'total_keahlian' => 18,
-    'total_jabatan' => 4,
-    'total_aktivitas' => 24,
-];
+// Ensure $stats has default values if empty
+if (empty($stats)) {
+    $stats = [
+        'total_dosen' => 0,
+        'total_publikasi' => 0,
+        'total_mitra' => 0,
+        'total_produk' => 0,
+        'total_fasilitas' => 0,
+        'total_keahlian' => 0,
+        'total_jabatan' => 0,
+        'total_aktivitas_lab' => 0,
+    ];
+}
 
-// Sample data publikasi berdasarkan tipe
-$publikasiByTipe = [
-    'Riset' => 25,
-    'Kekayaan Intelektual' => 12,
-    'PPM' => 11,
-];
+// Ensure publikasiByTipe has default values
+if (empty($publikasiByTipe)) {
+    $publikasiByTipe = [
+        'Riset' => 0,
+        'Kekayaan Intelektual' => 0,
+        'PPM' => 0,
+    ];
+}
 
-// Sample data mitra berdasarkan kategori
-$mitraByKategori = [
-    'Industri' => 3,
-    'Internasional' => 2,
-    'Institusi Pemerintah' => 1,
-    'Institusi Pendidikan' => 1,
-    'Komunitas' => 1,
-];
+// Ensure recentPublikasi is array
+if (empty($recentPublikasi)) {
+    $recentPublikasi = [];
+}
 
-// Sample recent publikasi
-$recentPublikasi = [
-    ['judul' => 'Implementasi Machine Learning untuk Prediksi Cuaca', 'dosen' => 'Dr. Ahmad Rizki, M.Kom', 'tipe' => 'Riset', 'tahun' => 2024],
-    ['judul' => 'Sistem Monitoring IoT untuk Smart Campus', 'dosen' => 'Dr. Siti Nurhaliza, M.T', 'tipe' => 'Riset', 'tahun' => 2024],
-    ['judul' => 'Aplikasi Mobile Pembelajaran Adaptif', 'dosen' => 'Budi Santoso, S.Kom., M.Kom', 'tipe' => 'Kekayaan Intelektual', 'tahun' => 2024],
-    ['judul' => 'Pelatihan Digital Marketing untuk UMKM', 'dosen' => 'Dr. Dewi Lestari, M.M', 'tipe' => 'PPM', 'tahun' => 2024],
-    ['judul' => 'Analisis Big Data untuk E-Commerce', 'dosen' => 'Prof. Dr. Hendra Wijaya', 'tipe' => 'Riset', 'tahun' => 2023],
-];
-
-// Sample recent aktivitas
-$recentAktivitas = [
-    ['judul' => 'Workshop Python untuk Data Science', 'tanggal' => '2024-11-15'],
-    ['judul' => 'Seminar Nasional AI dan Machine Learning', 'tanggal' => '2024-11-10'],
-    ['judul' => 'Hackathon Mahasiswa Informatika', 'tanggal' => '2024-11-05'],
-    ['judul' => 'Webinar Cloud Computing untuk Pemula', 'tanggal' => '2024-10-28'],
-    ['judul' => 'Pelatihan IoT dan Arduino', 'tanggal' => '2024-10-20'],
-];
-
-// Sample rekrutmen aktif
-$rekrutmenAktif = [
-    ['judul' => 'Asisten Laboratorium Pemrograman', 'tanggal_tutup' => '2024-12-01', 'lokasi' => 'Lab Applied Informatics'],
-    ['judul' => 'Asisten Riset Machine Learning', 'tanggal_tutup' => '2024-11-30', 'lokasi' => 'Lab Applied Informatics'],
-];
-
-// Data untuk chart aktivitas per bulan (6 bulan terakhir)
+// TODO: Implement these data from database (future development)
+if(empty($recentAktivitas)) {
+$recentAktivitas = [];
+}
+$rekrutmenAktif = [];
+$mitraByKategori = [];
 $aktivitasPerBulan = [
     'labels' => ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov'],
-    'data' => [3, 5, 4, 6, 4, 2]
+    'data' => [0, 0, 0, 0, 0, 0]
 ];
 ?>
 <!DOCTYPE html>
@@ -92,32 +84,13 @@ $aktivitasPerBulan = [
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <!-- Topbar -->
-            <!-- <div class="topbar">
-                <div class="topbar-left">
-                    <button class="btn-mobile-menu" id="mobileMenuBtn">
-                        <i data-feather="menu"></i>
-                    </button>
-                    <div>
-                        <h6 class="mb-0 fw-bold">Dashboard</h6>
-                        <small class="text-muted">Laboratorium Applied Informatics</small>
-                    </div>
-                </div>
-                <div class="topbar-right">
-                    <div class="user-info-topbar">
-                        <span class="fw-medium"><?= htmlspecialchars($userFullname) ?></span>
-                        <small class="text-muted d-block"><?= htmlspecialchars($userEmail) ?></small>
-                    </div>
-                </div>
-            </div> -->
-
             <!-- Dashboard Content -->
             <div class="dashboard-content">
 
                 <!-- Welcome Section -->
                 <div class="welcome-section">
                     <div class="welcome-text">
-                        <h4 class="welcome-title">Selamat Datang, <?= htmlspecialchars(explode(' ', $userFullname)[0]) ?>!</h4>
+                        <h4 class="welcome-title">Selamat Datang, Di Dashboard Admin!</h4>
                         <p class="welcome-subtitle">Berikut adalah ringkasan statistik Laboratorium Applied Informatics</p>
                     </div>
                     <div class="welcome-date">
@@ -145,13 +118,9 @@ $aktivitasPerBulan = [
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Total Dosen</p>
-                            <h3 class="stat-value"><?= $stats['total_dosen'] ?></h3>
-                            <span class="stat-change stat-positive">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                    <polyline points="17 6 23 6 23 12"></polyline>
-                                </svg>
-                                +2 dari bulan lalu
+                            <h3 class="stat-value"><?= $stats['total_dosen'] ?? 0 ?></h3>
+                            <span class="stat-change stat-neutral">
+                                Dosen aktif
                             </span>
                         </div>
                     </div>
@@ -166,18 +135,14 @@ $aktivitasPerBulan = [
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Total Publikasi</p>
-                            <h3 class="stat-value"><?= $stats['total_publikasi'] ?></h3>
-                            <span class="stat-change stat-positive">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                    <polyline points="17 6 23 6 23 12"></polyline>
-                                </svg>
-                                +8 dari bulan lalu
+                            <h3 class="stat-value"><?= $stats['total_publikasi'] ?? 0 ?></h3>
+                            <span class="stat-change stat-neutral">
+                                Publikasi akademik
                             </span>
                         </div>
                     </div>
 
-                    <!-- Total Mitra Aktif -->
+                    <!-- Total Mitra -->
                     <div class="stat-card">
                         <div class="stat-icon stat-icon-warning">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -187,10 +152,10 @@ $aktivitasPerBulan = [
                             </svg>
                         </div>
                         <div class="stat-content">
-                            <p class="stat-label">Mitra Aktif</p>
-                            <h3 class="stat-value"><?= $stats['total_mitra_aktif'] ?></h3>
+                            <p class="stat-label">Total Mitra</p>
+                            <h3 class="stat-value"><?= $stats['total_mitra'] ?? 0 ?></h3>
                             <span class="stat-change stat-neutral">
-                                Dari <?= array_sum($mitraByKategori) ?> total mitra
+                                Mitra kerjasama lab
                             </span>
                         </div>
                     </div>
@@ -205,13 +170,9 @@ $aktivitasPerBulan = [
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Total Produk</p>
-                            <h3 class="stat-value"><?= $stats['total_produk'] ?></h3>
-                            <span class="stat-change stat-positive">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                    <polyline points="17 6 23 6 23 12"></polyline>
-                                </svg>
-                                +3 dari bulan lalu
+                            <h3 class="stat-value"><?= $stats['total_produk'] ?? 0 ?></h3>
+                            <span class="stat-change stat-neutral">
+                                Produk laboratorium
                             </span>
                         </div>
                     </div>
@@ -249,12 +210,71 @@ $aktivitasPerBulan = [
 
                     <!-- Aktivitas Trend Chart -->
                     <div class="chart-card">
-                        <div class="chart-header">
+                        <!-- <div class="chart-header">
                             <h5 class="chart-title">Trend Aktivitas Laboratorium</h5>
                             <p class="chart-subtitle">6 Bulan Terakhir</p>
                         </div>
                         <div class="chart-container">
                             <canvas id="aktivitasChart"></canvas>
+                        </div> -->
+                        <div class="recent-card recent-card-compact recent-card-height mb-3">
+                            <div class="recent-header">
+                                <h5 class="recent-title">Aktivitas Terbaru</h5>
+                            </div>
+                            <div class="recent-list recent-list-compact">
+                                <?php if (empty($recentAktivitas)): ?>
+                                    <p style="text-align: center; color: #999; padding: 1rem;">
+                                        Belum ada data aktivitas
+                                    </p>
+                                <?php else: ?>
+                                    <?php foreach (array_slice($recentAktivitas, 0, 3) as $aktivitas): ?>
+                                        <div class="recent-item-compact">
+                                            <div class="recent-item-compact-dot"></div>
+                                            <div>
+                                                <p class="recent-item-compact-title"><?= htmlspecialchars($aktivitas['judul_aktivitas']) ?></p>
+                                                <p class="recent-item-compact-date"><?= date('d M Y', strtotime($aktivitas['tanggal_kegiatan'])) ?></p>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <div class="recent-card recent-card-compact ">
+                            <div class="recent-header">
+                                <h5 class="recent-title">Rekrutmen Aktif</h5>
+                                <?php if (!empty($rekrutmenAktif)): ?>
+                                    <span class="badge-count"><?= count($rekrutmenAktif) ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="recent-list recent-list-compact">
+                                <?php if (empty($rekrutmenAktif)): ?>
+                                    <p style="text-align: center; color: #999; padding: 1rem;">
+                                        Tidak ada rekrutmen aktif
+                                    </p>
+                                <?php else: ?>
+                                    <?php foreach ($rekrutmenAktif as $rekrutmen): ?>
+                                        <div class="recruitment-item">
+                                            <div class="recruitment-item-icon">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="recruitment-item-title"><?= htmlspecialchars($rekrutmen['judul']) ?></p>
+                                                <p class="recruitment-item-meta">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                                    </svg>
+                                                    Tutup: <?= date('d M Y', strtotime($rekrutmen['tanggal_tutup'])) ?>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -265,7 +285,7 @@ $aktivitasPerBulan = [
                     <div class="recent-card">
                         <div class="recent-header">
                             <h5 class="recent-title">Publikasi Terbaru</h5>
-                            <a href="<?= base_url('publikasi') ?>" class="btn-view-all">
+                            <a href="<?= base_url('admin/publikasi-akademik') ?>" class="btn-view-all">
                                 Lihat Semua
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="9 18 15 12 9 6"></polyline>
@@ -273,99 +293,62 @@ $aktivitasPerBulan = [
                             </a>
                         </div>
                         <div class="recent-list">
-                            <?php foreach ($recentPublikasi as $pub): ?>
+                            <?php if (empty($recentPublikasi)): ?>
                                 <div class="recent-item">
-                                    <div class="recent-item-icon">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                                        </svg>
-                                    </div>
                                     <div class="recent-item-content">
-                                        <p class="recent-item-title"><?= htmlspecialchars($pub['judul']) ?></p>
-                                        <p class="recent-item-meta">
-                                            <span><?= htmlspecialchars($pub['dosen']) ?></span>
-                                            <span class="separator">•</span>
-                                            <span class="badge-mini badge-<?= $pub['tipe'] === 'Riset' ? 'primary' : ($pub['tipe'] === 'Kekayaan Intelektual' ? 'warning' : 'success') ?>">
-                                                <?= htmlspecialchars($pub['tipe']) ?>
-                                            </span>
-                                            <span class="separator">•</span>
-                                            <span><?= $pub['tahun'] ?></span>
+                                        <p class="recent-item-meta" style="text-align: center; color: #999;">
+                                            Belum ada data publikasi
                                         </p>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
+                            <?php else: ?>
+                                <?php foreach ($recentPublikasi as $pub): ?>
+                                    <div class="recent-item">
+                                        <div class="recent-item-icon">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="recent-item-content">
+                                            <p class="recent-item-title"><?= htmlspecialchars($pub['judul']) ?></p>
+                                            <p class="recent-item-meta">
+                                                <span><?= htmlspecialchars($pub['dosen_name'] ?? '-') ?></span>
+                                                <span class="separator">•</span>
+                                                <span class="badge-mini badge-<?= $pub['tipe_publikasi'] === 'Riset' ? 'primary' : ($pub['tipe_publikasi'] === 'Kekayaan Intelektual' ? 'warning' : 'success') ?>">
+                                                    <?= htmlspecialchars($pub['tipe_publikasi']) ?>
+                                                </span>
+                                                <span class="separator">•</span>
+                                                <span><?= $pub['tahun_publikasi'] ?? '-' ?></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <!-- Recent Aktivitas & Rekrutmen -->
                     <div class="sidebar-cards">
-                        <!-- Recent Aktivitas -->
-                        <div class="recent-card recent-card-compact">
-                            <div class="recent-header">
-                                <h5 class="recent-title">Aktivitas Terbaru</h5>
-                            </div>
-                            <div class="recent-list recent-list-compact">
-                                <?php foreach (array_slice($recentAktivitas, 0, 3) as $aktivitas): ?>
-                                    <div class="recent-item-compact">
-                                        <div class="recent-item-compact-dot"></div>
-                                        <div>
-                                            <p class="recent-item-compact-title"><?= htmlspecialchars($aktivitas['judul']) ?></p>
-                                            <p class="recent-item-compact-date"><?= date('d M Y', strtotime($aktivitas['tanggal'])) ?></p>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-
-                        <!-- Rekrutmen Aktif -->
-                        <div class="recent-card recent-card-compact">
-                            <div class="recent-header">
-                                <h5 class="recent-title">Rekrutmen Aktif</h5>
-                                <span class="badge-count"><?= count($rekrutmenAktif) ?></span>
-                            </div>
-                            <div class="recent-list recent-list-compact">
-                                <?php foreach ($rekrutmenAktif as $rekrutmen): ?>
-                                    <div class="recruitment-item">
-                                        <div class="recruitment-item-icon">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                                <circle cx="12" cy="7" r="4"></circle>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="recruitment-item-title"><?= htmlspecialchars($rekrutmen['judul']) ?></p>
-                                            <p class="recruitment-item-meta">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <circle cx="12" cy="12" r="10"></circle>
-                                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                                </svg>
-                                                Tutup: <?= date('d M Y', strtotime($rekrutmen['tanggal_tutup'])) ?>
-                                            </p>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
 
                         <!-- Quick Stats -->
                         <div class="quick-stats-card">
                             <h5 class="quick-stats-title">Statistik Lainnya</h5>
                             <div class="quick-stats-grid">
                                 <div class="quick-stat-item">
-                                    <div class="quick-stat-value"><?= $stats['total_fasilitas'] ?></div>
+                                    <div class="quick-stat-value"><?= $stats['total_fasilitas'] ?? 0 ?></div>
                                     <div class="quick-stat-label">Fasilitas</div>
                                 </div>
                                 <div class="quick-stat-item">
-                                    <div class="quick-stat-value"><?= $stats['total_keahlian'] ?></div>
+                                    <div class="quick-stat-value"><?= $stats['total_keahlian'] ?? 0 ?></div>
                                     <div class="quick-stat-label">Keahlian</div>
                                 </div>
                                 <div class="quick-stat-item">
-                                    <div class="quick-stat-value"><?= $stats['total_jabatan'] ?></div>
+                                    <div class="quick-stat-value"><?= $stats['total_jabatan'] ?? 0 ?></div>
                                     <div class="quick-stat-label">Jabatan</div>
                                 </div>
                                 <div class="quick-stat-item">
-                                    <div class="quick-stat-value"><?= $stats['total_aktivitas'] ?></div>
+                                    <div class="quick-stat-value"><?= $stats['total_aktivitas_lab'] ?? 0 ?></div>
                                     <div class="quick-stat-label">Aktivitas</div>
                                 </div>
                             </div>

@@ -63,74 +63,91 @@ $members = [
 
 <!-- Main Content -->
 <main class="tentang-kami-page">
-    <!-- Page Title Section -->
-    <section class="page-title-section">
-        <div class="container">
-            <h1 class="page-title"><?= htmlspecialchars($labInfo['title']) ?></h1>
+    <!-- Breadcrumb -->
+    <div class="container">
+        <div class="breadcrumb-nav">
+            <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-item active">Tentang Kami</span>
         </div>
-    </section>
+    </div>
 
-    <!-- About Lab Section -->
-    <section class="about-lab-section">
+    <!-- Hero Section -->
+    <section class="hero-section">
         <div class="container">
-            <div class="content-wrapper">
-                <h2 class="section-subtitle"><?= htmlspecialchars($labInfo['subtitle']) ?></h2>
-                <p class="about-description"><?= htmlspecialchars($labInfo['description']) ?></p>
+            <div class="hero-content">
+                <div class="hero-badge">Tentang Kami</div>
+                <h1 class="hero-title"><?= htmlspecialchars($labInfo['title']) ?></h1>
+                <p class="hero-description"><?= htmlspecialchars($labInfo['description']) ?></p>
             </div>
         </div>
     </section>
 
-    <!-- Team Section -->
-    <section class="team-section">
+    <!-- Leadership Section -->
+    <section class="leadership-section">
         <div class="container">
-            <!-- Section Title -->
-            <h2 class="section-title">Anggota Laboratorium</h2>
+            <div class="section-header">
+                <h2 class="section-title">Struktur Pimpinan</h2>
+            </div>
 
-            <!-- Leadership Subsection -->
-            <div class="leadership-subsection">
-                <h3 class="subsection-title">Struktur Pimpinan</h3>
-
-                <div class="leadership-grid">
-                    <?php foreach ($leadership as $leader): ?>
-                        <div class="profile-card">
-                            <div class="profile-image-wrapper">
+            <div class="leadership-cards">
+                <?php foreach ($leadership as $leader): ?>
+                    <div class="leader-card">
+                        <div class="leader-card-inner">
+                            <div class="leader-image-container">
                                 <img src="<?= base_url($leader['foto_profil']) ?>"
                                     alt="<?= htmlspecialchars($leader['full_name']) ?>"
-                                    class="profile-image">
+                                    class="leader-image">
+                                <div class="leader-image-overlay"></div>
                             </div>
-                            <div class="profile-info">
-                                <h4 class="profile-name"><?= htmlspecialchars($leader['full_name']) ?></h4>
-                                <p class="profile-position"><?= htmlspecialchars($leader['jabatan']) ?></p>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-            <!-- Members Subsection -->
-            <div class="members-subsection">
-                <h3 class="subsection-title">Dosen Anggota</h3>
-
-                <div class="members-grid">
-                    <?php foreach ($members as $member): ?>
-                        <div class="profile-card">
-                            <div class="profile-image-wrapper">
-
-                            </div>
-                            <div class="profile-info">
-                                <h4 class="profile-name"><?= htmlspecialchars($member['full_name']) ?></h4>
-                                <div class="profile-expertise">
+                            <div class="leader-content">
+                                <div class="leader-position-badge"><?= htmlspecialchars($leader['jabatan']) ?></div>
+                                <h3 class="leader-name"><?= htmlspecialchars($leader['full_name']) ?></h3>
+                                <div class="leader-expertise">
                                     <?php
-                                    $keahlianArray = explode(', ', $member['keahlian_list']);
+                                    $keahlianArray = explode(', ', $leader['keahlian_list']);
                                     foreach ($keahlianArray as $keahlian):
                                     ?>
-                                        <span class="expertise-tag"><?= htmlspecialchars(trim($keahlian)) ?></span>
+                                        <span class="expertise-badge"><?= htmlspecialchars(trim($keahlian)) ?></span>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- Members Section -->
+    <section class="members-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Dosen Anggota</h2>
+            </div>
+
+            <div class="members-grid">
+                <?php foreach ($members as $member): ?>
+                    <div class="member-card">
+                        <div class="member-photo">
+                            <img src="<?= base_url($member['foto_profil']) ?>"
+                                alt="<?= htmlspecialchars($member['full_name']) ?>"
+                                class="member-image">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name"><?= htmlspecialchars($member['full_name']) ?></h3>
+                            <p class="member-position"><?= htmlspecialchars($member['jabatan']) ?></p>
+                            <div class="member-expertise">
+                                <?php
+                                $keahlianArray = explode(', ', $member['keahlian_list']);
+                                foreach ($keahlianArray as $keahlian):
+                                ?>
+                                    <span class="expertise-badge secondary"><?= htmlspecialchars(trim($keahlian)) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>

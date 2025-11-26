@@ -1,3 +1,41 @@
+<?php
+/**
+ * Get current path untuk set active menu
+ * Parse URL path only (tanpa query string & base URL)
+ */
+$current_url = $_SERVER['REQUEST_URI'];
+$current_path = parse_url($current_url, PHP_URL_PATH);
+
+// Remove base URL jika ada (e.g., /applied-informatics)
+$base_path = '/applied-informatics';
+if (strpos($current_path, $base_path) === 0) {
+    $current_path = substr($current_path, strlen($base_path));
+}
+
+/**
+ * Helper function to check if menu is active
+ *
+ * @param string $path - Target path untuk check (e.g., '/', '/tentang-kami')
+ * @param string $current - Current path dari URL
+ * @return string - 'active' jika match, empty string jika tidak
+ */
+function isActive($path, $current)
+{
+    // Normalize path
+    $path = '/' . trim($path, '/');
+    $current = '/' . trim($current, '/');
+
+    // Special case: Homepage - exact match only
+    if ($path === '/') {
+        return $current === '/' ? 'active' : '';
+    }
+
+    // For other pages: starts with match (support nested routes)
+    // Case-insensitive comparison
+    return stripos($current, $path) === 0 ? 'active' : '';
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -37,23 +75,23 @@
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav ms-auto gap-lg-4">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Beranda</a>
+                        <a class="nav-link <?= isActive('/', $current_path) ?>" href="<?= base_url('') ?>">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('tentang-kami') ?>">Tentang Kami</a>
+                        <a class="nav-link <?= isActive('/tentang-kami', $current_path) ?>" href="<?= base_url('tentang-kami') ?>">Tentang Kami</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
+                        <a class="nav-link dropdown-toggle <?= isActive('/publikasi-dosen', $current_path) || isActive('/produk-lab', $current_path) ? 'active' : '' ?>" href="#" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             Riset dan Produk
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?= base_url('publikasi-dosen') ?>">Publikasi Dosen</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url('produk-lab') ?>">Produk Lab</a></li>
+                            <li><a class="dropdown-item <?= isActive('/publikasi-dosen', $current_path) ?>" href="<?= base_url('publikasi-dosen') ?>">Publikasi Dosen</a></li>
+                            <li><a class="dropdown-item <?= isActive('/produk-lab', $current_path) ?>" href="<?= base_url('produk-lab') ?>">Produk Lab</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('aktivitas-laboratorium') ?>">Aktivitas Lab</a>
+                        <a class="nav-link <?= isActive('/aktivitas-laboratorium', $current_path) ?>" href="<?= base_url('aktivitas-laboratorium') ?>">Aktivitas Lab</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('mitra-lab') ?>">Mitra</a>

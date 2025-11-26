@@ -24,10 +24,35 @@ class AktivitasModel extends BaseModel
 {
     protected $table_name = 'trx_aktivitas_lab';
 
+    /**
+     * Ambil semua data aktivitas tanpa pagination
+     *
+     * @return array
+     */
+
+    public function getAll()
+    {
+        try {
+            $query = "SELECT judul_aktivitas, foto_aktivitas, tanggal_kegiatan FROM {$this->table_name} ORDER BY created_at, tanggal_kegiatan DESC LIMIT 6";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                "success" => true,
+                "data" => $result
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'data' => [],
+            ];
+        }
+    }
 
     /**
      * Ambil semua data aktivitas dengan pagination
-     * Menggunakan view vw_show_aktivitas_lab
      *
      * @param int $limit - Jumlah data per halaman
      * @param int $offset - Data dimulai dari baris ke berapa
@@ -37,13 +62,22 @@ class AktivitasModel extends BaseModel
     {
         try {
             // Hitung total records
-            $countQuery = "SELECT COUNT(*) as total FROM vw_show_aktivitas_lab";
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
             $countStmt = $this->db->prepare($countQuery);
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Ambil data dengan pagination
-            $query = "SELECT * FROM vw_show_aktivitas_lab LIMIT :limit OFFSET :offset";
+            $query = "SELECT
+                        id,
+                        judul_aktivitas,
+                        deskripsi,
+                        foto_aktivitas,
+                        tanggal_kegiatan,
+                        created_at,
+                        updated_at
+                    FROM {$this->table_name}
+                    ORDER BY tanggal_kegiatan DESC, created_at DESC LIMIT :limit OFFSET :offset";
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
@@ -76,7 +110,18 @@ class AktivitasModel extends BaseModel
     public function getById($id)
     {
         try {
-            $query = "SELECT * FROM vw_show_aktivitas_lab WHERE id = :id";
+            $query = "SELECT
+                        id,
+                        judul_aktivitas,
+                        deskripsi,
+                        foto_aktivitas,
+                        tanggal_kegiatan,
+                        created_at,
+                        updated_at
+                    FROM {$this->table_name}
+                    WHERE id = :id
+                    ORDER BY tanggal_kegiatan DESC, created_at DESC";
+
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
