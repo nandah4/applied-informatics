@@ -18,7 +18,8 @@ class DashboardModel
 {
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $database = new Database();
         $this->db = $database->getConnection();
     }
@@ -39,7 +40,7 @@ class DashboardModel
     public function getDashboardStats()
     {
         try {
-            $query = "SELECT * FROM v_dashboard_count";
+            $query = "SELECT * FROM vw_dashboard_count";
             $stmt = $this->db->prepare($query);
             $stmt->execute();
 
@@ -65,7 +66,7 @@ class DashboardModel
      * @param int $limit - Jumlah data yang diambil (default: 5)
      * @return array - Format: ['success' => bool, 'data' => array]
      */
-    public function getRecentPublikasi($limit = 5)
+    public function getRecentPublikasi($limit = 3)
     {
         try {
             $query = "SELECT * FROM vw_show_publikasi
@@ -86,6 +87,42 @@ class DashboardModel
             return [
                 'success' => false,
                 'message' => 'Gagal mengambil publikasi terbaru: ' . $e->getMessage(),
+                'data' => []
+            ];
+        }
+    }
+
+    /**
+     * Get publikasi terbaru (limit 5)
+     * Menggunakan view vw_show_publikasi
+     *
+     * @param int $limit - Jumlah data yang diambil (default: 5)
+     * @return array - Format: ['success' => bool, 'data' => array]
+     */
+    public function getRecentAktivitasLab($limit = 3)
+    {
+        try {
+            $query = "SELECT
+                        judul_aktivitas,
+                        tanggal_kegiatan
+                    FROM trx_aktivitas_lab
+                    ORDER BY tanggal_kegiatan DESC, created_at DESC
+                    LIMIT :limit";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $data
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil aktivitas lab terbaru: ' . $e->getMessage(),
                 'data' => []
             ];
         }
@@ -131,6 +168,42 @@ class DashboardModel
             return [
                 'success' => false,
                 'message' => 'Gagal mengambil statistik publikasi: ' . $e->getMessage(),
+                'data' => []
+            ];
+        }
+    }
+
+
+    /**
+     * Get profil statistik untuk home
+     * 
+     * @return array - Format: [
+     *                     'total_dosen' => int,
+     *                     'total_publikasi' => int,
+     *                     'total_mitra' => int,
+     *                 ]
+     */
+    public function getHomeStatistic()
+    {
+        try {
+            $query = "SELECT
+                        (SELECT COUNT(*) FROM mst_dosen) AS total_anggota,
+                        (SELECT COUNT(*) FROM trx_publikasi) AS total_publikasi,
+                        (SELECT COUNT(*) FROM mst_mitra) AS total_mitra;";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $data
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil statistik lab terbaru: ' . $e->getMessage(),
                 'data' => []
             ];
         }

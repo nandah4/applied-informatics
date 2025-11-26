@@ -1,4 +1,5 @@
-CREATE OR REPLACE VIEW v_dashboard_count AS
+
+CREATE OR REPLACE VIEW vw_dashboard_count AS
 SELECT
     (SELECT COUNT(*) FROM mst_dosen) AS total_dosen,
     (SELECT COUNT(*) FROM trx_publikasi) AS total_publikasi,

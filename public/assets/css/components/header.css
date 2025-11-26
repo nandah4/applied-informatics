@@ -1,6 +1,9 @@
 @import '../base/fonts.css';
 @import '../base/variables.css';
 
+body {
+    font-family: var(--font-manrope);
+}
 /* Navbar Modern Minimalist */
 .navbar {
     background: #ffffff;
@@ -54,6 +57,9 @@
     color: #2c3e50;
     font-weight: 500;
     font-size: var(--fs-sm);
+}
+.dropdown-item.active {
+    background-color: var(--color-primary-400) !important;
 }
 
 .dropdown-item:hover {

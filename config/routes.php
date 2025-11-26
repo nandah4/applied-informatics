@@ -33,7 +33,46 @@ $router = new Router();
  * URL: /
  */
 $router->get('/', function () {
+    $dashboardModel = new DashboardModel();
+    $statisticLab = $dashboardModel->getHomeStatistic();
+    $statisticData = $statisticLab['data'];
+
+    $fasiltiasModel = new FasilitasModel();
+    $listFasiltias = $fasiltiasModel->getAllFasilitas();
+    $fasilitasData = $listFasiltias['data'];
+
+    // Ambil data publikasi untuk section penelitian
+    $publikasiModel = new PublikasiAkademikModel();
+    $yearsResult = $publikasiModel->getDistinctYears();
+    $publikasiYears = $yearsResult['success'] ? $yearsResult['data'] : [];
+
+    // Ambil publikasi dari tahun pertama (terbaru) sebagai default
+    $publikasiData = [];
+    if (!empty($publikasiYears)) {
+        $firstYear = $publikasiYears[0];
+        $publikasiResult = $publikasiModel->getByYear($firstYear);
+        $publikasiData = $publikasiResult['success'] ? $publikasiResult['data'] : [];
+    }
+
+    // Ambil data terbaru aktivitas
+    $aktivitasModel = new AktivitasModel();
+    $listAktivitas = $aktivitasModel->getAll();
+    $aktivitasData = $listAktivitas['data'];
+
     require __DIR__ . '/../app/Views/client/index.php';
+});
+
+/**
+ * API: Get publikasi by year (AJAX endpoint)
+ * URL: /api/publikasi/year/{year}
+ */
+$router->get('api/publikasi/year/(\d+)', function ($year) {
+    header('Content-Type: application/json');
+
+    $publikasiModel = new PublikasiAkademikModel();
+    $result = $publikasiModel->getByYear($year);
+
+    echo json_encode($result);
 });
 
 /**
@@ -154,12 +193,16 @@ $router->get('admin/dashboard', function () {
     $stats = $statsResult['success'] ? $statsResult['data'] : [];
 
     // Ambil publikasi terbaru
-    $publikasiResult = $dashboardModel->getRecentPublikasi(5);
+    $publikasiResult = $dashboardModel->getRecentPublikasi(3);
     $recentPublikasi = $publikasiResult['success'] ? $publikasiResult['data'] : [];
 
     // Ambil statistik publikasi per tipe
     $publikasiByTipeResult = $dashboardModel->getPublikasiByTipe();
     $publikasiByTipe = $publikasiByTipeResult['success'] ? $publikasiByTipeResult['data'] : [];
+
+    // Ambil aktivitas lab terbaru
+    $aktivitasLabResult = $dashboardModel->getRecentAktivitasLab(3);
+    $recentAktivitas = $aktivitasLabResult['success'] ? $aktivitasLabResult['data'] : [];
 
     // Load view dengan data
     require __DIR__ . '/../app/Views/admin/index.php';

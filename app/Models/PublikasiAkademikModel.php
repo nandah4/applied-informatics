@@ -259,4 +259,76 @@ class PublikasiAkademikModel extends BaseModel
             ];
         }
     }
+
+    /**
+     * Ambil tahun publikasi yang unik (distinct)
+     * Diurutkan dari yang terbaru
+     *
+     * @return array - Format: ['success' => bool, 'data' => array, 'message' => string]
+     */
+    public function getDistinctYears()
+    {
+        try {
+            $query = "SELECT DISTINCT tahun_publikasi
+                      FROM trx_publikasi
+                      ORDER BY tahun_publikasi DESC";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            return [
+                'success' => true,
+                'data' => $data
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil tahun publikasi: ' . $e->getMessage(),
+                'data' => []
+            ];
+        }
+    }
+
+    /**
+     * Ambil publikasi berdasarkan tahun
+     * Menggunakan view vw_show_publikasi
+     *
+     * @param int $year - Tahun publikasi
+     * @param int $limit - Batasan jumlah data (optional, default null = semua data)
+     * @return array - Format: ['success' => bool, 'data' => array, 'message' => string]
+     */
+    public function getByYear($year, $limit = null)
+    {
+        try {
+            $query = "SELECT * FROM vw_show_publikasi
+                      WHERE tahun_publikasi = :year
+                      ORDER BY created_at DESC";
+
+            if ($limit !== null) {
+                $query .= " LIMIT :limit";
+            }
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':year', $year, PDO::PARAM_INT);
+
+            if ($limit !== null) {
+                $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            }
+
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $data
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil publikasi: ' . $e->getMessage(),
+                'data' => []
+            ];
+        }
+    }
 }

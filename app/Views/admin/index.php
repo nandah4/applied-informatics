@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File: Views/admin/index.php
  * Deskripsi: Dashboard admin dengan statistik dinamis dari database
@@ -10,7 +11,7 @@
  */
 
 // Get user data from session
-$userFullname = $_SESSION['user_fullname'] ?? 'User';
+// $userFullname = $_SESSION['user_fullname'] ?? 'User';
 $userEmail = $_SESSION['user_email'] ?? '';
 
 // Ensure $stats has default values if empty
@@ -42,7 +43,9 @@ if (empty($recentPublikasi)) {
 }
 
 // TODO: Implement these data from database (future development)
+if(empty($recentAktivitas)) {
 $recentAktivitas = [];
+}
 $rekrutmenAktif = [];
 $mitraByKategori = [];
 $aktivitasPerBulan = [
@@ -87,7 +90,7 @@ $aktivitasPerBulan = [
                 <!-- Welcome Section -->
                 <div class="welcome-section">
                     <div class="welcome-text">
-                        <h4 class="welcome-title">Selamat Datang, <?= htmlspecialchars(explode(' ', $userFullname)[0]) ?>!</h4>
+                        <h4 class="welcome-title">Selamat Datang, Di Dashboard Admin!</h4>
                         <p class="welcome-subtitle">Berikut adalah ringkasan statistik Laboratorium Applied Informatics</p>
                     </div>
                     <div class="welcome-date">
@@ -207,12 +210,71 @@ $aktivitasPerBulan = [
 
                     <!-- Aktivitas Trend Chart -->
                     <div class="chart-card">
-                        <div class="chart-header">
+                        <!-- <div class="chart-header">
                             <h5 class="chart-title">Trend Aktivitas Laboratorium</h5>
                             <p class="chart-subtitle">6 Bulan Terakhir</p>
                         </div>
                         <div class="chart-container">
                             <canvas id="aktivitasChart"></canvas>
+                        </div> -->
+                        <div class="recent-card recent-card-compact recent-card-height mb-3">
+                            <div class="recent-header">
+                                <h5 class="recent-title">Aktivitas Terbaru</h5>
+                            </div>
+                            <div class="recent-list recent-list-compact">
+                                <?php if (empty($recentAktivitas)): ?>
+                                    <p style="text-align: center; color: #999; padding: 1rem;">
+                                        Belum ada data aktivitas
+                                    </p>
+                                <?php else: ?>
+                                    <?php foreach (array_slice($recentAktivitas, 0, 3) as $aktivitas): ?>
+                                        <div class="recent-item-compact">
+                                            <div class="recent-item-compact-dot"></div>
+                                            <div>
+                                                <p class="recent-item-compact-title"><?= htmlspecialchars($aktivitas['judul_aktivitas']) ?></p>
+                                                <p class="recent-item-compact-date"><?= date('d M Y', strtotime($aktivitas['tanggal_kegiatan'])) ?></p>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <div class="recent-card recent-card-compact ">
+                            <div class="recent-header">
+                                <h5 class="recent-title">Rekrutmen Aktif</h5>
+                                <?php if (!empty($rekrutmenAktif)): ?>
+                                    <span class="badge-count"><?= count($rekrutmenAktif) ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="recent-list recent-list-compact">
+                                <?php if (empty($rekrutmenAktif)): ?>
+                                    <p style="text-align: center; color: #999; padding: 1rem;">
+                                        Tidak ada rekrutmen aktif
+                                    </p>
+                                <?php else: ?>
+                                    <?php foreach ($rekrutmenAktif as $rekrutmen): ?>
+                                        <div class="recruitment-item">
+                                            <div class="recruitment-item-icon">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="recruitment-item-title"><?= htmlspecialchars($rekrutmen['judul']) ?></p>
+                                                <p class="recruitment-item-meta">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                                    </svg>
+                                                    Tutup: <?= date('d M Y', strtotime($rekrutmen['tanggal_tutup'])) ?>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -268,67 +330,6 @@ $aktivitasPerBulan = [
 
                     <!-- Recent Aktivitas & Rekrutmen -->
                     <div class="sidebar-cards">
-                        <!-- Recent Aktivitas -->
-                        <div class="recent-card recent-card-compact">
-                            <div class="recent-header">
-                                <h5 class="recent-title">Aktivitas Terbaru</h5>
-                            </div>
-                            <div class="recent-list recent-list-compact">
-                                <?php if (empty($recentAktivitas)): ?>
-                                    <p style="text-align: center; color: #999; padding: 1rem;">
-                                        Belum ada data aktivitas
-                                    </p>
-                                <?php else: ?>
-                                    <?php foreach (array_slice($recentAktivitas, 0, 3) as $aktivitas): ?>
-                                        <div class="recent-item-compact">
-                                            <div class="recent-item-compact-dot"></div>
-                                            <div>
-                                                <p class="recent-item-compact-title"><?= htmlspecialchars($aktivitas['judul']) ?></p>
-                                                <p class="recent-item-compact-date"><?= date('d M Y', strtotime($aktivitas['tanggal'])) ?></p>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <!-- Rekrutmen Aktif -->
-                        <div class="recent-card recent-card-compact">
-                            <div class="recent-header">
-                                <h5 class="recent-title">Rekrutmen Aktif</h5>
-                                <?php if (!empty($rekrutmenAktif)): ?>
-                                    <span class="badge-count"><?= count($rekrutmenAktif) ?></span>
-                                <?php endif; ?>
-                            </div>
-                            <div class="recent-list recent-list-compact">
-                                <?php if (empty($rekrutmenAktif)): ?>
-                                    <p style="text-align: center; color: #999; padding: 1rem;">
-                                        Tidak ada rekrutmen aktif
-                                    </p>
-                                <?php else: ?>
-                                    <?php foreach ($rekrutmenAktif as $rekrutmen): ?>
-                                        <div class="recruitment-item">
-                                            <div class="recruitment-item-icon">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                                    <circle cx="12" cy="7" r="4"></circle>
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <p class="recruitment-item-title"><?= htmlspecialchars($rekrutmen['judul']) ?></p>
-                                                <p class="recruitment-item-meta">
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                        <circle cx="12" cy="12" r="10"></circle>
-                                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                                    </svg>
-                                                    Tutup: <?= date('d M Y', strtotime($rekrutmen['tanggal_tutup'])) ?>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
 
                         <!-- Quick Stats -->
                         <div class="quick-stats-card">

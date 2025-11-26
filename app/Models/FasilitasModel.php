@@ -45,7 +45,7 @@ class FasilitasModel
     {
         try {
             // ✅ Query dari VIEW (lebih simple & konsisten)
-            $query = "SELECT * FROM {$this->view_name}";
+            $query = "SELECT * FROM {$this->table_name}";
 
             $stmt = $this->db->prepare($query);
             $stmt->execute();

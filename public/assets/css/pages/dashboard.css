@@ -229,8 +229,9 @@
 }
 
 .chart-container {
+    overflow: visible;
     position: relative;
-    height: 280px;
+    height: 290px;
     margin-bottom: 1rem;
 }
 
@@ -297,6 +298,10 @@
     border-radius: 12px;
     padding: 1.5rem;
     border: 1px solid var(--color-gray-200);
+}
+.recent-card-height {
+    height: 50%;
+    overflow: auto;
 }
 
 .recent-card-compact {

@@ -26,12 +26,23 @@ class MitraModel extends BaseModel
     public function getAllMitraWithPagination($limit = 10, $offset = 0)
     {
         try {
-            $countQuery = "SELECT COUNT(*) as total FROM vw_show_mitra";
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
             $countStmt = $this->db->prepare($countQuery);
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-            $query = "SELECT * FROM vw_show_mitra ORDER BY created_at DESC
+            $query = "SELECT
+                        m.id,
+                        m.nama,          
+                        m.status,        
+                        m.deskripsi,
+                        m.logo_mitra,
+                        m.kategori,
+                        m.tanggal_mulai,
+                        m.tanggal_akhir,
+                        m.created_at,
+                        m.updated_at
+                    FROM mst_mitra m ORDER BY created_at DESC
                     LIMIT :limit OFFSET :offset";
 
             $stmt = $this->db->prepare($query);
@@ -65,7 +76,18 @@ class MitraModel extends BaseModel
     public function getById($id)
     {
         try {
-            $query = "SELECT * FROM vw_show_mitra WHERE id = :id";
+            $query = "SELECT
+                        m.id,
+                        m.nama,          
+                        m.status,        
+                        m.deskripsi,
+                        m.logo_mitra,
+                        m.kategori,
+                        m.tanggal_mulai,
+                        m.tanggal_akhir,
+                        m.created_at,
+                        m.updated_at
+                    FROM mst_mitra m WHERE id = :id";
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(":id", $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -180,7 +202,7 @@ class MitraModel extends BaseModel
                     'message' => 'Data mitra tidak ditemukan (ID mungkin salah).'
                 ];
             }
-            
+
             return [
                 'success' => false,
                 'message' => 'Gagal update data: ' . $e->getMessage()
