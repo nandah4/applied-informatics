@@ -136,6 +136,7 @@
                             <tr>
                                 <td colspan="4">
                                     <div class="empty-state">
+                                        <?= count($listFasilitas) ?>
                                         <h6>Tidak ada data fasilitas</h6>
                                         <p>Mulai dengan menambahkan fasilitas pertama Anda</p>
                                     </div>

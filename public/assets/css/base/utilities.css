@@ -1,0 +1,26 @@
+/**
+ * Utility Classes
+ * Reusable utility classes for common patterns
+ * Applied Informatics Laboratory
+ */
+
+/* Height Utilities */
+.fixed-height {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Background Utilities */
+.bg-primary-400 {
+  background-color: var(--color-primary-400);
+}
+
+/* Container Utilities */
+.container-custom {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}

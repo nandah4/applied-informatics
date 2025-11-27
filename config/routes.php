@@ -76,11 +76,51 @@ $router->get('api/publikasi/year/(\d+)', function ($year) {
 });
 
 /**
- * Tentang Kami
- * URL: /tentang-kami
+ * Anggota Laboratorium
+ * URL: /anggota-laboratorium
  */
-$router->get('tentang-kami', function () {
-    require __DIR__ . '/../app/Views/client/tentang_kami.php';
+$router->get('anggota-laboratorium', function () {
+    $dosenModel = new DosenModel();
+
+    // Ambil data Kepala Laboratorium
+    $leadershipResult = $dosenModel->getDosenByJabatan('Kepala Laboratorium');
+    $leadership = $leadershipResult['success'] ? $leadershipResult['data'] : [];
+
+    // Ambil data Dosen (anggota)
+    $membersResult = $dosenModel->getDosenByJabatan('Anggota');
+    $members = $membersResult['success'] ? $membersResult['data'] : [];
+
+    require __DIR__ . '/../app/Views/client/anggota_lab.php';
+});
+
+/**
+ * Detail Dosen
+ * URL: /dosen/detail/{id}
+ */
+$router->get('dosen/detail/(\d+)', function ($id) {
+    $dosenModel = new DosenModel();
+    $profilPublikasiModel = new ProfilPublikasiModel();
+    $publikasiModel = new PublikasiAkademikModel();
+
+    // Get data dosen by ID
+    $dosenResult = $dosenModel->getDosenById((int)$id);
+
+    if (!$dosenResult['success']) {
+        header("Location: " . base_url('anggota-laboratorium'));
+        exit;
+    }
+
+    $dosenData = $dosenResult['data'];
+
+    // Get profil publikasi dosen (SINTA, Scopus, dll)
+    $profilPublikasiResult = $profilPublikasiModel->getByDosenId((int)$id);
+    $profilPublikasi = $profilPublikasiResult['success'] ? $profilPublikasiResult['data'] : [];
+
+    // Get publikasi akademik dosen (Riset, PPM, Kekayaan Intelektual)
+    $publikasiResult = $publikasiModel->getByDosenId((int)$id);
+    $publikasiGrouped = $publikasiResult['success'] ? $publikasiResult['data'] : [];
+
+    require __DIR__ . '/../app/Views/client/detail_dosen.php';
 });
 
 
@@ -89,6 +129,12 @@ $router->get('tentang-kami', function () {
  * URL: /produk-lab
  */
 $router->get('produk-lab', function () {
+    $produkModel = new ProdukModel();
+
+    // Ambil semua data produk dari database
+    $produkResult = $produkModel->getAllProduk();
+    $listProduk = $produkResult['success'] ? $produkResult['data'] : [];
+
     require __DIR__ . '/../app/Views/client/produk_lab.php';
 });
 
@@ -97,14 +143,49 @@ $router->get('produk-lab', function () {
  * URL: /aktivitas-laboratorium
  */
 $router->get('aktivitas-laboratorium', function () {
+    // Ambil data terbaru aktivitas dengan limit dari query parameter
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 6;
+    if ($limit < 6) $limit = 6; // Minimum limit
+
+    $aktivitasModel = new AktivitasModel();
+    $listAktivitas = $aktivitasModel->getAll($limit);
+    $aktivitasData = $listAktivitas['data'];
+
     require __DIR__ . '/../app/Views/client/aktivitas_lab.php';
+});
+
+/**
+ * Detail Aktivitas Lab
+ * URL: /aktivitas/{id}
+ */
+$router->get('aktivitas/(\d+)', function ($id) {
+    $aktivitasModel = new AktivitasModel();
+    $aktivitasResult = $aktivitasModel->getById((int)$id);
+
+    // Redirect jika aktivitas tidak ditemukan
+    if (!$aktivitasResult['success']) {
+        header("Location: " . base_url('aktivitas-laboratorium'));
+        exit;
+    }
+
+    $aktivitas = $aktivitasResult['data'];
+
+    require __DIR__ . '/../app/Views/client/detail_aktivitas.php';
 });
 
 /**
  * Publikasi Dosen
  * URL: /publikasi-dosen
+ * Menampilkan semua publikasi dari semua dosen dengan search, filter, dan pagination
  */
 $router->get('publikasi-dosen', function () {
+    $controller = new PublikasiAkademikController();
+    $result = $controller->getPublikasiForClient();
+
+    $listPublikasi = $result['data'];
+    $pagination = $result['pagination'];
+    $totalPublikasi = $result['total'];
+
     require __DIR__ . '/../app/Views/client/publikasi_dosen.php';
 });
 
@@ -112,7 +193,21 @@ $router->get('publikasi-dosen', function () {
  * Mitra Laboratorium
  * URL: /mitra-lab
  */
-$router->get('mitra-lab', function () {
+$router->get('mitra-laboratorium', function () {
+    $mitraModel = new MitraModel();
+
+    $internasional = $mitraModel->getMitraByKategori("internasional");
+    $internasionalList = $internasional['data'];
+
+    $pendidikan = $mitraModel->getMitraByKategori("institusi pendidikan");
+    $pendidikanList = $pendidikan['data'];
+
+    $institusiPemerintah = $mitraModel->getMitraByKategori("institusi pemerintah");
+    $institusiPemerintahList = $institusiPemerintah['data'];
+
+    $industri = $mitraModel->getMitraByKategori("industri");
+    $industriList = $industri['data'];
+
     require __DIR__ . '/../app/Views/client/mitra.php';
 });
 

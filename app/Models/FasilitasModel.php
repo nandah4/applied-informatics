@@ -24,7 +24,6 @@ class FasilitasModel
 {
     private $db;
     private $table_name = 'mst_fasilitas';
-    protected $view_name = 'vw_show_fasilitas'; // ✅ Tambahkan view
 
     /**
      * CONSTRUCTOR
@@ -79,8 +78,8 @@ class FasilitasModel
     public function getAllFasilitasPaginated($limit = 10, $offset = 0, $countOnly = false)
     {
         try {
-            // 1. Hitung total records dari VIEW
-            $countQuery = "SELECT COUNT(*) as total FROM {$this->view_name}";
+            // 1. Hitung total records 
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
             $countStmt = $this->db->prepare($countQuery);
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
@@ -94,8 +93,8 @@ class FasilitasModel
                 ];
             }
 
-            // 2. Ambil data dengan pagination dari VIEW
-            $query = "SELECT * FROM {$this->view_name}
+            // 2. Ambil data dengan pagination 
+            $query = "SELECT * FROM {$this->table_name}
                       LIMIT :limit OFFSET :offset";
 
             $stmt = $this->db->prepare($query);
@@ -132,8 +131,8 @@ class FasilitasModel
     public function getFasilitasById($id)
     {
         try {
-            // Query dari table utama (bukan view) untuk detail
-            $query = "SELECT * FROM {$this->view_name} WHERE id = :id LIMIT 1";
+            // Query dari table utama untuk detail
+            $query = "SELECT * FROM {$this->table_name} WHERE id = :id LIMIT 1";
 
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);

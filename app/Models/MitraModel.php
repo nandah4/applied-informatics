@@ -19,6 +19,30 @@ class MitraModel extends BaseModel
 {
     protected $table_name = "mst_mitra";
 
+    public function getMitraByKategori($kategori = "industri")
+    {
+        try {
+            $query = "SELECT id, nama, status, kategori, logo_mitra FROM {$this->table_name} WHERE kategori = :kategori AND status = 'aktif' ORDER BY tanggal_mulai";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":kategori", $kategori, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $result
+            ];
+        } catch (PDOException $e) {
+            error_log("MitraModel getMitraByKategori error: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Gagal mendapatkan data mitra',
+                'data' => []
+            ];
+        }
+    }
+
     /**
      * Ambil semua data mitra
      * @return array

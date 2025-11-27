@@ -331,4 +331,133 @@ class PublikasiAkademikModel extends BaseModel
             ];
         }
     }
+
+    /**
+     * Ambil publikasi berdasarkan dosen ID
+     * Menggunakan view vw_show_publikasi
+     *
+     * @param int $dosenId - ID dosen
+     * @return array - Format: ['success' => bool, 'data' => array grouped by tipe_publikasi]
+     */
+    public function getByDosenId($dosenId)
+    {
+        try {
+            $query = "SELECT * FROM vw_show_publikasi
+                      WHERE dosen_id = :dosen_id
+                      ORDER BY tahun_publikasi DESC, created_at DESC";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':dosen_id', $dosenId, PDO::PARAM_INT);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Group by tipe_publikasi
+            $groupedData = [];
+            foreach ($data as $publikasi) {
+                $tipe = $publikasi['tipe_publikasi'];
+                if (!isset($groupedData[$tipe])) {
+                    $groupedData[$tipe] = [];
+                }
+                $groupedData[$tipe][] = $publikasi;
+            }
+
+            return [
+                'success' => true,
+                'data' => $groupedData,
+                'raw_data' => $data // untuk kebutuhan lain
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil publikasi: ' . $e->getMessage(),
+                'data' => []
+            ];
+        }
+    }
+
+    /**
+     * Ambil semua publikasi dengan search, filter, dan pagination untuk halaman client
+     *
+     * @param array $params - Format: [
+     *                          'search' => string (optional),
+     *                          'tipe_publikasi' => string (optional),
+     *                          'limit' => int,
+     *                          'offset' => int
+     *                        ]
+     * @return array - Format: ['success' => bool, 'data' => array, 'total' => int]
+     */
+    public function getAllWithSearchAndFilter($params = [])
+    {
+        try {
+            // Extract parameters
+            $search = $params['search'] ?? '';
+            $tipePublikasi = $params['tipe_publikasi'] ?? '';
+            $limit = $params['limit'] ?? 10;
+            $offset = $params['offset'] ?? 0;
+
+            // Build WHERE clause
+            $whereConditions = [];
+            $bindParams = [];
+
+            // Search by judul atau nama dosen
+            if (!empty($search)) {
+                $whereConditions[] = "(judul LIKE :search OR dosen_name LIKE :search)";
+                $bindParams[':search'] = '%' . $search . '%';
+            }
+
+            // Filter by tipe publikasi
+            if (!empty($tipePublikasi)) {
+                $whereConditions[] = "tipe_publikasi = :tipe_publikasi";
+                $bindParams[':tipe_publikasi'] = $tipePublikasi;
+            }
+
+            // Combine WHERE conditions
+            $whereClause = '';
+            if (!empty($whereConditions)) {
+                $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+            }
+
+            // Count total records
+            $countQuery = "SELECT COUNT(*) as total FROM vw_show_publikasi $whereClause";
+            $countStmt = $this->db->prepare($countQuery);
+            foreach ($bindParams as $key => $value) {
+                $countStmt->bindValue($key, $value);
+            }
+            $countStmt->execute();
+            $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+            // Get data with pagination
+            $query = "SELECT * FROM vw_show_publikasi
+                      $whereClause
+                      ORDER BY tahun_publikasi DESC, created_at DESC
+                      LIMIT :limit OFFSET :offset";
+
+            $stmt = $this->db->prepare($query);
+
+            // Bind search and filter params
+            foreach ($bindParams as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+
+            // Bind pagination params
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $data,
+                'total' => (int) $totalRecords
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil data publikasi: ' . $e->getMessage(),
+                'data' => [],
+                'total' => 0
+            ];
+        }
+    }
 }

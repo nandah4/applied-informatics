@@ -3,6 +3,7 @@
 include __DIR__ . '/../layouts/header.php';
 ?>
 <main>
+
     <!-- Section Selamat Datang -->
     <section class="p-5 selamat-datang">
         <div class="container container-text-center">
@@ -166,65 +167,46 @@ include __DIR__ . '/../layouts/header.php';
 
     <!-- ------ -->
 
-    <section>
-        <div class="container-fluid p-5">
-            <h1 class="mb-4 title-section">Penelitian</h1>
 
-            <?php if (empty($publikasiYears)): ?>
-                <p class="subtitle-section">Belum ada data penelitian.</p>
-            <?php else: ?>
-                <div class="row g-4">
-                    <!-- Kolom Kiri: Tahun Penelitian -->
-                    <div class="col-md-3 text-center">
-                        <div class="card card-tahun-penelitian overflow-auto fixed-height">
-                            <div class="card-body">
-                                <p class="tahun-penelitian mb-3">Tahun Penelitian</p>
-                                <?php foreach ($publikasiYears as $index => $year): ?>
-                                    <?php if ($index > 0): ?>
-                                        <hr class="line">
-                                    <?php endif; ?>
-                                    <p class="tahun-penelitian year-item <?= $index === 0 ? 'active' : '' ?>"
-                                        data-year="<?= $year ?>"
-                                        style="cursor: pointer;">
-                                        <?= $year ?>
-                                    </p>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Section Penelitian -->
+    <section class="penelitian-section py-5">
+        <div class="container-fluid px-5">
+            <!-- Header Section -->
+            <div class="mb-4">
+                <button class="btn-penelitian rounded-pill px-4 mb-3">Publikasi Penelitian</button>
+                <p class="subtitle-section mb-0">Karya ilmiah dan penelitian yang telah dipublikasikan oleh tim laboratorium</p>
+            </div>
 
-                    <!-- Kolom Kanan: Daftar Publikasi -->
-                    <div class="col-md-9">
-                        <div class="card card-judul-penelitian overflow-auto fixed-height">
-                            <div class="card-body" id="publikasiContainer">
-                                <!-- Publikasi akan dimuat di sini via JavaScript -->
-                                <?php if (!empty($publikasiData)): ?>
-                                    <?php foreach ($publikasiData as $index => $publikasi): ?>
-                                        <?php if ($index > 0): ?>
-                                            <hr>
-                                        <?php endif; ?>
-                                        <div class="publikasi-item">
-                                            <p class="judul-penelitian">
-                                                <?= htmlspecialchars($publikasi['judul']) ?>
-                                                <?php if (!empty($publikasi['nama_dosen'])): ?>
-                                                    - Oleh <?= htmlspecialchars($publikasi['nama_dosen']) ?>
-                                                <?php endif; ?>
-                                            </p>
-                                            <?php if (!empty($publikasi['url_publikasi']) && $publikasi['url_publikasi'] !== 'null'): ?>
-                                                <a href="<?= htmlspecialchars($publikasi['url_publikasi']) ?>" target="_blank">
-                                                    <p class="link-penelitian">Baca disini</p>
-                                                </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <p class="text-muted">Tidak ada publikasi untuk tahun ini.</p>
-                                <?php endif; ?>
-                            </div>
-                        </div>
+            <!-- Year Filter Pills -->
+            <div class="year-filter-container mb-4">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted me-2 flex-shrink-0">Filter Tahun:</span>
+
+                    <div class="overflow-auto d-flex gap-2 flex-nowrap pb-2" style="scrollbar-width: thin;">
+                        <?php
+                        $years = range(date('Y'), date('Y') - 20); // 21 tahun terakhir
+                        foreach ($years as $index => $year):
+                        ?>
+                            <button
+                                class="year-pill flex-shrink-0 <?= $index === 0 ? 'active' : '' ?>"
+                                data-year="<?= $year ?>">
+                                <?= $year ?>
+                            </button>
+                        <?php endforeach; ?>
                     </div>
                 </div>
-            <?php endif; ?>
+            </div>
+
+            <!-- Publikasi Container -->
+            <div id="publikasiContainer" class="publikasi-container">
+                <!-- Loading state awal -->
+                <div class="loading-state text-center py-5">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="text-muted">Memuat publikasi...</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -241,31 +223,42 @@ include __DIR__ . '/../layouts/header.php';
                 </div>
             </div>
 
-            <div class="row g-4 mt-3">
-                <?php foreach ($aktivitasData as $aktivitas): ?>
-                    <?php
-                    $aktivitasFoto = empty($aktivitas['foto_aktivitas'])
-                        ? upload_url('default/image.png')
-                        : upload_url('aktivitas-lab/' . $aktivitas['foto_aktivitas']);
+            <?php if (empty($aktivitasData)): ?>
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-calendar-x fa-4x text-muted opacity-50" style="font-size: 4rem;"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">Belum Ada Aktivitas</h5>
+                    <p class="text-muted mb-0">Data aktivitas laboratorium belum tersedia saat ini.</p>
+                </div>
+            <?php else: ?>
+                <div class="row g-4 mt-3">
+                    <?php foreach ($aktivitasData as $aktivitas): ?>
+                        <?php
+                        $aktivitasFoto = empty($aktivitas['foto_aktivitas'])
+                            ? upload_url('default/image.png')
+                            : upload_url('aktivitas-lab/' . $aktivitas['foto_aktivitas']);
 
-                    $judul = htmlspecialchars($aktivitas['judul_aktivitas']);
-                    $judulPendek = strlen($judul) > 40 ? substr($judul, 0, 40) . '...' : $judul;
-                    ?>
+                        $judul = htmlspecialchars($aktivitas['judul_aktivitas']);
+                        $judulPendek = strlen($judul) > 40 ? substr($judul, 0, 40) . '...' : $judul;
+                        ?>
 
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <div class="card shadow-none h-100 border-0">
-                            <img src="<?= $aktivitasFoto ?>" class="card-img-top" alt="<?= $judul ?>">
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="card shadow-none h-100 border-0">
+                                <img src="<?= $aktivitasFoto ?>" class="card-img-top" alt="<?= $judul ?>">
 
-                            <div class="card-body">
-                                <small class="teks-tanggal-aktivitas d-block mb-1">
-                                    <?= formatTanggal($aktivitas['tanggal_kegiatan']); ?>
-                                </small>
-                                <p class="title-fasilitas m-0"><?= $judulPendek ?></p>
+                                <div class="card-body">
+                                    <small class="teks-tanggal-aktivitas d-block mb-1">
+                                        <?= formatTanggal($aktivitas['tanggal_kegiatan']); ?>
+                                    </small>
+                                    <p class="title-fasilitas m-0"><?= $judulPendek ?></p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
 
 
             <!-- <div class="col-md-4">
@@ -286,6 +279,21 @@ include __DIR__ . '/../layouts/header.php';
 
 <!-- Script untuk handle modal fasilitas -->
 <script>
+    // Helper function untuk escape HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) {
+            return map[m];
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Get modal element
         const fasilitasModal = document.getElementById('fasilitasModal');
@@ -307,69 +315,109 @@ include __DIR__ . '/../layouts/header.php';
             modalDeskripsi.textContent = deskripsi;
         });
 
-        // ============================================================
-        // Script untuk handle tahun penelitian selection
-        // ============================================================
-        const yearItems = document.querySelectorAll('.year-item');
-        const publikasiContainer = document.getElementById('publikasiContainer');
+        const $yearPills = $('.year-pill');
+        const $publikasiContainer = $('#publikasiContainer');
 
-        yearItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const year = this.getAttribute('data-year');
+        // Load publikasi pertama kali (tahun aktif)
+        const activeYear = $('.year-pill.active').data('year');
+        if (activeYear) {
+            loadPublikasi(activeYear);
+        }
 
-                // Update active state
-                yearItems.forEach(y => y.classList.remove('active'));
-                this.classList.add('active');
+        // Handle click year pill
+        $yearPills.on('click', function() {
+            const year = $(this).data('year');
 
-                // Show loading state
-                publikasiContainer.innerHTML = '<p class="text-muted">Memuat data...</p>';
+            // Update active state
+            $yearPills.removeClass('active');
+            $(this).addClass('active');
 
-                // Fetch publikasi by year via AJAX
-                fetch(`<?= base_url('api/publikasi/year/') ?>${year}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.data.length > 0) {
-                            let html = '';
-                            data.data.forEach((publikasi, index) => {
-                                if (index > 0) {
-                                    html += '<hr>';
-                                }
-                                html += '<div class="publikasi-item">';
-                                html += '<p class="judul-penelitian">';
-                                html += escapeHtml(publikasi.judul);
-                                if (publikasi.nama_dosen) {
-                                    html += ' - Oleh ' + escapeHtml(publikasi.nama_dosen);
-                                }
-                                html += '</p>';
-                                if (publikasi.url_publikasi && publikasi.url_publikasi !== 'null') {
-                                    html += '<a href="' + escapeHtml(publikasi.url_publikasi) + '" target="_blank">';
-                                    html += '<p class="link-penelitian">Baca disini</p>';
-                                    html += '</a>';
-                                }
-                                html += '</div>';
-                            });
-                            publikasiContainer.innerHTML = html;
-                        } else {
-                            publikasiContainer.innerHTML = '<p class="text-muted">Tidak ada publikasi untuk tahun ini.</p>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        publikasiContainer.innerHTML = '<p class="text-danger">Gagal memuat data. Silakan coba lagi.</p>';
-                    });
-            });
+            // Load publikasi
+            loadPublikasi(year);
         });
 
-        // Helper function to escape HTML
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
+        function loadPublikasi(year) {
+            // Show loading state
+            $publikasiContainer.html(`
+            <div class="loading-state text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="text-muted">Memuat publikasi tahun ${year}...</p>
+            </div>
+        `);
+
+            // Fetch data via AJAX
+            $.ajax({
+                url: `<?= base_url('api/publikasi/year/') ?>${year}`,
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success && response.data && response.data.length > 0) {
+                        let html = '';
+
+                        response.data.forEach((publikasi, index) => {
+                            const judul = escapeHtml(publikasi.judul || 'Tanpa Judul');
+                            const author = publikasi.dosen_name ? escapeHtml(publikasi.dosen_name) : 'Penulis Tidak Diketahui';
+                            const url = publikasi.url_publikasi && publikasi.url_publikasi !== 'null' ?
+                                escapeHtml(publikasi.url_publikasi) :
+                                null;
+
+                            html += `
+                            <div class="publikasi-card">
+                                <div class="publikasi-number">${index + 1}</div>
+                                <h3 class="publikasi-title">${judul}</h3>
+                                <div class="publikasi-meta">
+                                    <span class="publikasi-author">
+                                        <i class="bi bi-person-fill"></i>
+                                        ${author}
+                                    </span>
+                                    <span class="publikasi-date">
+                                        <i class="bi bi-calendar-fill"></i>
+                                        ${year}
+                                    </span>
+                                </div>
+                                ${url ? `
+                                    <a href="${url}" target="_blank" class="publikasi-link">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        Baca Publikasi
+                                    </a>
+                                ` : ''}
+                            </div>
+                        `;
+                        });
+
+                        $publikasiContainer.html(html);
+                    } else {
+                        showEmptyState(year);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    console.error('Response:', xhr.responseText);
+                    $publikasiContainer.html(`
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <h4 class="empty-state-title">Gagal Memuat Data</h4>
+                        <p class="empty-state-text">Terjadi kesalahan saat memuat publikasi. Silakan coba lagi.</p>
+                    </div>
+                `);
+                }
+            });
+        }
+
+        function showEmptyState(year) {
+            $publikasiContainer.html(`
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-folder2-open"></i>
+                </div>
+                <h5 class="text-muted mb-2">Belum Ada Publikasi.</h5>
+                <p class="text-secondary mb-0">Tidak ada publikasi yang ditemukan untuk tahun ${year}.</p>
+            </div>
+        `);
         }
     });
 </script>

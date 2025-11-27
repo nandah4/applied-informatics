@@ -1,0 +1,37 @@
+/**
+ * Button Components
+ * Global button styles used across multiple pages
+ * Applied Informatics Laboratory
+ */
+
+/* Primary Action Button */
+.btn-riset-hero {
+  font-size: var(--fs-sm);
+  padding: 12px 0;
+  background-color: var(--color-primary-500);
+  color: #ffffff;
+  border: none;
+  transition: var(--transition-base);
+}
+
+.btn-riset-hero:hover {
+  color: #ffffff;
+  transform: scale(1.05);
+  transition: .6s all;
+}
+
+/* Global Button Override */
+.btn {
+  background-color: var(--color-primary-500) !important;
+  color: #ffffff;
+}
+
+/* Button Fasilitas Style */
+.btn-fasilitas {
+  font-size: var(--fs-sm);
+  padding: 12px 0;
+  background-color: var(--color-primary-50);
+  border: 1px solid var(--color-primary-400) !important;
+  border-radius: 10px;
+  color: var(--color-primary-800);
+}
