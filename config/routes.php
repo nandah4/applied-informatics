@@ -116,6 +116,14 @@ $router->get('mitra-lab', function () {
     require __DIR__ . '/../app/Views/client/mitra.php';
 });
 
+/**
+ * Rekrutment
+ * URL: /rekrutment
+ */
+$router->get('rekrutment', function () {
+    require __DIR__ . '/../app/Views/client/rekrutment.php';
+});
+
 // ============================================================================
 // AUTH ROUTES
 // ============================================================================

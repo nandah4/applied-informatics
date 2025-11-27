@@ -4,10 +4,8 @@
 
         <!-- Logo -->
         <div class="mb-4 text-center text-md-start">
-            <img src="<?= asset_url('images/lab-ai-logo.png') ?>" 
-                 alt="Lab AI Logo" 
-                 class="img-fluid logo-footer" 
-                 style="max-height: 70px;">
+            <img src="<?= asset_url('images/lab-ai-logo.png') ?>" alt="Lab AI Logo" class="img-fluid logo-footer"
+                style="max-height: 70px;">
         </div>
 
         <!-- Main Menu -->
@@ -22,10 +20,8 @@
             </div>
 
             <div class="col-12 col-md-auto dropdown text-center text-md-start">
-                <button class="dropdown-toggle px-2 py-1" 
-                        type="button" 
-                        id="dropdownMenuButton1"
-                        data-bs-toggle="dropdown">
+                <button class="dropdown-toggle px-2 py-1" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown">
                     Riset dan Produk
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
@@ -46,24 +42,27 @@
         <!-- Contact & Info -->
         <div class="row mb-4 text-center text-md-start">
 
-            <div class="col-12 col-md-3">
-                <i data-feather="home"></i>
+            <div class="col-12 col-md-3 d-flex align-items-center mb-3 mb-md-0">
+                <i data-feather="map-pin" class="me-2 flex-shrink-0" style="width: 20px; height: 20px;"></i>
                 <p class="mb-0">
                     Jl. Soekarno Hatta No.9, Jatimulyo, Lowokwaru, Malang, Jawa Timur 65141
                 </p>
             </div>
 
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-3 d-flex align-items-center mb-3 mb-md-0">
+                <i data-feather="home" class="me-2 flex-shrink-0" style="width: 20px; height: 20px;"></i>
                 <p class="mb-0">
                     Applied Informatics Laboratory, Postgraduate Building, 2nd Floor, Polinema
                 </p>
             </div>
 
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-3 d-flex align-items-center mb-3 mb-md-0">
+                <i data-feather="phone" class="me-2 flex-shrink-0" style="width: 20px; height: 20px;"></i>
                 <p class="mb-0">0984018041</p>
             </div>
 
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-3 d-flex align-items-center mb-3 mb-md-0">
+                <i data-feather="mail" class="me-2 flex-shrink-0" style="width: 20px; height: 20px;"></i>
                 <p class="mb-0">info@company.com</p>
             </div>
 

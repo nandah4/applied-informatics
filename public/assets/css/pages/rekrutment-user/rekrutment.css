@@ -1,0 +1,30 @@
+main {
+  background-color: var(--bg-primary);
+}
+
+.badge-open {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.badge-closed {
+  background-color: #e5e7eb;
+  color: #6b7280;
+}
+
+.date-open {
+  color: #10b981;
+}
+
+.date-close {
+  color: #ef4444;
+}
+
+.date-close {
+  color: #ef4444;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
