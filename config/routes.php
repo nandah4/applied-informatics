@@ -900,40 +900,34 @@ $router->post('admin/aktivitas-lab/delete/(\\d+)', function ($id) {
 
 /**
  * Recruitment - List/Index dengan Pagination
- * URL: GET /recruitment?page={number}&per_page={number}
+ * URL: GET /admin/recruitment?page={number}&per_page={number}
  */
-$router->get('recruitment', function () {
-    // $controller = new RecruitmentController();
+$router->get('admin/recruitment', function () {
+    $controller = new RecruitmentController();
+    $result = $controller->getAllRecruitment();
 
-    // // Ambil parameter dari query string
-    // $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    // $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
-
-    // // Ambil data dengan pagination
-    // $result = $controller->getAllRecruitmentWithPagination($page, $perPage);
-
-    // $listRecruitment = $result['data'] ?? [];
-    // $pagination = $result['pagination'] ?? null;
+    $listRecruitment = $result['data'] ?? [];
+    $pagination = $result['pagination'] ?? null;
 
     require __DIR__ . '/../app/Views/admin/recruitment/index.php';
 }, [AuthMiddleware::class]);
 
 /**
  * Recruitment - Detail Page
- * URL: GET /recruitment/detail/{id}
+ * URL: GET /admin/recruitment/detail/{id}
  */
-$router->get('recruitment/detail/(\\d+)', function ($id) {
-    // $controller = new RecruitmentController();
+$router->get('admin/recruitment/detail/(\\d+)', function ($id) {
+    $controller = new RecruitmentController();
 
-    // // Get data recruitment by ID
-    // $recruitmentData = $controller->getRecruitmentById((int)$id);
+    // Get data recruitment by ID
+    $recruitmentData = $controller->getRecruitmentById((int)$id);
 
-    // if (!$recruitmentData['success']) {
-    //     header("Location: " . base_url('recruitment'));
-    //     exit;
-    // }
+    if (!$recruitmentData['success']) {
+        header("Location: " . base_url('admin/recruitment'));
+        exit;
+    }
 
-    // $recruitment = $recruitmentData['data'];
+    $recruitment = $recruitmentData['data'];
 
     require __DIR__ . '/../app/Views/admin/recruitment/read.php';
 }, [AuthMiddleware::class]);
@@ -944,19 +938,19 @@ $router->get('recruitment/detail/(\\d+)', function ($id) {
 
 /**
  * Recruitment - Create Page (Form)
- * URL: GET /recruitment/create
+ * URL: GET /admin/recruitment/create
  */
-$router->get('recruitment/create', function () {
+$router->get('admin/recruitment/create', function () {
     require __DIR__ . '/../app/Views/admin/recruitment/create.php';
 }, [AuthMiddleware::class]);
 
 /**
  * Recruitment - Create (Handle Submit)
- * URL: POST /recruitment/create
+ * URL: POST /admin/recruitment/create
  */
-$router->post('recruitment/create', function () {
-    // $controller = new RecruitmentController();
-    // $controller->createRecruitment();
+$router->post('admin/recruitment/create', function () {
+    $controller = new RecruitmentController();
+    $controller->createRecruitment();
 }, [AuthMiddleware::class]);
 
 // ----------------------------------------
@@ -965,31 +959,31 @@ $router->post('recruitment/create', function () {
 
 /**
  * Recruitment - Edit Page (Form)
- * URL: GET /recruitment/edit/{id}
+ * URL: GET /admin/recruitment/edit/{id}
  */
-$router->get('recruitment/edit/(\\d+)', function ($id) {
-    // $controller = new RecruitmentController();
+$router->get('admin/recruitment/edit/(\\d+)', function ($id) {
+    $controller = new RecruitmentController();
 
-    // // Get data recruitment by ID
-    // $recruitmentData = $controller->getRecruitmentById((int)$id);
+    // Get data recruitment by ID
+    $recruitmentData = $controller->getRecruitmentById((int)$id);
 
-    // if (!$recruitmentData['success']) {
-    //     header("Location: " . base_url('recruitment'));
-    //     exit;
-    // }
+    if (!$recruitmentData['success']) {
+        header("Location: " . base_url('admin/recruitment'));
+        exit;
+    }
 
-    // $recruitment = $recruitmentData['data'];
+    $recruitment = $recruitmentData['data'];
 
     require __DIR__ . '/../app/Views/admin/recruitment/edit.php';
 }, [AuthMiddleware::class]);
 
 /**
  * Recruitment - Update (Handle Submit)
- * URL: POST /recruitment/update
+ * URL: POST /admin/recruitment/update
  */
-$router->post('recruitment/update', function () {
-    // $controller = new RecruitmentController();
-    // $controller->updateRecruitment();
+$router->post('admin/recruitment/update', function () {
+    $controller = new RecruitmentController();
+    $controller->updateRecruitment();
 }, [AuthMiddleware::class]);
 
 // ----------------------------------------
@@ -998,11 +992,11 @@ $router->post('recruitment/update', function () {
 
 /**
  * Recruitment - Delete
- * URL: POST /recruitment/delete/{id}
+ * URL: POST /admin/recruitment/delete/{id}
  */
-$router->post('recruitment/delete/(\\d+)', function ($id) {
-    // $controller = new RecruitmentController();
-    // $controller->deleteRecruitment($id);
+$router->post('admin/recruitment/delete/(\\d+)', function ($id) {
+    $controller = new RecruitmentController();
+    $controller->deleteRecruitment($id);
 }, [AuthMiddleware::class]);
 
 // ============================================================================

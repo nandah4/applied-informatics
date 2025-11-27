@@ -9,7 +9,7 @@
  * Deskripsi: Model untuk menangani operasi database terkait data fasilitas
  * 
  * Tabel yang digunakan:
- * - tbl_fasilitas: Data utama fasilitas
+ * - mst_fasilitas: Data fasilitas laboratorium
  * 
  * Fungsi utama:
  * - insertFasilitas(): Insert data fasilitas baru (via SP)
@@ -18,13 +18,17 @@
  * - getFasilitasById(): Ambil detail fasilitas berdasarkan ID
  * - updateFasilitas(): Update data fasilitas (via SP)
  * - deleteFasilitas(): Hapus fasilitas (via SP)
+ * 
+ * CATATAN:
+ * - Tidak menggunakan view karena tidak ada join di schema
+ * - Query langsung ke tabel mst_fasilitas
+ * - Validasi dilakukan di stored procedure
  */
 
 class FasilitasModel
 {
     private $db;
     private $table_name = 'mst_fasilitas';
-    protected $view_name = 'vw_show_fasilitas'; // ✅ Tambahkan view
 
     /**
      * CONSTRUCTOR
@@ -39,13 +43,24 @@ class FasilitasModel
     /**
      * GET ALL FASILITAS
      * Fungsi: Mengambil semua data fasilitas (untuk keperluan non-pagination)
-     * @return array
+     * 
+     * @return array - ['success' => bool, 'message' => string, 'data' => array]
      */
     public function getAllFasilitas()
     {
         try {
-            // ✅ Query dari VIEW (lebih simple & konsisten)
-            $query = "SELECT * FROM {$this->table_name}";
+            // Query langsung ke tabel
+            $query = "
+                SELECT 
+                    id,
+                    nama,
+                    deskripsi,
+                    foto,
+                    created_at,
+                    updated_at
+                FROM {$this->table_name}
+                ORDER BY created_at DESC
+            ";
 
             $stmt = $this->db->prepare($query);
             $stmt->execute();
@@ -71,6 +86,7 @@ class FasilitasModel
      * GET ALL FASILITAS (PAGINATION)
      *
      * Fungsi: Mengambil data dengan batasan per halaman
+     * 
      * @param int $limit - Jumlah data per halaman
      * @param int $offset - Mulai dari data ke berapa
      * @param bool $countOnly - Jika true, hanya kembalikan total
@@ -79,8 +95,8 @@ class FasilitasModel
     public function getAllFasilitasPaginated($limit = 10, $offset = 0, $countOnly = false)
     {
         try {
-            // 1. Hitung total records dari VIEW
-            $countQuery = "SELECT COUNT(*) as total FROM {$this->view_name}";
+            // 1. Hitung total records
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
             $countStmt = $this->db->prepare($countQuery);
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
@@ -94,9 +110,19 @@ class FasilitasModel
                 ];
             }
 
-            // 2. Ambil data dengan pagination dari VIEW
-            $query = "SELECT * FROM {$this->view_name}
-                      LIMIT :limit OFFSET :offset";
+            // 2. Ambil data dengan pagination
+            $query = "
+                SELECT 
+                    id,
+                    nama,
+                    deskripsi,
+                    foto,
+                    created_at,
+                    updated_at
+                FROM {$this->table_name}
+                ORDER BY created_at DESC
+                LIMIT :limit OFFSET :offset
+            ";
 
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
@@ -126,14 +152,25 @@ class FasilitasModel
      * GET FASILITAS BY ID
      * 
      * Fungsi: Mengambil detail 1 fasilitas berdasarkan ID
+     * 
      * @param int $id - ID fasilitas
      * @return array - ['success' => bool, 'message' => string, 'data' => array|null]
      */
     public function getFasilitasById($id)
     {
         try {
-            // Query dari table utama (bukan view) untuk detail
-            $query = "SELECT * FROM {$this->view_name} WHERE id = :id LIMIT 1";
+            $query = "
+                SELECT 
+                    id,
+                    nama,
+                    deskripsi,
+                    foto,
+                    created_at,
+                    updated_at
+                FROM {$this->table_name} 
+                WHERE id = :id 
+                LIMIT 1
+            ";
 
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -168,13 +205,14 @@ class FasilitasModel
      * INSERT FASILITAS
      * 
      * Fungsi: Insert data fasilitas baru menggunakan stored procedure
+     * Validasi nama duplicate dilakukan di stored procedure (case-insensitive)
+     * 
      * @param array $data - Data fasilitas ['nama', 'deskripsi', 'foto']
      * @return array - ['success' => bool, 'message' => string, 'data' => ['id' => int]]
      */
     public function insertFasilitas($data)
     {
         try {
-            // Gunakan CALL, bukan SELECT
             $query = "CALL sp_insert_fasilitas(
                 :nama,
                 :deskripsi,
@@ -191,8 +229,8 @@ class FasilitasModel
             // Execute procedure
             $stmt->execute();
 
-            // Ambil ID baru yang baru saja diinsert
-            // Gunakan CURRVAL untuk mendapatkan ID terakhir dari sequence
+            // Ambil ID terakhir yang baru saja diinsert
+            // Menggunakan CURRVAL untuk mendapatkan last ID dari sequence
             $lastIdQuery = "SELECT CURRVAL(pg_get_serial_sequence('mst_fasilitas', 'id')) as last_id";
             $lastIdStmt = $this->db->prepare($lastIdQuery);
             $lastIdStmt->execute();
@@ -227,6 +265,8 @@ class FasilitasModel
      * UPDATE FASILITAS
      * 
      * Fungsi: Update data fasilitas menggunakan stored procedure
+     * Validasi nama duplicate dan ID existence dilakukan di stored procedure
+     * 
      * @param int $id - ID fasilitas yang akan diupdate
      * @param array $data - Data yang akan diupdate ['nama', 'deskripsi', 'foto']
      * @return array - ['success' => bool, 'message' => string]
@@ -234,7 +274,6 @@ class FasilitasModel
     public function updateFasilitas($id, $data)
     {
         try {
-            // Gunakan CALL
             $query = "CALL sp_update_fasilitas(
                 :id,
                 :nama,
@@ -286,13 +325,19 @@ class FasilitasModel
      * DELETE FASILITAS
      *
      * Fungsi: Hapus fasilitas dari database menggunakan stored procedure
+     * 
+     * CATATAN PENTING:
+     * - Stored procedure TIDAK mengembalikan nama file foto
+     * - Model harus SELECT foto terlebih dahulu sebelum memanggil SP
+     * - Ini untuk keperluan delete file foto dari server
+     * 
      * @param int $id - ID fasilitas yang akan dihapus
      * @return array - ['success' => bool, 'message' => string, 'data' => ['foto' => string]]
      */
     public function deleteFasilitas($id)
     {
         try {
-            // Ambil data foto SEBELUM delete
+            // 1. Ambil data foto SEBELUM delete
             // Karena stored procedure tidak return nilai foto
             $checkQuery = "SELECT foto FROM {$this->table_name} WHERE id = :id LIMIT 1";
             $checkStmt = $this->db->prepare($checkQuery);
@@ -308,15 +353,13 @@ class FasilitasModel
                 ];
             }
 
-            // Panggil SP untuk menghapus data
+            // 2. Panggil stored procedure untuk delete data
             $deleteQuery = "CALL sp_delete_fasilitas(:id)";
             $deleteStmt = $this->db->prepare($deleteQuery);
             $deleteStmt->bindParam(':id', $id, PDO::PARAM_INT);
             $deleteStmt->execute();
 
-            // // ✅ FITUR BARU: Reset sequence jika tabel kosong setelah delete
-            // $this->resetSequenceIfEmpty();
-
+            // 3. Return success dengan info foto untuk dihapus dari server
             return [
                 'success' => true,
                 'message' => 'Data fasilitas berhasil dihapus',
@@ -342,50 +385,96 @@ class FasilitasModel
         }
     }
 
-    // /**
-    //  * ✅ FITUR BARU: RESET SEQUENCE IF EMPTY
-    //  * 
-    //  * Fungsi: Reset auto-increment sequence jika tabel kosong
-    //  * Dijalankan setelah delete untuk menghindari gap ID yang terlalu besar
-    //  * 
-    //  * @return bool - True jika berhasil reset, false jika gagal atau tidak perlu reset
-    //  */
-    // private function resetSequenceIfEmpty()
-    // {
-    //     try {
-    //         // Cek apakah tabel kosong
-    //         $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
-    //         $countStmt = $this->db->prepare($countQuery);
-    //         $countStmt->execute();
-    //         $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+    /**
+     * OPTIONAL: GET FASILITAS COUNT
+     * 
+     * Fungsi: Mendapatkan jumlah total fasilitas
+     * Berguna untuk dashboard/statistik
+     * 
+     * @return int
+     */
+    public function getTotalFasilitas()
+    {
+        try {
+            $query = "SELECT COUNT(*) as total FROM {$this->table_name}";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return (int)($result['total'] ?? 0);
+        } catch (PDOException $e) {
+            error_log("FasilitasModel getTotalFasilitas error: " . $e->getMessage());
+            return 0;
+        }
+    }
 
-    //         // Jika tabel kosong, reset sequence ke 1
-    //         if ($total == 0) {
-    //             $resetQuery = "ALTER SEQUENCE mst_fasilitas_seq RESTART WITH 1";
-    //             $this->db->exec($resetQuery);
-    //             error_log("FasilitasModel: Sequence direset ke 1 karena tabel kosong");
-    //             return true;
-    //         }
+    /**
+     * OPTIONAL: SEARCH FASILITAS
+     * 
+     * Fungsi: Search fasilitas berdasarkan nama atau deskripsi
+     * 
+     * @param string $keyword - Kata kunci pencarian
+     * @param int $limit - Limit hasil
+     * @param int $offset - Offset untuk pagination
+     * @return array
+     */
+    public function searchFasilitas($keyword, $limit = 10, $offset = 0)
+    {
+        try {
+            $searchTerm = '%' . $keyword . '%';
 
-    //         // Jika masih ada data, reset sequence ke MAX(id) + 1
-    //         // Ini untuk handle jika ada gap ID (misal: 1,2,5,7 -> next akan jadi 8)
-    //         $maxIdQuery = "SELECT MAX(id) as max_id FROM {$this->table_name}";
-    //         $maxIdStmt = $this->db->prepare($maxIdQuery);
-    //         $maxIdStmt->execute();
-    //         $maxId = $maxIdStmt->fetch(PDO::FETCH_ASSOC)['max_id'];
+            // Count total hasil search
+            $countQuery = "
+                SELECT COUNT(*) as total 
+                FROM {$this->table_name}
+                WHERE LOWER(nama) LIKE LOWER(:keyword1)
+                   OR LOWER(deskripsi) LIKE LOWER(:keyword2)
+            ";
+            $countStmt = $this->db->prepare($countQuery);
+            $countStmt->bindParam(':keyword1', $searchTerm, PDO::PARAM_STR);
+            $countStmt->bindParam(':keyword2', $searchTerm, PDO::PARAM_STR);
+            $countStmt->execute();
+            $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-    //         if ($maxId) {
-    //             $nextId = $maxId + 1;
-    //             $resetQuery = "ALTER SEQUENCE mst_fasilitas_seq RESTART WITH {$nextId}";
-    //             $this->db->exec($resetQuery);
-    //             error_log("FasilitasModel: Sequence direset ke {$nextId}");
-    //             return true;
-    //         }
+            // Search dengan pagination
+            $query = "
+                SELECT 
+                    id,
+                    nama,
+                    deskripsi,
+                    foto,
+                    created_at,
+                    updated_at
+                FROM {$this->table_name}
+                WHERE LOWER(nama) LIKE LOWER(:keyword1)
+                   OR LOWER(deskripsi) LIKE LOWER(:keyword2)
+                ORDER BY created_at DESC
+                LIMIT :limit OFFSET :offset
+            ";
 
-    //         return false;
-    //     } catch (PDOException $e) {
-    //         error_log("FasilitasModel resetSequenceIfEmpty error: " . $e->getMessage());
-    //         return false;
-    //     }
-    // }
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':keyword1', $searchTerm, PDO::PARAM_STR);
+            $stmt->bindParam(':keyword2', $searchTerm, PDO::PARAM_STR);
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'message' => 'Berhasil melakukan pencarian',
+                'data' => $result,
+                'total' => (int)$totalRecords
+            ];
+        } catch (PDOException $e) {
+            error_log("FasilitasModel searchFasilitas error: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Gagal melakukan pencarian',
+                'data' => [],
+                'total' => 0
+            ];
+        }
+    }
 }

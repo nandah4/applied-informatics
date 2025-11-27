@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= base_url() ?>">
     <title>Edit Recruitment - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <!-- Base CSS - Must load first -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
@@ -25,16 +26,14 @@
     <div id="liveAlertPlaceholder"></div>
 
     <!-- Sidebar -->
-    <?php
-    include __DIR__ . '/../../layouts/sidebar.php';
-    ?>
+    <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
     <!-- Main Content Area -->
     <div class="main-content">
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('recruitment') ?>">Data Recruitment</a>
+                <a href="<?= base_url('admin/recruitment') ?>">Data Recruitment</a>
                 <span>/</span>
                 <span>Edit Recruitment</span>
             </div>
@@ -45,19 +44,19 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formRecruitment" method="POST" enctype="multipart/form-data">
-                    <!-- Hidden Field: ID Recruitment -->
-                    <input type="hidden" id="recruitment_id" name="id" value="<?= htmlspecialchars($recruitment['id']) ?>">
+                <form id="formUpdateRecruitment" method="POST" action="<?= base_url('admin/recruitment/update') ?>" enctype="multipart/form-data">
+
+                    <?= CsrfHelper::tokenField() ?>
+                    <input type="hidden" name="id" value="<?= htmlspecialchars($recruitment['id']) ?>">
 
                     <div class="row">
-                        <!-- Posisi -->
+                        <!-- Judul -->
                         <div class="col-md-6 mb-3">
-                            <label for="posisi" class="form-label">
-                                Posisi <span class="required">*</span>
+                            <label for="judul" class="form-label">
+                                Judul <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="posisi" name="posisi" placeholder="Contoh: Asisten Praktikum AI" value="<?= htmlspecialchars($recruitment['posisi']) ?>" required>
-                            <!-- Error Message -->
-                            <div id="posisiError" class="invalid-feedback"></div>
+                            <input type="text" class="form-control" id="judul" name="judul" value="<?= htmlspecialchars($recruitment['judul']) ?>" placeholder="Contoh: Asisten Praktikum AI" required>
+                            <div id="judulError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Status -->
@@ -67,70 +66,62 @@
                             </label>
                             <select class="form-control" id="status" name="status" required>
                                 <option value="">Pilih Status</option>
-                                <option value="aktif" <?= $recruitment['status'] === 'aktif' ? 'selected' : '' ?>>Aktif</option>
-                                <option value="nonaktif" <?= $recruitment['status'] === 'nonaktif' ? 'selected' : '' ?>>Nonaktif</option>
+                                <option value="buka" <?= $recruitment['status'] === 'buka' ? 'selected' : '' ?>>Buka</option>
+                                <option value="tutup" <?= $recruitment['status'] === 'tutup' ? 'selected' : '' ?>>Tutup</option>
                             </select>
+                            <div class="helper-text" style="color: #f59e0b;">
+                                ℹ️ Status akan otomatis diperbarui berdasarkan tanggal tutup
+                            </div>
                             <div id="statusError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Tanggal Mulai -->
+                        <!-- Tanggal Buka -->
                         <div class="col-md-6 mb-3">
-                            <label for="tanggal_mulai" class="form-label">
-                                Tanggal Mulai <span class="required">*</span>
+                            <label for="tanggal_buka" class="form-label">
+                                Tanggal Buka <span class="required">*</span>
                             </label>
-                            <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" value="<?= htmlspecialchars($recruitment['tanggal_mulai']) ?>" required>
+                            <input type="date" class="form-control" id="tanggal_buka" name="tanggal_buka" value="<?= htmlspecialchars($recruitment['tanggal_buka']) ?>" required>
                             <div class="helper-text">Tanggal dimulainya periode recruitment</div>
-                            <div id="tanggalMulaiError" class="invalid-feedback"></div>
+                            <div id="tanggalBukaError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Tanggal Berakhir -->
+                        <!-- Tanggal Tutup -->
                         <div class="col-md-6 mb-3">
-                            <label for="tanggal_berakhir" class="form-label">
-                                Tanggal Berakhir <span class="required">*</span>
+                            <label for="tanggal_tutup" class="form-label">
+                                Tanggal Tutup <span class="required">*</span>
                             </label>
-                            <input type="date" class="form-control" id="tanggal_berakhir" name="tanggal_berakhir" value="<?= htmlspecialchars($recruitment['tanggal_berakhir']) ?>" required>
+                            <input type="date" class="form-control" id="tanggal_tutup" name="tanggal_tutup" value="<?= htmlspecialchars($recruitment['tanggal_tutup']) ?>" required>
                             <div class="helper-text">Tanggal berakhirnya periode recruitment</div>
-                            <div id="tanggalBerakhirError" class="invalid-feedback"></div>
+                            <div id="tanggalTutupError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Link Pendaftaran -->
-                        <div class="col-12 mb-3">
-                            <label for="link_pendaftaran" class="form-label">
-                                Link Pendaftaran
-                            </label>
-                            <input type="url" class="form-control" id="link_pendaftaran" name="link_pendaftaran" placeholder="https://forms.google.com/..." value="<?= htmlspecialchars($recruitment['link_pendaftaran'] ?? '') ?>">
-                            <div class="helper-text">Link formulir atau halaman pendaftaran</div>
-                            <div id="linkPendaftaranError" class="invalid-feedback"></div>
-                        </div>
-
-                        <!-- Gambar Banner -->
-                        <div class="col-12 mb-3">
-                            <label class="form-label">
-                                Gambar Banner
-                            </label>
-                            <div class="file-upload-wrapper" id="fileUploadWrapper">
-                                <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                        <!-- Info Box untuk Auto-Status Feature -->
+                        <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                            <div style="display: flex; gap: 0.75rem; align-items: start;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
                                 </svg>
-                                <div class="file-upload-text">
-                                    <strong>Klik untuk upload</strong> atau drag and drop
-                                </div>
-                                <div class="file-upload-hint">
-                                    PNG, JPG, JPEG maksimal 2MB
+                                <div>
+                                    <strong style="color: #1e40af; font-size: 0.875rem;">Informasi Status Otomatis</strong>
+                                    <p style="color: #1e40af; font-size: 0.8125rem; margin: 0.25rem 0 0 0; line-height: 1.5;">
+                                        Status recruitment akan diperbarui otomatis:
+                                        <br>• <strong>Tutup</strong>: jika tanggal tutup sudah terlewat
+                                        <br>• <strong>Buka</strong>: jika tanggal tutup masih di masa depan (termasuk saat diperpanjang)
+                                    </p>
                                 </div>
                             </div>
-                            <input type="file" class="file-upload-input" id="gambar_banner" name="gambar_banner" accept="image/png,image/jpg,image/jpeg">
-                            <div class="image-preview" id="imagePreview" style="display: none;">
-                                <img id="previewImg" src="" alt="Preview">
-                            </div>
-                            <?php if (!empty($recruitment['gambar_banner'])): ?>
-                                <div class="current-image mt-2">
-                                    <p class="text-muted mb-1" style="font-size: 0.875rem;">Gambar saat ini:</p>
-                                    <img src="<?= upload_url('recruitment/' . $recruitment['gambar_banner']) ?>" alt="Current Banner" style="max-width: 200px; border-radius: 8px; border: 1px solid #e5e7eb;">
-                                </div>
-                            <?php endif; ?>
+                        </div>
+
+                        <!-- Lokasi -->
+                        <div class="col-12 mb-3">
+                            <label for="lokasi" class="form-label">
+                                Lokasi <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="lokasi" name="lokasi" value="<?= htmlspecialchars($recruitment['lokasi'] ?? '') ?>" placeholder="Contoh: Lab AI - Gedung H7 Lantai 8" required>
+                            <div class="helper-text">Lokasi pelaksanaan recruitment atau pekerjaan</div>
+                            <div id="lokasiError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Deskripsi -->
@@ -142,29 +133,18 @@
                             <div class="helper-text">Deskripsikan posisi, tanggung jawab, dan benefit</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
-
-                        <!-- Persyaratan -->
-                        <div class="col-12 mb-3">
-                            <label for="persyaratan" class="form-label">
-                                Persyaratan
-                            </label>
-                            <textarea class="form-control" id="persyaratan" name="persyaratan" rows="5" placeholder="Masukkan persyaratan untuk posisi ini (pisahkan dengan enter untuk setiap poin)"><?= htmlspecialchars($recruitment['persyaratan'] ?? '') ?></textarea>
-                            <div class="helper-text">Tuliskan persyaratan atau kualifikasi yang dibutuhkan</div>
-                            <div id="persyaratanError" class="invalid-feedback"></div>
-                        </div>
-
                     </div>
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('recruitment') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/recruitment') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                             Batal
                         </a>
-                        <button type="submit" id="btn-submit-update-recruitment" class="btn-primary-custom">
+                        <button type="submit" id="btn-update-recruitment" class="btn-primary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
@@ -188,31 +168,11 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Helper Scripts (Must load before form.js) -->
+    <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-    <!-- Setup Edit Mode Data -->
-    <script>
-        // Data recruitment untuk edit mode (dari PHP)
-        window.EDIT_MODE = true;
-        window.RECRUITMENT_DATA = {
-            id: <?= json_encode($recruitment['id']) ?>,
-            posisi: <?= json_encode($recruitment['posisi']) ?>,
-            deskripsi: <?= json_encode($recruitment['deskripsi']) ?>,
-            persyaratan: <?= json_encode($recruitment['persyaratan'] ?? '') ?>,
-            tanggal_mulai: <?= json_encode($recruitment['tanggal_mulai']) ?>,
-            tanggal_berakhir: <?= json_encode($recruitment['tanggal_berakhir']) ?>,
-            status: <?= json_encode($recruitment['status']) ?>,
-            link_pendaftaran: <?= json_encode($recruitment['link_pendaftaran'] ?? '') ?>,
-            gambar_banner: <?= json_encode($recruitment['gambar_banner'] ?? '') ?>
-        };
-    </script>
-
-    <!-- Data Recruitment Form Page JS (shared logic) -->
-    <script src="<?= asset_url('js/pages/recruitment/form.js') ?>"></script>
-
-    <!-- Data Recruitment Edit Page JS (edit-specific logic) -->
+    <!-- Page Spesific Scripts -->
     <script src="<?= asset_url('js/pages/recruitment/edit.js') ?>"></script>
 </body>
 

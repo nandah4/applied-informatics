@@ -2,83 +2,82 @@
 
 /* Layout */
 .main-content {
-    padding: 2rem;
-    margin-left: 260px;
-    min-height: 100vh;
+  padding: 2rem;
+  margin-left: 260px;
+  min-height: 100vh;
 }
 
 @media (max-width: 768px) {
-    .main-content {
-        margin-left: 0;
-        padding: 1rem;
-    }
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
 }
 
-/* Page Header */
 .page-header {
-    margin-bottom: 2rem;
-    padding-top: 70px;
-}
-
-.breadcrumb-custom {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    font-size: var(--fs-sm);
-}
-
-.breadcrumb-custom a {
-    color: var(--color-primary-500);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.breadcrumb-custom a:hover {
-    color: var(--color-primary-600);
-    text-decoration: underline;
-}
-
-.breadcrumb-custom span {
-    color: var(--color-gray-400);
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 }
 
 .page-title {
-    font-size: var(--fs-2xl);
-    font-weight: 700;
-    color: var(--color-gray-900);
-    margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  margin: 0;
 }
 
 .page-subtitle {
-    color: var(--color-gray-500);
-    font-size: var(--fs-base);
-    margin-top: 0.5rem;
+  color: var(--color-gray-500);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
-/* Card */
+.breadcrumb-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.breadcrumb-custom a {
+  color: var(--color-primary-500);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-custom a:hover {
+  color: var(--color-primary-600);
+}
+
+.breadcrumb-custom span {
+  color: var(--color-gray-400);
+}
+
 .card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: none;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: none;
 }
 
 .card-body {
-    padding: 2rem;
+  padding: 2rem;
 }
 
 /* Form Elements */
 .form-label {
-    display: block;
-    font-weight: 600;
-    color: var(--color-gray-700);
-    font-size: var(--fs-sm);
-    margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin-bottom: 0.5rem;
 }
 
-.required {
-    color: #ef4444;
+.form-label .required {
+  color: var(--color-error);
 }
 
 .form-control {

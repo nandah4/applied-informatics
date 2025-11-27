@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= base_url() ?>">
     <title>Data Recruitment - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
@@ -21,7 +22,12 @@
 </head>
 
 <body>
+    <!-- Alert Placeholder untuk notifikasi -->
     <div id="liveAlertPlaceholder"></div>
+
+    <!-- CSRF Token untuk AJAX requests -->
+    <?= CsrfHelper::tokenField() ?>
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -54,11 +60,11 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
-                        <input type="text" class="search-input" placeholder="Cari posisi atau deskripsi...">
+                        <input type="text" class="search-input" placeholder="Cari judul, deskripsi, atau lokasi...">
                     </div>
 
                     <!-- Add Button -->
-                    <a href="<?= base_url('recruitment/create') ?>" class="btn-primary-custom">
+                    <a href="<?= base_url('admin/recruitment/create') ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -74,9 +80,9 @@
                     <thead>
                         <tr>
                             <th class="col-id">ID</th>
-                            <th class="col-banner">Banner</th>
-                            <th class="col-posisi">Posisi</th>
+                            <th class="col-judul">Judul</th>
                             <th class="col-deskripsi">Deskripsi</th>
+                            <th class="col-lokasi">Lokasi</th>
                             <th class="col-periode">Periode</th>
                             <th class="col-status">Status</th>
                             <th class="action-cell">Aksi</th>
@@ -96,44 +102,40 @@
                             <?php foreach ($listRecruitment as $dt): ?>
                                 <tr>
                                     <td class="col-id"><?= $dt['id'] ?></td>
-                                    <td class="col-banner">
-                                        <?php if (!empty($dt['gambar_banner'])): ?>
-                                            <img src="<?= upload_url('recruitment/' . $dt['gambar_banner']) ?>" alt="Banner" class="banner-image">
-                                        <?php else: ?>
-                                            <img src="<?= upload_url('default/image.png') ?>" alt="Banner" class="banner-image">
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="col-posisi">
-                                        <div style="font-weight: 600; color: var(--color-gray-900);"><?= htmlspecialchars($dt['posisi']) ?></div>
+                                    <td class="col-judul">
+                                        <div style="font-weight: 600; color: var(--color-gray-900);"><?= htmlspecialchars($dt['judul']) ?></div>
                                     </td>
                                     <td class="col-deskripsi">
                                         <div class="text-truncate-2">
                                             <?= !empty($dt['deskripsi']) ? htmlspecialchars($dt['deskripsi']) : '-' ?>
                                         </div>
                                     </td>
+                                    <td class="col-lokasi">
+                                        <?= !empty($dt['lokasi']) ? htmlspecialchars($dt['lokasi']) : '-' ?>
+                                    </td>
                                     <td class="col-periode">
                                         <div class="periode-wrapper">
-                                            <span class="periode-date"><?= date('d/m/Y', strtotime($dt['tanggal_mulai'])) ?></span>
+                                            <span class="periode-date"><?= date('d/m/Y', strtotime($dt['tanggal_buka'])) ?></span>
                                             <span>-</span>
-                                            <span class="periode-date"><?= date('d/m/Y', strtotime($dt['tanggal_berakhir'])) ?></span>
+                                            <span class="periode-date"><?= date('d/m/Y', strtotime($dt['tanggal_tutup'])) ?></span>
                                         </div>
                                     </td>
                                     <td class="col-status">
-                                        <?php if ($dt['status'] === 'aktif'): ?>
-                                            <span class="badge-custom badge-success">Aktif</span>
+                                        <?php if ($dt['status'] === 'buka'): ?>
+                                            <span class="badge-custom badge-buka">Recruitment Buka</span>
                                         <?php else: ?>
-                                            <span class="badge-custom badge-secondary">Nonaktif</span>
+                                            <span class="badge-custom badge-tutup">Recruitment Tutup</span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
-                                            <a href="<?= base_url('recruitment/detail/' . $dt['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
+                                            <a href="<?= base_url('admin/recruitment/detail/' . $dt['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                                     <circle cx="12" cy="12" r="3"></circle>
                                                 </svg>
                                             </a>
-                                            <a href="<?= base_url('recruitment/edit/' . $dt['id']) ?>" class="btn-action btn-edit" title="Edit">
+                                            <a href="<?= base_url('admin/recruitment/edit/' . $dt['id']) ?>" class="btn-action btn-edit" title="Edit">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                                                 </svg>
@@ -173,7 +175,7 @@
                             <!-- Previous Button -->
                             <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_prev'] ? base_url('recruitment?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'])
+                                    href="<?= $pagination['has_prev'] ? base_url('admin/recruitment?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'])
                                                 : '#' ?>"
                                     tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
                                     Previous
@@ -191,7 +193,7 @@
                                     <!-- Page Number -->
                                     <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
                                         <a class="page-link"
-                                            href="<?= base_url('recruitment?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
+                                            href="<?= base_url('admin/recruitment?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
                                             <?= $pageData['number'] ?>
                                         </a>
                                     </li>
@@ -201,7 +203,7 @@
                             <!-- Next Button -->
                             <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_next'] ? base_url('recruitment?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'])
+                                    href="<?= $pagination['has_next'] ? base_url('admin/recruitment?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'])
                                                 : '#' ?>">
                                     Next
                                 </a>
@@ -224,12 +226,13 @@
     <!-- Feather Icons -->
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
-    <!-- Sidebar JS (jQuery Version) -->
+    <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Helper Scripts (Must load before form.js) -->
+    <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
 
+    <!-- Page Specific Scripts -->
     <script src="<?= asset_url('js/pages/recruitment/index.js') ?>"></script>
 </body>
 
