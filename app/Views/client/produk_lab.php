@@ -1,97 +1,203 @@
 <!-- header -->
 <?php
 include __DIR__ . '/../layouts/header.php';
+
+// Data produk sudah di-fetch dari route
+// $listProduk - Array data produk dari database
 ?>
 
-<main class="p-5">
-    
-    <div class="container-fluid">
-        <div class="halaman d-flex flex-row gap-4 mb-5">
-            <p>Riset dan Produk</p>
-            <p>></p>
-            <p class="halaman-ini">Produk</p>
+<main class="produk-lab-page">
+
+    <div class="container">
+        <div class="breadcrumb-nav">
+            <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-item active">Produk Laboratorium</span>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div>
+            <h1 class="title-section mb-3">Semua Produk</h1>
+            <p class="subtitle-section w-75">Temukan berbagai produk inovatif yang dikembangkan oleh tim laboratorium. Setiap produk dirancang untuk memberikan nilai serta mendukung pengembangan teknologi di berbagai bidang.</p>
         </div>
 
-        <div class="mb-4">
-            <h1 class="judul mb-4">Semua Produk</h1>
-            <p class="deskripsi">Halaman ini menyediakan akses ke beragam hasil produk labrolatorium. Gunakan fitur pencarian untuk
-                menemukan produk berdasarkan nama, kategori, atau kata kunci tertentu.</p>
-        </div>
+        <div class="divider-hr"></div>
 
-        <hr class="mb-5">
+        <?php if (!empty($listProduk)): ?>
+            <div class="row">
+                <?php foreach ($listProduk as $produk): ?>
+                    <?php
+                    // Prepare data
+                    $produkFoto = upload_url('produk/' . $produk['foto_produk']);
+                    $deskripsi = !empty($produk['deskripsi']) ? htmlspecialchars($produk['deskripsi']) : "Tidak ada deskripsi.";
+                    $kontributor = !empty($produk['dosen_names']) ? htmlspecialchars($produk['dosen_names']) : "";
+                    $timMahasiswa = !empty($produk['tim_mahasiswa']) ? htmlspecialchars($produk['tim_mahasiswa']) : "";
+                    $linkProduk = !empty($produk['link_produk']) ? htmlspecialchars($produk['link_produk']) : "";
+                    ?>
 
-        <div class="row">
-            <div class="col-sm-6 col-md-3 produk-item mb-3">
-                <div class="card-container mx-auto mb-1">
-                    <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/amati.png') ?>" class="mx-auto d-block gambar-produk">
+                    <div class="col-sm-6 col-md-3 produk-item mb-4">
+                        <div class="card-container mx-auto mb-1 " data-bs-toggle="modal"
+                            data-bs-target="#produkModal"
+                            data-produk-nama="<?= htmlspecialchars($produk['nama_produk']) ?>"
+                            data-produk-foto="<?= $produkFoto ?>"
+                            data-produk-deskripsi="<?= $deskripsi ?>"
+                            data-produk-kontributor="<?= $kontributor ?>"
+                            data-produk-tim="<?= $timMahasiswa ?>"
+                            data-produk-link="<?= $linkProduk ?>"
+                            style="cursor: pointer;"
+                            role="button"
+                            tabindex="0">
+                            <!-- ketika logo di klik maka muncul modal -->
+                            <img src="<?= $produkFoto ?>"
+                                alt="<?= htmlspecialchars($produk['nama_produk']) ?>"
+                                class="mx-auto d-block gambar-produk logo-container">
+                            <!-- Teks hover -->
+                            <div class="hover-text">Lihat Detail Produk</div>
+                        </div>
+                        <p class="w-75 nama-produk mt-3"><?= htmlspecialchars($produk['nama_produk']) ?></p>
                     </div>
-                    <!-- Teks hover -->
-                    <div class="hover-text">Klik untuk melihat</div>
-                </div>
-                <p class="tipe">Digital</p>
-                <p class="fw-bold nama-produk">Automated Cyber Security Maturity Assessment (AMATI)</p>
+                <?php endforeach; ?>
             </div>
-
-            <div class="col-sm-6 col-md-3 produk-item mb-3">
-                <div class="card-container mx-auto mb-1">
-                    <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/agrilink.png') ?>" class="mx-auto d-block gambar-produk">
-                    </div>
-                    <div class="hover-text">Klik untuk melihat</div>
+        <?php else: ?>
+            <div class="text-center py-5">
+                <div class="mb-4 d-flex justify-content-center">
+                    <i data-feather="grid" class="icon-something-not-found"></i>
                 </div>
-                <p class="tipe">Digital</p>
-                <p class="fw-bold nama-produk">Agrilink Vocpro</p>
+                <h5 class="text-muted mb-2">Belum Ada Produk.</h5>
+                <p class="text-secondary mb-0">Belum ada produk yang tersedia.</p>
             </div>
+        <?php endif; ?>
+    </div>
 
-            <div class="col-sm-6 col-md-3 produk-item mb-3">
-                <div class="card-container mx-auto mb-1">
-                    <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/seals.png') ?>" class="mx-auto d-block gambar-produk">
-                    </div>
-                    <div class="hover-text">Klik untuk melihat</div>
+    <!-- Single Modal Produk Detail -->
+    <div class="modal fade" id="produkModal" tabindex="-1" aria-labelledby="produkModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="produkModalLabel">Nama Produk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <p class="tipe">Digital</p>
-                <p class="fw-bold nama-produk">Smart Adaptive Learning System (SEALS)</p>
-            </div>
+                <div class="modal-body">
+                    <!-- Foto Produk -->
+                    <div class="text-center mb-4">
+                        <img id="modalProdukFoto"
+                            src=""
+                            alt="Produk"
+                            class="img-fluid rounded"
+                            style="max-height: 300px; object-fit: contain;">
+                    </div>
 
-            <div class="col-sm-6 col-md-3 produk-item mb-3">
-                <div class="card-container mx-auto mb-1">
-                    <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/crowdfunding.png') ?>" class="mx-auto d-block gambar-produk">
+                    <!-- Deskripsi -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-2" style="color: var(--color-tertiary-500);">
+                            Deskripsi Produk
+                        </h6>
+                        <p class="text-secondary mb-0" id="modalProdukDeskripsi">Deskripsi produk akan muncul di sini.</p>
                     </div>
-                    <div class="hover-text">Klik untuk melihat</div>
-                </div>
-                <p class="tipe">Digital</p>
-                <p class="fw-bold nama-produk">Crowdfunding</p>
-            </div>
 
-            <div class="col-sm-6 col-md-3 produk-item mb-3">
-                <div class="card-container mx-auto mb-1">
-                    <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/owncloud.png') ?>" class="mx-auto d-block gambar-produk">
+                    <!-- Kontributor Dosen -->
+                    <div class="mb-4" id="kontributorSection" style="display: none;">
+                        <h6 class="fw-bold mb-2" style="color: var(--color-tertiary-500);">
+                            Kontributor
+                        </h6>
+                        <div id="modalProdukKontributor" class="d-flex flex-wrap gap-2"></div>
                     </div>
-                    <div class="hover-text">Klik untuk melihat</div>
-                </div>
-                <p class="tipe">Digital</p>
-                <p class="fw-bold nama-produk">Owncloud Server</p>
-            </div>
 
-            <div class="col-sm-6 col-md-3 produk-item mb-3">
-                <div class="card-container mx-auto mb-1">
-                    <div class="logo-container">
-                        <img src="<?= asset_url('images/produk/gitea.png') ?>" class="mx-auto d-block gambar-produk">
+                    <!-- Tim Mahasiswa -->
+                    <div class="mb-3" id="timSection" style="display: none;">
+                        <h6 class="fw-bold mb-2" style="color: var(--color-tertiary-500);">
+                            Tim Mahasiswa
+                        </h6>
+                        <p class="text-secondary mb-0" id="modalProdukTim"></p>
                     </div>
-                    <div class="hover-text">Klik untuk melihat</div>
                 </div>
-                <p class="tipe">Digital</p>
-                <p class="fw-bold nama-produk">Gitea</p>
+                <div class="modal-footer border-0">
+                    <a id="modalProdukLink"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-primary"
+                        style="background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600)); border: none; padding: 10px 24px; display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        Lihat Demo
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="padding: 10px 24px;">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
 </main>
 
 <link rel="stylesheet" href="<?= asset_url('css/pages/produk-user/produk.css') ?>">
+
+<!-- Script untuk handle modal produk -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal element
+        const produkModal = document.getElementById('produkModal');
+
+        // Event listener saat modal akan ditampilkan
+        produkModal.addEventListener('show.bs.modal', function(event) {
+            // Tombol/image yang di-klik
+            const button = event.relatedTarget;
+
+            // Ambil data dari data attributes
+            const nama = button.getAttribute('data-produk-nama');
+            const foto = button.getAttribute('data-produk-foto');
+            const deskripsi = button.getAttribute('data-produk-deskripsi');
+            const kontributor = button.getAttribute('data-produk-kontributor');
+            const tim = button.getAttribute('data-produk-tim');
+            const link = button.getAttribute('data-produk-link');
+
+            // Update modal content
+            const modalTitle = produkModal.querySelector('.modal-title');
+            const modalFoto = document.getElementById('modalProdukFoto');
+            const modalDeskripsi = document.getElementById('modalProdukDeskripsi');
+            const modalKontributor = document.getElementById('modalProdukKontributor');
+            const modalTim = document.getElementById('modalProdukTim');
+            const modalLink = document.getElementById('modalProdukLink');
+            const kontributorSection = document.getElementById('kontributorSection');
+            const timSection = document.getElementById('timSection');
+
+            // Set basic info
+            modalTitle.textContent = nama;
+            modalFoto.src = foto;
+            modalFoto.alt = nama;
+            modalDeskripsi.textContent = deskripsi;
+
+            // Handle kontributor
+            if (kontributor && kontributor.trim() !== '') {
+                kontributorSection.style.display = 'block';
+
+                modalKontributor.textContent = kontributor
+            } else {
+                kontributorSection.style.display = 'none';
+            }
+
+            // Handle tim mahasiswa
+            if (tim && tim.trim() !== '') {
+                timSection.style.display = 'block';
+                modalTim.textContent = tim;
+            } else {
+                timSection.style.display = 'none';
+            }
+
+            // Handle link demo
+            if (link && link.trim() !== '') {
+                modalLink.href = link;
+                modalLink.style.display = 'inline-flex';
+            } else {
+                modalLink.style.display = 'none';
+            }
+        });
+    });
+</script>
 
 <!--footer -->
 <?php

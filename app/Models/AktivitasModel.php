@@ -30,12 +30,13 @@ class AktivitasModel extends BaseModel
      * @return array
      */
 
-    public function getAll()
+    public function getAll($limit = 6)
     {
         try {
-            $query = "SELECT judul_aktivitas, foto_aktivitas, tanggal_kegiatan FROM {$this->table_name} ORDER BY created_at, tanggal_kegiatan DESC LIMIT 6";
+            $query = "SELECT id, judul_aktivitas, foto_aktivitas, deskripsi, tanggal_kegiatan FROM {$this->table_name} ORDER BY tanggal_kegiatan DESC, created_at DESC LIMIT :limit";
 
             $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -77,7 +78,8 @@ class AktivitasModel extends BaseModel
                         created_at,
                         updated_at
                     FROM {$this->table_name}
-                    ORDER BY tanggal_kegiatan DESC, created_at DESC LIMIT :limit OFFSET :offset";
+                    ORDER BY tanggal_kegiatan DESC, created_at DESC
+                    LIMIT :limit OFFSET :offset";
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);

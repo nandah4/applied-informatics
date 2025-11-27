@@ -78,7 +78,7 @@ function isActive($path, $current)
                         <a class="nav-link <?= isActive('/', $current_path) ?>" href="<?= base_url('') ?>">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= isActive('/tentang-kami', $current_path) ?>" href="<?= base_url('tentang-kami') ?>">Tentang Kami</a>
+                        <a class="nav-link <?= isActive('/anggota-laboratorium', $current_path) ?>" href="<?= base_url('anggota-laboratorium') ?>">Anggota</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle <?= isActive('/publikasi-dosen', $current_path) || isActive('/produk-lab', $current_path) ? 'active' : '' ?>" href="#" role="button"
@@ -94,7 +94,7 @@ function isActive($path, $current)
                         <a class="nav-link <?= isActive('/aktivitas-laboratorium', $current_path) ?>" href="<?= base_url('aktivitas-laboratorium') ?>">Aktivitas Lab</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('mitra-lab') ?>">Mitra</a>
+                        <a class="nav-link  <?= isActive('/mitra-laboratorium', $current_path) ?>" href="<?= base_url('mitra-laboratorium') ?>">Mitra</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('rekrutment') ?>">Rekrutment</a>

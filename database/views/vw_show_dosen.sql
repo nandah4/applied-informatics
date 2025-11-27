@@ -29,4 +29,4 @@ CREATE OR REPLACE VIEW vw_profil_publikasi AS
         p.tipe,
         p.url_profil
     FROM ref_profil_publikasi p
-    JOIN mst_dosen d ON d.id = p.dosen_id
+    JOIN mst_dosen d ON d.id = p.dosen_id;

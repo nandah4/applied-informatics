@@ -164,56 +164,360 @@ main{
 .fasilitas-section {
   margin-bottom: 40px;
 }
-
-/*Font dan warna font tahun penelitian*/
-.tahun-penelitian {
-  font-size: var(--fs-base);
-  color: var(--color-primary-800);
+/* Penelitian Section */
+.penelitian-section {
+    background-color: var(--bg-primary);
 }
 
-/*Warna line pada tahun penelitian*/
-.line {
-  color: white;
-  background-color: white;
-  border-color: white;
+.btn-penelitian {
+    font-size: var(--fs-sm);
+    padding: 12px 24px;
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-400);
+    color: var(--color-primary-800);
+    font-weight: var(--fw-semibold);
+    transition: all 0.3s ease;
 }
 
-/*Ukuran radius border card pada tahun penelitian*/
-.card-tahun-penelitian{
-  border-radius: 8px;
+.btn-penelitian:hover {
+    background-color: var(--color-primary-100);
+    transform: translateY(-2px);
 }
 
-/*Warna Font judul penelitian dan link nya*/
-.judul-penelitian, .link-penelitian{
-  color: var(--color-primary-700);
+/* Year Filter Pills */
+.year-filter-container {
+    padding: 20px;
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, rgba(255,255,255,0.5) 100%);
+    border-radius: 12px;
+    border: 1px solid var(--color-primary-200);
 }
 
-/*Ukuran Font judul penelitian*/
-.judul-penelitian{
-  font-size: 20px;
+.year-pill {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 2px solid var(--color-primary-300);
+    background-color: #ffffff;
+    color: var(--color-primary-700);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-/*Ukuran Font link penelitian*/
-.link-penelitian{
-  font-size: 18px;
+.year-pill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
 }
 
-/* Penelitian Section - Year Selection */
-.year-item {
-  transition: all 0.3s ease;
+.year-pill:hover::before {
+    left: 100%;
 }
 
-.year-item:hover {
-  color: var(--color-primary-600);
-  font-weight: var(--fw-semibold);
+.year-pill:hover {
+    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-50);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.year-item.active {
-  color: var(--color-primary-800);
-  font-weight: var(--fw-bold);
-  background-color: var(--color-primary-100);
-  padding: 8px;
-  border-radius: 4px;
+.year-pill.active {
+    background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
+    color: #ffffff;
+    border-color: var(--color-primary-700);
+    font-weight: var(--fw-bold);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Publikasi Container */
+.publikasi-container {
+    height: 600px; /* Fixed height */
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Custom Scrollbar */
+.publikasi-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.publikasi-container::-webkit-scrollbar-track {
+    background: var(--color-primary-50);
+    border-radius: 10px;
+}
+
+.publikasi-container::-webkit-scrollbar-thumb {
+    background: var(--color-primary-400);
+    border-radius: 10px;
+}
+
+.publikasi-container::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-600);
+}
+
+/* Untuk Firefox */
+.publikasi-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary-400) var(--color-primary-50);
+}
+
+/* Responsive Heights */
+@media (max-width: 1199.98px) {
+    .publikasi-container {
+        height: 550px;
+        max-height: 550px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .publikasi-container {
+        height: 500px;
+        max-height: 500px;
+        padding: 25px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .publikasi-container {
+        height: 450px;
+        max-height: 450px;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .publikasi-container {
+        height: 400px;
+        max-height: 400px;
+        padding: 15px;
+    }
+}
+
+/* Smooth scroll behavior */
+.publikasi-container {
+    scroll-behavior: smooth;
+}
+
+/* Fade effect di bagian bawah container (optional) */
+.publikasi-container::after {
+    content: '';
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+}
+
+/* Publikasi Card */
+.publikasi-card {
+    padding: 24px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, var(--color-primary-50) 100%);
+    border: 1px solid var(--color-primary-200);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.publikasi-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
+    transition: width 0.3s ease;
+}
+
+.publikasi-card:hover {
+    transform: translateX(8px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border-color: var(--color-primary-400);
+}
+
+.publikasi-card:hover::before {
+    width: 8px;
+}
+
+.publikasi-number {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary-100);
+    color: var(--color-primary-700);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-sm);
+}
+
+.publikasi-title {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--color-primary-800);
+    margin-bottom: 12px;
+    line-height: 1.5;
+    padding-right: 50px;
+}
+
+.publikasi-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.publikasi-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-fourtiary-600);
+    font-size: var(--fs-sm);
+}
+
+.publikasi-author i {
+    color: var(--color-primary-600);
+}
+
+.publikasi-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-fourtiary-600);
+    font-size: var(--fs-sm);
+}
+
+.publikasi-date i {
+    color: var(--color-primary-600);
+}
+
+.publikasi-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: var(--color-primary-600);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    transition: all 0.3s ease;
+}
+
+.publikasi-link:hover {
+    background-color: var(--color-primary-700);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.publikasi-link i {
+    transition: transform 0.3s ease;
+}
+
+.publikasi-link:hover i {
+    transform: translateX(4px);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-state-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-icon i {
+    font-size: 48px;
+    color: var(--color-gray-500);
+}
+
+.empty-state-title {
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-semibold);
+    color: var(--color-primary-800);
+    margin-bottom: 8px;
+}
+
+.empty-state-text {
+    font-size: var(--fs-base);
+    color: var(--color-fourtiary-600);
+}
+
+/* Loading State */
+.loading-state {
+    padding: 60px 20px;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .year-filter-container {
+        padding: 15px;
+    }
+    
+    .year-pill {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+    }
+    
+    .publikasi-container {
+        padding: 20px;
+    }
+    
+    .publikasi-card {
+        padding: 20px;
+    }
+    
+    .publikasi-title {
+        font-size: var(--fs-base);
+        padding-right: 0;
+    }
+    
+    .publikasi-number {
+        position: static;
+        margin-bottom: 12px;
+    }
+    
+    .publikasi-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
 }
 
 /*Posisi button aktivitas*/

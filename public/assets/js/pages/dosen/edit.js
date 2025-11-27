@@ -928,10 +928,7 @@
             onSuccess: (response) => {
               if (response.success) {
                 // Tambahkan ke dropdown
-                KeahlianDropdown.addItemToDropdown({
-                  id: response.data.id,
-                  keahlian: response.data.keahlian,
-                });
+                KeahlianDropdown.addItemToDropdown(response.data);
 
                 // Reset input dan tutup modal
                 $newKeahlianInput.val("");

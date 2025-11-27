@@ -320,6 +320,39 @@ class DosenModel extends BaseModel
             ];
         }
     }
+
+    /**
+     * Ambil data dosen berdasarkan nama jabatan
+     *
+     * @param string $jabatanName - Nama jabatan (contoh: "Kepala Laboratorium", "Dosen")
+     * @return array - Format: ['success' => bool, 'data' => array]
+     */
+    public function getDosenByJabatan($jabatanName)
+    {
+        try {
+            $query = "SELECT * FROM vw_show_dosen
+                      WHERE jabatan_name = :jabatan_name
+                      ORDER BY created_at DESC";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':jabatan_name', $jabatanName, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $result
+            ];
+        } catch (PDOException $e) {
+            error_log("DosenModel getDosenByJabatan error: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Gagal mendapatkan data dosen',
+                'data' => []
+            ];
+        }
+    }
 }
 
 

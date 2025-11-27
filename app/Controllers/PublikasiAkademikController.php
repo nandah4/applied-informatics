@@ -298,4 +298,53 @@ class PublikasiAkademikController
         // 5. Return success response
         ResponseHelper::success('Data publikasi akademik berhasil dihapus');
     }
+
+    /**
+     * Get publikasi untuk halaman client dengan search, filter, dan pagination
+     * Method: GET
+     * Endpoint: /publikasi-dosen
+     *
+     * Query parameters:
+     * - search: string (optional) - Cari berdasarkan judul atau nama dosen
+     * - tipe_publikasi: string (optional) - Filter by tipe (Riset, Kekayaan Intelektual, PPM)
+     * - page: int (optional, default: 1)
+     * - per_page: int (optional, default: 10)
+     *
+     * @return array - Data publikasi dengan pagination info
+     */
+    public function getPublikasiForClient()
+    {
+        // Ambil parameter dari GET request
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $tipePublikasi = isset($_GET['tipe_publikasi']) ? trim($_GET['tipe_publikasi']) : '';
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+        // Validasi input
+        $page = max(1, $page);
+        $perPage = max(1, min(50, $perPage)); // Max 50 items per page
+
+        // Hitung offset
+        $offset = ($page - 1) * $perPage;
+
+        // Siapkan params untuk model
+        $params = [
+            'search' => $search,
+            'tipe_publikasi' => $tipePublikasi,
+            'limit' => $perPage,
+            'offset' => $offset
+        ];
+
+        // Get data dari model
+        $result = $this->publikasiAkademikModel->getAllWithSearchAndFilter($params);
+
+        // Generate pagination
+        $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
+
+        return [
+            'data' => $result['data'],
+            'pagination' => $pagination,
+            'total' => $result['total']
+        ];
+    }
 }
