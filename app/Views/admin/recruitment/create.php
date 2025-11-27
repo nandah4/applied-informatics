@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= base_url() ?>">
     <title>Tambah Recruitment - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <!-- Base CSS - Must load first -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
@@ -25,16 +26,14 @@
     <div id="liveAlertPlaceholder"></div>
 
     <!-- Sidebar -->
-    <?php
-    include __DIR__ . '/../../layouts/sidebar.php';
-    ?>
+    <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
     <!-- Main Content Area -->
     <div class="main-content">
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('recruitment') ?>">Data Recruitment</a>
+                <a href="<?= base_url('admin/recruitment') ?>">Data Recruitment</a>
                 <span>/</span>
                 <span>Tambah Recruitment</span>
             </div>
@@ -46,15 +45,17 @@
         <div class="card">
             <div class="card-body">
                 <form id="formRecruitment" method="POST" enctype="multipart/form-data">
+                    
+                    <?= CsrfHelper::tokenField() ?>
+
                     <div class="row">
-                        <!-- Posisi -->
+                        <!-- Judul -->
                         <div class="col-md-6 mb-3">
-                            <label for="posisi" class="form-label">
-                                Posisi <span class="required">*</span>
+                            <label for="judul" class="form-label">
+                                Judul <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="posisi" name="posisi" placeholder="Contoh: Asisten Praktikum AI" required>
-                            <!-- Error Message -->
-                            <div id="posisiError" class="invalid-feedback"></div>
+                            <input type="text" class="form-control" id="judul" name="judul" placeholder="Contoh: Asisten Praktikum AI" required>
+                            <div id="judulError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Status -->
@@ -64,64 +65,40 @@
                             </label>
                             <select class="form-control" id="status" name="status" required>
                                 <option value="">Pilih Status</option>
-                                <option value="aktif">Aktif</option>
-                                <option value="nonaktif">Nonaktif</option>
+                                <option value="buka">Buka</option>
+                                <option value="tutup">Tutup</option>
                             </select>
                             <div id="statusError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Tanggal Mulai -->
+                        <!-- Tanggal Buka -->
                         <div class="col-md-6 mb-3">
-                            <label for="tanggal_mulai" class="form-label">
-                                Tanggal Mulai <span class="required">*</span>
+                            <label for="tanggal_buka" class="form-label">
+                                Tanggal Buka <span class="required">*</span>
                             </label>
-                            <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" required>
+                            <input type="date" class="form-control" id="tanggal_buka" name="tanggal_buka" required>
                             <div class="helper-text">Tanggal dimulainya periode recruitment</div>
-                            <div id="tanggalMulaiError" class="invalid-feedback"></div>
+                            <div id="tanggalBukaError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Tanggal Berakhir -->
+                        <!-- Tanggal Tutup -->
                         <div class="col-md-6 mb-3">
-                            <label for="tanggal_berakhir" class="form-label">
-                                Tanggal Berakhir <span class="required">*</span>
+                            <label for="tanggal_tutup" class="form-label">
+                                Tanggal Tutup <span class="required">*</span>
                             </label>
-                            <input type="date" class="form-control" id="tanggal_berakhir" name="tanggal_berakhir" required>
+                            <input type="date" class="form-control" id="tanggal_tutup" name="tanggal_tutup" required>
                             <div class="helper-text">Tanggal berakhirnya periode recruitment</div>
-                            <div id="tanggalBerakhirError" class="invalid-feedback"></div>
+                            <div id="tanggalTutupError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Link Pendaftaran -->
+                        <!-- Lokasi -->
                         <div class="col-12 mb-3">
-                            <label for="link_pendaftaran" class="form-label">
-                                Link Pendaftaran
+                            <label for="lokasi" class="form-label">
+                                Lokasi <span class="required">*</span>
                             </label>
-                            <input type="url" class="form-control" id="link_pendaftaran" name="link_pendaftaran" placeholder="https://forms.google.com/...">
-                            <div class="helper-text">Link formulir atau halaman pendaftaran</div>
-                            <div id="linkPendaftaranError" class="invalid-feedback"></div>
-                        </div>
-
-                        <!-- Gambar Banner -->
-                        <div class="col-12 mb-3">
-                            <label class="form-label">
-                                Gambar Banner
-                            </label>
-                            <div class="file-upload-wrapper" id="fileUploadWrapper">
-                                <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                </svg>
-                                <div class="file-upload-text">
-                                    <strong>Klik untuk upload</strong> atau drag and drop
-                                </div>
-                                <div class="file-upload-hint">
-                                    PNG, JPG, JPEG maksimal 2MB
-                                </div>
-                            </div>
-                            <input type="file" class="file-upload-input" id="gambar_banner" name="gambar_banner" accept="image/png,image/jpg,image/jpeg">
-                            <div class="image-preview" id="imagePreview" style="display: none;">
-                                <img id="previewImg" src="" alt="Preview">
-                            </div>
+                            <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="Contoh: Lab AI - Gedung H7 Lantai 8" required>
+                            <div class="helper-text">Lokasi pelaksanaan recruitment atau pekerjaan</div>
+                            <div id="lokasiError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Deskripsi -->
@@ -133,22 +110,11 @@
                             <div class="helper-text">Deskripsikan posisi, tanggung jawab, dan benefit</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
-
-                        <!-- Persyaratan -->
-                        <div class="col-12 mb-3">
-                            <label for="persyaratan" class="form-label">
-                                Persyaratan
-                            </label>
-                            <textarea class="form-control" id="persyaratan" name="persyaratan" rows="5" placeholder="Masukkan persyaratan untuk posisi ini (pisahkan dengan enter untuk setiap poin)"></textarea>
-                            <div class="helper-text">Tuliskan persyaratan atau kualifikasi yang dibutuhkan</div>
-                            <div id="persyaratanError" class="invalid-feedback"></div>
-                        </div>
-
                     </div>
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('recruitment') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/recruitment') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -179,7 +145,7 @@
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
 
-    <!-- Helper Scripts (Must load before form.js) -->
+    <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 

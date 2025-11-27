@@ -97,7 +97,7 @@ function isActive($path, $current)
                         <a class="nav-link  <?= isActive('/mitra-laboratorium', $current_path) ?>" href="<?= base_url('mitra-laboratorium') ?>">Mitra</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Rekrutment</a>
+                        <a class="nav-link" href="<?= base_url('rekrutment') ?>">Rekrutment</a>
                     </li>
                 </ul>
             </div>

@@ -89,7 +89,7 @@ function hasActiveChild($urls, $current)
 
             <!-- Manajemen Aktivitas -->
             <li class="nav-item">
-                <a class="nav-link parent-menu <?= hasActiveChild(['admin/aktivitas-lab', 'admin/publikasi-akademik', 'pengabdian', 'kekayaan'], $current_url) ?>">
+                <a class="nav-link parent-menu <?= hasActiveChild(['admin/aktivitas-lab', 'admin/publikasi-akademik', 'admin/recruitment'], $current_url) ?>">
                     <i data-feather="activity"></i>
                     <span class="nav-text">Manajemen Aktivitas</span>
                 </a>
@@ -105,7 +105,7 @@ function hasActiveChild($urls, $current)
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?= base_url('recruitment') ?>" class="nav-link <?= isActive('recruitment', $current_url) ?>">
+                        <a href="<?= base_url('admin/recruitment') ?>" class="nav-link <?= isActive('admin/recruitment', $current_url) ?>">
                             <span class="nav-text">Kelola Informasi Rekrutment</span>
                         </a>
                     </li>
