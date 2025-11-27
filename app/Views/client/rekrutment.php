@@ -76,7 +76,7 @@ include __DIR__ . '/../layouts/header.php';
 
             <!-- Card 2 -->
             <div class="col-sm-12 col-md-6">
-                <div class="card shadow-sm border-0 rounded-4 h-100 transition">
+                <div class="card shadow-sm border-0 rounded-4 transition">
                     <div class="card-body p-4">
                         <!-- Header -->
                         <div class="d-flex justify-content-between align-items-start mb-3">

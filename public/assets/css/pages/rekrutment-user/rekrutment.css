@@ -2,6 +2,18 @@ main {
   background-color: var(--bg-primary);
 }
 
+.halaman, .deskripsi{
+    font-size: 18px;
+}
+
+.halaman-ini{
+  color: var(--color-primary-500);
+}
+
+.judul{
+    font-size: 40px;
+}
+
 .badge-open {
   background-color: #d1fae5;
   color: #059669;
