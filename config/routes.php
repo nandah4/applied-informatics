@@ -219,6 +219,14 @@ $router->get('rekrutment', function () {
     require __DIR__ . '/../app/Views/client/rekrutment.php';
 });
 
+/**
+ * Contact Us
+ * URL: /contact-us
+ */
+$router->get('contact-us', function () {
+    require __DIR__ . '/../app/Views/client/contact_us.php';
+});
+
 // ============================================================================
 // AUTH ROUTES
 // ============================================================================

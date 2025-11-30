@@ -1,0 +1,11 @@
+@import '../../components/typography.css';
+
+
+.contactus-page{
+    background-color: var(--bg-primary);
+}
+
+.contact-form-wrapper{
+    background-color: var(--color-fourtiary-100);
+    border-radius: 10px;
+}
