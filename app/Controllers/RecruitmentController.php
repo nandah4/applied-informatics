@@ -329,4 +329,123 @@ class RecruitmentController
         // 4. Return success response
         ResponseHelper::success('Data recruitment berhasil dihapus');
     }
+
+    /**
+     * Handle pendaftaran mahasiswa (form submission)
+     * Method: POST
+     * Endpoint: /rekrutment/submit
+     *
+     * @return void - Redirect ke halaman sukses atau kembali ke form dengan error
+     */
+    public function submitPendaftaran()
+    {
+        // 1. Validasi request method
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: " . base_url('rekrutment'));
+            exit;
+        }
+
+        // 2. Ambil data dari POST
+        $rekrutmen_id = $_POST['rekrutmen_id'] ?? null;
+        $nim = trim($_POST['nim'] ?? '');
+        $nama = trim($_POST['nama'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $no_hp = trim($_POST['no_hp'] ?? '');
+        $semester = $_POST['semester'] ?? null;
+        $ipk = $_POST['ipk'] ?? null;
+        $link_portfolio = trim($_POST['link_portfolio'] ?? '');
+        $link_github = trim($_POST['link_github'] ?? '');
+
+        // 3. Validasi input wajib
+        $errors = [];
+
+        if (empty($rekrutmen_id) || !is_numeric($rekrutmen_id)) {
+            $errors[] = "ID Rekrutmen tidak valid";
+        }
+
+        if (empty($nim)) {
+            $errors[] = "NIM wajib diisi";
+        }
+
+        if (empty($nama)) {
+            $errors[] = "Nama lengkap wajib diisi";
+        }
+
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Email tidak valid";
+        }
+
+        if (empty($semester) || !is_numeric($semester)) {
+            $errors[] = "Semester wajib dipilih";
+        }
+
+        // Validasi file CV (wajib)
+        if (!isset($_FILES['file_cv']) || $_FILES['file_cv']['error'] === UPLOAD_ERR_NO_FILE) {
+            $errors[] = "Curriculum Vitae (CV) wajib diupload";
+        }
+
+        // Jika ada error validasi, redirect kembali dengan pesan error
+        if (!empty($errors)) {
+            $_SESSION['error_message'] = implode('<br>', $errors);
+            header("Location: " . base_url('rekrutment/form/' . $rekrutmen_id));
+            exit;
+        }
+
+        // 4. Upload file CV
+        $uploadCV = FileUploadHelper::upload($_FILES['file_cv'], 'pdf', 'cv', 2 * 1024 * 1024);
+
+        if (!$uploadCV['success']) {
+            $_SESSION['error_message'] = "Gagal upload CV: " . $uploadCV['message'];
+            header("Location: " . base_url('rekrutment/form/' . $rekrutmen_id));
+            exit;
+        }
+
+        $file_cv = $uploadCV['filename'];
+
+        // 5. Upload file KHS (optional)
+        $file_khs = null;
+        if (isset($_FILES['file_khs']) && $_FILES['file_khs']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $uploadKHS = FileUploadHelper::upload($_FILES['file_khs'], 'pdf', 'khs', 2 * 1024 * 1024);
+
+            if ($uploadKHS['success']) {
+                $file_khs = $uploadKHS['filename'];
+            }
+            // Jika upload KHS gagal, abaikan karena optional
+        }
+
+        // 6. Siapkan data untuk insert
+        $pendaftarData = [
+            'rekrutmen_id' => $rekrutmen_id,
+            'nim' => $nim,
+            'nama' => $nama,
+            'email' => $email,
+            'no_hp' => $no_hp,
+            'semester' => $semester,
+            'ipk' => $ipk,
+            'link_portfolio' => $link_portfolio,
+            'link_github' => $link_github,
+            'file_cv' => $file_cv,
+            'file_khs' => $file_khs
+        ];
+
+        // 7. Insert ke database menggunakan stored procedure
+        $result = $this->recruitmentModel->insertPendaftar($pendaftarData);
+
+        if (!$result['success']) {
+            // Jika gagal, hapus file yang sudah diupload
+            FileUploadHelper::delete($file_cv, 'cv');
+            if ($file_khs) {
+                FileUploadHelper::delete($file_khs, 'khs');
+            }
+
+            $_SESSION['error_message'] = $result['message'];
+            header("Location: " . base_url('rekrutment/form/' . $rekrutmen_id));
+            exit;
+        }
+
+        // 8. Redirect ke halaman sukses
+        $_SESSION['success_message'] = $result['message'];
+        header("Location: " . base_url('rekrutment/sukses'));
+        exit;
+    }
 }

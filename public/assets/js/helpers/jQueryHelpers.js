@@ -18,7 +18,9 @@ const jQueryHelpers = {
    * @param {string} message - Pesan error yang akan ditampilkan
    */
   showError: function (fieldId, errorId, message) {
-    $(`#${fieldId}`).addClass("is-invalid");
+    if(fieldId || fieldId.length > 0) {
+      $(`#${fieldId}`).addClass("is-invalid");
+    }
     $(`#${errorId}`).text(message).show();
   },
 

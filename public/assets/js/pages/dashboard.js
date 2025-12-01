@@ -54,6 +54,7 @@
                             '#01B5B9',  // Primary - Riset
                             '#FFA500',  // Orange - Kekayaan Intelektual
                             '#10B981',  // Green - PPM
+                            '#ff7d10',  // Orange Light - Publikasi
                         ],
                         borderWidth: 0,
                         hoverOffset: 8

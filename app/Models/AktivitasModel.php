@@ -59,12 +59,32 @@ class AktivitasModel extends BaseModel
      * @param int $offset - Data dimulai dari baris ke berapa
      * @return array
      */
-    public function getAllWithPagination($limit = 10, $offset = 0)
+    public function getAllWithPagination($params = [])
     {
         try {
+
+            $search = $params['search'] ?? '';
+            $limit = $params['limit'] ?? 10;
+            $offset = $params['offset'] ?? 0;
+
+            $whereClauses = [];
+            $bindParams = [];
+
+            if (!empty($search)) {
+                $whereClauses[] = "(judul_aktivitas ILIKE :search)";
+                $bindParams[':search'] = "%{$search}%";
+            }
+
+            $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
+
             // Hitung total records
-            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name} {$whereSQL}";
             $countStmt = $this->db->prepare($countQuery);
+
+            foreach ($bindParams as $key => $value) {
+                $countStmt->bindValue($key, $value);
+            }
+
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
@@ -78,9 +98,16 @@ class AktivitasModel extends BaseModel
                         created_at,
                         updated_at
                     FROM {$this->table_name}
+                    {$whereSQL}
                     ORDER BY tanggal_kegiatan DESC, created_at DESC
                     LIMIT :limit OFFSET :offset";
             $stmt = $this->db->prepare($query);
+            
+            // Bind search params
+            foreach ($bindParams as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+
             $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();

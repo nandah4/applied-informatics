@@ -6,6 +6,7 @@ CREATE OR REPLACE PROCEDURE sp_insert_dosen(
     p_nidn VARCHAR,
     p_jabatan_id BIGINT,
     p_keahlian_ids BIGINT[],
+    p_status_aktif BOOLEAN,
     p_foto_profil VARCHAR DEFAULT NULL,
     p_deskripsi TEXT DEFAULT NULL
 )
@@ -27,8 +28,8 @@ BEGIN
     END IF;
 
     -- Insert data dosen
-    INSERT INTO mst_dosen (full_name, email, nidn, jabatan_id, foto_profil, deskripsi)
-    VALUES (p_full_name, p_email, p_nidn, p_jabatan_id, p_foto_profil, p_deskripsi)
+    INSERT INTO mst_dosen (full_name, email, nidn, jabatan_id, foto_profil, deskripsi, status_aktif)
+    VALUES (p_full_name, p_email, p_nidn, p_jabatan_id, p_foto_profil, p_deskripsi, p_status_aktif)
     RETURNING id INTO v_dosen_id;
 
     -- Insert keahlian menggunakan unnest ke many-to-many
@@ -39,9 +40,6 @@ BEGIN
 
 END;
 $$;
-
--- Komentar untuk dokumentasi
-COMMENT ON PROCEDURE sp_insert_dosen_with_keahlian IS 'Procedure untuk insert dosen beserta keahlian. Gunakan RAISE EXCEPTION untuk error handling.';
 
 
 --
@@ -56,6 +54,7 @@ CREATE OR REPLACE PROCEDURE sp_update_dosen(
     p_nidn VARCHAR,
     p_jabatan_id BIGINT,
     p_keahlian_ids BIGINT[],
+    p_status_aktif BOOLEAN,
     p_foto_profil VARCHAR DEFAULT NULL,
     p_deskripsi TEXT DEFAULT NULL
 )
@@ -90,6 +89,7 @@ BEGIN
         jabatan_id  = p_jabatan_id,
         foto_profil = p_foto_profil,
         deskripsi   = p_deskripsi,
+        status_aktif = p_status_aktif,
         updated_at = NOW()
     WHERE id = p_id
     RETURNING id INTO v_dosen_id;

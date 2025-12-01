@@ -133,15 +133,6 @@
                             <div class="helper-text" id="helper-text-preview">Klik preview untuk hapus logo mitra</div>
                             <div id="logoMitraError" class="invalid-feedback"></div>
                         </div>
-
-                        <!-- Deskripsi (Optional) -->
-                        <div class="col-12 mb-3">
-                            <label for="deskripsi" class="form-label">
-                                Deskripsi
-                            </label>
-                            <textarea class="form-control" id="deskripsi" name="deskripsi" placeholder="Masukkan deskripsi singkat tentang mitra"></textarea>
-                            <div class="helper-text">Deskripsikan profil dan kerjasama dengan mitra</div>
-                        </div>
                     </div>
 
                     <!-- Form Actions -->

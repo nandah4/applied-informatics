@@ -115,6 +115,8 @@
                                 $badgeClass = 'badge-success';
                             } elseif ($publikasi['tipe_publikasi'] === 'PPM') {
                                 $badgeClass = 'badge-warning';
+                            } elseif ($publikasi['tipe_publikasi'] === 'Publikasi') {
+                                $badgeClass = 'badge-secondary';
                             }
                             ?>
                             <span class="badge-custom <?= $badgeClass ?>"><?= htmlspecialchars($publikasi['tipe_publikasi']) ?></span>

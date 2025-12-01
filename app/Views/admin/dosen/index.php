@@ -17,6 +17,7 @@
     <!-- Sidebar & Layout CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/components/admin_layout.css') ?>">
 
     <!-- Data Dosen Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/dosen/index.css') ?>">
@@ -24,7 +25,7 @@
 
 <body>
     <div id="liveAlertPlaceholder"></div>
-    
+
     <!-- Sidebar -->
     <?php include __DIR__ . '/../../layouts/sidebar.php'; ?>
 
@@ -37,13 +38,6 @@
                     <h1 class="page-title">Data Dosen</h1>
                     <p class="page-subtitle">Kelola data dosen Laboratorium Applied Informatics</p>
                 </div>
-                <button class="btn-mobile-menu d-md-none" id="mobileMenuBtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                </button>
             </div>
         </div>
 
@@ -52,12 +46,33 @@
             <div class="card-header">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                     <!-- Search Bar -->
-                    <div class="search-wrapper">
-                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input type="text" class="search-input" placeholder="Cari nama, email, atau NIDN...">
+                    <div class="d-flex gap-2">
+                        <div class="search-wrapper">
+                            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input type="text"
+                                id="searchInput"
+                                class="search-input"
+                                placeholder="Cari nama, atau NIDN ..."
+                                value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+                            <?php if (!empty($_GET['search'])): ?>
+                                <button type="button" class="btn-clear-search" id="btnClearSearch" title="Hapus pencarian">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                        <button type="button" class="btn-search-custom" id="btnSearch">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            Cari
+                        </button>
                     </div>
 
                     <!-- Add Button -->
@@ -77,13 +92,13 @@
                     <thead>
                         <tr>
                             <th class="col-id">ID</th>
+                            <th class="col-status">Status</th>
                             <th class="col-photo">Foto</th>
                             <th class="col-name">Nama Lengkap</th>
                             <th class="col-email">Email</th>
                             <th class="col-nidn">NIDN</th>
                             <th class="col-jabatan">Jabatan</th>
                             <th class="col-keahlian">Keahlian</th>
-                            <th class="col-deskripsi">Deskripsi</th>
                             <th class="action-cell">Aksi</th>
                         </tr>
                     </thead>
@@ -101,6 +116,14 @@
                             <?php foreach ($listDosen as $dt): ?>
                                 <tr>
                                     <td class="col-id"><?= $dt['id'] ?></td>
+                                    <td class="col-status">
+
+                                        <?php if ($dt['status_aktif']): ?>
+                                            <span class="badge-success rounded-pill">Aktif</span>
+                                        <?php else: ?>
+                                            <span class="badge-warning rounded-pill">Tidak Aktif</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="col-photo">
                                         <?php if (!empty($dt['foto_profil'])): ?>
                                             <img src="<?= upload_url('dosen/' . $dt['foto_profil']) ?>" alt="Photo" class="photo-profile">
@@ -141,11 +164,7 @@
                                             </div>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="col-deskripsi">
-                                        <div class="text-truncate-2">
-                                            <?= !empty($dt['deskripsi']) ? htmlspecialchars($dt['deskripsi']) : '-' ?>
-                                        </div>
-                                    </td>
+
                                     <td class="action-cell">
                                         <div class="action-buttons">
                                             <a href="<?= base_url('admin/dosen/detail/' . $dt['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
@@ -175,7 +194,11 @@
             </div>
 
             <!-- Pagination -->
-            <?php if (isset($pagination) && $pagination['total_pages'] > 0) : ?>
+            <?php if (isset($pagination) && $pagination['total_pages'] > 0) :
+
+                $searchParam = !empty($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
+
+            ?>
                 <div class="pagination-wrapper">
                     <div class="pagination-info">
                         <span>Menampilkan

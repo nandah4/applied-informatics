@@ -1,189 +1,223 @@
 <!-- header -->
 <?php
 include __DIR__ . '/../layouts/header.php';
+
+// Helper function untuk format tanggal Indonesia
+function formatTanggalIndonesia($tanggal)
+{
+    if (empty($tanggal)) {
+        return '-';
+    }
+
+    $bulan = [
+        1 => 'Jan',
+        2 => 'Feb',
+        3 => 'Mar',
+        4 => 'Apr',
+        5 => 'Mei',
+        6 => 'Jun',
+        7 => 'Jul',
+        8 => 'Agu',
+        9 => 'Sep',
+        10 => 'Okt',
+        11 => 'Nov',
+        12 => 'Des'
+    ];
+
+    $timestamp = strtotime($tanggal);
+    $hari = date('d', $timestamp);
+    $bulanAngka = (int)date('m', $timestamp);
+    $tahun = date('Y', $timestamp);
+
+    return $hari . ' ' . $bulan[$bulanAngka] . ' ' . $tahun;
+}
 ?>
-<main class="p-5">
 
-    <div class="container-fluid">
 
-        <div class="halaman d-flex flex-row gap-4 mb-5">
-            <p>Rekrutment</p>
-            <p>></p>
-            <p class="halaman-ini">Rekrutment</p>
+<main class="rekrutmen-page">
+
+    <div class="container-fluid px-5 pb-5">
+
+        <div class="breadcrumb-nav">
+            <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-item active">Rekrutmen Laboratorium</span>
         </div>
 
-        <div class="mb-4">
-            <h1 class="judul mb-4">Rekrutmen Laboratorium</h1>
-            <p class="deskripsi">Bergabunglah dengan tim laboratorium kami dan kembangkan kemampuan Anda</p>
-        </div>
-
-        <hr class="mb-5">
-
-        <!-- Rekrutmen Terbuka -->
-        <div class="d-flex align-items-center gap-3 mb-4 text-success">
-            <i data-feather="calendar"></i>
-            <h2 class="mb-0 fs-4 fw-semibold">Rekrutmen Terbuka</h2>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-12 col-md-6">
-                <div class="card shadow-sm border-0 rounded-4 transition">
-                    <div class="card-body p-4">
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title fw-semibold mb-0">Asisten Peneliti - Machine Learning</h5>
-                            <span class="badge badge-open rounded-pill px-3 py-2 ms-2">Terbuka</span>
-                        </div>
-
-                        <!-- Description -->
-                        <div class="d-flex gap-2 mb-4">
-                            <i data-feather="file-text" class="text-secondary flex-shrink-0 mt-1"></i>
-                            <p class="text-secondary small mb-0">Kami mencari asisten peneliti untuk bergabung dengan
-                                tim Machine Learning Lab. Kandidat akan terlibat dalam penelitian deep learning,
-                                computer vision, dan natural language processing. Diutamakan mahasiswa semester 4 ke
-                                atas dengan IPK minimal 3.5.</p>
-                        </div>
-
-                        <!-- Dates -->
-                        <div class="d-flex align-items-center gap-2 mb-3 date-open">
-                            <i data-feather="calendar" style="width: 18px; height: 18px;"></i>
-                            <small><span class="fw-medium text-dark">Tanggal Buka:</span> 15 Januari 2024</small>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-2 mb-3 date-close">
-                            <i data-feather="calendar" style="width: 18px; height: 18px;"></i>
-                            <small><span class="fw-medium text-dark">Tanggal Tutup:</span> 15 Februari 2024</small>
-                        </div>
-
-                        <hr class="my-3">
-
-                        <!-- Meta Info -->
-                        <div class="d-flex align-items-center gap-2 mb-2 text-muted">
-                            <i data-feather="clock" style="width: 16px; height: 16px;"></i>
-                            <small>Dibuat: 10 Januari 2024</small>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-2 mb-3 text-muted">
-                            <i data-feather="edit-2" style="width: 16px; height: 16px;"></i>
-                            <small>Update terakhir: 12 Januari 2024</small>
-                        </div>
-
-                        <!-- Button -->
-                        <button class="btn btn-primary w-100 rounded-2 py-2 fw-medium mt-3">Daftar Sekarang</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="col-sm-12 col-md-6">
-                <div class="card shadow-sm border-0 rounded-4 transition">
-                    <div class="card-body p-4">
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title fw-semibold mb-0">Asisten Lab - Jaringan Komputer</h5>
-                            <span class="badge badge-open rounded-pill px-3 py-2 ms-2">Terbuka</span>
-                        </div>
-
-                        <!-- Description -->
-                        <div class="d-flex gap-2 mb-4">
-                            <i data-feather="file-text" class="text-secondary flex-shrink-0 mt-1"></i>
-                            <p class="text-secondary small mb-0">Membuka kesempatan untuk asisten laboratorium jaringan
-                                komputer. Tugas meliputi membantu praktikum, maintenance perangkat jaringan, dan
-                                dokumentasi. Memiliki pengalaman dengan Cisco, routing, dan switching menjadi nilai
-                                tambah.</p>
-                        </div>
-
-                        <!-- Dates -->
-                        <div class="d-flex align-items-center gap-2 mb-3 date-open">
-                            <i data-feather="calendar" style="width: 18px; height: 18px;"></i>
-                            <small><span class="fw-medium text-dark">Tanggal Buka:</span> 20 Januari 2024</small>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-2 mb-3 date-close">
-                            <i data-feather="calendar" style="width: 18px; height: 18px;"></i>
-                            <small><span class="fw-medium text-dark">Tanggal Tutup:</span> 20 Februari 2024</small>
-                        </div>
-
-                        <hr class="my-3">
-
-                        <!-- Meta Info -->
-                        <div class="d-flex align-items-center gap-2 mb-2 text-muted">
-                            <i data-feather="clock" style="width: 16px; height: 16px;"></i>
-                            <small>Dibuat: 15 Januari 2024</small>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-2 mb-3 text-muted">
-                            <i data-feather="edit-2" style="width: 16px; height: 16px;"></i>
-                            <small>Update terakhir: 18 Januari 2024</small>
-                        </div>
-
-                        <!-- Button -->
-                        <button class="btn btn-primary w-100 rounded-2 py-2 fw-medium mt-3">Daftar Sekarang</button>
-                    </div>
+        <!-- Header Section -->
+        <div class="header-section mb-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="title-section mb-3">Rekrutmen Laboratorium</h1>
+                    <p class="subtitle-section">Bergabunglah dengan tim laboratorium kami dan kembangkan kemampuan Anda dalam penelitian, inovasi, dan teknologi terkini.</p>
                 </div>
             </div>
         </div>
 
-        <!-- Rekrutmen ditutup -->
-        <div class="d-flex align-items-center gap-3 mb-4 text-secondary">
-            <i data-feather="calendar"></i>
-            <h2 class="mb-0 fs-4 fw-semibold">Rekrutmen Tertutup</h2>
+        <!-- Tabs Navigation -->
+        <div class="tabs-container mb-4">
+            <ul class="nav nav-tabs custom-tabs" id="rekrutmenTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="terbuka-tab" data-bs-toggle="tab"
+                        data-bs-target="#terbuka" type="button" role="tab">
+                        Rekrutmen Terbuka
+                        <span class="tab-badge badge-open"><?= count($recruitmentTerbuka) ?></span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tertutup-tab" data-bs-toggle="tab"
+                        data-bs-target="#tertutup" type="button" role="tab">
+                        Rekrutmen Tertutup
+                        <span class="tab-badge badge-closed"><?= count($recruitmentTertutup) ?></span>
+                    </button>
+                </li>
+            </ul>
         </div>
 
-        <div class="row">
-            <!-- Card 3 - Ditutup -->
-            <div class="col-sm-12 col-md-6">
-                <div class="card shadow-sm border-0 rounded-4 transition">
-                    <div class="card-body p-4">
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title fw-semibold mb-0">Asisten Praktikum - Basis Data</h5>
-                            <span class="badge badge-closed rounded-pill px-3 py-2 ms-2">Ditutup</span>
+        <!-- Tabs Content -->
+        <div class="tab-content" id="rekrutmenTabsContent">
+
+            <!-- Tab Terbuka -->
+            <div class="tab-pane fade show active" id="terbuka" role="tabpanel">
+                <div class="row g-4">
+
+                    <?php if (empty($recruitmentTerbuka)): ?>
+                        <!-- Empty State -->
+                        <div class="text-center py-5">
+                            <div class="mb-4 d-flex justify-content-center">
+                                <i data-feather="user-x" class="icon-something-not-found"></i>
+                            </div>
+                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Terbuka.</h5>
+                            <p class="text-secondary mb-0">Saat ini belum ada rekrutmen yang sedang dibuka. Silakan cek kembali nanti.</p>
                         </div>
+                    <?php else: ?>
+                        <?php foreach ($recruitmentTerbuka as $recruitment): ?>
+                            <!-- Card Recruitment Terbuka -->
+                            <div class="col-lg-6 col-xl-4">
+                                <div class="rekrutmen-card">
+                                    <div class="card-header-custom">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h3 class="card-title-custom"><?= htmlspecialchars($recruitment['judul']) ?></h3>
+                                            <span class="status-badge status-open">Terbuka</span>
+                                        </div>
+                                    </div>
 
-                        <!-- Description -->
-                        <div class="d-flex gap-2 mb-4">
-                            <i data-feather="file-text" class="text-secondary flex-shrink-0 mt-1"></i>
-                            <p class="text-secondary small mb-0">Dibutuhkan asisten praktikum untuk mata kuliah basis
-                                data. Bertanggung jawab membimbing mahasiswa dalam praktikum SQL, database design, dan
-                                normalisasi. Pengalaman dengan PostgreSQL atau MySQL diperlukan.</p>
-                        </div>
+                                    <div class="card-body-custom">
+                                        <p class="card-description">
+                                            <?= nl2br(htmlspecialchars($recruitment['deskripsi'])) ?>
+                                        </p>
 
-                        <!-- Dates -->
-                        <div class="d-flex align-items-center gap-2 mb-3 date-open">
-                            <i data-feather="calendar" style="width: 18px; height: 18px;"></i>
-                            <small><span class="fw-medium text-dark">Tanggal Buka:</span> 1 Desember 2023</small>
-                        </div>
+                                        <div class="card-meta">
+                                            <div class="meta-item date-open">
+                                                <i data-feather="calendar" class="icon-recruitment-detail"></i>
+                                                <span>Dibuka: <strong><?= formatTanggalIndonesia($recruitment['tanggal_buka']) ?></strong></span>
+                                            </div>
+                                            <div class="meta-item date-close">
+                                                <i data-feather="calendar" class="icon-recruitment-detail"></i>
+                                                <span>Ditutup: <strong><?= formatTanggalIndonesia($recruitment['tanggal_tutup']) ?></strong></span>
+                                            </div>
+                                            <?php if (!empty($recruitment['lokasi'])): ?>
+                                                <div class="meta-item">
+                                                    <i data-feather="map-pin" class="icon-recruitment-detail"></i>
+                                                    <span><strong><?= htmlspecialchars($recruitment['lokasi']) ?></strong></span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
 
-                        <div class="d-flex align-items-center gap-2 mb-3 date-close">
-                            <i data-feather="calendar" style="width: 18px; height: 18px;"></i>
-                            <small><span class="fw-medium text-dark">Tanggal Tutup:</span> 5 Januari 2024</small>
-                        </div>
+                                    <div class="card-footer-custom">
+                                        <a href="<?= base_url('rekrutment/form/' . $recruitment['id']) ?>" class="btn-apply">
+                                            <span>Daftar Sekarang</span>
+                                            <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
 
-                        <hr class="my-3">
-
-                        <!-- Meta Info -->
-                        <div class="d-flex align-items-center gap-2 mb-2 text-muted">
-                            <i data-feather="clock" style="width: 16px; height: 16px;"></i>
-                            <small>Dibuat: 25 November 2023</small>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-2 mb-3 text-muted">
-                            <i data-feather="edit-2" style="width: 16px; height: 16px;"></i>
-                            <small>Update terakhir: 5 Januari 2024</small>
-                        </div>
-
-                        <!-- Button -->
-                        <button class="btn btn-primary w-100 rounded-2 py-2 fw-medium mt-3">Daftar Sekarang</button>
-                    </div>
                 </div>
             </div>
+
+            <!-- Tab Tertutup -->
+            <div class="tab-pane fade" id="tertutup" role="tabpanel">
+                <div class="row g-4">
+
+                    <?php if (empty($recruitmentTertutup)): ?>
+                        <!-- Empty State -->
+                        <div class="text-center py-5">
+                            <div class="mb-4 d-flex justify-content-center">
+                                <i data-feather="user-x" class="icon-something-not-found"></i>
+                            </div>
+                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Tertutup.</h5>
+                            <p class="text-secondary mb-0">Belum ada riwayat rekrutmen yang ditutup.</p>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($recruitmentTertutup as $recruitment): ?>
+                            <!-- Card Recruitment Tertutup -->
+                            <div class="col-lg-6 col-xl-4">
+                                <div class="rekrutmen-card card-closed">
+                                    <div class="card-header-custom">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h3 class="card-title-custom"><?= htmlspecialchars($recruitment['judul']) ?></h3>
+                                            <span class="status-badge status-closed">Ditutup</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body-custom">
+                                        <p class="card-description">
+                                            <?= nl2br(htmlspecialchars($recruitment['deskripsi'])) ?>
+                                        </p>
+
+                                        <div class="card-meta">
+                                            <div class="meta-item">
+                                                <i data-feather="calendar" class="icon-recruitment-detail"></i>
+                                                <span>Dibuka: <strong><?= formatTanggalIndonesia($recruitment['tanggal_buka']) ?></strong></span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <i data-feather="calendar" class="icon-recruitment-detail"></i>
+                                                <span>Ditutup: <strong><?= formatTanggalIndonesia($recruitment['tanggal_tutup']) ?></strong></span>
+                                            </div>
+                                            <?php if (!empty($recruitment['lokasi'])): ?>
+                                                <div class="meta-item">
+                                                    <i data-feather="map-pin" class="icon-recruitment-detail"></i>
+                                                    <span><strong><?= htmlspecialchars($recruitment['lokasi']) ?></strong></span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer-custom">
+                                        <button class="btn-apply" disabled>
+                                            <i class="fas fa-lock me-2"></i>
+                                            <span>Rekrutmen Ditutup</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+
+                </div>
+            </div>
+
         </div>
+
     </div>
-
-    <link rel="stylesheet" href="<?= asset_url('css/pages/rekrutment-user/rekrutment.css') ?>">
-
 </main>
+
+
+<link rel="stylesheet" href="<?= asset_url('css/pages/rekrutment-user/rekrutment.css') ?>">
+
+<!-- Feather Icons -->
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<script>
+    // Initialize Feather Icons
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+</script>
+
 <!-- Footer -->
 <?php
 include __DIR__ . '/../layouts/footer.php';

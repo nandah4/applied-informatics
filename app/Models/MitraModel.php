@@ -59,7 +59,6 @@ class MitraModel extends BaseModel
                         m.id,
                         m.nama,          
                         m.status,        
-                        m.deskripsi,
                         m.logo_mitra,
                         m.kategori,
                         m.tanggal_mulai,
@@ -104,7 +103,6 @@ class MitraModel extends BaseModel
                         m.id,
                         m.nama,          
                         m.status,        
-                        m.deskripsi,
                         m.logo_mitra,
                         m.kategori,
                         m.tanggal_mulai,
@@ -145,7 +143,7 @@ class MitraModel extends BaseModel
     public function insert($data)
     {
         try {
-            $query = "CALL sp_insert_mitra (:nama, :status, :kategori_mitra, :logo_mitra, :tanggal_mulai, :tanggal_akhir, :deskripsi)";
+            $query = "CALL sp_insert_mitra (:nama, :status, :kategori_mitra, :logo_mitra, :tanggal_mulai, :tanggal_akhir)";
             $stmt = $this->db->prepare($query);
 
             $stmt->bindParam(':nama', $data['nama']);
@@ -154,7 +152,6 @@ class MitraModel extends BaseModel
             $stmt->bindParam(':logo_mitra', $data['logo_mitra']);
             $stmt->bindParam(':tanggal_mulai', $data['tanggal_mulai']);
             $stmt->bindParam(':tanggal_akhir', $data['tanggal_akhir']);
-            $stmt->bindParam(':deskripsi', $data['deskripsi']);
 
             $stmt->execute();
 
@@ -189,7 +186,7 @@ class MitraModel extends BaseModel
     public function update($id, $data)
     {
         try {
-            $query = "CALL sp_update_mitra (:id, :nama, :status, :kategori_mitra, :logo_mitra, :tanggal_mulai, :tanggal_akhir, :deskripsi)";
+            $query = "CALL sp_update_mitra (:id, :nama, :status, :kategori_mitra, :logo_mitra, :tanggal_mulai, :tanggal_akhir)";
             $stmt = $this->db->prepare($query);
 
 
@@ -200,7 +197,6 @@ class MitraModel extends BaseModel
             $stmt->bindParam(':logo_mitra', $data['logo_mitra']);
             $stmt->bindParam(':tanggal_mulai', $data['tanggal_mulai']);
             $stmt->bindParam(':tanggal_akhir', $data['tanggal_akhir']);
-            $stmt->bindParam(':deskripsi', $data['deskripsi']);
 
             $stmt->execute();
 

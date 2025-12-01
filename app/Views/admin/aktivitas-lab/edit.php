@@ -13,6 +13,9 @@
     <!-- Base CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
+    <!-- Rich Text Editor -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
     <!-- Sidebar & Layout CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
@@ -111,11 +114,14 @@
                         </div>
 
                         <!-- Deskripsi -->
-                        <div class="col-12 mb-3">
+                        <div class="col-12 mb-deskripsi">
                             <label for="deskripsi" class="form-label">
                                 Deskripsi Aktivitas <span class="required">*</span>
                             </label>
-                            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi aktivitas" required><?= htmlspecialchars($aktivitas['deskripsi']) ?></textarea>
+                            <!-- Create the editor container -->
+                            <div id="editor-deskripsi">
+                                <?= $aktivitas['deskripsi'] ?>
+                            </div>
                             <div class="helper-text">Jelaskan detail aktivitas, tujuan, dan hasil yang dicapai</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
@@ -150,6 +156,62 @@
 
     <!-- Feather Icons -->
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <!-- Rich Text Editor -->
+    <!-- Include the Quill library -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script>
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{
+                'list': 'ordered'
+            }, {
+                'list': 'bullet'
+            }, {
+                'list': 'check'
+            }],
+            // [{
+            //     'script': 'sub'
+            // }, {
+            //     'script': 'super'
+            // }], // superscript/subscript
+            // [{
+            //     'indent': '-1'
+            // }, {
+            //     'indent': '+1'
+            // }], // outdent/indent
+            // [{
+            //     'direction': 'rtl'
+            // }], // text direction
+
+            [{
+                'size': ['small', false, 'large']
+            }], // custom dropdown
+            [{
+                'header': [3, 4, false]
+            }],
+
+            // [{
+            //     'color': []
+            // }, {
+            //     'background': []
+            // }], // dropdown with defaults from theme
+            // [{
+            //     'font': []
+            // }],
+            [{
+                'align': []
+            }],
+
+            // ['clean'] // remove formatting button
+        ];
+        const quill = new Quill('#editor-deskripsi', {
+            theme: 'snow',
+            modules: {
+                toolbar: toolbarOptions
+            },
+        });
+    </script>
 
     <!-- Sidebar JS -->
     <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>

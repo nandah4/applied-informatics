@@ -104,12 +104,12 @@ const validationHelpers = {
         }
 
         // Validasi panjang maksimal
-        if (trimmedUrl.length > 255) {
-            return {
-                valid: false,
-                message: 'URL maksimal 255 karakter'
-            };
-        }
+        // if (trimmedUrl.length > 255) {
+        //     return {
+        //         valid: false,
+        //         message: 'URL maksimal 255 karakter'
+        //     };
+        // }
 
         return {
             valid: true,
@@ -301,7 +301,7 @@ const validationHelpers = {
      * @param {boolean} required - Apakah wajib diisi (default: false)
      * @returns {Object} - {valid: boolean, message: string}
      */
-    validateText: function(text, maxLength = 5000, required = false) {
+    validateText: function(text, maxLength = 5000, required = false, fieldName = "Text") {
         // Jika tidak wajib dan kosong, anggap valid
         if (!required && (!text || text.trim().length === 0)) {
             return {
@@ -314,7 +314,7 @@ const validationHelpers = {
         if (required && (!text || text.trim().length === 0)) {
             return {
                 valid: false,
-                message: 'Text wajib diisi'
+                message: `${fieldName} wajib diis`
             };
         }
 
@@ -322,7 +322,7 @@ const validationHelpers = {
         if (text.length > maxLength) {
             return {
                 valid: false,
-                message: `Text maksimal ${maxLength} karakter`
+                message: `${fieldName} maksimal ${maxLength} karakter`
             };
         }
 

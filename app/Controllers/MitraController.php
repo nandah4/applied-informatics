@@ -92,7 +92,6 @@ class MitraController
         $kategori_mitra = $_POST['kategori_mitra'] ?? 'industri';
         $tanggal_mulai = $_POST['tanggal_mulai'];
         $tanggal_akhir = $_POST['tanggal_akhir'] ?? null;
-        $deskripsi = $_POST['deskripsi'] ?? '';
 
         // 2A. Validasi status
         $allowedStatus = ['aktif', 'non-aktif'];
@@ -135,7 +134,6 @@ class MitraController
             'logo_mitra' => $logoFileName,
             'tanggal_mulai' => $tanggal_mulai,
             'tanggal_akhir' => $tanggal_akhir,
-            'deskripsi' => $deskripsi
         ];
 
         // 6. Insert ke database
@@ -229,7 +227,6 @@ class MitraController
         $kategori_mitra = $_POST['kategori_mitra'] ?? 'industri';
         $tanggal_mulai = $_POST['tanggal_mulai'] ?? '';
         $tanggal_akhir = $_POST['tanggal_akhir'] ?? null;
-        $deskripsi = $_POST['deskripsi'] ?? '';
 
         // 3. Validasi ID (harus numeric)
         if (!$id || !is_numeric($id)) {
@@ -292,7 +289,6 @@ class MitraController
             'logo_mitra' => $logoFileName,
             'tanggal_mulai' => $tanggal_mulai,
             'tanggal_akhir' => $tanggal_akhir,
-            'deskripsi' => $deskripsi
         ];
 
         // 8. Update ke database

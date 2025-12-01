@@ -1,6 +1,6 @@
 # 🧪 Applied Informatics Laboratory - CMS & Website Profile
 
-> Website profil dan Content Management System (CMS) untuk Laboratorium Applied Informatics - Universitas Teknokrat Indonesia
+> Website profil dan Content Management System (CMS) untuk Laboratorium Applied Informatics - Jurusan Teknologi Informasi, Politeknik Negeri Malang
 
 [![PHP Version](https://img.shields.io/badge/PHP-8.0%2B-blue)](https://www.php.net/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-blue)](https://www.postgresql.org/)
@@ -35,13 +35,39 @@
 Website ini adalah sistem manajemen konten (CMS) untuk Laboratorium Applied Informatics yang memiliki fitur:
 
 ### ✨ Fitur Utama
-- 🔐 **Authentication System** - Login & logout untuk admin
-- 👥 **Manajemen Anggota** - CRUD Dosen & Mahasiswa
-- 🏢 **Konten Laboratorium** - Kelola Fasilitas, Produk, Mitra Kerjasama
-- 📊 **Manajemen Aktivitas** - Publikasi, Penelitian, Pengabdian, Kekayaan Intelektual
-- 📁 **File Upload** - Upload & manage foto profil, gambar fasilitas, dll
-- 🎨 **Responsive UI** - Bootstrap 5 dengan custom design
-- ⚡ **AJAX Operations** - Seamless user experience tanpa reload
+
+#### 🔐 Authentication & Security
+- **Login System** - Secure authentication untuk admin
+- **Session Timeout Management** - Idle timeout, absolute timeout, dan session regeneration
+- **CSRF Protection** - Token-based CSRF validation
+- **Role-Based Access Control** - Admin dan guest roles
+
+#### 👥 Manajemen Data Master
+- **Dosen Management** - CRUD lengkap dengan foto profil, jabatan, keahlian, dan status aktif
+- **Asisten Lab** - Kelola data mahasiswa asisten laboratorium
+- **Jabatan & Keahlian** - Master data untuk referensi
+
+#### 🎓 Recruitment System
+- **Buka/Tutup Rekrutmen** - Kelola periode rekrutmen asisten lab
+- **Formulir Pendaftaran** - Form pendaftaran online untuk calon asisten
+- **Manajemen Pendaftar** - Review, terima, atau tolak pendaftar
+- **Server-Side Search & Pagination** - Pencarian dan pagination efisien
+
+#### 🏢 Konten Laboratorium
+- **Fasilitas** - Kelola fasilitas laboratorium dengan foto
+- **Produk** - Showcase produk/project mahasiswa
+- **Mitra Kerjasama** - Kelola partnership dengan industri/institusi
+- **Aktivitas Lab** - Dokumentasi kegiatan laboratorium
+
+#### 📊 Publikasi & Riset
+- **Publikasi Akademik** - Riset, Kekayaan Intelektual, PPM
+- **Profil Publikasi Dosen** - Link ke SINTA, SCOPUS, Google Scholar, ORCID, ResearchGate
+
+#### 🎨 User Experience
+- **Responsive UI** - Bootstrap 5 dengan custom design
+- **AJAX Operations** - Seamless UX tanpa reload halaman
+- **File Upload System** - Upload foto dengan validasi
+- **Modern Dashboard** - Statistik dan overview data
 
 ---
 
@@ -62,9 +88,11 @@ Website ini adalah sistem manajemen konten (CMS) untuk Laboratorium Applied Info
 - **Feather Icons** - Icon library
 
 ### Tools & Libraries
-- **phpdotenv** - Environment configuration management
+- **phpdotenv (^5.6)** - Environment configuration management
+- **PHPMailer (^7.0)** - Email sending library
 - **Custom MVC** - Lightweight PHP MVC framework
 - **Clean URL Routing** - SEO-friendly URLs
+- **Stored Procedures** - PostgreSQL stored procedures untuk operasi kompleks
 
 ---
 
@@ -75,41 +103,69 @@ applied-informatics/
 │
 ├── 📂 app/                          # Application core
 │   ├── 📂 Controllers/              # Business logic controllers
-│   │   ├── AuthController.php       # Authentication logic
-│   │   └── DosenController.php      # Dosen CRUD operations
+│   │   ├── AuthController.php       # Authentication & logout
+│   │   ├── DosenController.php      # Dosen CRUD operations
+│   │   ├── RecruitmentController.php # Recruitment management
+│   │   ├── PendaftarController.php  # Applicant management
+│   │   ├── AsistenLabController.php # Lab assistant management
+│   │   ├── AktivitasController.php  # Lab activities
+│   │   ├── FasilitasController.php  # Facilities management
+│   │   ├── MitraController.php      # Partnership management
+│   │   ├── ProdukController.php     # Product management
+│   │   ├── PublikasiAkademikController.php # Academic publications
+│   │   ├── JabatanController.php    # Position/title management
+│   │   └── KeahlianController.php   # Expertise management
 │   │
 │   ├── 📂 Models/                   # Database models
-│   │   ├── AuthModel.php            # User authentication model
-│   │   ├── DosenModel.php           # Dosen data model
-│   │   ├── JabatanModel.php         # Jabatan data model
-│   │   └── KeahlianModel.php        # Keahlian data model
+│   │   ├── AuthModel.php            # User authentication
+│   │   ├── DosenModel.php           # Dosen data operations
+│   │   ├── RecruitmentModel.php     # Recruitment data
+│   │   ├── PendaftarModel.php       # Applicant data
+│   │   ├── AsistenLabModel.php      # Lab assistant data
+│   │   ├── DashboardModel.php       # Dashboard statistics
+│   │   ├── AktivitasModel.php       # Lab activities
+│   │   ├── FasilitasModel.php       # Facilities
+│   │   ├── MitraModel.php           # Partners
+│   │   ├── ProdukModel.php          # Products
+│   │   ├── PublikasiAkademikModel.php # Publications
+│   │   ├── ProfilPublikasiModel.php # Publication profiles
+│   │   ├── JabatanModel.php         # Positions/titles
+│   │   └── KeahlianModel.php        # Expertise areas
 │   │
 │   ├── 📂 Views/                    # View templates (HTML/PHP)
 │   │   ├── 📂 admin/                # Admin pages
-│   │   │   └── 📂 dosen/            # Dosen management views
-│   │   │       ├── index.php        # List dosen
-│   │   │       ├── create.php       # Create dosen form
-│   │   │       ├── edit.php         # Edit dosen form
-│   │   │       └── read.php         # Detail dosen
+│   │   │   ├── 📂 dosen/            # Dosen management views
+│   │   │   ├── 📂 recruitment/      # Recruitment views
+│   │   │   ├── 📂 pendaftar/        # Applicant views
+│   │   │   ├── 📂 asisten-lab/      # Lab assistant views
+│   │   │   ├── 📂 aktivitas-lab/    # Activities views
+│   │   │   ├── 📂 fasilitas/        # Facilities views
+│   │   │   ├── 📂 mitra/            # Partners views
+│   │   │   ├── 📂 produk/           # Products views
+│   │   │   └── 📂 publikasi/        # Publications views
 │   │   ├── 📂 auth/                 # Authentication views
-│   │   │   └── login.php            # Login page
-│   │   ├── 📂 home/                 # Public pages
-│   │   │   └── index.php            # Homepage
+│   │   │   └── login.php            # Login page with timeout messages
+│   │   ├── 📂 client/               # Public client pages
+│   │   │   └── recruitment.php      # Public recruitment form
 │   │   └── 📂 layouts/              # Reusable layouts
-│   │       └── sidebar.php          # Admin sidebar
+│   │       └── sidebar.php          # Admin sidebar navigation
 │   │
 │   ├── 📂 Helpers/                  # Helper functions
+│   │   ├── SessionHelper.php        # Session timeout management (NEW)
+│   │   ├── CsrfHelper.php           # CSRF token management
 │   │   ├── FileUploadHelper.php     # File upload utilities
 │   │   ├── PaginationHelper.php     # Pagination logic
 │   │   ├── ResponseHelper.php       # JSON response formatter
 │   │   ├── ValidationHelper.php     # Input validation
-│   │   └── validation.php           # Additional validators
+│   │   ├── EmailHelper.php          # Email sending
+│   │   └── date_helper.php          # Date utilities
 │   │
 │   ├── 📂 Middleware/               # Middleware components
-│   │   └── AuthMiddleware.php       # Authentication checker
+│   │   └── AuthMiddleware.php       # Auth + session timeout checker
 │   │
 │   └── 📂 Core/                     # Core framework files
 │       ├── Database.php             # Database connection
+│       ├── BaseModel.php            # Base model class
 │       └── Router.php               # URL routing handler
 │
 ├── 📂 config/                       # Configuration files
@@ -245,59 +301,162 @@ psql -U postgres -d db_lab_ai
 -- Atau copy-paste SQL dari file schema
 ```
 
-### 4. Create Tables
-**Contoh tabel yang diperlukan:**
+### 4. Database Schema Overview
 
+Database menggunakan **naming convention** dengan prefix:
+- **sys_** - System tables (authentication, users)
+- **ref_** - Reference/lookup tables
+- **mst_** - Master data tables
+- **trx_** - Transaction/activity tables
+- **map_** - Many-to-many mapping tables
+
+**Tabel-tabel utama:**
+
+#### System Tables (sys_)
 ```sql
--- Tabel Admin
-CREATE TABLE tbl_admin (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
+-- sys_users: User authentication
+CREATE TABLE sys_users (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    full_name VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tabel Jabatan
-CREATE TABLE tbl_jabatan (
-    id SERIAL PRIMARY KEY,
-    jabatan VARCHAR(255) NOT NULL
-);
-
--- Tabel Keahlian
-CREATE TABLE tbl_keahlian (
-    id SERIAL PRIMARY KEY,
-    keahlian VARCHAR(255) NOT NULL
-);
-
--- Tabel Dosen
-CREATE TABLE tbl_dosen (
-    id SERIAL PRIMARY KEY,
-    full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    nidn VARCHAR(20) UNIQUE,
-    jabatan_id INT REFERENCES tbl_jabatan(id),
-    foto_profil VARCHAR(255),
-    deskripsi TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Junction table: Dosen - Keahlian (Many-to-Many)
-CREATE TABLE tbl_dosen_keahlian (
-    id SERIAL PRIMARY KEY,
-    dosen_id INT REFERENCES tbl_dosen(id) ON DELETE CASCADE,
-    keahlian_id INT REFERENCES tbl_keahlian(id) ON DELETE CASCADE
+    role user_role_enum NOT NULL DEFAULT 'guest', -- 'guest' or 'admin'
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 ```
 
-### 5. Import Stored Procedures
+#### Reference Tables (ref_)
+```sql
+-- ref_jabatan: Positions/titles
+CREATE TABLE ref_jabatan (
+    id BIGSERIAL PRIMARY KEY,
+    nama_jabatan VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- ref_keahlian: Expertise areas
+CREATE TABLE ref_keahlian (
+    id BIGSERIAL PRIMARY KEY,
+    nama_keahlian VARCHAR(255) UNIQUE NOT NULL
+);
+```
+
+#### Master Tables (mst_)
+```sql
+-- mst_dosen: Lecturers/professors
+CREATE TABLE mst_dosen (
+    id BIGSERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    nidn VARCHAR(50) UNIQUE,
+    foto_profil VARCHAR(255),
+    deskripsi TEXT,
+    status_aktif BOOLEAN DEFAULT TRUE,
+    jabatan_id BIGINT REFERENCES ref_jabatan(id),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- mst_mahasiswa: Lab assistants
+CREATE TABLE mst_mahasiswa (
+    id BIGSERIAL PRIMARY KEY,
+    nim VARCHAR(20) UNIQUE NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    nama VARCHAR(150) NOT NULL,
+    no_hp VARCHAR(20),
+    jabatan_lab VARCHAR(100) DEFAULT 'Asisten Lab',
+    semester INT NOT NULL,
+    link_github VARCHAR(255),
+    status_aktif BOOLEAN DEFAULT TRUE,
+    tanggal_gabung DATE DEFAULT CURRENT_DATE,
+    asal_pendaftar_id BIGINT REFERENCES trx_pendaftar(id),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+```
+
+#### Transaction Tables (trx_)
+```sql
+-- trx_rekrutmen: Recruitment periods
+CREATE TABLE trx_rekrutmen (
+    id BIGSERIAL PRIMARY KEY,
+    judul VARCHAR(255) NOT NULL,
+    deskripsi TEXT NOT NULL,
+    status rekrutmen_status_enum NOT NULL DEFAULT 'tutup', -- 'buka' or 'tutup'
+    tanggal_buka DATE,
+    tanggal_tutup DATE,
+    lokasi VARCHAR(255),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- trx_pendaftar: Applicants
+CREATE TABLE trx_pendaftar (
+    id BIGSERIAL PRIMARY KEY,
+    rekrutmen_id BIGINT NOT NULL REFERENCES trx_rekrutmen(id),
+    nim VARCHAR(20) NOT NULL,
+    nama VARCHAR(150) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    no_hp VARCHAR(20),
+    semester INT NOT NULL,
+    ipk DECIMAL(3,2),
+    link_portfolio VARCHAR(255),
+    link_github VARCHAR(255),
+    file_cv VARCHAR(255) NOT NULL,
+    file_khs VARCHAR(255),
+    status_seleksi seleksi_status_enum NOT NULL DEFAULT 'Pending', -- 'Pending', 'Diterima', 'Ditolak'
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+```
+
+#### Mapping Tables (map_)
+```sql
+-- map_dosen_keahlian: Dosen-Keahlian many-to-many
+CREATE TABLE map_dosen_keahlian (
+    dosen_id BIGINT REFERENCES mst_dosen(id) ON DELETE CASCADE,
+    keahlian_id BIGINT REFERENCES ref_keahlian(id) ON DELETE CASCADE,
+    PRIMARY KEY (dosen_id, keahlian_id)
+);
+```
+
+**Import Schema Lengkap:**
+```bash
+psql -U postgres -d db_lab_ai -f database/schema.sql
+```
+
+### 5. Import Stored Procedures & Views
+
+**Stored Procedures:**
 ```bash
 # Navigate to procedures folder
 cd database/procedures/
 
-# Import each procedure
-psql -U postgres -d db_lab_ai -f sp_insert_dosen_with_keahlian.sql
+# Import procedures
+psql -U postgres -d db_lab_ai -f sp_dosen.sql
+psql -U postgres -d db_lab_ai -f sp_recruitment.sql
+psql -U postgres -d db_lab_ai -f sp_aktivitas_lab.sql
+psql -U postgres -d db_lab_ai -f sp_fasilitas.sql
+psql -U postgres -d db_lab_ai -f sp_mitra.sql
+psql -U postgres -d db_lab_ai -f sp_produk.sql
+psql -U postgres -d db_lab_ai -f sp_publikasi_akademik.sql
 ```
+
+**Database Views:**
+```bash
+# Import views for data presentation
+cd database/views/
+
+psql -U postgres -d db_lab_ai -f vw_show_dosen.sql
+psql -U postgres -d db_lab_ai -f vw_show_recruitment.sql
+psql -U postgres -d db_lab_ai -f vw_show_publikasi_akademik.sql
+psql -U postgres -d db_lab_ai -f vw_show_produk.sql
+psql -U postgres -d db_lab_ai -f vw_dashboard.sql
+```
+
+**Key Stored Procedures:**
+- `sp_insert_dosen()` - Insert dosen dengan keahlian (many-to-many)
+- `sp_update_dosen()` - Update dosen dengan keahlian
+- `sp_insert_recruitment()` - Insert recruitment period
+- `sp_update_recruitment()` - Update recruitment period
 
 ---
 
@@ -549,7 +708,78 @@ $pagination = PaginationHelper::paginate($totalRecords, $currentPage, $perPage);
 // ]
 ```
 
-### 5. **Helper Functions** - Global Utilities
+### 5. **SessionHelper** - Session Timeout Management
+
+**File:** `app/Helpers/SessionHelper.php`
+
+```php
+// Initialize session timestamps (saat login)
+SessionHelper::initSessionTimestamps();
+
+// Update last activity
+SessionHelper::updateLastActivity();
+
+// Check if session expired
+$check = SessionHelper::isSessionExpired();
+if ($check['expired']) {
+    echo $check['reason']; // 'idle' or 'absolute'
+}
+
+// Regenerate session ID periodically
+SessionHelper::regenerateSessionIfNeeded();
+
+// Destroy session completely
+SessionHelper::destroySession();
+```
+
+**Session Timeout Configuration:**
+File: `config/app.php`
+```php
+define('SESSION_IDLE_TIMEOUT', 30 * 60);      // 30 minutes
+define('SESSION_ABSOLUTE_TIMEOUT', 8 * 60 * 60); // 8 hours
+define('SESSION_REGENERATION_INTERVAL', 15 * 60); // 15 minutes
+```
+
+**Cara Kerja:**
+- **Idle Timeout**: Session expired setelah 30 menit tidak ada aktivitas
+- **Absolute Timeout**: Session expired setelah 8 jam sejak login (maksimal)
+- **Session Regeneration**: Session ID diregen setiap 15 menit (mencegah session fixation)
+
+### 6. **CsrfHelper** - CSRF Protection
+
+**File:** `app/Helpers/CsrfHelper.php`
+
+```php
+// Generate CSRF token (di form)
+$token = CsrfHelper::generateToken();
+
+// Validate CSRF token (di controller)
+if (!CsrfHelper::validateToken($csrfToken)) {
+    ResponseHelper::error('Invalid CSRF token');
+}
+
+// Regenerate token (setelah operasi sukses)
+CsrfHelper::regenerateToken();
+```
+
+### 7. **EmailHelper** - Email Sending
+
+**File:** `app/Helpers/EmailHelper.php`
+
+```php
+// Send email via PHPMailer
+$result = EmailHelper::send(
+    'user@example.com',      // To
+    'Welcome',               // Subject
+    '<h1>Welcome!</h1>'     // HTML Body
+);
+
+if ($result['success']) {
+    echo 'Email sent!';
+}
+```
+
+### 8. **Helper Functions** - Global Utilities
 
 **File:** `config/app.php`
 
@@ -618,26 +848,60 @@ public/assets/
 
 ## 🔐 Authentication & Middleware
 
-### Authentication Flow
+### Authentication Flow (Updated with Session Timeout)
 ```
 1. User akses protected page (e.g., /dashboard)
    ↓
 2. Router check middleware (AuthMiddleware::class)
    ↓
-3. Middleware check $_SESSION['user_id']
+3. Middleware checks:
+   - Apakah user logged in? ($_SESSION['user_id'])
+   - Apakah role = admin? ($_SESSION['role'])
+   - Apakah session expired? (idle/absolute timeout)
    ↓
-4a. If logged in → Allow access
+4a. If valid → Update last activity & regenerate session (if needed) → Allow access
 4b. If not logged in → Redirect to /login
+4c. If session expired → Destroy session → Redirect to /login with timeout message
+4d. If not admin → Show 403 error
 ```
 
-### AuthMiddleware
+### AuthMiddleware (with Session Timeout)
 
 **File:** `app/Middleware/AuthMiddleware.php`
 
 ```php
+use App\Helpers\SessionHelper;
+
 class AuthMiddleware {
-    public static function handle() {
-        session_start();
+    public function handle() {
+        // 1. Check if user logged in
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . base_url('/'));
+            exit;
+        }
+
+        // 2. Check admin role
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            echo '<h1>403 - Akses Ditolak</h1>';
+            exit;
+        }
+
+        // 3. Check session timeout
+        $timeoutCheck = SessionHelper::isSessionExpired();
+        if ($timeoutCheck['expired']) {
+            SessionHelper::destroySession();
+            session_start();
+            $_SESSION['timeout_reason'] = $timeoutCheck['reason'];
+            $_SESSION['timeout_message'] = $this->getTimeoutMessage($timeoutCheck);
+            header('Location: ' . base_url('/'));
+            exit;
+        }
+
+        // 4. Update last activity
+        SessionHelper::updateLastActivity();
+
+        // 5. Regenerate session ID periodically (anti session fixation)
+        SessionHelper::regenerateSessionIfNeeded();
 
         if (!isset($_SESSION['user_id'])) {
             header('Location: ' . base_url('login'));
@@ -1117,8 +1381,10 @@ Body (multipart/form-data):
 - nidn: string
 - jabatan_id: integer
 - keahlian_ids: string (comma-separated)
+- status_aktif: integer (1=aktif, 0=tidak aktif)
 - foto_profil: file
 - deskripsi: text
+- csrf_token: string
 
 Response:
 {
@@ -1198,6 +1464,202 @@ Response:
 }
 ```
 
+### Recruitment Management
+
+#### Get All Recruitment
+```
+GET /applied-informatics/admin/recruitment?page=1&per_page=10
+
+Response:
+{
+    "success": true,
+    "data": [...],
+    "pagination": {...}
+}
+```
+
+#### Create Recruitment
+```
+POST /applied-informatics/admin/recruitment/create
+
+Body:
+- judul: string
+- deskripsi: text
+- status: enum ('buka', 'tutup')
+- tanggal_buka: date
+- tanggal_tutup: date
+- lokasi: string
+- csrf_token: string
+
+Response:
+{
+    "success": true,
+    "message": "Rekrutmen berhasil dibuat"
+}
+```
+
+#### Update Recruitment Status
+```
+POST /applied-informatics/admin/recruitment/update-status/{id}
+
+Body:
+- status: enum ('buka', 'tutup')
+
+Response:
+{
+    "success": true,
+    "message": "Status rekrutmen berhasil diubah"
+}
+```
+
+### Pendaftar Management (Applicants)
+
+#### Get All Pendaftar with Server-Side Search & Pagination
+```
+GET /applied-informatics/admin/pendaftar/get-all?page=1&per_page=10&search=john
+
+Response:
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "nim": "12345678",
+            "nama": "John Doe",
+            "email": "john@example.com",
+            "semester": 5,
+            "ipk": "3.75",
+            "status_seleksi": "Pending",
+            "created_at": "2024-11-29 10:00:00"
+        }
+    ],
+    "pagination": {
+        "total": 50,
+        "per_page": 10,
+        "current_page": 1,
+        "last_page": 5
+    }
+}
+```
+
+#### Accept Applicant
+```
+POST /applied-informatics/admin/pendaftar/terima/{id}
+
+Response:
+{
+    "success": true,
+    "message": "Pendaftar berhasil diterima dan dipindahkan ke asisten lab"
+}
+```
+
+#### Reject Applicant
+```
+POST /applied-informatics/admin/pendaftar/tolak/{id}
+
+Response:
+{
+    "success": true,
+    "message": "Pendaftar berhasil ditolak"
+}
+```
+
+#### Delete Applicant
+```
+POST /applied-informatics/admin/pendaftar/delete/{id}
+
+Response:
+{
+    "success": true,
+    "message": "Data pendaftar berhasil dihapus"
+}
+```
+
+### Asisten Lab Management (Lab Assistants)
+
+#### Get All Asisten Lab with Server-Side Search & Pagination
+```
+GET /applied-informatics/admin/asisten-lab/get-all?page=1&per_page=10&search=jane
+
+Response:
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "nim": "12345678",
+            "nama": "Jane Doe",
+            "email": "jane@example.com",
+            "semester": 6,
+            "jabatan_lab": "Asisten Lab",
+            "status_aktif": true,
+            "tanggal_gabung": "2024-01-15"
+        }
+    ],
+    "total": 25
+}
+```
+
+#### Update Asisten Lab
+```
+POST /applied-informatics/admin/asisten-lab/update/{id}
+
+Body:
+- nim: string
+- nama: string
+- email: string
+- no_hp: string
+- semester: integer
+- jabatan_lab: string
+- link_github: string
+- status_aktif: boolean
+- csrf_token: string
+
+Response:
+{
+    "success": true,
+    "message": "Data asisten lab berhasil diupdate"
+}
+```
+
+#### Delete Asisten Lab
+```
+POST /applied-informatics/admin/asisten-lab/delete/{id}
+
+Response:
+{
+    "success": true,
+    "message": "Data asisten lab berhasil dihapus"
+}
+```
+
+### Client/Public Endpoints
+
+#### Submit Recruitment Application (Public)
+```
+POST /applied-informatics/recruitment/submit
+
+Body (multipart/form-data):
+- rekrutmen_id: integer
+- nim: string
+- nama: string
+- email: string
+- no_hp: string
+- semester: integer
+- ipk: decimal
+- link_portfolio: string (optional)
+- link_github: string (optional)
+- file_cv: file (PDF, max 2MB)
+- file_khs: file (PDF, max 2MB, optional)
+- csrf_token: string
+
+Response:
+{
+    "success": true,
+    "message": "Pendaftaran berhasil dikirim"
+}
+```
+
 ---
 
 ## 👥 Team
@@ -1217,6 +1679,58 @@ Response:
 ---
 
 ## 📝 Changelog
+
+### Version 3.0.0 (2024-11-29)
+**Major Features & Security Updates**
+
+#### 🔐 Security Enhancements
+- ✨ **Session Timeout Management** - Idle timeout (30 min), absolute timeout (8 hours), session regeneration (15 min)
+- 🛡️ **SessionHelper** - Comprehensive session management with timeout tracking
+- 🔒 **Enhanced AuthMiddleware** - Added timeout checks and session regeneration
+- ⚡ **CSRF Token Regeneration** - Auto-regenerate after successful operations
+
+#### 🎓 Recruitment System (NEW)
+- ✨ **Recruitment Management** - Create and manage recruitment periods
+- 📝 **Public Application Form** - Modern, responsive recruitment form
+- 👥 **Pendaftar Module** - Manage applicants with accept/reject workflow
+- 🔍 **Server-Side Search & Pagination** - Efficient search across applicants
+- 📊 **Asisten Lab Module** - Manage accepted lab assistants
+- 🔄 **Automated Transfer** - Auto-create lab assistant when applicant accepted
+
+#### 👨‍🏫 Dosen Management Updates
+- ✨ **Status Aktif Field** - Track active/inactive status for lecturers
+- 🔧 **Updated Stored Procedures** - sp_insert_dosen and sp_update_dosen with status_aktif
+- 🎨 **Status Badge UI** - Visual indicators for active/inactive status
+
+#### 📊 Content Management Enhancements
+- ✨ **Aktivitas Lab** - Lab activities management
+- 🏢 **Fasilitas** - Facilities management
+- 🤝 **Mitra** - Partnership management
+- 📦 **Produk** - Product showcase
+- 📚 **Publikasi Akademik** - Academic publications (Riset, KI, PPM)
+
+#### 🗄️ Database Improvements
+- 🔄 **Schema Refactoring** - Organized with naming conventions (sys_, ref_, mst_, trx_, map_)
+- 📋 **New Tables** - trx_rekrutmen, trx_pendaftar, mst_mahasiswa
+- 🔗 **Database Views** - vw_show_dosen, vw_show_recruitment, vw_dashboard
+- ⚡ **Stored Procedures** - Complex operations handled by PostgreSQL procedures
+
+#### 🎨 UI/UX Improvements
+- 📱 **Responsive Forms** - Modern recruitment form design
+- 🎯 **Required Field Indicators** - Visual "*" markers for required fields
+- 📊 **Enhanced Dashboard** - Updated statistics from all modules
+- 🎨 **Custom CSS** - Page-specific styling for better UX
+
+#### 🛠️ Technical Updates
+- 📧 **EmailHelper** - PHPMailer integration for notifications
+- 🔧 **ValidationHelper** - Enhanced input validation
+- 📦 **BaseModel** - Base class for all models
+- 🗂️ **Organized Assets** - Structured CSS/JS by pages
+
+#### 🐛 Bug Fixes
+- 🔧 **Parameter Order Fix** - Fixed DosenModel parameter order for stored procedures
+- 🐛 **CSRF Token Validation** - Improved token handling
+- 🔒 **Session Security** - Fixed session fixation vulnerability
 
 ### Version 2.0.0 (2024-11-12)
 - ✨ Implement pagination system
@@ -1269,9 +1783,16 @@ in the Software without restriction...
 
 ---
 
-**Last Updated:** 2024-11-12
-**Version:** 2.0.0
+**Last Updated:** 2024-11-29
+**Version:** 3.0.0
 **Location:** `/Applications/MAMP/htdocs/applied-informatics/`
+
+**Major Updates in v3.0.0:**
+- 🔐 Session Timeout Management
+- 🎓 Recruitment System (complete workflow)
+- 👥 Pendaftar & Asisten Lab modules
+- ✨ Status aktif field for dosen
+- 📊 Enhanced security features
 
 ---
 

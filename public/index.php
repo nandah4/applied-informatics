@@ -36,6 +36,8 @@ require_once __DIR__ . '/../app/Helpers/ValidationHelper.php';
 require_once __DIR__ . '/../app/Helpers/PaginationHelper.php';
 require_once __DIR__ . '/../app/Helpers/date_helper.php';
 require_once __DIR__ . '/../app/Helpers/CsrfHelper.php';
+require_once __DIR__ . '/../app/Helpers/EmailHelper.php';
+require_once __DIR__ . '/../app/Helpers/SessionHelper.php';
 
 // Load Middleware
 require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';
@@ -53,6 +55,8 @@ require_once __DIR__ . '/../app/Models/ProdukModel.php';
 require_once __DIR__ . '/../app/Models/ProfilPublikasiModel.php';
 require_once __DIR__ . '/../app/Models/PublikasiAkademikModel.php';
 require_once __DIR__ . '/../app/Models/RecruitmentModel.php';
+require_once __DIR__ . '/../app/Models/PendaftarModel.php';
+require_once __DIR__ . '/../app/Models/AsistenLabModel.php';
 
 // Load Controllers
 require_once __DIR__ . '/../app/Controllers/AuthController.php';
@@ -65,6 +69,8 @@ require_once __DIR__ . '/../app/Controllers/FasilitasController.php';
 require_once __DIR__ . '/../app/Controllers/ProdukController.php';
 require_once __DIR__ . '/../app/Controllers/PublikasiAkademikController.php';
 require_once __DIR__ . '/../app/Controllers/RecruitmentController.php';
+require_once __DIR__ . '/../app/Controllers/PendaftarController.php';
+require_once __DIR__ . '/../app/Controllers/AsistenLabController.php';
 
 // Load semua route dari config/routes.php
 $router = require_once __DIR__ . '/../config/routes.php';

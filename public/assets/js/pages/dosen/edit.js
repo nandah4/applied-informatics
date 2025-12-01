@@ -773,6 +773,7 @@
         jabatan_id: $("#jabatan").val().trim(),
         keahlian_ids: $("#keahlian").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
+        status_aktif: $("#status_aktif").val(),
         foto_profil: $("#foto_profil")[0]?.files[0] || null,
       };
     },
@@ -892,6 +893,7 @@
       formData.append("jabatan_id", data.jabatan_id);
       formData.append("keahlian_ids", data.keahlian_ids);
       formData.append("deskripsi", data.deskripsi);
+      formData.append("status_aktif", data.status_aktif);
 
       if (data.foto_profil) {
         formData.append("foto_profil", data.foto_profil);

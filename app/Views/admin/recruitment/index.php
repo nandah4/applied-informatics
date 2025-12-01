@@ -16,6 +16,7 @@
     <!-- Sidebar & Layout CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/components/admin_layout.css') ?>">
 
     <!-- Data Recruitment Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/recruitment/index.css') ?>">
@@ -55,13 +56,13 @@
             <div class="card-header">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                     <!-- Search Bar -->
-                    <div class="search-wrapper">
+                    <!-- <div class="search-wrapper">
                         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
                         <input type="text" class="search-input" placeholder="Cari judul, deskripsi, atau lokasi...">
-                    </div>
+                    </div> -->
 
                     <!-- Add Button -->
                     <a href="<?= base_url('admin/recruitment/create') ?>" class="btn-primary-custom">
@@ -105,7 +106,7 @@
                                     <td class="col-judul">
                                         <div style="font-weight: 600; color: var(--color-gray-900);"><?= htmlspecialchars($dt['judul']) ?></div>
                                     </td>
-                                    <td class="col-deskripsi">
+                                    <td class="col-deskripsi ">
                                         <div class="text-truncate-2">
                                             <?= !empty($dt['deskripsi']) ? htmlspecialchars($dt['deskripsi']) : '-' ?>
                                         </div>
@@ -122,9 +123,9 @@
                                     </td>
                                     <td class="col-status">
                                         <?php if ($dt['status'] === 'buka'): ?>
-                                            <span class="badge-custom badge-buka">Recruitment Buka</span>
+                                            <span class="badge-custom badge-buka">Buka</span>
                                         <?php else: ?>
-                                            <span class="badge-custom badge-tutup">Recruitment Tutup</span>
+                                            <span class="badge-custom badge-tutup">Tutup</span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="action-cell">

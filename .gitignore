@@ -11,3 +11,12 @@ public/uploads/mitra/*
 
 public/uploads/aktivitas-lab/*
 !public/uploads/aktivitas-lab/.gitkeep
+
+public/uploads/cv/*
+!public/uploads/cv/.gitkeep
+
+public/uploads/khs/*
+!public/uploads/khs/.gitkeep
+
+public/uploads/produk/*
+!public/uploads/produk/.gitkeep

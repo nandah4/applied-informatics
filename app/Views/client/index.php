@@ -12,15 +12,15 @@ include __DIR__ . '/../layouts/header.php';
             <img src="<?= asset_url('images/beranda/assets-home.png') ?>" alt=""
                 class="img-fluid mx-auto d-block gambar-sambutan">
             <p class="mt-5 sambutan">Selamat Datang, mari jelajahi berbagai aktivitas, penelitian, dan inovasi yang terus kami kembangkan untuk menghadirkan dampak nyata.</p>
-            <a href="" class="btn rounded-pill mt-3 px-3 btn-riset-hero">Lihat Riset Kami</a>
+            <a href="<?= base_url("publikasi-dosen") ?>" class="btn rounded-pill mt-3 px-3 btn-riset-hero">Lihat Riset Kami</a>
         </div>
     </section>
 
     <!-- ------ -->
 
     <!-- Section Visi Misi -->
-    <section class="visi-misi p-5">
-        <div class="container-fluid">
+    <section class="visi-misi">
+        <div class="container-fluid px-5">
             <div class="row g-4">
                 <div class="col-md-6">
                     <div class="card rounded-md card-visi card-custom-border">
@@ -57,8 +57,8 @@ include __DIR__ . '/../layouts/header.php';
     <!-- ------ -->
 
     <!-- Section Statistik -->
-    <section class="statistik p-5">
-        <div class="container-fluid">
+    <section class="statistik">
+        <div class="px-5 container-fluid">
             <div class="row">
                 <div class="col-md-6">
                     <h3 class="title-section">Profil Statistik Laboratorium</h3>
@@ -90,9 +90,9 @@ include __DIR__ . '/../layouts/header.php';
     <!-- ------ -->
 
     <!-- Section Fasilitas -->
-    <section class=" fasilitas-section">
+    <section class="fasilitas-section">
         <div class="px-5 container-fluid">
-            <button class="btn-fasilitas rounded-pill px-4 mb-3">Fasilitas Laboratorium</button>
+            <h3 class="title-section">Fasilitas Laboratorium</h3>
             <p class="mb-5 subtitle-section">Kelengkapan ruang, perangkat dan teknologi untuk menunjang kegiatan Applied
                 Informatics</p>
         </div>
@@ -165,6 +165,7 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </div>
 
+
     <!-- ------ -->
 
 
@@ -173,7 +174,7 @@ include __DIR__ . '/../layouts/header.php';
         <div class="container-fluid px-5">
             <!-- Header Section -->
             <div class="mb-4">
-                <button class="btn-penelitian rounded-pill px-4 mb-3">Publikasi Penelitian</button>
+                <h3 class="title-section">Publikasi Penelitian</h3>
                 <p class="subtitle-section mb-0">Karya ilmiah dan penelitian yang telah dipublikasikan oleh tim laboratorium</p>
             </div>
 
@@ -182,17 +183,19 @@ include __DIR__ . '/../layouts/header.php';
                 <div class="d-flex align-items-center gap-2">
                     <span class="text-muted me-2 flex-shrink-0">Filter Tahun:</span>
 
-                    <div class="overflow-auto d-flex gap-2 flex-nowrap pb-2" style="scrollbar-width: thin;">
-                        <?php
-                        $years = range(date('Y'), date('Y') - 20); // 21 tahun terakhir
-                        foreach ($years as $index => $year):
-                        ?>
-                            <button
-                                class="year-pill flex-shrink-0 <?= $index === 0 ? 'active' : '' ?>"
-                                data-year="<?= $year ?>">
-                                <?= $year ?>
-                            </button>
-                        <?php endforeach; ?>
+                    <div class="year-filter-wrapper flex-grow-1">
+                        <div class="year-pills-scroll" id="yearPillsScroll">
+                            <?php
+                            $years = range(date('Y'), 2000);
+                            foreach ($years as $index => $year):
+                            ?>
+                                <button
+                                    class="year-pill <?= $index === 0 ? 'active' : '' ?>"
+                                    data-year="<?= $year ?>">
+                                    <?= $year ?>
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -210,8 +213,8 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </section>
 
-    <section class="p-5">
-        <div class="container-fluid">
+    <section class="py-5">
+        <div class="container-fluid px-5">
             <h3 class="title-section mb-2">Aktivitas Lab Terbaru</h3>
             <div class="row">
                 <div class="col-md-8">
@@ -244,32 +247,34 @@ include __DIR__ . '/../layouts/header.php';
                         ?>
 
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="card shadow-none h-100 border-0">
-                                <img src="<?= $aktivitasFoto ?>" class="card-img-top" alt="<?= $judul ?>">
+                            <a href="<?= base_url('aktivitas-laboratorium/' . $aktivitas['id']) ?>" class="aktivitas-card-link text-decoration-none">
+                                <div class="card aktivitas-card shadow-none h-100 border-0">
+                                    <div class="aktivitas-card-image-wrapper">
+                                        <img src="<?= $aktivitasFoto ?>" class="card-img-top aktivitas-card-image" alt="<?= $judul ?>">
+                                        <div class="aktivitas-card-overlay">
+                                            <span class="aktivitas-view-detail">
+                                                <i data-feather="eye"></i>
+                                                Lihat Detail
+                                            </span>
+                                        </div>
+                                    </div>
 
-                                <div class="card-body">
-                                    <small class="teks-tanggal-aktivitas d-block mb-1">
-                                        <?= formatTanggal($aktivitas['tanggal_kegiatan']); ?>
-                                    </small>
-                                    <p class="title-fasilitas m-0"><?= $judulPendek ?></p>
+                                    <div class="card-body">
+                                        <div class="d-flex gap-2 align-items-center justify-items-center">
+                                            <i data-feather="calendar"></i>
+                                            <small class="teks-tanggal-aktivitas d-block mb-1">
+                                                <?= formatTanggal($aktivitas['tanggal_kegiatan']); ?>
+                                            </small>
+                                        </div>
+
+                                        <p class="title-fasilitas m-0"><?= $judulPendek ?></p>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
-
-
-
-            <!-- <div class="col-md-4">
-                    <img src="<?= asset_url('images/login/login.jpg') ?>" alt="" class="img-fluid rounded mb-3">
-                    <p class="fw-bold">Gedung Pascasarjana Teknik Mesin, Lantai 2.</p>
-                </div>
-
-                <div class="col-md-4">
-                    <img src="<?= asset_url('images/login/login.jpg') ?>" alt="" class="img-fluid rounded mb-3">
-                    <p class="fw-bold">Gedung Pascasarjana Teknik Mesin, Lantai 2.</p>
-                </div> -->
         </div>
         </div>
     </section>
@@ -314,6 +319,30 @@ include __DIR__ . '/../layouts/header.php';
             modalTitle.textContent = nama;
             modalDeskripsi.textContent = deskripsi;
         });
+
+        // ========================================
+        // Year Pills Horizontal Scroll Handler
+        // ========================================
+        const yearPillsScroll = document.getElementById('yearPillsScroll');
+        const yearFilterWrapper = yearPillsScroll.closest('.year-filter-wrapper');
+
+        // Function to check if container can scroll
+        function checkScrollable() {
+            if (yearPillsScroll) {
+                const canScroll = yearPillsScroll.scrollWidth > yearPillsScroll.clientWidth;
+                if (canScroll) {
+                    yearFilterWrapper.classList.add('has-scroll');
+                } else {
+                    yearFilterWrapper.classList.remove('has-scroll');
+                }
+            }
+        }
+
+        // Check on load
+        checkScrollable();
+
+        // Check on window resize
+        window.addEventListener('resize', checkScrollable);
 
         const $yearPills = $('.year-pill');
         const $publikasiContainer = $('#publikasiContainer');
@@ -365,7 +394,6 @@ include __DIR__ . '/../layouts/header.php';
 
                             html += `
                             <div class="publikasi-card">
-                                <div class="publikasi-number">${index + 1}</div>
                                 <h3 class="publikasi-title">${judul}</h3>
                                 <div class="publikasi-meta">
                                     <span class="publikasi-author">
