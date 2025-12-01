@@ -8,22 +8,17 @@ include __DIR__ . '/../layouts/header.php';
 
 <main class="produk-lab-page">
 
-    <div class="container">
+    <div class="container-fluid px-5 pb-5">
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
             <span class="breadcrumb-separator">›</span>
             <span class="breadcrumb-item active">Produk Laboratorium</span>
         </div>
-    </div>
 
-    <div class="container">
-
-        <div>
+        <div class="mb-5">
             <h1 class="title-section mb-3">Semua Produk</h1>
             <p class="subtitle-section w-75">Temukan berbagai produk inovatif yang dikembangkan oleh tim laboratorium. Setiap produk dirancang untuk memberikan nilai serta mendukung pengembangan teknologi di berbagai bidang.</p>
         </div>
-
-        <div class="divider-hr"></div>
 
         <?php if (!empty($listProduk)): ?>
             <div class="row">
@@ -76,7 +71,7 @@ include __DIR__ . '/../layouts/header.php';
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" id="produkModalLabel">Nama Produk</h5>
+                    <h5 id="modal-title" class="subtitle-section fw-bold" style="color: black;">Nama Produk</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -86,31 +81,31 @@ include __DIR__ . '/../layouts/header.php';
                             src=""
                             alt="Produk"
                             class="img-fluid rounded"
-                            style="max-height: 300px; object-fit: contain;">
+                            style="max-height: 100px; object-fit: contain;">
                     </div>
 
                     <!-- Deskripsi -->
                     <div class="mb-4">
-                        <h6 class="fw-bold mb-2" style="color: var(--color-tertiary-500);">
+                        <h6 class="label-desk-produk">
                             Deskripsi Produk
                         </h6>
-                        <p class="text-secondary mb-0" id="modalProdukDeskripsi">Deskripsi produk akan muncul di sini.</p>
+                        <p class="body-desk-produk" id="modalProdukDeskripsi">Deskripsi produk akan muncul di sini.</p>
                     </div>
 
                     <!-- Kontributor Dosen -->
                     <div class="mb-4" id="kontributorSection" style="display: none;">
-                        <h6 class="fw-bold mb-2" style="color: var(--color-tertiary-500);">
-                            Kontributor
+                        <h6 class="label-desk-produk">
+                            Kontributor Dosen
                         </h6>
-                        <div id="modalProdukKontributor" class="d-flex flex-wrap gap-2"></div>
+                        <div id="modalProdukKontributor" class="d-flex flex-wrap gap-2 body-desk-produk"></div>
                     </div>
 
                     <!-- Tim Mahasiswa -->
                     <div class="mb-3" id="timSection" style="display: none;">
-                        <h6 class="fw-bold mb-2" style="color: var(--color-tertiary-500);">
+                        <h6 class="label-desk-produk">
                             Tim Mahasiswa
                         </h6>
-                        <p class="text-secondary mb-0" id="modalProdukTim"></p>
+                        <p class="body-desk-produk" id="modalProdukTim"></p>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -134,7 +129,7 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 </main>
 
-<link rel="stylesheet" href="<?= asset_url('css/pages/produk-user/produk.css') ?>">
+<link rel="stylesheet" href="<?= asset_url('css/pages/produk/produk_user.css') ?>">
 
 <!-- Script untuk handle modal produk -->
 <script>
@@ -156,7 +151,7 @@ include __DIR__ . '/../layouts/header.php';
             const link = button.getAttribute('data-produk-link');
 
             // Update modal content
-            const modalTitle = produkModal.querySelector('.modal-title');
+            const modalTitle = produkModal.querySelector('#modal-title');
             const modalFoto = document.getElementById('modalProdukFoto');
             const modalDeskripsi = document.getElementById('modalProdukDeskripsi');
             const modalKontributor = document.getElementById('modalProdukKontributor');
@@ -175,7 +170,31 @@ include __DIR__ . '/../layouts/header.php';
             if (kontributor && kontributor.trim() !== '') {
                 kontributorSection.style.display = 'block';
 
-                modalKontributor.textContent = kontributor
+                // 1. Bersihkan isi kontainer sebelumnya
+                modalKontributor.innerHTML = '';
+
+                // 2. Split string berdasarkan delimiter dari SQL (", $$$")
+                // Hasilnya akan menjadi array nama-nama dosen
+                const listDosen = kontributor.split('-$$$-');
+
+                // 3. Loop setiap nama dosen dan buat badge
+                listDosen.forEach(function(nama) {
+                    if (nama.trim() !== '') {
+                        // Buat elemen span untuk badge
+                        const badge = document.createElement('span');
+
+                        badge.className = 'badge-produk rounded-pill mb-1 me-1';
+
+                        badge.style.backgroundColor = 'var(--color-primary-50)';
+                        badge.style.color = 'var(--color-primary-700)';
+                        badge.style.fontSize = 'var(--fs-xs)';
+                        badge.style.padding = '10px 16px';
+                        badge.textContent = nama.trim();
+
+                        // Masukkan ke dalam container
+                        modalKontributor.appendChild(badge);
+                    }
+                });
             } else {
                 kontributorSection.style.display = 'none';
             }

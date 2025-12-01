@@ -28,25 +28,55 @@ if (empty($stats)) {
     ];
 }
 
+// Ensure recruitmentStats has default values
+if (empty($recruitmentStats)) {
+    $recruitmentStats = [
+        'total_recruitment' => 0,
+        'recruitment_aktif' => 0,
+        'recruitment_tutup' => 0,
+        'total_pendaftar' => 0,
+        'pendaftar_diterima' => 0,
+        'pendaftar_ditolak' => 0,
+        'pendaftar_menunggu' => 0,
+    ];
+}
+
+// Ensure asistenLabStats has default values
+if (empty($asistenLabStats)) {
+    $asistenLabStats = [
+        'total_asisten' => 0,
+        'asisten_aktif' => 0,
+        'asisten_tidak_aktif' => 0,
+    ];
+}
+
 // Ensure publikasiByTipe has default values
 if (empty($publikasiByTipe)) {
     $publikasiByTipe = [
         'Riset' => 0,
         'Kekayaan Intelektual' => 0,
         'PPM' => 0,
+        'Publikasi' => 0
     ];
 }
 
-// Ensure recentPublikasi is array
+// Ensure arrays are set
 if (empty($recentPublikasi)) {
     $recentPublikasi = [];
 }
 
-// TODO: Implement these data from database (future development)
-if(empty($recentAktivitas)) {
-$recentAktivitas = [];
+if (empty($recentAktivitas)) {
+    $recentAktivitas = [];
 }
-$rekrutmenAktif = [];
+
+if (empty($rekrutmenAktif)) {
+    $rekrutmenAktif = [];
+}
+
+if (empty($recentPendaftar)) {
+    $recentPendaftar = [];
+}
+
 $mitraByKategori = [];
 $aktivitasPerBulan = [
     'labels' => ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov'],
@@ -125,9 +155,46 @@ $aktivitasPerBulan = [
                         </div>
                     </div>
 
-                    <!-- Total Publikasi -->
+                    <!-- Total Asisten Lab -->
                     <div class="stat-card">
                         <div class="stat-icon stat-icon-success">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Total Asisten Lab</p>
+                            <h3 class="stat-value"><?= $asistenLabStats['total_asisten'] ?? 0 ?></h3>
+                            <span class="stat-change stat-neutral">
+                                Asisten aktif
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Total Pendaftar -->
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-warning">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <path d="M20 8v6M23 11h-6"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Total Pendaftar</p>
+                            <h3 class="stat-value"><?= $recruitmentStats['total_pendaftar'] ?? 0 ?></h3>
+                            <span class="stat-change stat-neutral">
+                                Menunggu
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Total Publikasi -->
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-info">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
@@ -141,47 +208,14 @@ $aktivitasPerBulan = [
                             </span>
                         </div>
                     </div>
-
-                    <!-- Total Mitra -->
-                    <div class="stat-card">
-                        <div class="stat-icon stat-icon-warning">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="8.5" cy="7" r="4"></circle>
-                                <polyline points="17 11 19 13 23 9"></polyline>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <p class="stat-label">Total Mitra</p>
-                            <h3 class="stat-value"><?= $stats['total_mitra'] ?? 0 ?></h3>
-                            <span class="stat-change stat-neutral">
-                                Mitra kerjasama lab
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Total Produk -->
-                    <div class="stat-card">
-                        <div class="stat-icon stat-icon-info">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <p class="stat-label">Total Produk</p>
-                            <h3 class="stat-value"><?= $stats['total_produk'] ?? 0 ?></h3>
-                            <span class="stat-change stat-neutral">
-                                Produk laboratorium
-                            </span>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Charts Row -->
-                <div class="charts-row">
+                <div class="">
                     <!-- Publikasi Chart -->
-                    <div class="chart-card">
+
+                    <!-- Saya ingin chart ini di atas 2 grid di bawah, artinya card chart ini mengambil lebar penuh, sesuaikan uinya -->
+                    <div class="chart-card mb-4">
                         <div class="chart-header">
                             <h5 class="chart-title">Publikasi Berdasarkan Tipe</h5>
                             <p class="chart-subtitle">Distribusi publikasi berdasarkan kategori</p>
@@ -190,26 +224,37 @@ $aktivitasPerBulan = [
                             <canvas id="publikasiChart"></canvas>
                         </div>
                         <div class="chart-legend">
-                            <div class="legend-item">
-                                <span class="legend-color" style="background: #01B5B9;"></span>
-                                <span class="legend-label">Riset</span>
-                                <span class="legend-value"><?= $publikasiByTipe['Riset'] ?></span>
+                            <div class="w-50 mx-auto d-flex flex-column gap-3">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #ff7d10;"></span>
+                                    <span class="legend-label">Pubikasi</span>
+                                    <span class="legend-value"><?= $publikasiByTipe['Publikasi'] ?></span>
+                                </div>
+                                <div class="legend-item">
+
+                                    <span class="legend-color" style="background: #01B5B9;"></span>
+                                    <span class="legend-label">Riset</span>
+                                    <span class="legend-value"><?= $publikasiByTipe['Riset'] ?></span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #FFA500;"></span>
+                                    <span class="legend-label">Kekayaan Intelektual</span>
+                                    <span class="legend-value"><?= $publikasiByTipe['Kekayaan Intelektual'] ?></span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #10B981;"></span>
+                                    <span class="legend-label">PPM</span>
+                                    <span class="legend-value"><?= $publikasiByTipe['PPM'] ?></span>
+                                </div>
+
                             </div>
-                            <div class="legend-item">
-                                <span class="legend-color" style="background: #FFA500;"></span>
-                                <span class="legend-label">Kekayaan Intelektual</span>
-                                <span class="legend-value"><?= $publikasiByTipe['Kekayaan Intelektual'] ?></span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-color" style="background: #10B981;"></span>
-                                <span class="legend-label">PPM</span>
-                                <span class="legend-value"><?= $publikasiByTipe['PPM'] ?></span>
-                            </div>
+
                         </div>
                     </div>
 
+                    <!-- Aktivitas Trend Chart ini saya ingin agar dia menjadi 2 grid kanan dan kiri lalu berada di bawah chart card di atas -->
                     <!-- Aktivitas Trend Chart -->
-                    <div class="chart-card">
+                    <div class="charts-row">
                         <!-- <div class="chart-header">
                             <h5 class="chart-title">Trend Aktivitas Laboratorium</h5>
                             <p class="chart-subtitle">6 Bulan Terakhir</p>
@@ -240,7 +285,7 @@ $aktivitasPerBulan = [
                             </div>
                         </div>
 
-                        <div class="recent-card recent-card-compact ">
+                        <div class="recent-card recent-card-compact recent-card-height">
                             <div class="recent-header">
                                 <h5 class="recent-title">Rekrutmen Aktif</h5>
                                 <?php if (!empty($rekrutmenAktif)): ?>
@@ -336,21 +381,53 @@ $aktivitasPerBulan = [
                             <h5 class="quick-stats-title">Statistik Lainnya</h5>
                             <div class="quick-stats-grid">
                                 <div class="quick-stat-item">
-                                    <div class="quick-stat-value"><?= $stats['total_fasilitas'] ?? 0 ?></div>
-                                    <div class="quick-stat-label">Fasilitas</div>
+                                    <div class="quick-stat-value"><?= $stats['total_mitra'] ?? 0 ?></div>
+                                    <div class="quick-stat-label">Mitra</div>
                                 </div>
                                 <div class="quick-stat-item">
-                                    <div class="quick-stat-value"><?= $stats['total_keahlian'] ?? 0 ?></div>
-                                    <div class="quick-stat-label">Keahlian</div>
+                                    <div class="quick-stat-value"><?= $stats['total_produk'] ?? 0 ?></div>
+                                    <div class="quick-stat-label">Produk</div>
                                 </div>
                                 <div class="quick-stat-item">
-                                    <div class="quick-stat-value"><?= $stats['total_jabatan'] ?? 0 ?></div>
-                                    <div class="quick-stat-label">Jabatan</div>
+                                    <div class="quick-stat-value"><?= $recruitmentStats['recruitment_aktif'] ?? 0 ?></div>
+                                    <div class="quick-stat-label">Rekrutmen Aktif</div>
                                 </div>
                                 <div class="quick-stat-item">
                                     <div class="quick-stat-value"><?= $stats['total_aktivitas_lab'] ?? 0 ?></div>
                                     <div class="quick-stat-label">Aktivitas</div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Pendaftar Terbaru -->
+                        <div class="recent-card recent-card-compact recent-card-height mt-3">
+                            <div class="recent-header">
+                                <h5 class="recent-title">Pendaftar Terbaru</h5>
+                                <a href="<?= base_url('admin/daftar-pendaftar') ?>" class="btn-view-all" style="font-size: 0.85rem;">
+                                    Lihat Semua
+                                </a>
+                            </div>
+                            <div class="recent-list recent-list-compact">
+                                <?php if (empty($recentPendaftar)): ?>
+                                    <p style="text-align: center; color: #999; padding: 1rem;">
+                                        Belum ada pendaftar
+                                    </p>
+                                <?php else: ?>
+                                    <?php foreach (array_slice($recentPendaftar, 0, 5) as $pendaftar): ?>
+                                        <div class="recent-item-compact">
+                                            <div class="recent-item-compact-dot"></div>
+                                            <div>
+                                                <p class="recent-item-compact-title"><?= htmlspecialchars($pendaftar['nama']) ?></p>
+                                                <p class="recent-item-compact-date">
+                                                    <?= htmlspecialchars($pendaftar['nim']) ?> •
+                                                    <span class="badge-mini badge-<?= $pendaftar['status_seleksi'] === 'Menunggu' ? 'warning' : ($pendaftar['status_seleksi'] === 'Diterima' ? 'success' : 'danger') ?>">
+                                                        <?= htmlspecialchars($pendaftar['status_seleksi']) ?>
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

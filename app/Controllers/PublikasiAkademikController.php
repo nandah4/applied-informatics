@@ -89,7 +89,7 @@ class PublikasiAkademikController
             return;
         }
 
-        // 5. Validasi judul (minimal 5 karakter, maksimal 500)
+        // 5. Validasi judul (minimal 5 karakter)
         if (empty($judul)) {
             ResponseHelper::error('Judul publikasi tidak boleh kosong');
             return;
@@ -98,13 +98,13 @@ class PublikasiAkademikController
             ResponseHelper::error('Judul publikasi minimal 2 karakter');
             return;
         }
-        if (strlen($judul) > 500) {
-            ResponseHelper::error('Judul publikasi maksimal 500 karakter');
+        if (strlen($judul) > 600) {
+            ResponseHelper::error('Judul publikasi maksimal 600 karakter');
             return;
         }
 
         // 6. Validasi tipe publikasi (whitelist)
-        $allowedTipe = ['Riset', 'Kekayaan Intelektual', 'PPM'];
+        $allowedTipe = ['Publikasi', 'Riset', 'Kekayaan Intelektual', 'PPM'];
         if (empty($tipe_publikasi) || !in_array($tipe_publikasi, $allowedTipe)) {
             ResponseHelper::error('Tipe publikasi tidak valid');
             return;
@@ -204,7 +204,7 @@ class PublikasiAkademikController
         }
 
         // 6. Validasi tipe publikasi (whitelist)
-        $allowedTipe = ['Riset', 'Kekayaan Intelektual', 'PPM'];
+        $allowedTipe = ['Publikasi','Riset', 'Kekayaan Intelektual', 'PPM'];
         if (empty($tipe_publikasi) || !in_array($tipe_publikasi, $allowedTipe)) {
             ResponseHelper::error('Tipe publikasi tidak valid');
             return;

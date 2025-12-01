@@ -169,6 +169,19 @@
         }
       }
 
+      // Valiadate Tahun Publikasi not null
+      const tahunPublikasi = validationHelpers.validateRequired(
+        data.tahun_publikasi,
+        "Tahun Publikasi"
+      );
+      if (!tahunPublikasi.valid) {
+        errors.push({
+          fieldId: "tahun_publikasi",
+          errorId: "tahunPublikasiError",
+          message: tahunPublikasi.message,
+        });
+      }
+
       // Validate url_publikasi
       if (data.url_publikasi && data.url_publikasi.length > 0) {
         const result = validationHelpers.validateUrl(data.url_publikasi, false);
@@ -179,6 +192,19 @@
             message: result.message,
           });
         }
+      }
+
+      // Validate urlPublikasi
+      const urlValiddation = validationHelpers.validateRequired(
+        data.url_publikasi,
+        "URL Publikasi"
+      );
+      if (!urlValiddation.valid) {
+        errors.push({
+          fieldId: "url_publikasi",
+          errorId: "urlPublikasiError",
+          message: urlValiddation.message,
+        });
       }
 
       return errors;

@@ -154,7 +154,8 @@
           if (response.success) {
             jQueryHelpers.showAlert(
               "Data aktivitas berhasil diupdate!",
-              "success"
+              "success",
+              2000
             );
             setTimeout(() => {
               window.location.href = `${BASE_URL}/admin/aktivitas-lab`;
@@ -170,7 +171,7 @@
           }
         },
         onError: (errorMessage) => {
-          jQueryHelpers.showAlert("Error: " + errorMessage, "danger");
+          jQueryHelpers.showAlert("Error: " + errorMessage, "danger", 5000);
           submitButton.prop("disabled", false);
           submitButton.html(originalButtonHtml);
         },
@@ -181,7 +182,7 @@
       return {
         id: $('input[name="id"]').val(),
         judul: $("#judul_aktivitas").val().trim(),
-        deskripsi: $("#deskripsi").val().trim(),
+        deskripsi: $(quill.root).html(),
         foto_aktivitas: $("#foto_aktivitas")[0].files[0],
         tanggal_kegiatan: $("#tanggal_kegiatan").val().trim(),
         csrf_token: $("input[name='csrf_token']").val(),
@@ -202,9 +203,11 @@
       }
 
       // Validasi deskripsi
-      if (!data.deskripsi || data.deskripsi.length < 10) {
+      const textDeskripsi = quill.getText().trim();
+      if (!textDeskripsi || textDeskripsi.length < 10) {
+        console.log(textDeskripsi)
         errors.push({
-          fieldId: "deskripsi",
+          fieldId: "",
           errorId: "deskripsiError",
           message: "Deskripsi minimal 10 karakter",
         });

@@ -59,7 +59,7 @@ body {
     font-size: var(--fs-sm);
 }
 .dropdown-item.active {
-    background-color: var(--color-primary-400) !important;
+    background-color: var(--color-primary-600) !important;
 }
 
 .dropdown-item:hover {

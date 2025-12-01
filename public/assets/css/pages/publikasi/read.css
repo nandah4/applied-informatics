@@ -199,9 +199,10 @@
 }
 
 .badge-secondary {
-    background: var(--color-gray-100);
-    color: var(--color-gray-600);
+    background: var(--color-secondary-100);
+    color: var(--color-secondary-600);
 }
+
 
 
 /* Action Buttons */

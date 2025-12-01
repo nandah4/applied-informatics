@@ -226,3 +226,114 @@ SELECT id, judul, status, tanggal_buka, tanggal_tutup, updated_at
 FROM trx_rekrutmen 
 ORDER BY id;
 */
+
+
+-- Prosedur ini digunakan saat mahasiswa submit form pendaftaran
+
+CREATE OR REPLACE PROCEDURE sp_daftar_rekrutmen (
+    p_rekrutmen_id BIGINT,
+    p_nim VARCHAR,
+    p_nama VARCHAR,
+    p_email VARCHAR,
+    p_no_hp VARCHAR,
+    p_semester INT,
+    p_ipk DECIMAL,
+    p_link_portfolio VARCHAR,
+    p_link_github VARCHAR,
+    p_file_cv VARCHAR,
+    p_file_khs VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- 1. Validasi: Apakah rekrutmen ada dan statusnya 'buka'? (lowercase)
+    IF NOT EXISTS (SELECT 1 FROM trx_rekrutmen WHERE id = p_rekrutmen_id AND status = 'buka') THEN
+        RAISE EXCEPTION 'Lowongan rekrutmen tidak ditemukan atau sudah ditutup.';
+    END IF;
+
+    -- 2. Validasi: Apakah NIM ini SUDAH mendaftar di rekrutmen INI?
+    IF EXISTS (SELECT 1 FROM trx_pendaftar WHERE rekrutmen_id = p_rekrutmen_id AND nim = p_nim) THEN
+        RAISE EXCEPTION 'Anda sudah mendaftar pada lowongan ini sebelumnya.';
+    END IF;
+
+    -- 3. Insert Data
+    INSERT INTO trx_pendaftar (
+        rekrutmen_id, nim, nama, email, no_hp, semester, ipk,
+        link_portfolio, link_github, file_cv, file_khs, status_seleksi
+    ) VALUES (
+        p_rekrutmen_id, TRIM(p_nim), TRIM(p_nama), TRIM(p_email), p_no_hp, p_semester, p_ipk,
+        p_link_portfolio, p_link_github, p_file_cv, p_file_khs, 'Pending'
+    );
+END;
+$$;
+
+
+-- Digunakan admin untuk mengubah status (misal: dari  Pending -> Ditolak).
+
+CREATE OR REPLACE PROCEDURE sp_update_status_seleksi (
+    p_pendaftar_id BIGINT,
+    p_status_baru seleksi_status_enum
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Validasi ID
+    IF NOT EXISTS (SELECT 1 FROM trx_pendaftar WHERE id = p_pendaftar_id) THEN
+        RAISE EXCEPTION 'Data pendaftar tidak ditemukan.';
+    END IF;
+
+    -- Update Status
+    UPDATE trx_pendaftar 
+    SET status_seleksi = p_status_baru,
+        updated_at = NOW()
+    WHERE id = p_pendaftar_id;
+END;
+$$;
+
+
+-- SP untuk Menerima Anggota (Promosi) (sp_terima_anggota) 
+
+CREATE OR REPLACE PROCEDURE sp_terima_anggota (
+    p_pendaftar_id BIGINT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_rec RECORD; -- Variabel untuk menampung data pendaftar
+BEGIN
+    -- 1. Ambil data pendaftar
+    SELECT * INTO v_rec FROM trx_pendaftar WHERE id = p_pendaftar_id;
+
+    IF v_rec.id IS NULL THEN
+        RAISE EXCEPTION 'Data pendaftar tidak ditemukan.';
+    END IF;
+
+    -- 2. Validasi: Apakah NIM ini sudah ada di tabel anggota aktif?
+    IF EXISTS (SELECT 1 FROM mst_mahasiswa WHERE nim = v_rec.nim) THEN
+        RAISE EXCEPTION 'Mahasiswa dengan NIM % sudah menjadi anggota lab.', v_rec.nim;
+    END IF;
+
+    -- 3. Update status di tabel pendaftar jadi 'Diterima'
+    UPDATE trx_pendaftar 
+    SET status_seleksi = 'Diterima', updated_at = NOW() 
+    WHERE id = p_pendaftar_id;
+
+    -- 4. INSERT data ke tabel Master Mahasiswa (Promosi)
+    INSERT INTO mst_mahasiswa (
+        nim, nama, email, no_hp, 
+        jabatan_lab, semester, link_github, status_aktif, tanggal_gabung, asal_pendaftar_id
+    ) VALUES (
+        v_rec.nim, 
+        v_rec.nama, 
+        v_rec.email, 
+        v_rec.no_hp,
+        'Asisten Lab', -- Default Jabatan
+        v_rec.semester,
+        v_rec.link_github,
+        TRUE, 
+        CURRENT_DATE, 
+        p_pendaftar_id
+    );
+
+END;
+$$;

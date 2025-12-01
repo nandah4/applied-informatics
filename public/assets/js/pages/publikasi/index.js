@@ -3,7 +3,7 @@
  * Deskripsi: Script untuk halaman list data publikasi
  *
  * Fitur:
- * - Search/Filter data publikasi
+ * - Server-side search publikasi (dengan button trigger)
  * - Delete publikasi dengan konfirmasi
  * - Notifikasi menggunakan Bootstrap Alert
  *
@@ -16,38 +16,72 @@
     'use strict';
 
     const BASE_URL = $('meta[name="base-url"]').attr('content') || '/applied-informatics';
+
     // ============================================================
-    // MODUL SEARCH/FILTER
+    // MODUL SEARCH (SERVER-SIDE)
     // ============================================================
 
     const SearchModule = {
         /**
-         * Inisialisasi fungsi search/filter
+         * Inisialisasi fungsi search (server-side)
          */
         init: function() {
-            const searchInput = document.querySelector('.search-input');
+            const searchInput = document.getElementById('searchInput');
+            const btnSearch = document.getElementById('btnSearch');
+            const btnClear = document.getElementById('btnClearSearch');
 
+            // Handle search button click
+            if (btnSearch) {
+                btnSearch.addEventListener('click', this.handleSearch);
+            }
+
+            // Handle Enter key pada search input
             if (searchInput) {
-                searchInput.addEventListener('input', this.handleSearch);
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        SearchModule.handleSearch();
+                    }
+                });
+            }
+
+            // Handle clear button
+            if (btnClear) {
+                btnClear.addEventListener('click', this.handleClear);
             }
         },
 
         /**
-         * Handle event input pada search box
-         * Filter baris tabel berdasarkan keyword
-         *
-         * @param {Event} e - Event object
+         * Handle search - redirect ke URL dengan parameter search
          */
-        handleSearch: function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('.table-custom tbody tr');
+        handleSearch: function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchValue = searchInput.value.trim();
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
+            // Build URL dengan search parameter
+            const currentUrl = new URL(window.location.href);
 
-                // Tampilkan baris jika mengandung keyword, sembunyikan jika tidak
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
+            if (searchValue) {
+                currentUrl.searchParams.set('search', searchValue);
+            } else {
+                currentUrl.searchParams.delete('search');
+            }
+
+            // Reset ke page 1 saat search
+            currentUrl.searchParams.set('page', '1');
+
+            // Redirect
+            window.location.href = currentUrl.toString();
+        },
+
+        /**
+         * Handle clear search - hapus parameter search dan reload
+         */
+        handleClear: function() {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.delete('search');
+            currentUrl.searchParams.set('page', '1');
+            window.location.href = currentUrl.toString();
         }
     };
 
@@ -176,7 +210,7 @@
      * Jalankan semua modul saat document ready
      */
     $(document).ready(function() {
-        // Inisialisasi modul search
+        // Inisialisasi modul search (server-side)
         SearchModule.init();
 
         // Inisialisasi pagination

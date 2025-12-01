@@ -33,7 +33,8 @@ class DosenModel extends BaseModel
      *                          'jabatan_id' => int,
      *                          'keahlian_ids' => array, // [1, 2, 3]
      *                          'foto_profil' => string|null,
-     *                          'deskripsi' => string|null
+     *                          'deskripsi' => string|null,
+     *                          'status_aktif' => int (0 or 1)
      *                      ]
      * @return array - Format: ['success' => bool, 'message' => string]
      */
@@ -55,24 +56,28 @@ class DosenModel extends BaseModel
 
             // Query CALL stored procedure
             // Format: CALL sp_name(param1, param2, ...)
+            // Urutan parameter HARUS sesuai dengan stored procedure:
+            // sp_insert_dosen(p_full_name, p_email, p_nidn, p_jabatan_id, p_keahlian_ids, p_status_aktif, p_foto_profil, p_deskripsi)
             $query = "CALL sp_insert_dosen(
                 :full_name,
                 :email,
                 :nidn,
                 :jabatan_id,
                 :keahlian_ids,
+                :status_aktif,
                 :foto_profil,
                 :deskripsi
             )";
 
             $stmt = $this->db->prepare($query);
 
-            // Bind parameters
+            // Bind parameters sesuai urutan stored procedure
             $stmt->bindParam(':full_name', $data['full_name'], PDO::PARAM_STR);
             $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
             $stmt->bindParam(':nidn', $data['nidn'], PDO::PARAM_STR);
             $stmt->bindParam(':jabatan_id', $data['jabatan_id'], PDO::PARAM_INT);
             $stmt->bindParam(':keahlian_ids', $keahlianIds, PDO::PARAM_STR);
+            $stmt->bindParam(':status_aktif', $data['status_aktif'], PDO::PARAM_INT);
             $stmt->bindParam(':foto_profil', $data['foto_profil'], PDO::PARAM_STR);
             $stmt->bindParam(':deskripsi', $data['deskripsi'], PDO::PARAM_STR);
 
@@ -120,21 +125,45 @@ class DosenModel extends BaseModel
      * @param int $offset - Offset untuk query
      * @return array - Format: ['success' => bool, 'data' => array, 'total' => int]
      */
-    public function getAllDosenPaginated($limit = 10, $offset = 0)
+    public function getAllDosenPaginated($params = [])
     {
         try {
+            $search = $params['search'] ?? '';
+            $limit = $params['limit'] ?? 10;
+            $offset = $params['offset'] ?? 0;
+
+            $whereClauses = [];
+            $bindParams = [];
+
+            if (!empty($search)) {
+                $whereClauses[] = "(full_name ILIKE :search OR nidn ILIKE :search)";
+                $bindParams[':search'] = "%{$search}%";
+            }
+
+            $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
+
             // Query untuk hitung total records
-            $countQuery = "SELECT COUNT(*) as total FROM vw_show_dosen";
+            $countQuery = "SELECT COUNT(*) as total FROM vw_show_dosen {$whereSQL}";
             $countStmt = $this->db->prepare($countQuery);
+            foreach ($bindParams as $key => $value) {
+                $countStmt->bindValue($key, $value);
+            }
+
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Query dengan pagination
-            $query = "SELECT * FROM vw_show_dosen
+            $query = "SELECT * FROM vw_show_dosen {$whereSQL}
                     ORDER BY created_at DESC
                     LIMIT :limit OFFSET :offset";
 
             $stmt = $this->db->prepare($query);
+
+            // Bind search params
+            foreach ($bindParams as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+
             $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
@@ -156,6 +185,44 @@ class DosenModel extends BaseModel
             ];
         }
     }
+
+    // Prev Code
+    // public function getAllDosenPaginated($limit = 10, $offset = 0)
+    // {
+    //     try {
+    //         // Query untuk hitung total records
+    //         $countQuery = "SELECT COUNT(*) as total FROM vw_show_dosen";
+    //         $countStmt = $this->db->prepare($countQuery);
+    //         $countStmt->execute();
+    //         $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+    //         // Query dengan pagination
+    //         $query = "SELECT * FROM vw_show_dosen
+    //                 ORDER BY created_at DESC
+    //                 LIMIT :limit OFFSET :offset";
+
+    //         $stmt = $this->db->prepare($query);
+    //         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    //         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    //         $stmt->execute();
+
+    //         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    //         return [
+    //             'success' => true,
+    //             'data' => $result,
+    //             'total' => (int)$totalRecords
+    //         ];
+    //     } catch (PDOException $e) {
+    //         error_log("DosenModel getAllDosenPaginated error: " . $e->getMessage());
+    //         return [
+    //             'success' => false,
+    //             'message' => 'Gagal mendapatkan data dosen',
+    //             'data' => [],
+    //             'total' => 0
+    //         ];
+    //     }
+    // }
 
 
     /**
@@ -211,13 +278,16 @@ class DosenModel extends BaseModel
     public function update($id, $data)
     {
         try {
-           $query = "CALL sp_update_dosen(
+            // Urutan parameter HARUS sesuai dengan stored procedure:
+            // sp_update_dosen(p_id, p_full_name, p_email, p_nidn, p_jabatan_id, p_keahlian_ids, p_status_aktif, p_foto_profil, p_deskripsi)
+            $query = "CALL sp_update_dosen(
                 :id,
                 :full_name,
                 :email,
                 :nidn,
                 :jabatan_id,
                 :keahlian_ids,
+                :status_aktif,
                 :foto_profil,
                 :deskripsi
             )";
@@ -240,6 +310,7 @@ class DosenModel extends BaseModel
             $stmt->bindParam(':nidn', $data['nidn']);
             $stmt->bindParam(':jabatan_id', $data['jabatan_id'], PDO::PARAM_INT);
             $stmt->bindParam(':keahlian_ids', $keahlianIds);
+            $stmt->bindParam(':status_aktif', $data['status_aktif'], PDO::PARAM_INT);
             $stmt->bindParam(':foto_profil', $data['foto_profil']);
             $stmt->bindParam(':deskripsi', $data['deskripsi']);
 
@@ -331,7 +402,7 @@ class DosenModel extends BaseModel
     {
         try {
             $query = "SELECT * FROM vw_show_dosen
-                      WHERE jabatan_name = :jabatan_name
+                      WHERE jabatan_name = :jabatan_name AND status_aktif = TRUE
                       ORDER BY created_at DESC";
 
             $stmt = $this->db->prepare($query);

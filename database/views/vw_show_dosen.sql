@@ -9,6 +9,7 @@ CREATE OR REPLACE VIEW vw_show_dosen AS
         d.foto_profil,
         d.deskripsi,
         d.jabatan_id,
+        d.status_aktif,
         j.nama_jabatan as jabatan_name,
         STRING_AGG(k.nama_keahlian, ', ') as keahlian_list,
         d.updated_at,

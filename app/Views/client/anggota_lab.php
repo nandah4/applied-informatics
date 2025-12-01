@@ -9,17 +9,14 @@ include __DIR__ . '/../layouts/header.php';
 
 <!-- Main Content -->
 <main class="tentang-kami-page">
-    <!-- Breadcrumb -->
-    <div class="container">
+
+    <!-- Leadership Section -->
+    <section class="container-fluid px-5 pb-5">
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
             <span class="breadcrumb-separator">›</span>
             <span class="breadcrumb-item active">Anggota Laboratorium</span>
         </div>
-    </div>
-
-    <!-- Leadership Section -->
-    <section class="leadership-section">
         <div class="container">
             <div class="section-header">
                 <h2 class="title-section">Struktur Pimpinan</h2>
@@ -67,7 +64,10 @@ include __DIR__ . '/../layouts/header.php';
                             </div>
 
                             <!-- Btn -->
-                            <a href="<?= base_url('dosen/detail/' . $leader['id']) ?>" class="btn-detail-dosen">Klik Disini</a>
+                            <a href="<?= base_url('dosen/detail/' . $leader['id']) ?>" class="btn-detail-dosen">
+                                <span>Lihat Profil Lengkap</span>
+                                <i data-feather="arrow-right"></i>
+                            </a>
 
                         </div>
                     </div>

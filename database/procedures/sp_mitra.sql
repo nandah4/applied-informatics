@@ -6,8 +6,7 @@ CREATE OR REPLACE PROCEDURE sp_insert_mitra (
     p_kategori mitra_kategori_enum,
     p_logo_mitra TEXT,
     p_tanggal_mulai TIMESTAMP,
-    p_tanggal_akhir TIMESTAMP,
-    p_deskripsi TEXT
+    p_tanggal_akhir TIMESTAMP
 )
 LANGUAGE plpgsql
 AS $$
@@ -16,8 +15,8 @@ BEGIN
         RAISE EXCEPTION 'Tanggal mulai tidak boleh lebih dari tanggal akhir';
     END IF;
 
-    INSERT INTO mst_mitra (nama, status, kategori, logo_mitra, tanggal_mulai, tanggal_akhir, deskripsi)
-    VALUES (p_nama, p_status, p_kategori, p_logo_mitra, p_tanggal_mulai, p_tanggal_akhir, p_deskripsi);
+    INSERT INTO mst_mitra (nama, status, kategori, logo_mitra, tanggal_mulai, tanggal_akhir)
+    VALUES (p_nama, p_status, p_kategori, p_logo_mitra, p_tanggal_mulai, p_tanggal_akhir);
 
 END;
 $$;
@@ -32,8 +31,7 @@ CREATE OR REPLACE PROCEDURE sp_update_mitra (
     p_kategori mitra_kategori_enum,
     p_logo_mitra TEXT,
     p_tanggal_mulai TIMESTAMP,
-    p_tanggal_akhir TIMESTAMP,
-    p_deskripsi TEXT
+    p_tanggal_akhir TIMESTAMP
 )
 LANGUAGE plpgsql
 AS $$
@@ -54,7 +52,6 @@ BEGIN
         logo_mitra = p_logo_mitra,
         tanggal_mulai = p_tanggal_mulai,
         tanggal_akhir = p_tanggal_akhir,
-        deskripsi = p_deskripsi,
         updated_at = NOW()
     WHERE 
         id = p_id; 

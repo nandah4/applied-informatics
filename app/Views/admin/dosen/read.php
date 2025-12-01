@@ -124,6 +124,17 @@
                         </div>
                     </div>
                     <div class="info-row">
+                        <div class="info-label">Status</div>
+                        <div class="info-value">
+                            <?php if ($dosenData['status_aktif']): ?>
+                                <span class="badge badge-success">Aktif</span>
+                            <?php else: ?>
+                                <span class="badge badge-warning">Tidak Aktif</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
                         <div class="info-label">Terakhir Diperbarui</div>
                         <div class="info-value"><?= formatTanggal($dosenData['updated_at'], true) ?></div>
                     </div>

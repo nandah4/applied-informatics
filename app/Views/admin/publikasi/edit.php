@@ -81,6 +81,7 @@
                             </label>
                             <select class="form-control" id="tipe_publikasi" name="tipe_publikasi" required>
                                 <option value="">Pilih Tipe Publikasi</option>
+                                <option value="Publikasi" <?= ($publikasi['tipe_publikasi'] === 'Publikasi') ? 'selected' : '' ?>>Publikasi</option>
                                 <option value="Riset" <?= ($publikasi['tipe_publikasi'] === 'Riset') ? 'selected' : '' ?>>Riset</option>
                                 <option value="Kekayaan Intelektual" <?= ($publikasi['tipe_publikasi'] === 'Kekayaan Intelektual') ? 'selected' : '' ?>>Kekayaan Intelektual</option>
                                 <option value="PPM" <?= ($publikasi['tipe_publikasi'] === 'PPM') ? 'selected' : '' ?>>PPM</option>

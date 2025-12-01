@@ -5,15 +5,13 @@ include __DIR__ . '/../layouts/header.php';
 
 <main class="publikasi-dosen-page">
 
-    <div class="container">
+    <div class="container-fluid px-5 pb-5">
+
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
             <span class="breadcrumb-separator">›</span>
             <span class="breadcrumb-item active">Penelitian</span>
         </div>
-    </div>
-
-    <div class="container">
 
         <!-- Header Section -->
         <div class="header-content mb-5">
@@ -23,8 +21,6 @@ include __DIR__ . '/../layouts/header.php';
                 Setiap penelitian dirancang untuk memberikan kontribusi serta mendukung pengembangan ilmu pengetahuan di berbagai bidang.
             </p>
         </div>
-
-        <div class="divider-hr"></div>
 
         <!-- Search & Filter Section -->
         <div class="search-filter-container mb-4">
@@ -107,6 +103,7 @@ include __DIR__ . '/../layouts/header.php';
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-md-3">
                                 <div class="penelitian-action">
                                     <?php if (!empty($publikasi['url_publikasi'])): ?>
@@ -139,7 +136,7 @@ include __DIR__ . '/../layouts/header.php';
                             <a class="page-link"
                                 href="<?= $pagination['has_prev'] ? '?page=' . $pagination['prev_page'] . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '') . (isset($_GET['tipe_publikasi']) ? '&tipe_publikasi=' . urlencode($_GET['tipe_publikasi']) : '') : '#' ?>"
                                 tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
-                                <i class="fas fa-chevron-left"></i>
+                                <i data-feather="chevron-left"></i>
                             </a>
                         </li>
 
@@ -163,7 +160,7 @@ include __DIR__ . '/../layouts/header.php';
                         <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                             <a class="page-link"
                                 href="<?= $pagination['has_next'] ? '?page=' . $pagination['next_page'] . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '') . (isset($_GET['tipe_publikasi']) ? '&tipe_publikasi=' . urlencode($_GET['tipe_publikasi']) : '') : '#' ?>">
-                                <i class="fas fa-chevron-right"></i>
+                                <i data-feather="chevron-right"></i>
                             </a>
                         </li>
                     </ul>
@@ -172,9 +169,10 @@ include __DIR__ . '/../layouts/header.php';
         <?php endif; ?>
 
     </div>
+
 </main>
 
-<link rel="stylesheet" href="<?= asset_url('css/pages/publikasi_dosen-user/publikasi_dosen.css') ?>">
+<link rel="stylesheet" href="<?= asset_url('css/pages/publikasi/publikasi_dosen.css') ?>">
 
 <!-- jQuery -->
 <script src="<?= asset_url('js/jquery.min.js') ?>"></script>

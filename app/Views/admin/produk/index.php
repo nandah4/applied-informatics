@@ -54,13 +54,13 @@
             <div class="card-header">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                     <!-- Search Bar -->
-                    <div class="search-wrapper">
+                    <!-- <div class="search-wrapper">
                         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
                         <input type="text" class="search-input" placeholder="Cari nama produk atau URL...">
-                    </div>
+                    </div> -->
 
                     <!-- Add Button -->
                     <a href="<?= base_url('admin/produk/create') ?>" class="btn-primary-custom">
@@ -90,23 +90,6 @@
                         <?php
                         if (!empty($listProduk)) :
                             foreach ($listProduk as $produk) :
-                                // âœ… GENERATE AUTHOR DISPLAY DENGAN STRUKTUR BARU
-                                $authorDisplay = '';
-                                $hasDosen = !empty($produk['dosen_names']);
-                                $hasMahasiswa = !empty($produk['tim_mahasiswa']);
-
-                                if ($hasDosen && $hasMahasiswa) {
-                                    // Kolaborasi: Dosen & Mahasiswa
-                                    $authorDisplay = htmlspecialchars($produk['dosen_names']) . ' & ' . htmlspecialchars($produk['tim_mahasiswa']);
-                                } elseif ($hasDosen) {
-                                    // Hanya Dosen
-                                    $authorDisplay = htmlspecialchars($produk['dosen_names']);
-                                } elseif ($hasMahasiswa) {
-                                    // Hanya Mahasiswa
-                                    $authorDisplay = htmlspecialchars($produk['tim_mahasiswa']);
-                                } else {
-                                    $authorDisplay = '-';
-                                }
 
                                 $fotoUrl = !empty($produk['foto_produk'])
                                     ? upload_url('produk/' . $produk['foto_produk'])
@@ -122,68 +105,71 @@
                                     </td>
                                     <td class="col-author">
                                         <?php
-                                        // ✅ GENERATE AUTHOR DISPLAY DENGAN BADGE LABELS & PROPER SPACING
-                                        $hasDosen = !empty($produk['dosen_names']);
+                                        $dosenHtml = '';
+                                        if (!empty($produk['dosen_names'])) {
+                                            // Pecah string berdasarkan delimiter dari View SQL
+                                            $dosenArray = explode('-$$$-', $produk['dosen_names']);
+                                            $totalDosen = count($dosenArray);
+
+                                            if ($totalDosen > 2) {
+                                                $firstTwo = array_slice($dosenArray, 0, 2);
+                                                $remaining = array_slice($dosenArray, 2);
+                                                $remainingText = htmlspecialchars(implode(', ', $remaining));
+
+                                                // Gabungkan string
+                                                $dosenHtml = htmlspecialchars(implode(', ', $firstTwo)) .
+                                                    ', <span class="fw-bold" style="cursor:help;" data-bs-toggle="tooltip" title="' . $remainingText . '">...</span>';
+                                            } else {
+                                                // Jika <= 2, tampilkan semua
+                                                $dosenHtml = htmlspecialchars(implode(', ', $dosenArray));
+                                            }
+                                        }
+
+                                        // --- 2. LOGIC CEK KETERSEDIAAN DATA ---
+                                        $hasDosen = !empty($dosenHtml);
                                         $hasMahasiswa = !empty($produk['tim_mahasiswa']);
+                                        ?>
 
-                                        if ($hasDosen && $hasMahasiswa): ?>
-                                            <!-- ✅ Kolaborasi: Dosen & Mahasiswa dengan spacing -->
-                                            <div class="author-badges-wrapper">
-                                                <!-- Dosen Section -->
-                                                    <span class="author-badge author-dosen"> Dosen
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                                            <circle cx="12" cy="7" r="4"></circle>
-                                                        </svg>
-                                                        
-                                                        <?= htmlspecialchars($produk['dosen_names']) ?>
+                                        <?php if ($hasDosen && $hasMahasiswa): ?>
+                                            <div class="author-badges-wrapper d-flex flex-column gap-2">
+
+                                                <div class="d-flex align-items-center">
+                                                    <span class="author-badge me-2">
+                                                        Dosen -
                                                     </span>
+                                                    <span class="author-names text-sm">
+                                                        <?= $dosenHtml ?>
+                                                    </span>
+                                                </div>
 
-                                                <!-- Mahasiswa Section (dengan spacing top) -->
-                                                
-                                                    <span class="author-badge author-mahasiswa"> Mahasiswa
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                                            <circle cx="9" cy="7" r="4"></circle>
-                                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                                        </svg>
-                                                        
+                                                <div class="d-flex align-items-center">
+                                                    <span class="author-badge  me-2">
+                                                        Mahasiswa -
+                                                    </span>
+                                                    <span class="author-names text-sm">
                                                         <?= htmlspecialchars($produk['tim_mahasiswa']) ?>
                                                     </span>
-                                                
+                                                </div>
                                             </div>
 
                                         <?php elseif ($hasDosen): ?>
-                                            <!-- ✅ Hanya Dosen -->
-                                            <div class="author-badges-wrapper">
-                                                
-                                                    <span class="author-badge author-dosen"> Dosen
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                                            <circle cx="12" cy="7" r="4"></circle>
-                                                        </svg>
-                                                        
-                                                        <?= htmlspecialchars($produk['dosen_names']) ?>
-                                                    </span>
-                                                
+                                            <div class="d-flex align-items-center">
+                                                <span class="author-badge me-2">
+                                                    Dosen -
+                                                </span>
+                                                <span class="author-names text-sm">
+                                                    <?= $dosenHtml ?>
+                                                </span>
                                             </div>
 
                                         <?php elseif ($hasMahasiswa): ?>
-                                            <!-- ✅ Hanya Mahasiswa -->
-                                            <div class="author-badges-wrapper">
-                                                
-                                                    <span class="author-badge author-mahasiswa"> Mahasiswa
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                                            <circle cx="9" cy="7" r="4"></circle>
-                                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                                        </svg>
-                                                        
-                                                        <?= htmlspecialchars($produk['tim_mahasiswa']) ?>
-                                                    </span>
-                                                
+                                            <div class="d-flex align-items-center">
+                                                <span class="author-badge me-2">
+                                                    Mahasiswa -
+                                                </span>
+                                                <span class="author-names text-sm">
+                                                    <?= htmlspecialchars($produk['tim_mahasiswa']) ?>
+                                                </span>
                                             </div>
 
                                         <?php else: ?>

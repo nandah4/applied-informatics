@@ -213,6 +213,19 @@
                             <div class="helper-text">Deskripsikan pengalaman, spesialisasi, dan pencapaian dosen</div>
                         </div>
 
+                        <!-- Status Aktif -->
+                        <div class="col-md-6 mb-3">
+                            <label for="status_aktif" class="form-label">
+                                Status <span class="required">*</span>
+                            </label>
+                            <select class="form-select" id="status_aktif" name="status_aktif" required>
+                                <option value="1" <?= (isset($dosen['status_aktif']) && $dosen['status_aktif']) ? 'selected' : '' ?>>Aktif</option>
+                                <option value="0" <?= (isset($dosen['status_aktif']) && !$dosen['status_aktif']) ? 'selected' : '' ?>>Tidak Aktif</option>
+                            </select>
+                            <div class="helper-text">Status keaktifan dosen saat ini</div>
+                            <div id="statusAktifError" class="invalid-feedback"></div>
+                        </div>
+
                         <!-- Divider -->
                         <div class="col-12 mb-3">
                             <hr class="form-divider">

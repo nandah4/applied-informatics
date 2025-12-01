@@ -2,106 +2,6 @@
 
 /* Menggunakan CSS variables dari variables.css */
 
-.main-content {
-    padding: 2rem;
-    margin-left: 260px;
-    min-height: 100vh;
-}
-
-@media (max-width: 768px) {
-    .main-content {
-        margin-left: 0;
-        padding: 1rem;
-    }
-}
-
-.page-header-list {
-    margin-bottom: 10px;
-    padding: 70px 2rem 10px 2rem;
-}
-
-.page-title {
-    font-size: var(--fs-2xl) !important;
-    font-weight: 700;
-    color: var(--color-gray-900);
-    margin: 0;
-}
-
-.page-subtitle {
-    color: var(--color-gray-500);
-    font-size: var(--fs-base);
-    margin-top: 10px;
-}
-
-.card {
-    background: white;
-    overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: none;
-}
-
-.card-header {
-    background: white;
-    border-bottom: 1px solid var(--color-gray-200);
-    padding: 1.5rem;
-    border-radius: 12px 12px 0 0;
-}
-
-/* Search Bar */
-.search-wrapper {
-    position: relative;
-    /* border: 1px solid red; */
-    width: 300px;
-}
-
-.search-input {
-    width: 100%;
-    padding: 0.625rem 1rem 0.625rem 2.75rem;
-    border: 1px solid var(--color-gray-300);
-    border-radius: 8px;
-    font-size: 0.875rem;
-    transition: all 0.2s;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-gray-400);
-    width: 18px;
-    height: 18px;
-}
-
-/* Buttons */
-.btn-primary-custom {
-    background: var(--color-primary-500);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: var(--fs-sm);
-    font-weight: 600;
-    border: none;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-}
-
-.btn-primary-custom:hover {
-    background: var(--color-primary-600);
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
 /* Table */
 .table-wrapper {
     overflow-x: auto;
@@ -118,12 +18,26 @@
 }
 .col-id { min-width: 70px; }
 .col-photo { min-width: 120px; }
-.col-name { min-width: 240px; }
+.col-name { min-width: 290px; }
 .col-email { min-width: 260px; }
 .col-nidn { min-width: 180px; }
 .col-jabatan { min-width: 250px; }
-.col-keahlian { min-width: 300px; }
-.col-deskripsi { min-width: 250px; }
+.col-keahlian { min-width: 350px; }
+.col-status { min-width: 150px; }
+
+.badge-success {
+    font-size: var(--fs-xs);
+    background-color: var(--color-primary-600);
+    padding: 10px 16px;
+    color: white;
+}
+
+.badge-warning {
+    font-size: var(--fs-xs) !important;
+    background-color: var(--color-secondary-600);
+    padding: 10px 16px;
+    color: white;
+}
 
 .table-custom thead th {
     padding: 1rem;
@@ -243,13 +157,7 @@
     color: #6d28d9;
 }
 
-.text-truncate-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    max-width: 300px;
-}
+
 /* Pagination */
 .pagination-wrapper {
     padding: 1.5rem;

@@ -327,6 +327,10 @@ textarea.form-control {
   cursor: pointer;
 }
 
+.mb-deskripsi {
+  margin-bottom: 100px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .form-actions {

@@ -392,32 +392,31 @@
     font-weight: 600;
     text-transform: sentence-case;
     letter-spacing: 0.02em;
+    
 }
 
-.author-badge svg {
-    flex-shrink: 0;
-}
+
 
 /* Badge Dosen - Primary color (Cyan/Teal) - KONSISTEN */
-.author-badge.author-dosen {
-    background: rgba(1, 181, 185, 0.15);
+/* .author-badge.author-dosen {
+    background-color: #d97706;
     color: var(--color-primary-700);
     border: 1px solid rgba(1, 181, 185, 0.3);
-}
+} */
 
 /* Badge Mahasiswa - Orange color - KONSISTEN */
-.author-badge.author-mahasiswa {
+/* .author-badge.author-mahasiswa {
     background: rgba(255, 111, 0, 0.15);
     color: #d97706;
     border: 1px solid rgba(255, 111, 0, 0.3);
-}
+} */
 
 /* ✅ Hover effect */
-.author-badge:hover {
+/* .author-badge:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
-}
+} */
 
 /* Responsive */
 @media (max-width: 768px) {

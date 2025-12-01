@@ -5,7 +5,7 @@
  * Description: Handle database operations for AuthModel
  */
 
-
+use App\Helpers\SessionHelper;
 
 class AuthModel
 {
@@ -48,6 +48,9 @@ class AuthModel
             $_SESSION['user_email'] = $user['email'];
             $_SESSION['role'] = $user['role'];  // Role harus di-set di database
             $_SESSION['logged_in'] = true;
+
+            // Initialize session timestamps untuk timeout tracking
+            SessionHelper::initSessionTimestamps();
 
             return [
                 'success' => true,

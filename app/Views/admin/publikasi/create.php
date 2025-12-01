@@ -77,6 +77,7 @@
                             </label>
                             <select class="form-control" id="tipe_publikasi" name="tipe_publikasi" required>
                                 <option value="">Pilih Tipe Publikasi</option>
+                                <option value="Publikasi">Publikasi</option>
                                 <option value="Riset">Riset</option>
                                 <option value="Kekayaan Intelektual">Kekayaan Intelektual</option>
                                 <option value="PPM">PPM</option>

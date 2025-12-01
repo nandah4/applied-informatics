@@ -150,7 +150,8 @@
           if (response.success) {
             jQueryHelpers.showAlert(
               "Data mitra berhasil ditambahkan!",
-              "success"
+              "success",
+              2000
             );
             setTimeout(() => {
               window.location.href = `${BASE_URL}/admin/mitra`;
@@ -165,7 +166,7 @@
           }
         },
         onError: (errorMessage) => {
-          jQueryHelpers.showAlert("Error: " + errorMessage, "danger");
+          jQueryHelpers.showAlert("Error: " + errorMessage, "danger", 5000);
           buttonState.enable();
         },
       });
@@ -178,7 +179,6 @@
         logo_mitra: $("#logo_mitra")[0].files[0],
         tanggal_mulai: $("#tanggal_mulai").val().trim(),
         tanggal_akhir: $("#tanggal_akhir").val().trim(),
-        deskripsi: $("#deskripsi").val().trim(),
         csrf_token: $("input[name='csrf_token']").val(),
       };
     },
@@ -269,8 +269,6 @@
       if (data.tanggal_akhir && data.tanggal_akhir !== "") {
         formData.append("tanggal_akhir", data.tanggal_akhir);
       }
-
-      formData.append("deskripsi", data.deskripsi);
 
       if (data.logo_mitra) {
         formData.append("logo_mitra", data.logo_mitra);

@@ -58,6 +58,7 @@ class DosenController
         $jabatan_id = $_POST['jabatan_id'] ?? '';
         $keahlian_ids = $_POST['keahlian_ids'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
+        $status_aktif = $_POST['status_aktif'] ?? '1';
 
         // 3. Validasi input menggunakan ValidationHelper
         $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $jabatan_id, $keahlian_ids, $deskripsi);
@@ -99,7 +100,8 @@ class DosenController
             'jabatan_id' => (int)$jabatan_id,
             'keahlian_ids' => $keahlianArray,
             'foto_profil' => $fotoFileName,
-            'deskripsi' => $deskripsi
+            'deskripsi' => $deskripsi,
+            'status_aktif' => ($status_aktif === '1' || $status_aktif === 'true' || $status_aktif === true) ? 1 : 0
         ];
 
         // 6. Insert dosen ke database menggunakan stored procedure
@@ -130,6 +132,7 @@ class DosenController
         // Ambil parameter dari GET request
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
         // Validasi input
         $page = max(1, $page);
@@ -138,8 +141,14 @@ class DosenController
         // Hitung offset untuk query
         $offset = ($page - 1) * $perPage;
 
+        $params = [
+            'search' => $search,
+            'limit' => $perPage,
+            'offset' => $offset
+        ];
+
         // Get data dengan pagination
-        $result = $this->dosenModel->getAllDosenPaginated($perPage, $offset);
+        $result = $this->dosenModel->getAllDosenPaginated($params);
 
         // Generate pagination dari total yang dikembalikan model
         $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
@@ -149,6 +158,32 @@ class DosenController
             'pagination' => $pagination
         ];
     }
+
+    // Prev Code
+    // public function getAllDosen()
+    // {
+    //     // Ambil parameter dari GET request
+    //     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    //     $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+    //     // Validasi input
+    //     $page = max(1, $page);
+    //     $perPage = max(1, min(100, $perPage));
+
+    //     // Hitung offset untuk query
+    //     $offset = ($page - 1) * $perPage;
+
+    //     // Get data dengan pagination
+    //     $result = $this->dosenModel->getAllDosenPaginated($perPage, $offset);
+
+    //     // Generate pagination dari total yang dikembalikan model
+    //     $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
+
+    //     return [
+    //         'data' => $result['data'],
+    //         'pagination' => $pagination
+    //     ];
+    // }
 
 
     /**
@@ -252,6 +287,7 @@ class DosenController
         $jabatan_id = $_POST['jabatan_id'] ?? '';
         $keahlian_ids = $_POST['keahlian_ids'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
+        $status_aktif = $_POST['status_aktif'] ?? '1';
 
         // 2a. Validasi ID
         $idValidation = ValidationHelper::validateId($id, 'ID Dosen');
@@ -301,7 +337,8 @@ class DosenController
             'jabatan_id' => (int)$jabatan_id,
             'keahlian_ids' => $keahlian_ids,
             'foto_profil' => $fotoFileName,
-            'deskripsi' => $deskripsi
+            'deskripsi' => $deskripsi,
+            'status_aktif' => ($status_aktif === '1' || $status_aktif === 'true' || $status_aktif === true) ? 1 : 0
         ];
 
         // 6. Update data dosen

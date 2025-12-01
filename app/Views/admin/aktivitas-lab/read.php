@@ -122,7 +122,7 @@
                         </svg>
                         Deskripsi
                     </h3>
-                    <p class="description-text"><?= nl2br(htmlspecialchars($aktivitas['deskripsi'])) ?></p>
+                    <p class="description-text"><?= ($aktivitas['deskripsi']) ?></p>
                 </div>
 
                 <!-- Action Buttons -->
