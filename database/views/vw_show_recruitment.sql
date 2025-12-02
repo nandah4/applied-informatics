@@ -23,7 +23,7 @@ SELECT
      r.judul AS judul_rekrutmen,                                                                                                                                                                      
      p.nim,                                                                                                                                                                                           
      p.nama,                                                                                                                                                                                          
-     p3.email,                                                                                                                                                                                         
+     p.email,                                                                                                                                                                                         
      p.no_hp,                                                                                                                                                                                         
      p.semester,                                                                                                                                                                                      
      p.ipk,                                                                                                                                                                                           
