@@ -1251,7 +1251,7 @@ $router->get('admin/publikasi-akademik/read/(\\d+)', function ($id) {
 $router->get('admin/publikasi-akademik/create', function () {
     // // Get list dosen untuk dropdown
     $dosenController = new DosenController();
-    $dosenResult = $dosenController->getAllDosen();
+    $dosenResult = $dosenController->getAllDosenActive();
     $listDosen = $dosenResult['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/publikasi/create.php';
@@ -1289,7 +1289,7 @@ $router->get('admin/publikasi-akademik/edit/(\\d+)', function ($id) {
 
     // Get list dosen untuk dropdown
     $dosenController = new DosenController();
-    $dosenResult = $dosenController->getAllDosen();
+    $dosenResult = $dosenController->getAllDosenActive();
     $listDosen = $dosenResult['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/publikasi/edit.php';

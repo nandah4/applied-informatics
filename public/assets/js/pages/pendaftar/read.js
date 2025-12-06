@@ -4,6 +4,7 @@
  *
  * Fitur:
  * - Update status seleksi pendaftar (Diterima/Ditolak)
+ * - Rich text feedback editor untuk penolakan (Quill)
  * - Delete pendaftar dengan konfirmasi
  * - Kirim email notifikasi otomatis
  *
@@ -11,14 +12,61 @@
  * - jQuery
  * - jQueryHelpers.js
  * - Bootstrap
+ * - Quill.js
  */
 
 (function () {
     "use strict";
 
     const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
+    
+    // Quill Editor Instance
+    let quillEditor = null;
 
     $(document).ready(function () {
+        // ========================================
+        // Initialize Quill Editor
+        // ========================================
+        
+        if (document.getElementById('feedback-editor')) {
+            quillEditor = new Quill('#feedback-editor', {
+                theme: 'snow',
+                placeholder: 'Masukkan alasan penolakan...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered' }]
+                    ]
+                }
+            });
+        }
+
+        // ========================================
+        // Toggle Feedback Editor Visibility
+        // ========================================
+
+        const statusSelect = $('#selectStatusSeleksi');
+        const feedbackContainer = $('#feedbackContainer');
+
+        function toggleFeedbackEditor() {
+            const selectedStatus = statusSelect.val();
+            if (selectedStatus === 'Ditolak') {
+                feedbackContainer.addClass('show');
+            } else {
+                feedbackContainer.removeClass('show');
+                // Clear editor content when not Ditolak
+                if (quillEditor) {
+                    quillEditor.setContents([]);
+                }
+            }
+        }
+
+        // Initial check
+        toggleFeedbackEditor();
+
+        // On change
+        statusSelect.on('change', toggleFeedbackEditor);
+
         // ========================================
         // Form Update Status Seleksi
         // ========================================
@@ -28,7 +76,7 @@
 
             const form = $(this);
             const submitBtn = $('#btnUpdateStatus');
-            const statusSeleksi = form.find('select[name="status_seleksi"]').val();
+            const statusSeleksi = statusSelect.val();
 
             // Validasi
             if (!statusSeleksi) {
@@ -36,11 +84,34 @@
                 return;
             }
 
+            // Get deskripsi from Quill editor (only for Ditolak)
+            let deskripsi = '';
+            if (statusSeleksi === 'Ditolak' && quillEditor) {
+                const quillContent = quillEditor.root.innerHTML;
+                // Check if editor has actual content (not just empty paragraph)
+                const textContent = quillEditor.getText().trim();
+                if (textContent.length === 0) {
+                    jQueryHelpers.showAlert('Mohon isi alasan penolakan', 'danger', 3000);
+                    return;
+                }
+                deskripsi = quillContent;
+                $('#deskripsiInput').val(deskripsi);
+            }
+
             // Konfirmasi
-            const statusText = statusSeleksi === 'Diterima' ? 'DITERIMA' : 'DITOLAK';
-            const confirmMessage = `Apakah Anda yakin ingin mengubah status menjadi "${statusText}"?\n\n` +
+            let confirmMessage = `Apakah Anda yakin ingin mengubah status menjadi "Status"?\n\n` +
                 `Email notifikasi akan otomatis dikirim ke pendaftar.`;
 
+            if(statusSeleksi === 'Pending') {
+                confirmMessage = `Status saat ini PENDING dan Anda tidak bisa mengubah dari DITERIMA atau DITOLAK ke PENDING`
+            } else if (statusSeleksi === 'Diterima') {
+                confirmMessage = `Apakah Anda yakin ingin mengubah status menjadi "DITERIMA"?\n\n` +
+                `Email notifikasi akan otomatis dikirim ke pendaftar.`
+            } else {
+                confirmMessage = `Apakah Anda yakin ingin mengubah status menjadi "DITOLAK"?\n\n` +
+                `Feedback penolakan akan dikirim ke email pendaftar.`
+            }
+            
             if (!confirm(confirmMessage)) {
                 return;
             }
@@ -56,15 +127,23 @@
             // Get CSRF token
             const csrfToken = $('input[name="csrf_token"]').val();
 
+            // Prepare data
+            const requestData = {
+                pendaftar_id: form.find('input[name="pendaftar_id"]').val(),
+                status_seleksi: statusSeleksi,
+                csrf_token: csrfToken
+            };
+
+            // Add deskripsi only if Ditolak
+            if (statusSeleksi === 'Ditolak') {
+                requestData.deskripsi = deskripsi;
+            }
+
             // AJAX Request
             jQueryHelpers.makeAjaxRequest({
                 url: `${BASE_URL}/admin/daftar-pendaftar/update-status`,
                 method: 'POST',
-                data: {
-                    pendaftar_id: form.find('input[name="pendaftar_id"]').val(),
-                    status_seleksi: statusSeleksi,
-                    csrf_token: csrfToken
-                },
+                data: requestData,
                 onSuccess: (response) => {
                     if (response.success) {
                         jQueryHelpers.showAlert(response.message, 'success', 2000);

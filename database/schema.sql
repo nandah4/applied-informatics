@@ -252,6 +252,7 @@ CREATE TABLE trx_pendaftar (
     file_khs        VARCHAR(255),
     
     status_seleksi  seleksi_status_enum NOT NULL DEFAULT 'Pending',
+    deskripsi       TEXT DEFAULT NULL,  -- Feedback for rejected applicants
     
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),

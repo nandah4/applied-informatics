@@ -190,7 +190,8 @@ class DashboardModel
             $query = "SELECT
                         (SELECT COUNT(*) FROM mst_dosen WHERE status_aktif = TRUE) AS total_anggota,
                         (SELECT COUNT(*) FROM trx_publikasi) AS total_publikasi,
-                        (SELECT COUNT(*) FROM mst_mitra) AS total_mitra;";
+                        (SELECT COUNT(*) FROM mst_mitra) AS total_mitra,
+                        (SELECT COUNT(*) FROM mst_produk) AS total_produk";
 
             $stmt = $this->db->prepare($query);
             $stmt->execute();

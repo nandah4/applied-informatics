@@ -127,6 +127,12 @@ class DosenController
      *
      * @return array - Data dosen dengan pagination info
      */
+
+    public function getAllDosenActive()
+    {
+        return $this->dosenModel->getAllDosenActive();
+    }
+
     public function getAllDosen()
     {
         // Ambil parameter dari GET request

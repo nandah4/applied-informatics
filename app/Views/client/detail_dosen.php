@@ -189,7 +189,7 @@ include __DIR__ . '/../layouts/header.php';
                 <!-- Publikasi Tabs -->
                 <div class="publikasi-tabs">
                     <?php
-                    $tipeOrder = ['Riset', 'PPM', 'Kekayaan Intelektual'];
+                    $tipeOrder = ['Publikasi', 'Riset', 'PPM', 'Kekayaan Intelektual'];
                     $firstTab = true;
                     foreach ($tipeOrder as $tipe):
                         if (isset($publikasiGrouped[$tipe])):

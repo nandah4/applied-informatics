@@ -29,10 +29,18 @@
     width: 100px;
 }
 
-.action-cell {
-    width: 120px;
-    text-align: center;
+.col-created {
+    min-width: 250px;
 }
+
+
+.action-cell {
+    position: sticky;
+    right: 0;
+    background: white;
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.05);
+}
+
 
 
 /* URL Link */

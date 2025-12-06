@@ -429,7 +429,7 @@ class PublikasiAkademikModel extends BaseModel
             // Get data with pagination
             $query = "SELECT * FROM vw_show_publikasi
                       $whereClause
-                      ORDER BY tahun_publikasi DESC, created_at DESC
+                      ORDER BY created_at DESC
                       LIMIT :limit OFFSET :offset";
 
             $stmt = $this->db->prepare($query);
