@@ -52,13 +52,14 @@ class EmailHelper
      * @param string $toEmail - Email penerima
      * @param string $namaMahasiswa - Nama mahasiswa
      * @param string $judulRekrutmen - Judul rekrutmen
+     * @param string|null $deskripsi - Feedback/alasan penolakan (HTML from Quill)
      * @return array - ['success' => bool, 'message' => string]
      */
-    public static function sendRejectionEmail($toEmail, $namaMahasiswa, $judulRekrutmen)
+    public static function sendRejectionEmail($toEmail, $namaMahasiswa, $judulRekrutmen, $deskripsi = null)
     {
         $subject = "Informasi Hasil Seleksi Asisten Laboratorium";
 
-        $body = self::getRejectionEmailTemplate($namaMahasiswa, $judulRekrutmen);
+        $body = self::getRejectionEmailTemplate($namaMahasiswa, $judulRekrutmen, $deskripsi);
 
         return self::sendMail($toEmail, $namaMahasiswa, $subject, $body);
     }
@@ -264,10 +265,21 @@ class EmailHelper
      *
      * @param string $namaMahasiswa
      * @param string $judulRekrutmen
+     * @param string|null $deskripsi - Feedback/alasan penolakan (HTML from Quill)
      * @return string - HTML template
      */
-    private static function getRejectionEmailTemplate($namaMahasiswa, $judulRekrutmen)
+    private static function getRejectionEmailTemplate($namaMahasiswa, $judulRekrutmen, $deskripsi = null)
     {
+        // Build feedback section if deskripsi exists
+        $feedbackSection = '';
+        if (!empty($deskripsi)) {
+            $feedbackSection = '
+            <div class="feedback-box">
+                <h3>📝 Catatan dari Tim Penyeleksi</h3>
+                <div class="feedback-content">' . $deskripsi . '</div>
+            </div>';
+        }
+
         return '
 <!DOCTYPE html>
 <html lang="id">
@@ -328,6 +340,39 @@ class EmailHelper
             margin: 0;
             color: #4a5568;
         }
+        .feedback-box {
+            background: #fff5f5;
+            border-left: 4px solid #c53030;
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+        .feedback-box h3 {
+            margin: 0 0 12px 0;
+            color: #c53030;
+            font-size: 16px;
+        }
+        .feedback-content {
+            color: #4a5568;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        .feedback-content strong, .feedback-content b {
+            font-weight: 700;
+        }
+        .feedback-content em, .feedback-content i {
+            font-style: italic;
+        }
+        .feedback-content u {
+            text-decoration: underline;
+        }
+        .feedback-content ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .feedback-content li {
+            margin-bottom: 6px;
+        }
         .footer {
             background: #f7fafc;
             padding: 30px;
@@ -365,6 +410,8 @@ class EmailHelper
                 Setelah melalui proses seleksi yang ketat, dengan berat hati kami informasikan bahwa
                 Anda <strong>belum dapat kami terima</strong> pada kesempatan kali ini.
             </p>
+
+            ' . $feedbackSection . '
 
             <div class="info-box">
                 <p>

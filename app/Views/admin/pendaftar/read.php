@@ -22,6 +22,35 @@
 
     <!-- Data Dosen Read Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/dosen/read.css') ?>">
+
+    <!-- Quill Editor CSS -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <style>
+        .feedback-container {
+            margin-top: 1rem;
+            display: none;
+        }
+        .feedback-container.show {
+            display: block;
+        }
+        .feedback-container label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        #feedback-editor {
+            height: 150px;
+            background: #fff;
+            border-radius: 0 0 8px 8px;
+        }
+        .ql-toolbar.ql-snow {
+            border-radius: 8px 8px 0 0;
+        }
+        .ql-container.ql-snow {
+            border-radius: 0 0 8px 8px;
+        }
+    </style>
 </head>
 
 <body>
@@ -190,7 +219,7 @@
                             <form id="formUpdateStatus">
                                 <input type="hidden" name="pendaftar_id" value="<?= $pendaftar['id'] ?>">
 
-                                <select name="status_seleksi" class="form-select info-value">
+                                <select name="status_seleksi" class="form-select info-value" id="selectStatusSeleksi">
                                     <option value="Pending" <?= $pendaftar['status_seleksi'] === 'Pending' ? 'selected' : '' ?>>
                                         Pending
                                     </option>
@@ -201,6 +230,14 @@
                                         Ditolak
                                     </option>
                                 </select>
+
+                                <!-- Feedback Editor (shown only when Ditolak is selected) -->
+                                <div class="feedback-container" id="feedbackContainer">
+                                    <label for="feedback-editor">Alasan Penolakan</label>
+                                    <div id="feedback-editor"></div>
+                                    <input type="hidden" name="deskripsi" id="deskripsiInput">
+                                </div>
+
                                 <button type="submit" class="btn-primary-custom mt-3" id="btnUpdateStatus">
                                     Update Status
                                 </button>
@@ -257,6 +294,9 @@
     <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
+
+    <!-- Quill Editor JS -->
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
     <!-- Data Dosen Read Page JS -->
     <script src="<?= asset_url('js/pages/pendaftar/read.js') ?>"></script>

@@ -282,7 +282,7 @@ include __DIR__ . '/../layouts/header.php';
                                             <i data-feather="slack"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <span class="accordion-title">Mitra Institusi Pemerintah</span>
+                                            <span class="accordion-title">Mitra Industri</span>
                                         </div>
                                     </div>
                                 </button>
@@ -366,7 +366,7 @@ include __DIR__ . '/../layouts/header.php';
                                             <i data-feather="slack"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <span class="accordion-title">Mitra Institusi Pemerintah</span>
+                                            <span class="accordion-title">Mitra Komunitas</span>
                                         </div>
                                     </div>
                                 </button>
