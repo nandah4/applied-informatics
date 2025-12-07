@@ -142,13 +142,14 @@ class PendaftarModel
     /**
      * Update status seleksi pendaftar
      * Jika status = "Diterima", call sp_terima_anggota (otomatis masuk mst_mahasiswa)
-     * Jika status = "Ditolak", call sp_update_status_seleksi
+     * Jika status = "Ditolak", call sp_update_status_seleksi dengan deskripsi
      *
      * @param int $pendaftar_id
      * @param string $status_baru - "Diterima" atau "Ditolak"
+     * @param string|null $deskripsi - Feedback untuk penolakan (only for Ditolak)
      * @return array
      */
-    public function updateStatusSeleksi($pendaftar_id, $status_baru)
+    public function updateStatusSeleksi($pendaftar_id, $status_baru, $deskripsi = null)
     {
         try {
             // Validasi status
@@ -163,16 +164,15 @@ class PendaftarModel
             if ($status_baru === 'Diterima') {
                 // Call sp_terima_anggota - otomatis update status & insert ke mst_mahasiswa
                 $query = "CALL sp_terima_anggota(:pendaftar_id)";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':pendaftar_id', $pendaftar_id, PDO::PARAM_INT);
             } else {
-                // Call sp_update_status_seleksi
-                $query = "CALL sp_update_status_seleksi(:pendaftar_id, :status)";
-            }
-
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':pendaftar_id', $pendaftar_id, PDO::PARAM_INT);
-
-            if ($status_baru === 'Ditolak') {
+                // Call sp_update_status_seleksi dengan deskripsi
+                $query = "CALL sp_update_status_seleksi(:pendaftar_id, :status, :deskripsi)";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':pendaftar_id', $pendaftar_id, PDO::PARAM_INT);
                 $stmt->bindParam(':status', $status_baru);
+                $stmt->bindParam(':deskripsi', $deskripsi);
             }
 
             $stmt->execute();

@@ -272,7 +272,8 @@ $$;
 
 CREATE OR REPLACE PROCEDURE sp_update_status_seleksi (
     p_pendaftar_id BIGINT,
-    p_status_baru seleksi_status_enum
+    p_status_baru seleksi_status_enum,
+    p_deskripsi TEXT DEFAULT NULL  -- Feedback for rejected applicants
 )
 LANGUAGE plpgsql
 AS $$
@@ -282,9 +283,13 @@ BEGIN
         RAISE EXCEPTION 'Data pendaftar tidak ditemukan.';
     END IF;
 
-    -- Update Status
+    -- Update Status and Deskripsi
     UPDATE trx_pendaftar 
     SET status_seleksi = p_status_baru,
+        deskripsi = CASE 
+            WHEN p_status_baru = 'Ditolak' THEN p_deskripsi 
+            ELSE NULL 
+        END,
         updated_at = NOW()
     WHERE id = p_pendaftar_id;
 END;

@@ -102,6 +102,7 @@ class PendaftarController
         // 2. Ambil data dari POST
         $pendaftar_id = $_POST['pendaftar_id'] ?? null;
         $status_baru = $_POST['status_seleksi'] ?? '';
+        $deskripsi = $_POST['deskripsi'] ?? null;  // Feedback untuk penolakan
 
         // 3. Validasi input
         if (empty($pendaftar_id) || !is_numeric($pendaftar_id)) {
@@ -121,6 +122,12 @@ class PendaftarController
             return;
         }
 
+        // 4A. Validasi deskripsi wajib untuk status Ditolak
+        if ($status_baru === 'Ditolak' && empty(trim(strip_tags($deskripsi)))) {
+            ResponseHelper::error('Alasan penolakan wajib diisi');
+            return;
+        }
+
         // 5. Get data pendaftar untuk email
         $pendaftarResult = $this->pendaftarModel->getById($pendaftar_id);
         if (!$pendaftarResult['success']) {
@@ -136,8 +143,12 @@ class PendaftarController
             return;
         }
 
-        // 7. Update status di database
-        $updateResult = $this->pendaftarModel->updateStatusSeleksi($pendaftar_id, $status_baru);
+        // 7. Update status di database (dengan deskripsi untuk penolakan)
+        $updateResult = $this->pendaftarModel->updateStatusSeleksi(
+            $pendaftar_id, 
+            $status_baru, 
+            $status_baru === 'Ditolak' ? $deskripsi : null
+        );
 
         if (!$updateResult['success']) {
             ResponseHelper::error($updateResult['message']);
@@ -156,7 +167,8 @@ class PendaftarController
             $emailResult = EmailHelper::sendRejectionEmail(
                 $pendaftar['email'],
                 $pendaftar['nama'],
-                $pendaftar['judul_rekrutmen']
+                $pendaftar['judul_rekrutmen'],
+                $deskripsi  // Include feedback in rejection email
             );
         }
 

@@ -120,7 +120,7 @@ $aktivitasPerBulan = [
                 <!-- Welcome Section -->
                 <div class="welcome-section">
                     <div class="welcome-text">
-                        <h4 class="welcome-title">Selamat Datang, Di Dashboard Admin!</h4>
+                        <h4 class="welcome-title">Selamat Datang <?= strstr($userEmail, '@', true); ?>, Di Dashboard Admin!</h4>
                         <p class="welcome-subtitle">Berikut adalah ringkasan statistik Laboratorium Applied Informatics</p>
                     </div>
                     <div class="welcome-date">
@@ -147,10 +147,10 @@ $aktivitasPerBulan = [
                             </svg>
                         </div>
                         <div class="stat-content">
-                            <p class="stat-label">Total Dosen</p>
+                            <p class="stat-label">Total Anggota</p>
                             <h3 class="stat-value"><?= $stats['total_dosen'] ?? 0 ?></h3>
                             <span class="stat-change stat-neutral">
-                                Dosen aktif
+                                Anggota tetap aktif
                             </span>
                         </div>
                     </div>
@@ -313,7 +313,7 @@ $aktivitasPerBulan = [
                                                         <circle cx="12" cy="12" r="10"></circle>
                                                         <polyline points="12 6 12 12 16 14"></polyline>
                                                     </svg>
-                                                    Tutup: <?= date('d M Y', strtotime($rekrutmen['tanggal_tutup'])) ?>
+                                                    Ditutup pada: <?= date('d M Y', strtotime($rekrutmen['tanggal_tutup'])) ?>
                                                 </p>
                                             </div>
                                         </div>

@@ -35,7 +35,7 @@ BEGIN
     -- Insert keahlian menggunakan unnest ke many-to-many
     IF p_keahlian_ids IS NOT NULL AND array_length(p_keahlian_ids, 1) > 0 THEN
         INSERT INTO map_dosen_keahlian (dosen_id, keahlian_id)
-        SELECT v_dosen_id, unnest(p_keahlian_ids);
+        SELECT DISTINCT v_dosen_id, unnest(p_keahlian_ids);
     END IF;
 
 END;

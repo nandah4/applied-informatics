@@ -340,16 +340,16 @@ class ValidationHelper
      * @param string $input - Input yang akan di-sanitize
      * @return string - Input yang sudah di-sanitize
      */
-    public static function sanitize($input)
-    {
-        if (is_array($input)) {
-            return array_map([self::class, 'sanitize'], $input);
-        }
+    // public static function sanitize($input)
+    // {
+    //     if (is_array($input)) {
+    //         return array_map([self::class, 'sanitize'], $input);
+    //     }
 
-        $input = trim($input);
-        $input = stripslashes($input);
-        $input = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+    //     $input = trim($input);
+    //     $input = stripslashes($input);
+    //     $input = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
 
-        return $input;
-    }
+    //     return $input;
+    // }
 }

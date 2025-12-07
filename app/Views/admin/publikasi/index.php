@@ -20,7 +20,7 @@
 
     <!-- Data Publikasi Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/publikasi/index.css') ?>">
-    
+
 </head>
 
 <body>
@@ -63,10 +63,10 @@
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
                             <input type="text"
-                                   id="searchInput"
-                                   class="search-input"
-                                   placeholder="Cari judul atau nama dosen..."
-                                   value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+                                id="searchInput"
+                                class="search-input"
+                                placeholder="Cari judul atau nama dosen..."
+                                value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
                             <?php if (!empty($_GET['search'])): ?>
                                 <button type="button" class="btn-clear-search" id="btnClearSearch" title="Hapus pencarian">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -107,6 +107,8 @@
                             <th class="col-tipe">Tipe</th>
                             <th class="col-tahun">Tahun</th>
                             <th class="col-url">URL</th>
+                            <th class="col-created">Diperbarui</th>
+                            <th class="col-created">Ditambahkan</th>
                             <th class="action-cell">Aksi</th>
                         </tr>
                     </thead>
@@ -139,7 +141,7 @@
                                             $badgeClass = 'badge-success';
                                         } elseif ($dt['tipe_publikasi'] === 'PPM') {
                                             $badgeClass = 'badge-warning';
-                                        } elseif($dt['tipe_publikasi'] === 'Publikasi') {
+                                        } elseif ($dt['tipe_publikasi'] === 'Publikasi') {
                                             $badgeClass = 'badge-secondary';
                                         }
                                         ?>
@@ -160,6 +162,8 @@
                                             <span class="text-muted">-</span>
                                         <?php endif; ?>
                                     </td>
+                                    <td class="col-created"><?= formatTanggal($dt['updated_at'], true) ?></td>
+                                    <td class="col-created"><?= formatTanggal($dt['created_at'], true)  ?></td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
                                             <a href="<?= base_url('admin/publikasi-akademik/read/' . $dt['id']) ?>" class="btn-action btn-view" title="Lihat Detail">

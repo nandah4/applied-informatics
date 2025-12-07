@@ -224,6 +224,39 @@ class DosenModel extends BaseModel
     //     }
     // }
 
+    public function getAllDosenActive()
+    {
+        try {
+            // Query untuk ambil data dosen beserta jabatan
+            $query = "SELECT * FROM vw_show_dosen WHERE status_aktif = TRUE";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+
+            $dosen = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!$dosen) {
+                return [
+                    'success' => false,
+                    'message' => 'Data dosen tidak ditemukan',
+                    'data' => null
+                ];
+            }
+
+            return [
+                'success' => true,
+                'data' => $dosen
+            ];
+        } catch (PDOException $e) {
+            error_log("DosenModel getDosenById error: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Gagal mendapatkan detail dosen',
+                'data' => null
+            ];
+        }
+    }
+
 
     /**
      * Ambil detail dosen berdasarkan ID
