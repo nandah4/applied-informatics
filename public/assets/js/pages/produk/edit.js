@@ -1,12 +1,13 @@
 /**
- * File: pages/produk/form.js
- * Deskripsi: Script untuk halaman form CREATE produk
+ * File: pages/produk/edit.js
+ * Deskripsi: Script untuk halaman form EDIT produk
  *
  * Fitur:
  * - Upload file dengan preview (dukungan drag & drop)
- * - Multiple dosen selection
+ * - Multiple dosen selection dengan pre-filled data
  * - Author type toggle (Dosen/Mahasiswa/Kolaborasi)
- * - Validasi dan submit form create
+ * - Preview foto lama dan foto baru
+ * - Validasi dan submit form edit
  * - Error handling per-field
  * - CSRF Protection
  *
@@ -30,6 +31,8 @@
       const fileInput = document.getElementById("foto_produk");
       const imagePreview = document.getElementById("imagePreview");
       const previewImg = document.getElementById("previewImg");
+      const btnRemovePreview = document.getElementById("btnRemovePreview");
+      const currentImageWrapper = document.querySelector(".current-image-wrapper");
 
       if (!fileUploadWrapper || !fileInput) return;
 
@@ -40,13 +43,21 @@
 
       // File change handler
       fileInput.addEventListener("change", (e) => {
-        this.handleFileSelect(e.target.files[0], previewImg, imagePreview, fileInput, fileUploadWrapper);
+        this.handleFileSelect(
+          e.target.files[0],
+          previewImg,
+          imagePreview,
+          fileInput,
+          fileUploadWrapper,
+          currentImageWrapper
+        );
       });
 
-      // Click preview to remove
-      if (imagePreview) {
-        imagePreview.addEventListener("click", () => {
-          this.removePreview(fileInput, imagePreview, fileUploadWrapper);
+      // Remove preview button
+      if (btnRemovePreview) {
+        btnRemovePreview.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.removePreview(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper);
         });
       }
 
@@ -54,7 +65,14 @@
       this.setupDragAndDrop(fileUploadWrapper, fileInput);
     },
 
-    handleFileSelect: function (file, previewImg, imagePreview, fileInput, fileUploadWrapper) {
+    handleFileSelect: function (
+      file,
+      previewImg,
+      imagePreview,
+      fileInput,
+      fileUploadWrapper,
+      currentImageWrapper
+    ) {
       if (!file) return;
 
       // Validasi ukuran file
@@ -86,14 +104,24 @@
         previewImg.src = e.target.result;
         imagePreview.style.display = "block";
         fileUploadWrapper.style.display = "none";
+
+        // Hide current image
+        if (currentImageWrapper) {
+          currentImageWrapper.style.display = "none";
+        }
       };
       reader.readAsDataURL(file);
     },
 
-    removePreview: function (fileInput, imagePreview, fileUploadWrapper) {
+    removePreview: function (fileInput, imagePreview, fileUploadWrapper, currentImageWrapper) {
       fileInput.value = "";
       imagePreview.style.display = "none";
       fileUploadWrapper.style.display = "flex";
+
+      // Show current image again
+      if (currentImageWrapper) {
+        currentImageWrapper.style.display = "block";
+      }
     },
 
     setupDragAndDrop: function (wrapper, fileInput) {
@@ -192,6 +220,32 @@
         // Update display
         this.updateDisplay($hiddenInput, $badgesContainer);
       });
+
+      // Load selected dosen from edit mode
+      this.loadSelectedDosenFromEdit();
+    },
+
+    loadSelectedDosenFromEdit: function () {
+      const hiddenInput = document.getElementById("dosen_ids");
+      if (!hiddenInput || !hiddenInput.value) return;
+
+      const selectedIds = hiddenInput.value.split(",").map((id) => parseInt(id.trim()));
+      const $menu = $("#dosenMenu");
+
+      selectedIds.forEach((id) => {
+        const item = document.querySelector(`.custom-dropdown-item[data-id="${id}"]`);
+        if (item) {
+          const name = item.querySelector(".item-text").textContent;
+          this.selectedDosen.push({ id: id.toString(), name });
+
+          // Mark dropdown item as selected and disabled
+          $(item).addClass("selected disabled");
+        }
+      });
+
+      this.renderSelectedBadges();
+      this.updateHiddenInput();
+      this.updateDropdownText();
     },
 
     updateDisplay: function ($hiddenInput, $badgesContainer) {
@@ -266,6 +320,9 @@
       if (authorTypeKolaborasi) {
         authorTypeKolaborasi.addEventListener("change", this.toggleAuthorFields);
       }
+
+      // Initial toggle based on checked radio
+      this.toggleAuthorFields();
     },
 
     toggleAuthorFields: function () {
@@ -282,16 +339,11 @@
         authorMahasiswaWrapper.style.display = "none";
         dosenIdsInput.required = true;
         timMahasiswaInput.required = false;
-        timMahasiswaInput.value = "";
       } else if (authorTypeMahasiswa && authorTypeMahasiswa.checked) {
         authorDosenWrapper.style.display = "none";
         authorMahasiswaWrapper.style.display = "block";
         dosenIdsInput.required = false;
         timMahasiswaInput.required = true;
-        dosenIdsInput.value = "";
-        DosenSelectionModule.selectedDosen = [];
-        DosenSelectionModule.renderSelectedBadges();
-        DosenSelectionModule.updateDropdownText();
       } else if (authorTypeKolaborasi && authorTypeKolaborasi.checked) {
         authorDosenWrapper.style.display = "block";
         authorMahasiswaWrapper.style.display = "block";
@@ -302,11 +354,11 @@
   };
 
   // ============================================================
-  // MODUL SUBMIT FORM CREATE
+  // MODUL SUBMIT FORM EDIT
   // ============================================================
-  const FormCreateModule = {
+  const FormEditModule = {
     init: function () {
-      $("#btn-submit-create-produk").on("click", (e) => {
+      $("#btn-submit-update-produk").on("click", (e) => {
         e.preventDefault();
         this.handleSubmit();
       });
@@ -328,19 +380,19 @@
       const submitData = this.prepareFormData(formData);
 
       const buttonState = jQueryHelpers.disableButton(
-        "btn-submit-create-produk",
+        "btn-submit-update-produk",
         "Menyimpan..."
       );
 
       jQueryHelpers.makeAjaxRequest({
-        url: `${BASE_URL}/admin/produk/create`,
+        url: `${BASE_URL}/admin/produk/update`,
         method: "POST",
         data: submitData,
         processData: false,
         contentType: false,
         onSuccess: (response) => {
           if (response.success) {
-            jQueryHelpers.showAlert("Data produk berhasil ditambahkan!", "success", 1500);
+            jQueryHelpers.showAlert("Data produk berhasil diupdate!", "success", 1500);
             setTimeout(() => {
               window.location.href = `${BASE_URL}/admin/produk`;
             }, 500);
@@ -358,6 +410,7 @@
 
     getFormData: function () {
       return {
+        id: $("#id").val(),
         nama_produk: $("#nama_produk").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
         link_produk: $("#link_produk").val().trim(),
@@ -378,6 +431,15 @@
           fieldId: "csrf_token",
           errorId: "csrfError",
           message: "Token keamanan tidak ditemukan. Silakan refresh halaman.",
+        });
+      }
+
+      // Validasi ID
+      if (!data.id) {
+        errors.push({
+          fieldId: "id",
+          errorId: "idError",
+          message: "ID produk tidak valid.",
         });
       }
 
@@ -415,14 +477,8 @@
           }
       }
 
-      // Validasi foto (wajib untuk create)
-      if (!data.foto_produk) {
-        errors.push({
-          fieldId: "foto_produk",
-          errorId: "fotoProdukError",
-          message: "Foto produk wajib diisi",
-        });
-      } else {
+      // Validasi foto (optional untuk edit)
+      if (data.foto_produk) {
         const sizeValidation = validationHelpers.validateFileSize(data.foto_produk, 2);
         if (!sizeValidation.valid) {
           errors.push({
@@ -514,6 +570,7 @@
       const formData = new FormData();
 
       formData.append("csrf_token", data.csrf_token);
+      formData.append("id", data.id);
       formData.append("nama_produk", data.nama_produk);
       formData.append("deskripsi", data.deskripsi);
       formData.append("link_produk", data.link_produk);
@@ -527,6 +584,7 @@
         formData.append("tim_mahasiswa", data.tim_mahasiswa);
       }
 
+      // Foto optional untuk edit
       if (data.foto_produk) {
         formData.append("foto_produk", data.foto_produk);
       }
@@ -542,6 +600,6 @@
     FileUploadModule.init();
     DosenSelectionModule.init();
     AuthorTypeModule.init();
-    FormCreateModule.init();
+    FormEditModule.init();
   });
 })();

@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= base_url() ?>">
     <title>Tambah Produk - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <!-- Base CSS - Must load first -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
@@ -43,21 +44,18 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formProduk" method="POST" enctype="multipart/form-data"
-                    data-ajax-url="<?= base_url('admin/produk/create') ?>"
-                    data-redirect-url="<?= base_url('admin/produk') ?>"
-                    data-success-message="Data produk berhasil ditambahkan.">
+                <form id="formProduk" method="POST" enctype="multipart/form-data">
 
-                    <!-- ✅ CSRF Token Hidden Field -->
+                    <!-- CSRF Token Hidden Field -->
                     <?= CsrfHelper::tokenField() ?>
 
                     <div class="row">
                         <!-- Nama Produk -->
                         <div class="col-12 mb-3">
                             <label for="nama_produk" class="form-label">
-                                Nama Produk <span class="required"></span>
+                                Nama Produk <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Masukkan nama produk">
+                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Masukkan nama produk" required>
                             <div class="helper-text">Berikan nama yang jelas dan deskriptif (3-255 karakter)</div>
                             <div id="namaProdukError" class="invalid-feedback"></div>
                         </div>
@@ -67,15 +65,15 @@
                             <label for="link_produk" class="form-label">
                                 Link Produk
                             </label>
-                            <input type="url" class="form-control" id="link_produk" name="link_produk" placeholder="https://example.com">
-                            <div class="helper-text">URL lengkap produk (Opsional, maksimal 255 karakter)</div>
+                            <input type="url" class="form-control" id="link_produk" name="link_produk" placeholder="https://...">
+                            <div class="helper-text">URL lengkap produk (Opsional)</div>
                             <div id="linkProdukError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Foto Produk -->
                         <div class="col-12 mb-3">
                             <label class="form-label">
-                                Foto Produk <span class="required"></span>
+                                Foto Produk <span class="required">*</span>
                             </label>
 
                             <!-- File Upload -->
@@ -92,7 +90,7 @@
                                     PNG, JPG, JPEG maksimal 2MB (Rekomendasi: 800x600px)
                                 </div>
                             </div>
-                            <input type="file" class="file-upload-input" id="foto_produk" name="foto_produk" accept="image/png,image/jpg,image/jpeg">
+                            <input type="file" class="file-upload-input" id="foto_produk" name="foto_produk" accept="image/png,image/jpg,image/jpeg" required>
 
                             <!-- Image Preview -->
                             <div class="image-preview" id="imagePreview" style="display: none;">
@@ -105,7 +103,7 @@
                         <!-- Author Type Selection -->
                         <div class="col-12 mb-3">
                             <label class="form-label">
-                                Tipe Author <span class="required"></span>
+                                Tipe Author <span class="required">*</span>
                             </label>
                             <div class="author-type-selection">
                                 <div class="form-check">
@@ -171,7 +169,7 @@
                         <!-- Tim Mahasiswa -->
                         <div class="col-md-6 mb-3" id="author_mahasiswa_wrapper" style="display: none;">
                             <label for="tim_mahasiswa" class="form-label">
-                                Tim Mahasiswa <span class="required" id="mahasiswa_required"></span>
+                                Tim Mahasiswa <span class="required" id="mahasiswa_required">*</span>
                             </label>
                             <input type="text" class="form-control" id="tim_mahasiswa" name="tim_mahasiswa" placeholder="Contoh: Ahmad, Budi, Citra">
                             <div class="helper-text">Masukkan nama anggota tim mahasiswa (3-255 karakter)</div>
@@ -185,7 +183,6 @@
                                 Deskripsi Produk
                             </label>
                             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi produk"></textarea>
-                            <!-- ✅ FIXED: Helper text sesuai schema (255 char) -->
                             <div class="helper-text">Jelaskan deskripsi singkat produk (Opsional, maksimal 255 karakter)</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
@@ -228,7 +225,7 @@
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-    <!-- Page Specific Scripts -->
+    <!-- Produk CREATE Form JS -->
     <script src="<?= asset_url('js/pages/produk/form.js') ?>"></script>
 </body>
 

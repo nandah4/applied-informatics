@@ -80,6 +80,106 @@ class RecruitmentModel extends BaseModel
             ];
         }
     }
+    
+    /**
+     * GET ALL RECRUITMENT WITH SEARCH AND FILTER
+     * Ambil semua data recruitment dengan search dan pagination
+     * Mencari berdasarkan judul, status, dan lokasi.
+     * @param array $params - ['search' => string, 'limit' => int, 'offset' => int]
+     * @return array - ['success' => bool, 'data' => array, 'total' => int]
+     */
+    public function getAllWithSearchAndFilter($params = [])
+    {
+        try {
+            // Auto-close expired recruitments sebelum fetch data
+            $this->autoCloseExpiredRecruitments();
+
+            // Extract parameters
+            $search = $params['search'] ?? '';
+            $limit = $params['limit'] ?? 10;
+            $offset = $params['offset'] ?? 0;
+
+            // Build WHERE clause
+            $whereConditions = [];
+            $bindParams = [];
+
+            // 1. Search: Judul ATAU Lokasi ATAU Status
+            if (!empty($search)) {
+                $searchLower = '%' . strtolower($search) . '%';
+
+                $whereConditions[] = "(
+                    LOWER(judul) LIKE :search 
+                    OR LOWER(lokasi) LIKE :search
+                    OR LOWER(status::text) LIKE :search
+                )";
+                $bindParams[':search'] = $searchLower;
+            }
+
+            // Combine WHERE conditions
+            $whereClause = '';
+            if (!empty($whereConditions)) {
+                $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+            }
+
+            // Count total records
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name} $whereClause";
+            $countStmt = $this->db->prepare($countQuery);
+
+            // Bind search params for count
+            foreach ($bindParams as $key => $value) {
+                $countStmt->bindValue($key, $value);
+            }
+            $countStmt->execute();
+            $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+            // Get data dengan pagination
+            $query = "
+                SELECT 
+                    id,
+                    judul,
+                    deskripsi,
+                    status,
+                    tanggal_buka,
+                    tanggal_tutup,
+                    lokasi,
+                    created_at,
+                    updated_at
+                FROM {$this->table_name} 
+                $whereClause
+                ORDER BY created_at DESC
+                LIMIT :limit OFFSET :offset
+            ";
+
+            $stmt = $this->db->prepare($query);
+
+            // Bind search params for data
+            foreach ($bindParams as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+
+            // Bind pagination params
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $result,
+                'total' => (int)$totalRecords
+            ];
+        } catch (PDOException $e) {
+            error_log("RecruitmentModel getAllWithSearchAndFilter error: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil data: ' . $e->getMessage(),
+                'data' => [],
+                'total' => 0
+            ];
+        }
+    }
 
     /**
      * Get recruitment by ID
@@ -106,7 +206,7 @@ class RecruitmentModel extends BaseModel
                 FROM {$this->table_name} 
                 WHERE id = :id
             ";
-            
+
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(":id", $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -279,14 +379,14 @@ class RecruitmentModel extends BaseModel
             $query = "SELECT fn_auto_close_expired_recruitment()";
             $stmt = $this->db->prepare($query);
             $stmt->execute();
-            
+
             // Optional: ambil jumlah record yang diupdate untuk logging
             $result = $stmt->fetch(PDO::FETCH_NUM);
             $updatedCount = $result[0] ?? 0;
-            
+
             // Uncomment untuk debugging
             // error_log("Auto-closed {$updatedCount} expired recruitment(s)");
-            
+
         } catch (PDOException $e) {
             // Log error tapi jangan stop execution
             error_log('Auto-close expired recruitments failed: ' . $e->getMessage());

@@ -126,7 +126,7 @@ function hasActiveChild($urls, $current)
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
                         <a href="<?= base_url('admin/publikasi-akademik') ?>" class="nav-link <?= isActive('admin/publikasi-akademik', $current_url) ?>">
-                            <span class="nav-text">Publikasi Akademik</span>
+                            <span class="nav-text">Kelola Publikasi Akademik</span>
                         </a>
                     </li>
                     <li class="nav-item">

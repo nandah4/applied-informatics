@@ -384,17 +384,17 @@ include __DIR__ . '/../layouts/header.php';
             }, 1000);
         });
 
-        // Duplicate items untuk seamless loop (optional, untuk efek infinite yang lebih smooth)
-        function duplicateItems() {
-            const items = container.children('.container-item-fasilitas');
-            if (items.length > 0) {
-                // Clone semua items dan append ke container
-                items.clone().appendTo(container);
-            }
-        }
+        // // Duplicate items untuk seamless loop (optional, untuk efek infinite yang lebih smooth)
+        // function duplicateItems() {
+        //     const items = container.children('.container-item-fasilitas');
+        //     if (items.length > 0) {
+        //         // Clone semua items dan append ke container
+        //         items.clone().appendTo(container);
+        //     }
+        // }
 
         // Initialize
-        duplicateItems(); // Duplicate untuk seamless loop
+        // duplicateItems(); // Duplicate untuk seamless loop
         startAutoScroll();
 
         // Cleanup saat page unload

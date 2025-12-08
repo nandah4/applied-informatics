@@ -39,27 +39,35 @@ class ProdukController
      */
     public function getAllProduk()
     {
-        // Ambil parameter page & per_page dari $_GET
+        // Ambil parameter dari GET request
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
-        // Validasi parameter
+        // Validasi input
         $page = max(1, $page);
-        $perPage = max(1, min(100, $perPage)); // Max 100 per page
+        $perPage = max(1, min(100, $perPage));
 
-        // Ambil total records DARI MODEL dengan $countOnly = true
-        $paginationData = $this->produkModel->getAllProdukPaginated($perPage, 0, true);
-        $totalRecords = $paginationData['total'];
+        // Hitung offset
+        $offset = ($page - 1) * $perPage;
 
-        // Gunakan PaginationHelper
-        $pagination = PaginationHelper::paginate($totalRecords, $page, $perPage);
+        // Siapkan params untuk model
+        $params = [
+            'search' => $search,
+            'limit' => $perPage,
+            'offset' => $offset
+        ];
 
-        // Panggil model->getAllProdukPaginated()
-        $result = $this->produkModel->getAllProdukPaginated($pagination['per_page'], $pagination['offset']);
+        // Get data dari model
+        $result = $this->produkModel->getAllWithSearchAndFilter($params);
+
+        // Generate pagination
+        $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
         return [
             'data' => $result['data'],
-            'pagination' => $pagination
+            'pagination' => $pagination,
+            'total' => $result['total']
         ];
     }
 
@@ -115,7 +123,7 @@ class ProdukController
             ResponseHelper::error('Invalid request method');
             return;
         }
-        
+
         // ✅ VALIDASI CSRF TOKEN
         $csrfToken = $_POST['csrf_token'] ?? '';
         if (!CsrfHelper::validateToken($csrfToken)) {
@@ -139,8 +147,8 @@ class ProdukController
 
         // Validasi input
         $validationErrors = $this->validateProdukInput(
-            $nama_produk, 
-            $deskripsi, 
+            $nama_produk,
+            $deskripsi,
             $link_produk,
             $author_type,
             $dosenIdsArray,
@@ -250,8 +258,8 @@ class ProdukController
 
         // Validasi input
         $validationErrors = $this->validateProdukInput(
-            $nama_produk, 
-            $deskripsi, 
+            $nama_produk,
+            $deskripsi,
             $link_produk,
             $author_type,
             $dosenIdsArray,
@@ -380,8 +388,8 @@ class ProdukController
      * @return array - Array error messages
      */
     private function validateProdukInput(
-        $nama_produk, 
-        $deskripsi, 
+        $nama_produk,
+        $deskripsi,
         $link_produk,
         $author_type,
         $dosen_ids,
@@ -401,16 +409,11 @@ class ProdukController
             $errors[] = $deskripsiValidation['message'];
         }
 
-        // 3. Validasi link produk (opsional, max 255 char, jika diisi harus valid URL)
+        // 3. Validasi link produk (opsional, jika diisi harus valid URL)
         if (!empty($link_produk)) {
-            // Validasi panjang link sesuai schema
-            if (strlen($link_produk) > 255) {
-                $errors[] = 'Link produk maksimal 255 karakter';
-            } else {
-                $linkValidation = ValidationHelper::validateUrl($link_produk, false);
-                if (!$linkValidation['valid']) {
-                    $errors[] = $linkValidation['message'];
-                }
+            $linkValidation = ValidationHelper::validateUrl($link_produk, false);
+            if (!$linkValidation['valid']) {
+                $errors[] = $linkValidation['message'];
             }
         }
 

@@ -4,7 +4,8 @@
  *
  * Fungsi:
  * - validateEmail(): Validasi format email
- * - validateNIDN(): Validasi NIDN (10 digit)
+ * - validateNIDN(): Validasi NIDN (minimal 10 digit)
+ * - validateNIP(): Validasi NIP (18 digit)
  * - validateName(): Validasi panjang nama
  * - validateRequired(): Validasi field wajib diisi
  * - validateFileSize(): Validasi ukuran file
@@ -47,7 +48,7 @@ const validationHelpers = {
         };
     },
 
-        /**
+    /**
      * Validasi URL
      * 
      * @param {string} url - URL yang akan divalidasi
@@ -103,20 +104,11 @@ const validationHelpers = {
             }
         }
 
-        // Validasi panjang maksimal
-        // if (trimmedUrl.length > 255) {
-        //     return {
-        //         valid: false,
-        //         message: 'URL maksimal 255 karakter'
-        //     };
-        // }
-
         return {
             valid: true,
             message: ''
         };
     },
-
 
     /**
      * Validasi NIDN (Nomor Induk Dosen Nasional)
@@ -156,6 +148,53 @@ const validationHelpers = {
             return {
                 valid: false,
                 message: 'NIDN minimal 10 digit'
+            };
+        }
+
+        return {
+            valid: true,
+            message: ''
+        };
+    },
+
+    /**
+     * Validasi NIP (Nomor Induk Pegawai)
+     * Harus 18 digit angka
+     *
+     * @param {string} nip - NIP yang akan divalidasi
+     * @param {boolean} required - Apakah field ini wajib diisi (default: false)
+     * @returns {Object} - {valid: boolean, message: string}
+     */
+    validateNIP: function(nip, required = false) {
+        // Jika tidak wajib dan kosong, anggap valid
+        if (!required && (!nip || nip.trim().length === 0)) {
+            return {
+                valid: true,
+                message: ''
+            };
+        }
+
+        // Cek apakah kosong (jika wajib)
+        if (required && (!nip || nip.trim().length === 0)) {
+            return {
+                valid: false,
+                message: 'NIP wajib diisi'
+            };
+        }
+
+        // Cek apakah hanya angka
+        if (!/^\d+$/.test(nip)) {
+            return {
+                valid: false,
+                message: 'NIP harus berisi angka saja'
+            };
+        }
+
+        // Cek panjang (harus 18 digit)
+        if (nip.length < 18) {
+            return {
+                valid: false,
+                message: 'NIP minimal harus 18 digit'
             };
         }
 
@@ -314,7 +353,7 @@ const validationHelpers = {
         if (required && (!text || text.trim().length === 0)) {
             return {
                 valid: false,
-                message: `${fieldName} wajib diis`
+                message: `${fieldName} wajib diisi`
             };
         }
 

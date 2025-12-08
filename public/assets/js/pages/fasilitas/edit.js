@@ -1,10 +1,11 @@
 /**
- * File: pages/fasilitas/form.js
- * Deskripsi: Script untuk halaman form CREATE fasilitas
+ * File: pages/fasilitas/edit.js
+ * Deskripsi: Script untuk halaman form EDIT fasilitas
  *
  * Fitur:
  * - Upload file dengan preview (dukungan drag & drop)
- * - Validasi dan submit form create
+ * - Validasi dan submit form edit
+ * - Preview foto lama dan foto baru
  * - Error handling per-field
  * - CSRF Protection
  *
@@ -28,6 +29,8 @@
       const fileInput = document.getElementById("foto");
       const imagePreview = document.getElementById("imagePreview");
       const previewImg = document.getElementById("previewImg");
+      const btnRemovePreview = document.getElementById("btnRemovePreview");
+      const currentImageWrapper = document.querySelector(".current-image-wrapper");
 
       if (!fileUploadWrapper || !fileInput) return;
 
@@ -38,13 +41,21 @@
 
       // File change handler
       fileInput.addEventListener("change", (e) => {
-        this.handleFileSelect(e.target.files[0], previewImg, imagePreview, fileInput, fileUploadWrapper);
+        this.handleFileSelect(
+          e.target.files[0],
+          previewImg,
+          imagePreview,
+          fileInput,
+          fileUploadWrapper,
+          currentImageWrapper
+        );
       });
 
-      // Click preview to remove
-      if (imagePreview) {
-        imagePreview.addEventListener("click", () => {
-          this.removePreview(fileInput, imagePreview, fileUploadWrapper);
+      // Remove preview button
+      if (btnRemovePreview) {
+        btnRemovePreview.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.removePreview(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper);
         });
       }
 
@@ -52,7 +63,14 @@
       this.setupDragAndDrop(fileUploadWrapper, fileInput);
     },
 
-    handleFileSelect: function (file, previewImg, imagePreview, fileInput, fileUploadWrapper) {
+    handleFileSelect: function (
+      file,
+      previewImg,
+      imagePreview,
+      fileInput,
+      fileUploadWrapper,
+      currentImageWrapper
+    ) {
       if (!file) return;
 
       // Validasi ukuran file
@@ -84,14 +102,24 @@
         previewImg.src = e.target.result;
         imagePreview.style.display = "block";
         fileUploadWrapper.style.display = "none";
+
+        // Hide current image
+        if (currentImageWrapper) {
+          currentImageWrapper.style.display = "none";
+        }
       };
       reader.readAsDataURL(file);
     },
 
-    removePreview: function (fileInput, imagePreview, fileUploadWrapper) {
+    removePreview: function (fileInput, imagePreview, fileUploadWrapper, currentImageWrapper) {
       fileInput.value = "";
       imagePreview.style.display = "none";
       fileUploadWrapper.style.display = "flex";
+
+      // Show current image again
+      if (currentImageWrapper) {
+        currentImageWrapper.style.display = "block";
+      }
     },
 
     setupDragAndDrop: function (wrapper, fileInput) {
@@ -118,11 +146,11 @@
   };
 
   // ============================================================
-  // MODUL SUBMIT FORM CREATE
+  // MODUL SUBMIT FORM EDIT
   // ============================================================
-  const FormCreateModule = {
+  const FormEditModule = {
     init: function () {
-      $("#btn-submit-create-fasilitas").on("click", (e) => {
+      $("#btn-submit-update-fasilitas").on("click", (e) => {
         e.preventDefault();
         this.handleSubmit();
       });
@@ -149,13 +177,13 @@
 
       // Disable button
       const buttonState = jQueryHelpers.disableButton(
-        "btn-submit-create-fasilitas",
+        "btn-submit-update-fasilitas",
         "Menyimpan..."
       );
 
       // Submit via AJAX
       jQueryHelpers.makeAjaxRequest({
-        url: `${BASE_URL}/admin/fasilitas/create`,
+        url: `${BASE_URL}/admin/fasilitas/update`,
         method: "POST",
         data: submitData,
         processData: false,
@@ -163,7 +191,7 @@
         onSuccess: (response) => {
           if (response.success) {
             jQueryHelpers.showAlert(
-              "Data fasilitas berhasil ditambahkan!",
+              "Data fasilitas berhasil diupdate!",
               "success",
               1500
             );
@@ -184,6 +212,7 @@
 
     getFormData: function () {
       return {
+        id: $("#id").val(),
         nama: $("#nama").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
         foto: $("#foto")[0].files[0] || null,
@@ -200,6 +229,15 @@
           fieldId: "csrf_token",
           errorId: "csrfError",
           message: "Token keamanan tidak ditemukan. Silakan refresh halaman.",
+        });
+      }
+
+      // Validasi ID
+      if (!data.id) {
+        errors.push({
+          fieldId: "id",
+          errorId: "idError",
+          message: "ID fasilitas tidak valid.",
         });
       }
 
@@ -225,14 +263,8 @@
         }
       }
 
-      // Validasi foto (wajib untuk create)
-      if (!data.foto) {
-        errors.push({
-          fieldId: "foto",
-          errorId: "fotoError",
-          message: "Foto fasilitas wajib diisi",
-        });
-      } else {
+      // Validasi foto (optional untuk edit, tapi jika ada harus valid)
+      if (data.foto) {
         // Validasi ukuran file
         const sizeValidation = validationHelpers.validateFileSize(data.foto, 2);
         if (!sizeValidation.valid) {
@@ -265,9 +297,11 @@
       const formData = new FormData();
 
       formData.append("csrf_token", data.csrf_token);
+      formData.append("id", data.id);
       formData.append("nama", data.nama);
       formData.append("deskripsi", data.deskripsi);
 
+      // Foto optional untuk edit
       if (data.foto) {
         formData.append("foto", data.foto);
       }
@@ -281,6 +315,6 @@
   // ============================================================
   $(document).ready(function () {
     FileUploadModule.init();
-    FormCreateModule.init();
+    FormEditModule.init();
   });
 })();

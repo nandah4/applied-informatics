@@ -616,16 +616,39 @@ $router->get('admin/dosen/(\d+)/profil-publikasi', function ($dosen_id) {
 // CRUD operations untuk data fasilitas laboratorium
 
 /**
- * Fasilitas - List/Index (dengan Pagination)
- * URL: GET /fasilitas?page=1&per_page=10
- * 
+ * Fasilitas - List/Index dengan Pagination & Search
+ * URL: GET /admin/fasilitas?page={number}&per_page={number}&search={keyword}
  */
 $router->get('admin/fasilitas', function () {
     $controller = new FasilitasController();
-    $result = $controller->getAllFasilitas();
 
-    $listFasilitas = $result['data'];      // Variable untuk view index.php
-    $pagination = $result['pagination'];
+    // Ambil parameter dari query string
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+    // Validasi input
+    $page = max(1, $page);
+    $perPage = max(1, min(100, $perPage));
+
+    // Hitung offset
+    $offset = ($page - 1) * $perPage;
+
+    // Siapkan params untuk search & filter
+    $params = [
+        'search' => $search,
+        'limit' => $perPage,
+        'offset' => $offset
+    ];
+
+    // Ambil data dengan search & pagination dari model
+    $fasilitasModel = new FasilitasModel();
+    $result = $fasilitasModel->getAllWithSearchAndFilter($params);
+
+    // Generate pagination
+    $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
+
+    $listFasilitas = $result['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/fasilitas/index.php';
 }, [AuthMiddleware::class]);
@@ -852,10 +875,33 @@ $router->post('admin/produk/delete/(\d+)', function ($id) {
  */
 $router->get('admin/mitra', function () {
     $controller = new MitraController();
-    $result = $controller->getAllMitra();
+    // Ambil parameter dari query string
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+    // Validasi input
+    $page = max(1, $page);
+    $perPage = max(1, min(100, $perPage));
+
+    // Hitung offset
+    $offset = ($page - 1) * $perPage;
+
+    // Siapkan params untuk search & filter
+    $params = [
+        'search' => $search,
+        'limit' => $perPage,
+        'offset' => $offset
+    ];
+
+    // Ambil data dengan search & pagination dari model
+    $mitraModel = new MitraModel();
+    $result = $mitraModel->getAllWithSearchAndFilter($params);
+
+    // Generate pagination
+    $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
     $listMitra = $result['data'] ?? [];
-    $pagination = $result['pagination'] ?? null;
 
     require __DIR__ . '/../app/Views/admin/mitra/index.php';
 }, [AuthMiddleware::class]);
@@ -1078,10 +1124,33 @@ $router->post('admin/aktivitas-lab/delete/(\\d+)', function ($id) {
  */
 $router->get('admin/recruitment', function () {
     $controller = new RecruitmentController();
-    $result = $controller->getAllRecruitment();
+    // Ambil parameter dari query string
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+    // Validasi input
+    $page = max(1, $page);
+    $perPage = max(1, min(100, $perPage));
+
+    // Hitung offset
+    $offset = ($page - 1) * $perPage;
+
+    // Siapkan params untuk search & filter
+    $params = [
+        'search' => $search,
+        'limit' => $perPage,
+        'offset' => $offset
+    ];
+
+    // Ambil data dengan search & pagination dari model
+    $recruitmentModel = new RecruitmentModel();
+    $result = $recruitmentModel->getAllWithSearchAndFilter($params);
+
+    // Generate pagination
+    $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
     $listRecruitment = $result['data'] ?? [];
-    $pagination = $result['pagination'] ?? null;
 
     require __DIR__ . '/../app/Views/admin/recruitment/index.php';
 }, [AuthMiddleware::class]);

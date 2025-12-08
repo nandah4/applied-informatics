@@ -97,6 +97,7 @@
                             <th class="col-name">Nama Lengkap</th>
                             <th class="col-email">Email</th>
                             <th class="col-nidn">NIDN</th>
+                            <th class="col-nip">NIP</th>
                             <th class="col-jabatan">Jabatan</th>
                             <th class="col-keahlian">Keahlian</th>
                             <th class="action-cell">Aksi</th>
@@ -136,6 +137,7 @@
                                     </td>
                                     <td class="col-email"><?= htmlspecialchars($dt['email']) ?></td>
                                     <td class="col-nidn"><?= htmlspecialchars($dt['nidn'] ?? '-') ?></td>
+                                    <td class="col-nip"><?= htmlspecialchars($dt['nip'] ?? '-') ?></td>
                                     <td class="col-jabatan">
                                         <?php if (!empty($dt['jabatan_name'])): ?>
                                             <span class="badge-custom badge-primary"><?= htmlspecialchars($dt['jabatan_name']) ?></span>
