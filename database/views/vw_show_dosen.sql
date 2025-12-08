@@ -6,9 +6,11 @@ CREATE OR REPLACE VIEW vw_show_dosen AS
         d.full_name,
         d.email,
         d.nidn,
+        d.nip,
         d.foto_profil,
         d.deskripsi,
         d.jabatan_id,
+        d.status_aktif,
         j.nama_jabatan as jabatan_name,
         STRING_AGG(k.nama_keahlian, ', ') as keahlian_list,
         d.updated_at,
@@ -17,7 +19,7 @@ CREATE OR REPLACE VIEW vw_show_dosen AS
     LEFT JOIN ref_jabatan j ON d.jabatan_id = j.id
     LEFT JOIN map_dosen_keahlian dk ON d.id = dk.dosen_id
     LEFT JOIN ref_keahlian k ON dk.keahlian_id = k.id
-    GROUP BY d.id, d.full_name, d.email, d.nidn, d.foto_profil, d.deskripsi, d.jabatan_id, j.nama_jabatan, d.created_at;
+    GROUP BY d.id, d.full_name, d.email, d.nidn, d.nip, d.foto_profil, d.deskripsi, d.jabatan_id, j.nama_jabatan, d.created_at;
 
 
 

@@ -1,7 +1,7 @@
 
 CREATE OR REPLACE VIEW vw_dashboard_count AS
 SELECT
-    (SELECT COUNT(*) FROM mst_dosen) AS total_dosen,
+    (SELECT COUNT(*) FROM mst_dosen WHERE status_aktif = TRUE) AS total_dosen,
     (SELECT COUNT(*) FROM trx_publikasi) AS total_publikasi,
     (SELECT COUNT(*) FROM mst_mitra) AS total_mitra,
     (SELECT COUNT(*) FROM mst_produk) AS total_produk,

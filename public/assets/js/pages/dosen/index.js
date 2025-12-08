@@ -22,36 +22,61 @@
     // MODUL SEARCH/FILTER
     // ============================================================
 
-    const SearchModule = {
-        /**
-         * Inisialisasi fungsi search/filter
-         */
-        init: function() {
-            const searchInput = document.querySelector('.search-input');
+   const SearchModule = {
 
-            if (searchInput) {
-                searchInput.addEventListener('input', this.handleSearch);
+    init: function() {
+        this.handleSearch();
+    },
+
+    handleSearch: function() {
+        const self = this;
+
+        // Enter / keypress
+        $('#searchInput').on('keypress', function(e) {
+            if (e.which === 13) {
+                self.performSearch();
             }
-        },
+        });
 
-        /**
-         * Handle event input pada search box
-         * Filter baris tabel berdasarkan keyword
-         *
-         * @param {Event} e - Event object
-         */
-        handleSearch: function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('.table-custom tbody tr');
+        // Tombol cari
+        $('#btnSearch').on('click', function() {
+            self.performSearch();
+        });
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
+        // Tombol hapus search
+        $('#btnClearSearch').on('click', function() {
+            window.location.href = `${BASE_URL}/admin/dosen`;
+        });
 
-                // Tampilkan baris jika mengandung keyword, sembunyikan jika tidak
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
+        // Select per page
+        $('#perPageSelect').on('change', function() {
+            const perPage = $(this).val();
+            const currentUrl = new URL(window.location.href);
+            const search = currentUrl.searchParams.get('search') || '';
+
+            let url = `${BASE_URL}/admin/dosen?per_page=${perPage}`;
+            if (search) {
+                url += `&search=${encodeURIComponent(search)}`;
+            }
+
+            window.location.href = url;
+        });
+    },
+
+    performSearch: function() {
+        const searchValue = $('#searchInput').val().trim();
+        const currentUrl = new URL(window.location.href);
+        const perPage = currentUrl.searchParams.get('per_page') || '10';
+
+        if (searchValue) {
+            window.location.href =
+                `${BASE_URL}/admin/dosen?search=${encodeURIComponent(searchValue)}&per_page=${perPage}`;
+        } else {
+            window.location.href =
+                `${BASE_URL}/admin/dosen?per_page=${perPage}`;
         }
-    };
+    }
+};
 
   // ============================================================
   // MODUL PAGINATION

@@ -77,6 +77,7 @@
                             </label>
                             <select class="form-control" id="tipe_publikasi" name="tipe_publikasi" required>
                                 <option value="">Pilih Tipe Publikasi</option>
+                                <option value="Publikasi">Publikasi</option>
                                 <option value="Riset">Riset</option>
                                 <option value="Kekayaan Intelektual">Kekayaan Intelektual</option>
                                 <option value="PPM">PPM</option>
@@ -107,10 +108,10 @@
                         <!-- URL Publikasi -->
                         <div class="col-md-6 mb-3">
                             <label for="url_publikasi" class="form-label">
-                                URL Publikasi
+                                URL Publikasi <span class="required">*</span>
                             </label>
                             <input type="url" class="form-control" id="url_publikasi" name="url_publikasi" placeholder="https://...">
-                            <div class="helper-text">Link ke publikasi online (opsional)</div>
+                            <div class="helper-text">Link ke publikasi online</div>
                             <div id="urlPublikasiError" class="invalid-feedback"></div>
                         </div>
 
@@ -118,7 +119,7 @@
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="<?= base_url('publikasi') ?>" class="btn-secondary-custom">
+                        <a href="<?= base_url('admin/publikasi-akademik') ?>" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>

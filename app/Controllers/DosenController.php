@@ -55,12 +55,14 @@ class DosenController
         $full_name = $_POST['full_name'] ?? '';
         $email = $_POST['email'] ?? '';
         $nidn = $_POST['nidn'] ?? '';
+        $nip = $_POST['nip'] ?? '';
         $jabatan_id = $_POST['jabatan_id'] ?? '';
         $keahlian_ids = $_POST['keahlian_ids'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
+        $status_aktif = $_POST['status_aktif'] ?? '1';
 
         // 3. Validasi input menggunakan ValidationHelper
-        $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $jabatan_id, $keahlian_ids, $deskripsi);
+        $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $nip, $jabatan_id, $keahlian_ids, $deskripsi);
 
         if (!empty($validationErrors)) {
             ResponseHelper::error($validationErrors[0]); // Return error pertama
@@ -96,10 +98,12 @@ class DosenController
             'full_name' => $full_name,
             'email' => $email,
             'nidn' => $nidn,
+            'nip' => $nip,  
             'jabatan_id' => (int)$jabatan_id,
             'keahlian_ids' => $keahlianArray,
             'foto_profil' => $fotoFileName,
-            'deskripsi' => $deskripsi
+            'deskripsi' => $deskripsi,
+            'status_aktif' => ($status_aktif === '1' || $status_aktif === 'true' || $status_aktif === true) ? 1 : 0
         ];
 
         // 6. Insert dosen ke database menggunakan stored procedure
@@ -125,11 +129,18 @@ class DosenController
      *
      * @return array - Data dosen dengan pagination info
      */
+
+    public function getAllDosenActive()
+    {
+        return $this->dosenModel->getAllDosenActive();
+    }
+
     public function getAllDosen()
     {
         // Ambil parameter dari GET request
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
         // Validasi input
         $page = max(1, $page);
@@ -138,8 +149,14 @@ class DosenController
         // Hitung offset untuk query
         $offset = ($page - 1) * $perPage;
 
+        $params = [
+            'search' => $search,
+            'limit' => $perPage,
+            'offset' => $offset
+        ];
+
         // Get data dengan pagination
-        $result = $this->dosenModel->getAllDosenPaginated($perPage, $offset);
+        $result = $this->dosenModel->getAllDosenPaginated($params);
 
         // Generate pagination dari total yang dikembalikan model
         $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
@@ -150,6 +167,32 @@ class DosenController
         ];
     }
 
+    // Prev Code
+    // public function getAllDosen()
+    // {
+    //     // Ambil parameter dari GET request
+    //     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    //     $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+    //     // Validasi input
+    //     $page = max(1, $page);
+    //     $perPage = max(1, min(100, $perPage));
+
+    //     // Hitung offset untuk query
+    //     $offset = ($page - 1) * $perPage;
+
+    //     // Get data dengan pagination
+    //     $result = $this->dosenModel->getAllDosenPaginated($perPage, $offset);
+
+    //     // Generate pagination dari total yang dikembalikan model
+    //     $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
+
+    //     return [
+    //         'data' => $result['data'],
+    //         'pagination' => $pagination
+    //     ];
+    // }
+
 
     /**
      * Validasi input untuk create/update dosen
@@ -157,12 +200,13 @@ class DosenController
      * @param string $full_name
      * @param string $email
      * @param string $nidn
+     * @param string $nip
      * @param mixed $jabatan_id
      * @param mixed $keahlian_ids
      * @param string $deskripsi
      * @return array - Array of error messages (kosong jika valid)
      */
-    private function validateDosenInput($full_name, $email, $nidn, $jabatan_id, $keahlian_ids, $deskripsi)
+    private function validateDosenInput($full_name, $email, $nidn, $nip, $jabatan_id, $keahlian_ids, $deskripsi)
     {
         $errors = [];
 
@@ -182,6 +226,12 @@ class DosenController
         $nidnValidation = ValidationHelper::validateNIDN($nidn, true);
         if (!$nidnValidation['valid']) {
             $errors[] = $nidnValidation['message'];
+        }
+
+        // Validasi NIP
+        $nipValidation = ValidationHelper::validateNIP($nip, true);
+        if (!$nipValidation['valid']) {
+            $errors[] = $nipValidation['message'];
         }
 
         // Validasi jabatan ID
@@ -244,14 +294,16 @@ class DosenController
             return;
         }
 
-        // 3. Ambil data dari POST
+        // 3. Ambil data dari POST 
         $id = $_POST['id'] ?? '';
         $full_name = $_POST['full_name'] ?? '';
         $email = $_POST['email'] ?? '';
         $nidn = $_POST['nidn'] ?? '';
+        $nip = $_POST['nip'] ?? '';  
         $jabatan_id = $_POST['jabatan_id'] ?? '';
         $keahlian_ids = $_POST['keahlian_ids'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
+        $status_aktif = $_POST['status_aktif'] ?? '1';
 
         // 2a. Validasi ID
         $idValidation = ValidationHelper::validateId($id, 'ID Dosen');
@@ -261,7 +313,7 @@ class DosenController
         }
 
         // 3. Validasi input
-        $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $jabatan_id, $keahlian_ids, $deskripsi);
+        $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $nip, $jabatan_id, $keahlian_ids, $deskripsi);
         if (!empty($validationErrors)) {
             ResponseHelper::error($validationErrors[0]);
             return;
@@ -298,10 +350,12 @@ class DosenController
             'full_name' => $full_name,
             'email' => $email,
             'nidn' => $nidn,
+            'nip' => $nip,
             'jabatan_id' => (int)$jabatan_id,
             'keahlian_ids' => $keahlian_ids,
             'foto_profil' => $fotoFileName,
-            'deskripsi' => $deskripsi
+            'deskripsi' => $deskripsi,
+            'status_aktif' => ($status_aktif === '1' || $status_aktif === 'true' || $status_aktif === true) ? 1 : 0
         ];
 
         // 6. Update data dosen

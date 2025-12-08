@@ -45,11 +45,12 @@ main{
   font-size: 60px;
   margin-bottom: 30px;
   font-weight: 400;
+  text-align: center;
 }
 
 /* Section Visi Misi */
 .visi-misi {
-  margin: 80px 0;
+  margin: 100px 0 80px 0;
 }
 
 .visi, .misi{
@@ -66,8 +67,9 @@ main{
 }
 
 .btn-riset-hero {
-  font-size: var(--fs-sm);
-  padding: 12px 0;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  padding: 12px 8px;
   background-color: var(--bg-primary-400);
 }
 .btn-riset-hero:hover {
@@ -86,6 +88,17 @@ main{
   text-align: center;
   color: var(--color-fourtiary-600);
 }
+
+/* .container-img-hero {
+  border: 1px solid red;
+} */
+
+.container-img-hero p {
+  text-align: center;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-lg);
+}
+
 
 /*Memperbesar ukuran gambar pada bagian sambutan dan mengatur agar ke tengah*/
 .gambar-sambutan {
@@ -112,6 +125,14 @@ main{
   background-color: var(--color-primary-500) !important;
   color: #ffffff;
 }
+
+
+
+/* Statistik Section */
+
+.statistik {
+  margin: 150px 0;
+}
 .row-angka{
   white-space: nowrap;
 }
@@ -132,38 +153,154 @@ main{
 
 
 /* Fasilitas Section */
+.fasilitas-wrapper {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.fasilitas-container {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
 .container-item-fasilitas {
-  flex-shrink: 0;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
 }
+
 .foto-fasilitas {
-  height: 350px;
-  width: 350px;
-  object-fit: cover;
-  object-position: center;
+    height: 330px;
+    width: 330px;
+    object-fit: cover;
+    object-position: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-
-/*Tampilan button fasilitas*/
 .btn-fasilitas {
-  font-size: var(--fs-sm);
-  padding: 12px 0;
-  background-color: var(--color-primary-50);
-  border: 1px solid var(--color-primary-400) !important;
-  border-radius: 10px;
-  color: var(--color-primary-800);
+    font-size: var(--fs-sm);
+    padding: 12px 0;
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-400) !important;
+    border-radius: 8px;
+    color: var(--color-primary-800);
 }
 
 .title-fasilitas {
-  font-size: var(--fs-base);
-  font-weight: var(--fw-semibold);
-  text-align: start;
-  margin-top: 10px;
-  color: var(--color-fourtiary-600);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-semibold);
+    text-align: start;
+    margin-top: 10px;
+    color: var(--color-fourtiary-600);
+}
+
+.fasilitas-section {
+    margin-bottom: 80px;
+}
+
+/* Control Buttons */
+.fasilitas-controls {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+}
+
+
+/* Title Wrapper dengan Dekorasi */
+.title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.title-decoration {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.decoration-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-primary-500);
+    transition: all 0.3s ease;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.decoration-line {
+    height: 2px;
+    width: 40px;
+    background: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-300));
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.title-fasilitas {
+    font-size: var(--fs-base);
+    font-weight: var(--fw-semibold);
+    text-align: start;
+    margin: 0;
+    color: var(--color-fourtiary-600);
+    flex: 1;
+}
+
+/* Animation untuk dot */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(var(--color-primary-500-rgb, 59, 130, 246), 0.7);
+    }
+    50% {
+        opacity: 0.8;
+        box-shadow: 0 0 0 6px rgba(var(--color-primary-500-rgb, 59, 130, 246), 0);
+    }
 
 }
-.fasilitas-section {
-  margin-bottom: 40px;
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .foto-fasilitas {
+        height: 250px;
+        width: 250px;
+    }
+
+    .fasilitas-controls {
+        top: 10px;
+        right: 20px;
+    }
+
+    .title-wrapper {
+        gap: 10px;
+    }
+
+    .decoration-dot {
+        width: 6px;
+        height: 6px;
+    }
+
+    .decoration-line {
+        width: 30px;
+    }
+
+    .title-fasilitas {
+        font-size: var(--fs-sm);
+    }
 }
+
+
+
+
 /* Penelitian Section */
 .penelitian-section {
     background-color: var(--bg-primary);
@@ -186,10 +323,71 @@ main{
 
 /* Year Filter Pills */
 .year-filter-container {
+    overflow: hidden;
     padding: 20px;
     background: linear-gradient(135deg, var(--color-primary-50) 0%, rgba(255,255,255,0.5) 100%);
     border-radius: 12px;
     border: 1px solid var(--color-primary-200);
+}
+
+.year-filter-container .d-flex {
+    align-items: center;
+}
+
+/* Horizontal Scroll Container untuk Year Pills */
+.year-pills-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling di iOS */
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary-100) var(--color-primary-100);
+}
+
+/* Custom Scrollbar untuk Year Pills */
+.year-pills-scroll::-webkit-scrollbar {
+    height: 5px;
+}
+
+.year-pills-scroll::-webkit-scrollbar-track {
+    background: var(--color-primary-100);
+    border-radius: 10px;
+}
+
+.year-pills-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, var(--color-primary-400) 0%, var(--color-primary-500) 100%);
+    border-radius: 10px;
+    border: 2px solid var(--color-primary-100);
+}
+
+.year-pills-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+}
+
+/* Gradient fade effect di kanan (optional - menunjukkan ada lebih banyak items) */
+.year-filter-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.year-filter-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    background: linear-gradient(to left, rgba(255,255,255,0.9) 0%, transparent 100%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.year-filter-wrapper.has-scroll::after {
+    opacity: 1;
 }
 
 .year-pill {
@@ -204,6 +402,8 @@ main{
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    white-space: nowrap; /* Prevent text wrapping */
+    flex-shrink: 0; /* Prevent pills from shrinking */
 }
 
 .year-pill::before {
@@ -245,6 +445,7 @@ main{
     border-radius: 12px;
     padding: 30px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid var(--color-gray-200);
 }
 
 /* Custom Scrollbar */
@@ -484,35 +685,54 @@ main{
     border-width: 0.3rem;
 }
 
-/* Responsive */
+/* Responsive - Year Filter & Publikasi */
+@media (max-width: 991px) {
+    .year-filter-container {
+        padding: 16px;
+    }
+
+    .year-pills-scroll {
+        gap: 10px;
+    }
+}
+
 @media (max-width: 768px) {
     .year-filter-container {
         padding: 15px;
     }
-    
+
+    .year-pills-scroll {
+        gap: 8px;
+        padding-bottom: 10px;
+    }
+
+    .year-pills-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+
     .year-pill {
         padding: 8px 16px;
         font-size: 0.875rem;
     }
-    
+
     .publikasi-container {
         padding: 20px;
     }
-    
+
     .publikasi-card {
         padding: 20px;
     }
-    
+
     .publikasi-title {
         font-size: var(--fs-base);
         padding-right: 0;
     }
-    
+
     .publikasi-number {
         position: static;
         margin-bottom: 12px;
     }
-    
+
     .publikasi-meta {
         flex-direction: column;
         align-items: flex-start;
@@ -535,4 +755,653 @@ main{
 
 .teks-tanggal-aktivitas {
   font-weight: var(--fw-semibold);
+}
+
+/* Aktivitas Card Styles with Animations */
+.aktivitas-card-link {
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.aktivitas-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 12px !important;
+}
+
+.aktivitas-card:hover {
+  transform: translateY(-8px);
+}
+
+.aktivitas-card-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.aktivitas-card-image {
+  transition: all 0.5s ease;
+}
+
+.aktivitas-card:hover .aktivitas-card-image {
+  transform: scale(1.1);
+}
+
+.aktivitas-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(37, 99, 235, 0) 0%,
+    #01a3a7 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.aktivitas-card:hover .aktivitas-card-overlay {
+  opacity: 1;
+}
+
+.aktivitas-view-detail {
+  color: #ffffff;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.aktivitas-card:hover .aktivitas-view-detail {
+  transform: translateY(0);
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.aktivitas-view-detail i {
+  width: 20px;
+  height: 20px;
+}
+
+.aktivitas-card .card-body {
+  transition: all 0.3s ease;
+}
+
+.aktivitas-card:hover .card-body {
+  background-color: rgba(37, 99, 235, 0.02);
+}
+
+.aktivitas-card .title-fasilitas {
+  transition: color 0.3s ease;
+}
+
+.aktivitas-card:hover .title-fasilitas {
+  color: var(--color-primary-700);
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN - COMPREHENSIVE
+   ========================================== */
+
+/* Large Desktop (≥1400px) */
+@media (min-width: 1400px) {
+  .container-fluid {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+/* Desktop (992px - 1399px) */
+@media (min-width: 992px) and (max-width: 1399px) {
+  .title-lab {
+    font-size: 50px;
+    text-align: center;
+  }
+
+  .angka-statistik {
+    font-size: 70px;
+  }
+
+  .foto-fasilitas {
+    height: 300px;
+    width: 300px;
+  }
+}
+
+/* Tablet (768px - 991px) */
+@media (max-width: 991px) {
+  /* Hero Section */
+  .title-lab {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 20px;
+  }
+
+  .sambutan {
+    font-size: 16px;
+    width: 70%;
+  }
+
+  .gambar-sambutan {
+    width: 60%;
+  }
+
+  .selamat-datang {
+    min-height: 500px;
+    padding: 3rem 1rem !important;
+  }
+
+  /* Visi Misi */
+  .visi-misi {
+    margin: 60px 0;
+  }
+
+  .visi-misi .container-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  /* Statistik */
+  .statistik .container-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .angka-statistik {
+    font-size: 60px;
+    margin-top: -1.5rem;
+  }
+
+  .title-section {
+    font-size: 2rem;
+  }
+
+  .subtitle-section {
+    font-size: 1rem;
+  }
+
+  /* Fasilitas */
+  .fasilitas-section .container-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .foto-fasilitas {
+    height: 280px;
+    width: 280px;
+  }
+
+  .d-flex.column-gap-4 {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+/* Mobile Landscape & Small Tablet (576px - 767px) */
+@media (max-width: 767px) {
+  /* General Spacing */
+  .p-5 {
+    padding: 2rem !important;
+  }
+
+  .px-5 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  /* Hero Section */
+  .title-lab {
+    font-size: 32px;
+    margin-bottom: 15px;
+    line-height: 1.3;
+  }
+
+  .sambutan {
+    font-size: 14px;
+    width: 90%;
+    margin-top: 1.5rem !important;
+  }
+
+  .gambar-sambutan {
+    width: 80%;
+    max-width: 350px;
+  }
+
+  .selamat-datang {
+    min-height: 450px;
+    padding: 2rem 1rem !important;
+  }
+
+  .btn-riset-hero {
+    font-size: 0.875rem;
+    padding: 10px 20px;
+  }
+
+  /* Visi Misi */
+  .visi-misi {
+    margin: 40px 0;
+  }
+
+  .visi-misi .container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .visi, .misi {
+    font-size: 1.25rem;
+  }
+
+  .icon-vm-size {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 20px;
+  }
+
+  /* Statistik */
+  .statistik {
+    padding: 2rem 0;
+  }
+
+  .statistik .container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .angka-statistik {
+    font-size: 48px;
+    margin-top: -1rem;
+  }
+
+  .info-statistik {
+    font-size: 0.875rem;
+  }
+
+  .title-section {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .subtitle-section {
+    font-size: 0.875rem;
+  }
+
+  /* Fasilitas */
+  .fasilitas-section {
+    margin-bottom: 30px;
+  }
+
+  .fasilitas-section .container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .foto-fasilitas {
+    height: 220px;
+    width: 220px;
+  }
+
+  .d-flex.column-gap-4 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    column-gap: 1rem !important;
+  }
+
+  .title-fasilitas {
+    font-size: 0.875rem;
+  }
+
+  .btn-fasilitas {
+    font-size: 0.75rem;
+    padding: 10px 16px;
+  }
+
+  /* Penelitian */
+  .penelitian-section {
+    padding: 2rem 0 !important;
+  }
+
+  .btn-penelitian {
+    font-size: 0.75rem;
+    padding: 10px 16px;
+  }
+
+  /* Aktivitas */
+  .card-img-top {
+    height: 160px;
+  }
+}
+
+/* Mobile Portrait (≤575px) */
+@media (max-width: 575px) {
+  /* General Spacing */
+  .p-5 {
+    padding: 1.5rem !important;
+  }
+
+  .px-5 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Hero Section */
+  .title-lab {
+    font-size: 26px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .sambutan {
+    font-size: 13px;
+    width: 100%;
+    margin-top: 1rem !important;
+  }
+
+  .gambar-sambutan {
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .selamat-datang {
+    min-height: 400px;
+    padding: 1.5rem 0.75rem !important;
+  }
+
+  .btn-riset-hero {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  /* Visi Misi */
+  .visi-misi {
+    margin: 30px 0;
+  }
+
+  .visi-misi .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .card-visi, .card-misi {
+    margin-bottom: 1rem;
+  }
+
+  .visi, .misi {
+    font-size: 1.1rem;
+  }
+
+  .icon-vm-size {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 15px;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .card-body p {
+    font-size: 0.875rem;
+  }
+
+  /* Statistik */
+  .statistik {
+    padding: 1.5rem 0;
+  }
+
+  .statistik .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .statistik .row {
+    row-gap: 1rem;
+  }
+
+  .angka-statistik {
+    font-size: 40px;
+    margin-top: -0.5rem;
+  }
+
+  .info-statistik {
+    font-size: 0.8rem;
+  }
+
+  .title-section {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle-section {
+    font-size: 0.8rem;
+  }
+
+  /* Adjust column layout for statistics */
+  .row-angka {
+    justify-content: center !important;
+  }
+
+  .row-angka > div {
+    margin-bottom: 2rem !important;
+  }
+
+  /* Fasilitas */
+  .fasilitas-section {
+    margin-bottom: 20px;
+  }
+
+  .fasilitas-section .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .foto-fasilitas {
+    height: 180px;
+    width: 180px;
+  }
+
+  .d-flex.column-gap-4 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    column-gap: 0.75rem !important;
+  }
+
+  .title-fasilitas {
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+
+  .btn-fasilitas {
+    font-size: 0.7rem;
+    padding: 8px 12px;
+  }
+
+  /* Penelitian */
+  .penelitian-section {
+    padding: 1.5rem 0 !important;
+  }
+
+  .penelitian-section .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .btn-penelitian {
+    font-size: 0.7rem;
+    padding: 8px 12px;
+  }
+
+  /* Publikasi Cards - Stack layout on mobile */
+  .publikasi-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .publikasi-title {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+
+  .publikasi-number {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+
+  .publikasi-meta {
+    font-size: 0.75rem;
+  }
+
+  .publikasi-link {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+
+  /* Aktivitas */
+  .card-img-top {
+    height: 140px;
+  }
+
+  .title-fasilitas {
+    font-size: 0.875rem;
+  }
+
+  .teks-tanggal-aktivitas {
+    font-size: 0.75rem;
+  }
+
+  /* Year Filter - Better mobile layout */
+  .year-filter-container {
+    padding: 12px;
+  }
+
+  .year-filter-container .d-flex {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .year-filter-container .text-muted {
+    margin-bottom: 0;
+    font-size: 0.75rem;
+  }
+
+  .year-pills-scroll {
+    gap: 8px;
+    width: 100%;
+  }
+
+  .year-pill {
+    padding: 6px 14px;
+    font-size: 0.75rem;
+  }
+
+  /* Scrollbar lebih tipis di mobile */
+  .year-pills-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+}
+
+/* Extra Small Mobile (≤380px) */
+@media (max-width: 380px) {
+  .title-lab {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .sambutan {
+    font-size: 12px;
+  }
+
+  .angka-statistik {
+    font-size: 36px;
+  }
+
+  .foto-fasilitas {
+    height: 150px;
+    width: 150px;
+  }
+
+  .visi, .misi {
+    font-size: 1rem;
+  }
+
+  .title-section {
+    font-size: 1.1rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .card-body p {
+    font-size: 0.8rem;
+  }
+
+  /* Year Pills - Extra small */
+  .year-pills-scroll {
+    gap: 6px;
+  }
+
+  .year-pills-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .year-pill {
+    padding: 5px 12px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Landscape Mode Specific */
+@media (max-height: 500px) and (orientation: landscape) {
+  .selamat-datang {
+    min-height: 350px;
+  }
+
+  .title-lab {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .gambar-sambutan {
+    width: 40%;
+    max-width: 250px;
+  }
+
+  .sambutan {
+    margin-top: 0.5rem !important;
+  }
+}
+
+/* Fix for horizontal scroll on mobile */
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .container-fluid {
+    overflow-x: hidden;
+  }
+
+  /* Ensure fasilitas horizontal scroll works properly */
+  .d-flex.overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
 }

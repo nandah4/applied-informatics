@@ -77,13 +77,14 @@ const BASE_URL =
           if (response.success) {
             jQueryHelpers.showAlert(
               "Data publikasi berhasil ditambahkan!",
-              "success"
+              "success",
+              2000
             );
             setTimeout(() => {
               window.location.href = `${BASE_URL}/admin/publikasi-akademik`;
             }, 500);
           } else {
-            jQueryHelpers.showAlert("Gagal: " + response.message, "danger");
+            jQueryHelpers.showAlert("Gagal: " + response.message, "danger", 5000);
             buttonState.enable();
           }
         },
@@ -122,9 +123,10 @@ const BASE_URL =
         });
       }
 
-      // Validate judul
-      const judulValidation = validationHelpers.validateRequired(
+       const judulValidation = validationHelpers.validateText(
         data.judul,
+        600,
+        true,
         "Judul Publikasi"
       );
       if (!judulValidation.valid) {
@@ -161,6 +163,19 @@ const BASE_URL =
         }
       }
 
+      // Valiadate Tahun Publikasi not null
+      const tahunPublikasi = validationHelpers.validateRequired(
+        data.tahun_publikasi,
+        "Tahun Publikasi"
+      );
+      if (!tahunPublikasi.valid) {
+        errors.push({
+          fieldId: "tahun_publikasi",
+          errorId: "tahunPublikasiError",
+          message: tahunPublikasi.message,
+        });
+      }
+
       // Validate url_publikasi
       if (data.url_publikasi && data.url_publikasi.length > 0) {
         const result = validationHelpers.validateUrl(data.url_publikasi, false);
@@ -171,6 +186,19 @@ const BASE_URL =
             message: result.message,
           });
         }
+      }
+
+      // Validate urlPublikasi
+      const urlValiddation = validationHelpers.validateRequired(
+        data.url_publikasi,
+        "URL Publikasi"
+      );
+      if (!urlValiddation.valid) {
+        errors.push({
+          fieldId: "url_publikasi",
+          errorId: "urlPublikasiError",
+          message: urlValiddation.message,
+        });
       }
 
       return errors;

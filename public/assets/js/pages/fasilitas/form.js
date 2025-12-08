@@ -1,22 +1,23 @@
 /**
  * File: pages/fasilitas/form.js
- * Deskripsi: Menangani interaksi form fasilitas (create & edit)
- *
- * Dependencies:
- * - jQuery
- * - Bootstrap 5
- * - jQueryHelpers.js
- * - validationHelpers.js
+ * Deskripsi: Script untuk halaman form CREATE fasilitas
  *
  * Fitur:
  * - Upload file dengan preview (dukungan drag & drop)
- * - Validasi dan submit form (create & edit)
+ * - Validasi dan submit form create
  * - Error handling per-field
  * - CSRF Protection
+ *
+ * Dependencies:
+ * - jQuery
+ * - jQueryHelpers.js
+ * - validationHelpers.js
  */
 
 (function () {
   "use strict";
+
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
   // MODUL FILE UPLOAD
@@ -27,52 +28,34 @@
       const fileInput = document.getElementById("foto");
       const imagePreview = document.getElementById("imagePreview");
       const previewImg = document.getElementById("previewImg");
-      const btnRemovePreview = document.getElementById("btnRemovePreview");
-      const currentImageWrapper = document.querySelector(".current-image-wrapper");
 
       if (!fileUploadWrapper || !fileInput) return;
 
+      // Click to upload
       fileUploadWrapper.addEventListener("click", () => {
         fileInput.click();
       });
 
+      // File change handler
       fileInput.addEventListener("change", (e) => {
-        this.handleFileSelect(
-          e.target.files[0], 
-          previewImg, 
-          imagePreview, 
-          fileInput, 
-          fileUploadWrapper, 
-          currentImageWrapper
-        );
+        this.handleFileSelect(e.target.files[0], previewImg, imagePreview, fileInput, fileUploadWrapper);
       });
 
-      if (btnRemovePreview) {
-        btnRemovePreview.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this.removePreview(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper);
-        });
-      }
-
-      if (!btnRemovePreview && imagePreview) {
+      // Click preview to remove
+      if (imagePreview) {
         imagePreview.addEventListener("click", () => {
-          this.removePreview(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper);
+          this.removePreview(fileInput, imagePreview, fileUploadWrapper);
         });
       }
 
+      // Setup drag and drop
       this.setupDragAndDrop(fileUploadWrapper, fileInput);
     },
 
-    handleFileSelect: function (
-      file, 
-      previewImg, 
-      imagePreview, 
-      fileInput, 
-      fileUploadWrapper, 
-      currentImageWrapper
-    ) {
+    handleFileSelect: function (file, previewImg, imagePreview, fileInput, fileUploadWrapper) {
       if (!file) return;
 
+      // Validasi ukuran file
       const sizeValidation = validationHelpers.validateFileSize(file, 2);
       if (!sizeValidation.valid) {
         jQueryHelpers.showError("foto", "fotoError", sizeValidation.message);
@@ -80,6 +63,7 @@
         return;
       }
 
+      // Validasi tipe file
       const typeValidation = validationHelpers.validateFileType(file, [
         "image/jpeg",
         "image/jpg",
@@ -91,27 +75,23 @@
         return;
       }
 
+      // Clear error jika ada
       jQueryHelpers.clearError("foto", "fotoError");
 
+      // Show preview
       const reader = new FileReader();
       reader.onload = (e) => {
         previewImg.src = e.target.result;
         imagePreview.style.display = "block";
         fileUploadWrapper.style.display = "none";
-        if (currentImageWrapper) {
-          currentImageWrapper.style.display = "none";
-        }
       };
       reader.readAsDataURL(file);
     },
 
-    removePreview: function(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper) {
+    removePreview: function (fileInput, imagePreview, fileUploadWrapper) {
       fileInput.value = "";
       imagePreview.style.display = "none";
       fileUploadWrapper.style.display = "flex";
-      if (currentImageWrapper) {
-        currentImageWrapper.style.display = "block";
-      }
     },
 
     setupDragAndDrop: function (wrapper, fileInput) {
@@ -138,29 +118,25 @@
   };
 
   // ============================================================
-  // MODUL SUBMIT FORM FASILITAS (Create & Edit)
+  // MODUL SUBMIT FORM CREATE
   // ============================================================
-  const FormSubmissionModule = {
+  const FormCreateModule = {
     init: function () {
-      $("#formFasilitas").on("submit", (e) => {
+      $("#btn-submit-create-fasilitas").on("click", (e) => {
         e.preventDefault();
-        this.handleSubmit(e.currentTarget);
+        this.handleSubmit();
       });
     },
 
-    handleSubmit: function (formElement) {
-      const $form = $(formElement);
-
-      const ajaxUrl = $form.data("ajax-url");
-      const redirectUrl = $form.data("redirect-url");
-      const successMessage = $form.data("success-message");
-
+    handleSubmit: function () {
+      // Clear all errors
       jQueryHelpers.clearAllErrors("formFasilitas");
 
+      // Get form data
       const formData = this.getFormData();
-      
-      const validationErrors = this.validateFormData(formData);
 
+      // Validate
+      const validationErrors = this.validateFormData(formData);
       if (validationErrors.length > 0) {
         validationErrors.forEach((error) => {
           jQueryHelpers.showError(error.fieldId, error.errorId, error.message);
@@ -168,22 +144,31 @@
         return;
       }
 
+      // Prepare FormData
       const submitData = this.prepareFormData(formData);
-      
-      const submitButton = $form.find('button[type="submit"]');
-      const buttonState = jQueryHelpers.disableButton(submitButton.attr('id') || 'submit-btn', "Menyimpan...");
 
+      // Disable button
+      const buttonState = jQueryHelpers.disableButton(
+        "btn-submit-create-fasilitas",
+        "Menyimpan..."
+      );
+
+      // Submit via AJAX
       jQueryHelpers.makeAjaxRequest({
-        url: ajaxUrl,
+        url: `${BASE_URL}/admin/fasilitas/create`,
         method: "POST",
         data: submitData,
         processData: false,
         contentType: false,
         onSuccess: (response) => {
           if (response.success) {
-            jQueryHelpers.showAlert(successMessage, "success", 1500);
+            jQueryHelpers.showAlert(
+              "Data fasilitas berhasil ditambahkan!",
+              "success",
+              1500
+            );
             setTimeout(() => {
-              window.location.href = redirectUrl;
+              window.location.href = `${BASE_URL}/admin/fasilitas`;
             }, 500);
           } else {
             jQueryHelpers.showAlert("Gagal: " + response.message, "danger", 5000);
@@ -202,17 +187,14 @@
         nama: $("#nama").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
         foto: $("#foto")[0].files[0] || null,
-        id: $("#id").val() || null,
-        // ✅ AMBIL CSRF TOKEN DARI HIDDEN FIELD
         csrf_token: $('input[name="csrf_token"]').val() || null,
       };
     },
 
     validateFormData: function (data) {
       const errors = [];
-      const isCreateMode = data.id === null;
 
-      // ✅ VALIDASI CSRF TOKEN
+      // Validasi CSRF token
       if (!data.csrf_token) {
         errors.push({
           fieldId: "csrf_token",
@@ -221,12 +203,8 @@
         });
       }
 
-      const nameValidation = validationHelpers.validateName(
-        data.nama, 
-        3, 
-        150, 
-        "Nama fasilitas"
-      );
+      // Validasi nama
+      const nameValidation = validationHelpers.validateName(data.nama, 3, 150);
       if (!nameValidation.valid) {
         errors.push({
           fieldId: "nama",
@@ -235,28 +213,27 @@
         });
       }
 
-      const deskripsiValidation = validationHelpers.validateText(
-        data.deskripsi, 
-        255, 
-        false
-      );
-      if (!deskripsiValidation.valid) {
-        errors.push({
-          fieldId: "deskripsi",
-          errorId: "deskripsiError",
-          message: deskripsiValidation.message,
-        });
+      // Validasi deskripsi (optional)
+      if (data.deskripsi) {
+        const deskripsiValidation = validationHelpers.validateText(data.deskripsi, 255, false);
+        if (!deskripsiValidation.valid) {
+          errors.push({
+            fieldId: "deskripsi",
+            errorId: "deskripsiError",
+            message: deskripsiValidation.message,
+          });
+        }
       }
 
-      if (isCreateMode && !data.foto) {
+      // Validasi foto (wajib untuk create)
+      if (!data.foto) {
         errors.push({
           fieldId: "foto",
           errorId: "fotoError",
           message: "Foto fasilitas wajib diisi",
         });
-      }
-
-      if (data.foto) {
+      } else {
+        // Validasi ukuran file
         const sizeValidation = validationHelpers.validateFileSize(data.foto, 2);
         if (!sizeValidation.valid) {
           errors.push({
@@ -266,6 +243,7 @@
           });
         }
 
+        // Validasi tipe file
         const typeValidation = validationHelpers.validateFileType(data.foto, [
           "image/jpeg",
           "image/jpg",
@@ -285,8 +263,7 @@
 
     prepareFormData: function (data) {
       const formData = new FormData();
-      
-      // ✅ SERTAKAN CSRF TOKEN
+
       formData.append("csrf_token", data.csrf_token);
       formData.append("nama", data.nama);
       formData.append("deskripsi", data.deskripsi);
@@ -295,19 +272,15 @@
         formData.append("foto", data.foto);
       }
 
-      if (data.id) {
-        formData.append("id", data.id);
-      }
-
       return formData;
     },
   };
 
   // ============================================================
-  // INISIALISASI SEMUA MODUL
+  // INISIALISASI
   // ============================================================
   $(document).ready(function () {
     FileUploadModule.init();
-    FormSubmissionModule.init();
+    FormCreateModule.init();
   });
 })();

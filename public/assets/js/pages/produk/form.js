@@ -1,12 +1,25 @@
 /**
  * File: pages/produk/form.js
- * Deskripsi: Menangani interaksi form produk (create & edit) dengan multiple dosen
- * 
- * ✅ FIXED VERSION - Sesuai dengan referensi dosen/edit.js
+ * Deskripsi: Script untuk halaman form CREATE produk
+ *
+ * Fitur:
+ * - Upload file dengan preview (dukungan drag & drop)
+ * - Multiple dosen selection
+ * - Author type toggle (Dosen/Mahasiswa/Kolaborasi)
+ * - Validasi dan submit form create
+ * - Error handling per-field
+ * - CSRF Protection
+ *
+ * Dependencies:
+ * - jQuery
+ * - jQueryHelpers.js
+ * - validationHelpers.js
  */
 
 (function () {
   "use strict";
+
+  const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
   // MODUL FILE UPLOAD
@@ -17,52 +30,34 @@
       const fileInput = document.getElementById("foto_produk");
       const imagePreview = document.getElementById("imagePreview");
       const previewImg = document.getElementById("previewImg");
-      const btnRemovePreview = document.getElementById("btnRemovePreview");
-      const currentImageWrapper = document.querySelector(".current-image-wrapper");
 
       if (!fileUploadWrapper || !fileInput) return;
 
+      // Click to upload
       fileUploadWrapper.addEventListener("click", () => {
         fileInput.click();
       });
 
+      // File change handler
       fileInput.addEventListener("change", (e) => {
-        this.handleFileSelect(
-          e.target.files[0],
-          previewImg,
-          imagePreview,
-          fileInput,
-          fileUploadWrapper,
-          currentImageWrapper
-        );
+        this.handleFileSelect(e.target.files[0], previewImg, imagePreview, fileInput, fileUploadWrapper);
       });
 
-      if (btnRemovePreview) {
-        btnRemovePreview.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this.removePreview(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper);
-        });
-      }
-
-      if (!btnRemovePreview && imagePreview) {
+      // Click preview to remove
+      if (imagePreview) {
         imagePreview.addEventListener("click", () => {
-          this.removePreview(fileInput, imagePreview, fileUploadWrapper, currentImageWrapper);
+          this.removePreview(fileInput, imagePreview, fileUploadWrapper);
         });
       }
 
+      // Setup drag and drop
       this.setupDragAndDrop(fileUploadWrapper, fileInput);
     },
 
-    handleFileSelect: function (
-      file,
-      previewImg,
-      imagePreview,
-      fileInput,
-      fileUploadWrapper,
-      currentImageWrapper
-    ) {
+    handleFileSelect: function (file, previewImg, imagePreview, fileInput, fileUploadWrapper) {
       if (!file) return;
 
+      // Validasi ukuran file
       const sizeValidation = validationHelpers.validateFileSize(file, 2);
       if (!sizeValidation.valid) {
         jQueryHelpers.showError("foto_produk", "fotoProdukError", sizeValidation.message);
@@ -70,6 +65,7 @@
         return;
       }
 
+      // Validasi tipe file
       const typeValidation = validationHelpers.validateFileType(file, [
         "image/jpeg",
         "image/jpg",
@@ -81,27 +77,23 @@
         return;
       }
 
+      // Clear error
       jQueryHelpers.clearError("foto_produk", "fotoProdukError");
 
+      // Show preview
       const reader = new FileReader();
       reader.onload = (e) => {
         previewImg.src = e.target.result;
         imagePreview.style.display = "block";
         fileUploadWrapper.style.display = "none";
-        if (currentImageWrapper) {
-          currentImageWrapper.style.display = "none";
-        }
       };
       reader.readAsDataURL(file);
     },
 
-    removePreview: function (fileInput, imagePreview, fileUploadWrapper, currentImageWrapper) {
+    removePreview: function (fileInput, imagePreview, fileUploadWrapper) {
       fileInput.value = "";
       imagePreview.style.display = "none";
       fileUploadWrapper.style.display = "flex";
-      if (currentImageWrapper) {
-        currentImageWrapper.style.display = "block";
-      }
     },
 
     setupDragAndDrop: function (wrapper, fileInput) {
@@ -128,7 +120,7 @@
   };
 
   // ============================================================
-  // ✅ MODUL MULTIPLE DOSEN SELECTION - FIXED VERSION
+  // MODUL MULTIPLE DOSEN SELECTION
   // ============================================================
   const DosenSelectionModule = {
     selectedDosen: [],
@@ -137,31 +129,26 @@
       const $dropdown = $("#customDropdownDosen");
       const $trigger = $("#dosenTrigger");
       const $menu = $("#dosenMenu");
-      const $text = $("#dosenText");
       const $hiddenInput = $("#dosen_ids");
       const $badgesContainer = $("#selectedDosenBadges");
 
-      if ($dropdown.length === 0 || $trigger.length === 0) {
-        console.warn("Dosen dropdown elements not found");
-        return;
-      }
+      if ($dropdown.length === 0 || $trigger.length === 0) return;
 
-      // ✅ FIX: Toggle dropdown dengan class 'active' sesuai CSS
+      // Toggle dropdown
       $trigger.on("click", (e) => {
         e.stopPropagation();
         $dropdown.toggleClass("active");
       });
 
-      // Tutup dropdown saat klik di luar
+      // Close dropdown when clicking outside
       $(document).on("click", (e) => {
         if (!$dropdown.is(e.target) && $dropdown.has(e.target).length === 0) {
           $dropdown.removeClass("active");
         }
       });
 
-      // ✅ Handle klik item - ADDITIVE ONLY (seperti dosen/edit.js)
+      // Handle item click - additive only
       $menu.on("click", ".custom-dropdown-item", (e) => {
-        // Jangan proses jika sudah selected/disabled
         const $item = $(e.target).closest(".custom-dropdown-item");
         if ($item.hasClass("selected") || $item.hasClass("disabled")) {
           return;
@@ -170,74 +157,44 @@
         const value = $item.attr("data-value");
         const text = $item.find(".item-text").text();
 
-        // Tambah ke selection (ADDITIVE)
+        // Add to selection
         this.selectedDosen.push({ id: value, name: text });
 
-        // Mark item sebagai selected dan disabled
+        // Mark as selected and disabled
         $item.addClass("selected disabled");
 
         // Update display
-        this.updateDisplay($hiddenInput, $text, $badgesContainer);
+        this.updateDisplay($hiddenInput, $badgesContainer);
       });
 
-      // ✅ Handle hapus badge - SATU-SATUNYA cara untuk unselect
+      // Handle remove badge
       $badgesContainer.on("click", ".badge-remove-btn", (e) => {
         e.stopPropagation();
 
         const $removeBtn = $(e.target).closest(".badge-remove-btn");
         const id = $removeBtn.attr("data-id");
 
-        // Hapus dari selectedDosen
+        // Remove from selectedDosen
         const index = this.selectedDosen.findIndex((d) => d.id === id);
         if (index !== -1) {
           this.selectedDosen.splice(index, 1);
         }
 
-        // Hapus badge dari DOM
+        // Remove badge
         $removeBtn.closest(".selected-badge").remove();
 
-        // Re-enable item di dropdown
+        // Re-enable item in dropdown
         const $menuItem = $menu.find(`.custom-dropdown-item[data-value="${id}"]`);
         if ($menuItem.length > 0) {
           $menuItem.removeClass("selected disabled");
         }
 
         // Update display
-        this.updateDisplay($hiddenInput, $text, $badgesContainer);
+        this.updateDisplay($hiddenInput, $badgesContainer);
       });
-
-      // Load selected dosen dari edit mode (jika ada)
-      this.loadSelectedDosenFromEdit();
-
-      console.log("Dosen selection module initialized");
     },
 
-    loadSelectedDosenFromEdit: function () {
-      const hiddenInput = document.getElementById("dosen_ids");
-      if (!hiddenInput || !hiddenInput.value) return;
-
-      const selectedIds = hiddenInput.value.split(",").map((id) => parseInt(id.trim()));
-      const $menu = $("#dosenMenu");
-
-      selectedIds.forEach((id) => {
-        const item = document.querySelector(`.custom-dropdown-item[data-id="${id}"]`);
-        if (item) {
-          const name = item.querySelector(".item-text").textContent;
-          this.selectedDosen.push({ id: id.toString(), name });
-          
-          // Mark dropdown item as selected and disabled
-          $(item).addClass("selected disabled");
-        }
-      });
-
-      this.renderSelectedBadges();
-      this.updateHiddenInput();
-      this.updateDropdownText();
-
-      console.log("Loaded selected dosen from edit mode:", this.selectedDosen);
-    },
-
-    updateDisplay: function ($hiddenInput, $text, $badgesContainer) {
+    updateDisplay: function ($hiddenInput, $badgesContainer) {
       this.updateHiddenInput();
       this.renderSelectedBadges();
       this.updateDropdownText();
@@ -309,8 +266,6 @@
       if (authorTypeKolaborasi) {
         authorTypeKolaborasi.addEventListener("change", this.toggleAuthorFields);
       }
-
-      this.toggleAuthorFields();
     },
 
     toggleAuthorFields: function () {
@@ -347,23 +302,17 @@
   };
 
   // ============================================================
-  // MODUL SUBMIT FORM PRODUK (Create & Edit)
+  // MODUL SUBMIT FORM CREATE
   // ============================================================
-  const FormSubmissionModule = {
+  const FormCreateModule = {
     init: function () {
-      $("#formProduk").on("submit", (e) => {
+      $("#btn-submit-create-produk").on("click", (e) => {
         e.preventDefault();
-        this.handleSubmit(e.currentTarget);
+        this.handleSubmit();
       });
     },
 
-    handleSubmit: function (formElement) {
-      const $form = $(formElement);
-
-      const ajaxUrl = $form.data("ajax-url");
-      const redirectUrl = $form.data("redirect-url");
-      const successMessage = $form.data("success-message");
-
+    handleSubmit: function () {
       jQueryHelpers.clearAllErrors("formProduk");
 
       const formData = this.getFormData();
@@ -378,23 +327,22 @@
 
       const submitData = this.prepareFormData(formData);
 
-      const submitButton = $form.find('button[type="submit"]');
       const buttonState = jQueryHelpers.disableButton(
-        submitButton.attr("id") || "submit-btn",
+        "btn-submit-create-produk",
         "Menyimpan..."
       );
 
       jQueryHelpers.makeAjaxRequest({
-        url: ajaxUrl,
+        url: `${BASE_URL}/admin/produk/create`,
         method: "POST",
         data: submitData,
         processData: false,
         contentType: false,
         onSuccess: (response) => {
           if (response.success) {
-            jQueryHelpers.showAlert(successMessage, "success", 1500);
+            jQueryHelpers.showAlert("Data produk berhasil ditambahkan!", "success", 1500);
             setTimeout(() => {
-              window.location.href = redirectUrl;
+              window.location.href = `${BASE_URL}/admin/produk`;
             }, 500);
           } else {
             jQueryHelpers.showAlert("Gagal: " + response.message, "danger", 5000);
@@ -417,15 +365,14 @@
         author_type: $('input[name="author_type"]:checked').val(),
         dosen_ids: $("#dosen_ids").val() || null,
         tim_mahasiswa: $("#tim_mahasiswa").val().trim() || null,
-        id: $("#id").val() || null,
         csrf_token: $('input[name="csrf_token"]').val() || null,
       };
     },
 
     validateFormData: function (data) {
       const errors = [];
-      const isCreateMode = data.id === null;
 
+      // Validasi CSRF token
       if (!data.csrf_token) {
         errors.push({
           fieldId: "csrf_token",
@@ -434,7 +381,8 @@
         });
       }
 
-      const nameValidation = validationHelpers.validateName(data.nama_produk, 3, 255, "Nama produk");
+      // Validasi nama produk
+      const nameValidation = validationHelpers.validateName(data.nama_produk, 3, 255);
       if (!nameValidation.valid) {
         errors.push({
           fieldId: "nama_produk",
@@ -443,24 +391,21 @@
         });
       }
 
-      const deskripsiValidation = validationHelpers.validateText(data.deskripsi, 255, false);
-      if (!deskripsiValidation.valid) {
-        errors.push({
-          fieldId: "deskripsi",
-          errorId: "deskripsiError",
-          message: deskripsiValidation.message,
-        });
+      // Validasi deskripsi (optional)
+      if (data.deskripsi) {
+        const deskripsiValidation = validationHelpers.validateText(data.deskripsi, 255, false);
+        if (!deskripsiValidation.valid) {
+          errors.push({
+            fieldId: "deskripsi",
+            errorId: "deskripsiError",
+            message: deskripsiValidation.message,
+          });
+        }
       }
 
+      // Validasi link produk (optional)
       if (data.link_produk) {
-        if (data.link_produk.length > 255) {
-          errors.push({
-            fieldId: "link_produk",
-            errorId: "linkProdukError",
-            message: "Link produk maksimal 255 karakter",
-          });
-        } else {
-          const linkValidation = validationHelpers.validateUrl(data.link_produk);
+          const linkValidation = validationHelpers.validateUrl(data.link_produk, false);
           if (!linkValidation.valid) {
             errors.push({
               fieldId: "link_produk",
@@ -468,18 +413,16 @@
               message: linkValidation.message,
             });
           }
-        }
       }
 
-      if (isCreateMode && !data.foto_produk) {
+      // Validasi foto (wajib untuk create)
+      if (!data.foto_produk) {
         errors.push({
           fieldId: "foto_produk",
           errorId: "fotoProdukError",
           message: "Foto produk wajib diisi",
         });
-      }
-
-      if (data.foto_produk) {
+      } else {
         const sizeValidation = validationHelpers.validateFileSize(data.foto_produk, 2);
         if (!sizeValidation.valid) {
           errors.push({
@@ -503,6 +446,7 @@
         }
       }
 
+      // Validasi author type
       if (!data.author_type) {
         errors.push({
           fieldId: "author_type",
@@ -511,6 +455,7 @@
         });
       }
 
+      // Validasi berdasarkan author type
       if (data.author_type === "dosen") {
         if (!data.dosen_ids) {
           errors.push({
@@ -527,12 +472,7 @@
             message: "Tim mahasiswa harus diisi",
           });
         } else {
-          const mahasiswaValidation = validationHelpers.validateName(
-            data.tim_mahasiswa,
-            3,
-            255,
-            "Tim mahasiswa"
-          );
+          const mahasiswaValidation = validationHelpers.validateName(data.tim_mahasiswa, 3, 255);
           if (!mahasiswaValidation.valid) {
             errors.push({
               fieldId: "tim_mahasiswa",
@@ -556,12 +496,7 @@
             message: "Tim mahasiswa harus diisi untuk kolaborasi",
           });
         } else {
-          const mahasiswaValidation = validationHelpers.validateName(
-            data.tim_mahasiswa,
-            3,
-            255,
-            "Tim mahasiswa"
-          );
+          const mahasiswaValidation = validationHelpers.validateName(data.tim_mahasiswa, 3, 255);
           if (!mahasiswaValidation.valid) {
             errors.push({
               fieldId: "tim_mahasiswa",
@@ -596,21 +531,17 @@
         formData.append("foto_produk", data.foto_produk);
       }
 
-      if (data.id) {
-        formData.append("id", data.id);
-      }
-
       return formData;
     },
   };
 
   // ============================================================
-  // INISIALISASI SEMUA MODUL
+  // INISIALISASI
   // ============================================================
   $(document).ready(function () {
     FileUploadModule.init();
     DosenSelectionModule.init();
     AuthorTypeModule.init();
-    FormSubmissionModule.init();
+    FormCreateModule.init();
   });
 })();

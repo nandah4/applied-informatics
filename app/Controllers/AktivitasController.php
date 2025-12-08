@@ -33,11 +33,20 @@ class AktivitasController
      */
     public function getAllAktivitasWithPagination($page = 1, $perPage = 10)
     {
+
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
         // Hitung offset
         $offset = ($page - 1) * $perPage;
 
+        $params = [
+            'search' => $search,
+            'limit' => $perPage,
+            'offset' => $offset
+        ];
+
         // Ambil data dengan pagination dari model
-        $result = $this->aktivitasModel->getAllWithPagination($perPage, $offset);
+        $result = $this->aktivitasModel->getAllWithPagination($params);
 
         // Generate pagination data
         $pagination = PaginationHelper::paginate($result['total'] ?? 0, $page, $perPage);

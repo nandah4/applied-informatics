@@ -3,9 +3,11 @@
 include __DIR__ . '/../layouts/header.php';
 ?>
 
+
 <main class="detail-aktivitas-page">
-    <div class="container">
-        <!-- Breadcrumb Navigation -->
+
+    <!-- Article Container -->
+    <article class="container-fluid px-5 pb-5">
         <div class="breadcrumb-nav">
             <a href="<?= base_url('') ?>" class="breadcrumb-item">Laboratorium Applied Informatics</a>
             <span class="breadcrumb-separator">›</span>
@@ -13,10 +15,7 @@ include __DIR__ . '/../layouts/header.php';
             <span class="breadcrumb-separator">›</span>
             <span class="breadcrumb-item active">Detail Aktivitas</span>
         </div>
-    </div>
 
-    <!-- Article Container -->
-    <article class="container">
         <div class="row justify-content-center">
             <div class="col-lg-10 col-xl-8">
 
@@ -48,14 +47,14 @@ include __DIR__ . '/../layouts/header.php';
                         : upload_url("aktivitas-lab/" . $aktivitas['foto_aktivitas']);
                     ?>
                     <img src="<?= $urlPhoto ?>"
-                         alt="<?= htmlspecialchars($aktivitas['judul_aktivitas'], ENT_QUOTES, 'UTF-8') ?>"
-                         class="featured-image">
+                        alt="<?= htmlspecialchars($aktivitas['judul_aktivitas'], ENT_QUOTES, 'UTF-8') ?>"
+                        class="featured-image">
                 </div>
 
                 <!-- Article Content -->
                 <div class="article-content">
                     <div class="content-body">
-                        <?= nl2br(htmlspecialchars($aktivitas['deskripsi'], ENT_QUOTES, 'UTF-8')) ?>
+                        <?= $aktivitas['deskripsi'] ?>
                     </div>
                 </div>
 
@@ -101,7 +100,7 @@ include __DIR__ . '/../layouts/header.php';
     </div> -->
 </main>
 
-<link rel="stylesheet" href="<?= asset_url('css/pages/aktivitas-lab-user/detail_aktivitas.css') ?>">
+<link rel="stylesheet" href="<?= asset_url('css/pages/aktivitas-lab/detail_aktivitas_user.css') ?>">
 
 <script>
     function shareToFacebook(e) {

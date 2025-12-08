@@ -69,8 +69,10 @@ CREATE TABLE mst_dosen (
     full_name VARCHAR(255) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     nidn VARCHAR(50) UNIQUE,
+    nip VARCHAR(50) UNIQUE,
     foto_profil VARCHAR(255),
     deskripsi text default NULL,
+    status_aktif    BOOLEAN DEFAULT TRUE,
     jabatan_id bigint,
     created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMP NOT NULL DEFAULT NOW(), 
@@ -99,7 +101,6 @@ CREATE TABLE mst_mitra (
     id              BIGSERIAL PRIMARY KEY,
     nama            VARCHAR(200) NOT NULL,
     status          mitra_status_enum NOT NULL DEFAULT 'non-aktif',
-    deskripsi       TEXT,
     logo_mitra      TEXT,
     kategori        mitra_kategori_enum NOT NULL DEFAULT 'industri',
     tanggal_mulai   DATE,
@@ -114,12 +115,48 @@ CREATE TABLE mst_produk (
     nama_produk   VARCHAR(255) NOT NULL,
     deskripsi     VARCHAR(255),
     foto_produk   TEXT,
-    link_produk   VARCHAR(255),
+    link_produk   TEXT,
     tim_mahasiswa VARCHAR(255), 
     
     created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+
+-- TABLE: mst_mahasiswa
+CREATE TABLE mst_mahasiswa (
+    id              BIGSERIAL PRIMARY KEY,
+    
+    nim             VARCHAR(20) UNIQUE NOT NULL,
+    email           VARCHAR(150) UNIQUE NOT NULL,
+    nama            VARCHAR(150) NOT NULL,
+    no_hp           VARCHAR(20), 
+    jabatan_lab     VARCHAR(100) DEFAULT 'Asisten Lab',
+    semester        INT NOT NULL,
+    
+    link_github     VARCHAR(255),
+    
+    status_aktif    BOOLEAN DEFAULT TRUE,
+    tanggal_gabung  DATE DEFAULT CURRENT_DATE,
+    
+    asal_pendaftar_id BIGINT,
+
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+    
+    -- Constraint ke trx_pendaftar
+    CONSTRAINT fk_asal_pendaftar
+        FOREIGN KEY(asal_pendaftar_id)
+        REFERENCES trx_pendaftar(id)
+        ON DELETE SET NULL
+);
+
+-- Trigger
+CREATE TRIGGER trg_set_timestamp_mahasiswa
+BEFORE UPDATE ON mst_mahasiswa
+FOR EACH ROW EXECUTE FUNCTION fn_trigger_set_timestamp();
+
+
 
 -- Mapping Table: Produk <-> Dosen
 CREATE TABLE map_produk_dosen (
@@ -173,7 +210,7 @@ CREATE TABLE trx_rekrutmen (
     updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TYPE publikasi_tipe_enum AS ENUM ('Riset', 'Kekayaan Intelektual', 'PPM');
+CREATE TYPE publikasi_tipe_enum AS ENUM ('Publikasi', 'Riset', 'Kekayaan Intelektual', 'PPM');
 
 -- TABLE : trx_publikasi
 CREATE TABLE trx_publikasi (
@@ -191,6 +228,49 @@ CREATE TABLE trx_publikasi (
         REFERENCES mst_dosen(id)
         ON DELETE CASCADE
 );
+
+
+-- TABLE : trx_pendaftar
+
+CREATE TYPE seleksi_status_enum AS ENUM ('Pending', 'Diterima', 'Ditolak');
+
+CREATE TABLE trx_pendaftar (
+    id              BIGSERIAL PRIMARY KEY,
+    
+    -- Relasi ke Transaksi Rekrutmen
+    rekrutmen_id    BIGINT NOT NULL, 
+    
+    nim             VARCHAR(20) NOT NULL,
+    nama            VARCHAR(150) NOT NULL,
+    email           VARCHAR(150) NOT NULL,
+    no_hp           VARCHAR(20),
+    semester        INT NOT NULL,
+    ipk             DECIMAL(3,2),
+    
+    link_portfolio  VARCHAR(255),
+    link_github     VARCHAR(255),
+    file_cv         VARCHAR(255) NOT NULL,
+    file_khs        VARCHAR(255),
+    
+    status_seleksi  seleksi_status_enum NOT NULL DEFAULT 'Pending',
+    deskripsi       TEXT DEFAULT NULL,  -- Feedback for rejected applicants
+    
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_trx_rekrutmen
+        FOREIGN KEY(rekrutmen_id) 
+        REFERENCES trx_rekrutmen(id)
+        ON DELETE CASCADE
+);
+
+-- Trigger
+CREATE TRIGGER trg_set_timestamp_pendaftar
+BEFORE UPDATE ON trx_pendaftar
+FOR EACH ROW EXECUTE FUNCTION fn_trigger_set_timestamp();
+
+
+
 
 
 -- ==========================================

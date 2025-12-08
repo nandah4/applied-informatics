@@ -84,6 +84,19 @@
                                     </div>
                                 </div>
                             </div>
+                            <div>
+                                <div class="meta-item">
+                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="8.5" cy="7" r="4"></circle>
+                                        <polyline points="17 11 19 13 23 9"></polyline>
+                                    </svg>
+                                    <div>
+                                        <div class="meta-label">NIP</div>
+                                        <div class="meta-value"><?= htmlspecialchars($dosenData['nip']) ?></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,6 +136,17 @@
                             <span class="badge-custom badge-primary"><?= htmlspecialchars($dosenData['jabatan_name']) ?></span>
                         </div>
                     </div>
+                    <div class="info-row">
+                        <div class="info-label">Status</div>
+                        <div class="info-value">
+                            <?php if ($dosenData['status_aktif']): ?>
+                                <span class="badge badge-success">Aktif</span>
+                            <?php else: ?>
+                                <span class="badge badge-warning">Tidak Aktif</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
                     <div class="info-row">
                         <div class="info-label">Terakhir Diperbarui</div>
                         <div class="info-value"><?= formatTanggal($dosenData['updated_at'], true) ?></div>

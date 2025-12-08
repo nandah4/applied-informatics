@@ -770,9 +770,11 @@
         full_name: $("#full_name").val().trim(),
         email: $("#email").val().trim(),
         nidn: $("#nidn").val().trim(),
+        nip: $("#nip").val().trim(),
         jabatan_id: $("#jabatan").val().trim(),
         keahlian_ids: $("#keahlian").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
+        status_aktif: $("#status_aktif").val(),
         foto_profil: $("#foto_profil")[0]?.files[0] || null,
       };
     },
@@ -814,6 +816,16 @@
           fieldId: "nidn",
           errorId: "nidnError",
           message: nidnValidation.message,
+        });
+      }
+
+      // VALIDASI NIP 
+      const nipValidation = validationHelpers.validateNIP(data.nip, true);
+      if (!nipValidation.valid) {
+        errors.push({
+          fieldId: "nip",
+          errorId: "nipError",
+          message: nipValidation.message,
         });
       }
 
@@ -889,9 +901,11 @@
       formData.append("full_name", data.full_name);
       formData.append("email", data.email);
       formData.append("nidn", data.nidn);
+      formData.append("nip", data.nip);
       formData.append("jabatan_id", data.jabatan_id);
       formData.append("keahlian_ids", data.keahlian_ids);
       formData.append("deskripsi", data.deskripsi);
+      formData.append("status_aktif", data.status_aktif);
 
       if (data.foto_profil) {
         formData.append("foto_profil", data.foto_profil);

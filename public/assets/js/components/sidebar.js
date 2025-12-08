@@ -92,40 +92,73 @@
        * Setup mobile menu
        */
       function setupMobileMenu() {
-          // Open sidebar on mobile
-          $('#mobileMenuBtn').on('click', function() {
-              $('#sidebar').addClass('show');
-              showOverlay();
+          // Open sidebar on mobile when toggle button clicked
+          $('#mobileMenuToggle').on('click', function() {
+              toggleMobileSidebar();
           });
 
           // Close sidebar on overlay click
-          $(document).on('click', '.sidebar-overlay', function() {
+          $('#sidebarOverlay').on('click', function() {
               closeMobileSidebar();
           });
 
           // Close on ESC key
           $(document).on('keydown', function(e) {
-              if (e.key === 'Escape') {
-                  closeMobileSidebar();
+              if (e.key === 'Escape' || e.keyCode === 27) {
+                  if ($('#sidebar').hasClass('show')) {
+                      closeMobileSidebar();
+                  }
+              }
+          });
+
+          // Close sidebar when clicking a link on mobile
+          if ($(window).width() <= 992) {
+              $('.sidebar .nav-link').on('click', function(e) {
+                  // Don't close if it's a parent menu (has submenu)
+                  if (!$(this).hasClass('parent-menu')) {
+                      setTimeout(function() {
+                          closeMobileSidebar();
+                      }, 200);
+                  }
+              });
+          }
+
+          // Handle window resize
+          $(window).on('resize', function() {
+              if ($(window).width() > 992) {
+                  // Desktop mode - ensure sidebar is visible and overlay is hidden
+                  $('#sidebar').removeClass('show');
+                  $('#sidebarOverlay').removeClass('show');
               }
           });
       }
 
       /**
-       * Show overlay untuk mobile
+       * Toggle mobile sidebar
        */
-      function showOverlay() {
-          if ($(window).width() <= 768) {
-              // Buat overlay jika belum ada
-              if ($('.sidebar-overlay').length === 0) {
-                  $('body').append('<div class="sidebar-overlay"></div>');
-              }
+      function toggleMobileSidebar() {
+          const $sidebar = $('#sidebar');
+          const $overlay = $('#sidebarOverlay');
 
-              // Show overlay dengan fade in
-              setTimeout(function() {
-                  $('.sidebar-overlay').addClass('show');
-              }, 10);
+          if ($sidebar.hasClass('show')) {
+              closeMobileSidebar();
+          } else {
+              openMobileSidebar();
           }
+      }
+
+      /**
+       * Open mobile sidebar
+       */
+      function openMobileSidebar() {
+          $('#sidebar').addClass('show');
+          $('#sidebarOverlay').addClass('show');
+
+          // Prevent body scroll when sidebar is open
+          $('body').css('overflow', 'hidden');
+
+          // Update hamburger icon to X
+          updateMobileMenuIcon(true);
       }
 
       /**
@@ -133,12 +166,25 @@
        */
       function closeMobileSidebar() {
           $('#sidebar').removeClass('show');
-          $('.sidebar-overlay').removeClass('show');
+          $('#sidebarOverlay').removeClass('show');
 
-          // Remove overlay setelah animasi
-          setTimeout(function() {
-              $('.sidebar-overlay').remove();
-          }, 300);
+          // Re-enable body scroll
+          $('body').css('overflow', '');
+
+          // Update icon back to hamburger
+          updateMobileMenuIcon(false);
+      }
+
+      /**
+       * Update mobile menu toggle icon
+       */
+      function updateMobileMenuIcon(isOpen) {
+          const iconName = isOpen ? 'x' : 'menu';
+          $('#mobileMenuToggle i').attr('data-feather', iconName);
+
+          if (typeof feather !== 'undefined') {
+              feather.replace();
+          }
       }
 
       /**
@@ -181,12 +227,15 @@
           },
 
           showOnMobile: function() {
-              $('#sidebar').addClass('show');
-              showOverlay();
+              openMobileSidebar();
           },
 
           hideOnMobile: function() {
               closeMobileSidebar();
+          },
+
+          toggleMobile: function() {
+              toggleMobileSidebar();
           }
       };
 

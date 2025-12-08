@@ -21,6 +21,25 @@ function hasActiveChild($urls, $current)
 }
 ?>
 
+<!-- Mobile Navbar (visible on mobile/tablet only) -->
+<nav class="mobile-navbar" id="mobileNavbar">
+    <div class="mobile-navbar-content">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+            <i data-feather="menu"></i>
+        </button>
+        <div class="mobile-navbar-logo">
+            <img src="<?= asset_url('images/lab-ai-logo.png') ?>" alt="Lab AI Logo" class="mobile-logo-img">
+        </div>
+        <div class="mobile-navbar-actions">
+            <!-- Optional: Add user profile or notifications here -->
+        </div>
+    </div>
+</nav>
+
+<!-- Overlay for mobile sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar (Desktop: always visible, Mobile: toggle) -->
 <aside class="sidebar" id="sidebar">
 
     <!-- Sidebar Header with Logo -->
@@ -57,6 +76,17 @@ function hasActiveChild($urls, $current)
                     <li class="nav-item">
                         <a href="<?= base_url('admin/dosen') ?>" class="nav-link <?= isActive('admin/dosen', $current_url) ?>">
                             <span class="nav-text">Data Dosen</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('admin/asisten-lab') ?>" class="nav-link <?= isActive('admin/asisten-lab', $current_url) ?>">
+                            <span class="nav-text">Data Asisten Lab</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="<?= base_url('admin/daftar-pendaftar') ?>" class="nav-link <?= isActive('admin/daftar-pendaftar', $current_url) ?>">
+                            <span class="nav-text">Data Pendaftar</span>
                         </a>
                     </li>
                 </ul>
@@ -96,7 +126,7 @@ function hasActiveChild($urls, $current)
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
                         <a href="<?= base_url('admin/publikasi-akademik') ?>" class="nav-link <?= isActive('admin/publikasi-akademik', $current_url) ?>">
-                            <span class="nav-text">Publikasi Akademik</span>
+                            <span class="nav-text">Kelola Publikasi Akademik</span>
                         </a>
                     </li>
                     <li class="nav-item">

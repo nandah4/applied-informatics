@@ -4,8 +4,10 @@ CREATE OR REPLACE PROCEDURE sp_insert_dosen(
     p_full_name VARCHAR,
     p_email VARCHAR,
     p_nidn VARCHAR,
+    p_nip VARCHAR,
     p_jabatan_id BIGINT,
     p_keahlian_ids BIGINT[],
+    p_status_aktif BOOLEAN,
     p_foto_profil VARCHAR DEFAULT NULL,
     p_deskripsi TEXT DEFAULT NULL
 )
@@ -26,22 +28,26 @@ BEGIN
         END IF;
     END IF;
 
+    -- Validasi nip duplicate (hanya jika NIP tidak NULL)
+    IF p_nip IS NOT NULL THEN
+        IF EXISTS (SELECT 1 FROM mst_dosen WHERE nip = p_nip) THEN
+            RAISE EXCEPTION 'NIP sudah terdaftar';
+        END IF;
+    END IF;
+
     -- Insert data dosen
-    INSERT INTO mst_dosen (full_name, email, nidn, jabatan_id, foto_profil, deskripsi)
-    VALUES (p_full_name, p_email, p_nidn, p_jabatan_id, p_foto_profil, p_deskripsi)
+    INSERT INTO mst_dosen (full_name, email, nidn, nip, jabatan_id, foto_profil, deskripsi, status_aktif)
+    VALUES (p_full_name, p_email, p_nidn, p_nip, p_jabatan_id, p_foto_profil, p_deskripsi, p_status_aktif)
     RETURNING id INTO v_dosen_id;
 
     -- Insert keahlian menggunakan unnest ke many-to-many
     IF p_keahlian_ids IS NOT NULL AND array_length(p_keahlian_ids, 1) > 0 THEN
         INSERT INTO map_dosen_keahlian (dosen_id, keahlian_id)
-        SELECT v_dosen_id, unnest(p_keahlian_ids);
+        SELECT DISTINCT v_dosen_id, unnest(p_keahlian_ids);
     END IF;
 
 END;
 $$;
-
--- Komentar untuk dokumentasi
-COMMENT ON PROCEDURE sp_insert_dosen_with_keahlian IS 'Procedure untuk insert dosen beserta keahlian. Gunakan RAISE EXCEPTION untuk error handling.';
 
 
 --
@@ -54,8 +60,10 @@ CREATE OR REPLACE PROCEDURE sp_update_dosen(
     p_full_name VARCHAR,
     p_email VARCHAR,
     p_nidn VARCHAR,
+    p_nip VARCHAR,
     p_jabatan_id BIGINT,
     p_keahlian_ids BIGINT[],
+    p_status_aktif BOOLEAN,
     p_foto_profil VARCHAR DEFAULT NULL,
     p_deskripsi TEXT DEFAULT NULL
 )
@@ -82,14 +90,26 @@ BEGIN
         END IF;
     END IF;
 
+    -- VALIDATION NIP (if not null)
+    IF p_nip IS NOT NULL THEN
+        IF EXISTS (
+            SELECT 1 FROM mst_dosen 
+            WHERE nip = p_nip AND id != p_id
+        ) THEN
+            RAISE EXCEPTION 'NIP sudah terdaftar';
+        END IF;
+    END IF;
+
     -- UPDATE MAIN TABLE
     UPDATE mst_dosen SET
         full_name   = p_full_name,
         email       = p_email,
         nidn        = p_nidn,
+        nip         = p_nip,
         jabatan_id  = p_jabatan_id,
         foto_profil = p_foto_profil,
         deskripsi   = p_deskripsi,
+        status_aktif = p_status_aktif,
         updated_at = NOW()
     WHERE id = p_id
     RETURNING id INTO v_dosen_id;

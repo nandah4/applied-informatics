@@ -4,29 +4,25 @@ include __DIR__ . '/../layouts/header.php';
 ?>
 
 <main class="aktivitas-lab-page">
-    <div class="container">
+
+    <div class="container-fluid px-5 pb-5">
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
             <span class="breadcrumb-separator">›</span>
             <span class="breadcrumb-item active">Aktivitas Laboratorium</span>
         </div>
-    </div>
 
-    <div class="container">
-
-        <div class="mb-4">
+        <div class="mb-5">
             <h1 class="title-section mb-3">Semua Aktivitas Lab</h1>
             <p class="subtitle-section w-75">Beragam kegiatan penelitian, pengembangan, dan kolaborasi yang dilakukan oleh
                 anggota laboratorium.</p>
         </div>
 
-        <div class="divider-hr"></div>
-
         <div class="row g-4" id="aktivitasContainer">
             <?php if (!empty($aktivitasData)): ?>
                 <?php foreach ($aktivitasData as $aktivitas): ?>
                     <div class="col-md-6 col-lg-4 aktivitas-item">
-                        <a href="<?= base_url("aktivitas/" . $aktivitas['id']) ?>" class="text-decoration-none">
+                        <a href="<?= base_url("aktivitas-laboratorium/" . $aktivitas['id']) ?>" class="text-decoration-none">
                             <article class="news-card h-100">
                                 <!-- Image Section -->
                                 <div class="news-image-wrapper">
@@ -44,20 +40,12 @@ include __DIR__ . '/../layouts/header.php';
 
                                 <!-- Content Section -->
                                 <div class="news-content">
-                                    <h3 class="news-title">
-                                        <?php
-                                        $judul = $aktivitas['judul_aktivitas'];
-                                        $judul_display = mb_strlen($judul) > 80 ? mb_substr($judul, 0, 80) . '...' : $judul;
-                                        echo htmlspecialchars($judul_display);
-                                        ?>
+                                    <h3 class="news-title text-truncate-2">
+                                        <?= $aktivitas['judul_aktivitas'] ?>
                                     </h3>
-                                    <p class="news-description">
-                                        <?php
-                                        $deskripsi = $aktivitas['deskripsi'];
-                                        $deskripsi_display = mb_strlen($deskripsi) > 150 ? mb_substr($deskripsi, 0, 150) . '...' : $deskripsi;
-                                        echo htmlspecialchars($deskripsi_display);
-                                        ?>
-                                    </p>
+                                    <div class="news-description text-truncate-4">
+                                        <?= $aktivitas['deskripsi'] ?>
+                                    </div>
 
                                     <div class="news-footer">
                                         <span class="read-more-link">
@@ -86,11 +74,11 @@ include __DIR__ . '/../layouts/header.php';
         <!-- Load More/Less Button -->
         <?php if (!empty($aktivitasData)): ?>
             <div class="text-center mt-5" id="loadMoreSection">
-                <button type="button" class="btn btn-outline-primary btn-lg px-5" id="loadMoreBtn" onclick="loadMore()">
+                <button type="button" class="btn btn-outline-primary px-5" id="loadMoreBtn" onclick="loadMore()">
                     <i class="bi bi-arrow-down-circle me-2"></i>
                     Muat Lebih Banyak
                 </button>
-                <button type="button" class="btn btn-outline-secondary btn-lg px-5" id="loadLessBtn" onclick="loadLess()" style="display: none;">
+                <button type="button" class="btn btn-outline-secondary px-5" id="loadLessBtn" onclick="loadLess()" style="display: none;">
                     <i class="bi bi-arrow-up-circle me-2"></i>
                     Tampilkan Lebih Sedikit
                 </button>
@@ -100,7 +88,7 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 </main>
 
-<link rel="stylesheet" href="<?= asset_url('css/pages/aktivitas-lab-user/aktivitas_lab.css') ?>">
+<link rel="stylesheet" href="<?= asset_url('css/pages/aktivitas-lab/aktivitas_lab_user.css') ?>">
 
 <script>
     let currentLimit = 6;

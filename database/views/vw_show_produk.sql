@@ -10,7 +10,7 @@ CREATE OR REPLACE VIEW vw_show_produk AS
         p.created_at,
         p.updated_at,
         -- Aggregate dosen names (comma-separated)
-        STRING_AGG(d.full_name, ', ' ORDER BY d.full_name) as dosen_names,
+        STRING_AGG(d.full_name, '-$$$-' ORDER BY d.full_name) as dosen_names,
         -- Count dosen
         COUNT(DISTINCT mpd.dosen_id) as dosen_count
     FROM mst_produk p

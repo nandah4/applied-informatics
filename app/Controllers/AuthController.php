@@ -5,6 +5,8 @@
  * Description: Handle authentication logic (register, login, + logout)
  */
 
+use App\Helpers\SessionHelper;
+
 class AuthController
 {
     private $authModel;
@@ -62,6 +64,20 @@ class AuthController
         }
     }
 
+
+    /**
+     * Handle user logout
+     * Destroy session dan redirect ke halaman login
+     */
+    public function handleLogout()
+    {
+        // Destroy session using SessionHelper
+        SessionHelper::destroySession();
+
+        // Redirect ke halaman beranda
+        header('Location: ' . base_url('/'));
+        exit;
+    }
 
     /**
      * Sanitize email input

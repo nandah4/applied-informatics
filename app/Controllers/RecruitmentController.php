@@ -4,17 +4,16 @@
  * File: Controllers/RecruitmentController.php
  * Deskripsi: Controller untuk menangani request terkait data recruitment
  *
- * Fungsi utama:
- * - createRecruitment(): Handle request create recruitment baru
- * - updateRecruitment(): Handle request update recruitment
- * - deleteRecruitment(): Handle request delete recruitment
- * - getAllRecruitment(): Get all recruitment dengan pagination
- * - getRecruitmentById(): Get detail recruitment by ID
+ * PERUBAHAN:
+ * - Status sekarang bisa diubah manual menjadi 'tutup' meskipun tanggal masih panjang
+ * - Auto-open tetap aktif saat tanggal diperpanjang dari expired ke valid
+ * - Auto-close tetap aktif untuk recruitment yang sudah expired
  *
- * AUTO-STATUS FEATURE:
- * - Status akan otomatis menjadi "tutup" jika tanggal_tutup < hari ini
- * - Status akan otomatis menjadi "buka" jika tanggal_tutup >= hari ini (termasuk saat diperpanjang)
- * - User tidak perlu manual mengubah status saat memperpanjang periode recruitment
+ * LOGIKA STATUS:
+ * 1. Jika tanggal_tutup < hari ini -> status SELALU 'tutup' (tidak bisa dibuka)
+ * 2. Jika tanggal_tutup >= hari ini:
+ *    a. Jika diperpanjang dari expired -> auto 'buka'
+ *    b. Jika tanggal masih valid -> gunakan pilihan user (bisa tutup manual)
  */
 
 class RecruitmentController
@@ -26,12 +25,8 @@ class RecruitmentController
         $this->recruitmentModel = new RecruitmentModel();
     }
 
-    // ========================================
-    // RECRUITMENT CRUD OPERATIONS
-    // ========================================
-
     /**
-     * Get all recruitment for index page
+     * Get all recruitment for index page with search
      * Method: GET
      *
      * @return array
@@ -39,6 +34,7 @@ class RecruitmentController
     public function getAllRecruitment()
     {
         // Ambil parameter dari GET request
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
@@ -46,18 +42,26 @@ class RecruitmentController
         $page = max(1, $page);
         $perPage = max(1, min(100, $perPage));
 
-        // Hitung offset untuk query
+        // Hitung offset
         $offset = ($page - 1) * $perPage;
 
-        // Ambil data dengan pagination
-        $result = $this->recruitmentModel->getAllRecruitmentWithPagination($perPage, $offset);
+        // Siapkan params untuk model
+        $params = [
+            'search' => $search,
+            'limit' => $perPage,
+            'offset' => $offset
+        ];
 
-        // Generate pagination dari total yang dikembalikan model
+        // Get data dari model
+        $result = $this->recruitmentModel->getAllWithSearchAndFilter($params);
+
+        // Generate pagination
         $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
         return [
             'data' => $result['data'],
-            'pagination' => $pagination
+            'pagination' => $pagination,
+            'total' => $result['total']
         ];
     }
 
@@ -82,20 +86,17 @@ class RecruitmentController
      */
     public function createRecruitment()
     {
-        // 1. Validasi request method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             ResponseHelper::error('Invalid request method');
             return;
         }
 
-        // 1A. Validasi csrf token
         $csrfToken = $_POST['csrf_token'] ?? '';
         if (!CsrfHelper::validateToken($csrfToken)) {
             ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
             return;
         }
 
-        // 2. Ambil data dari POST
         $judul = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $status = $_POST['status'] ?? 'tutup';
@@ -103,22 +104,19 @@ class RecruitmentController
         $tanggal_tutup = $_POST['tanggal_tutup'] ?? '';
         $lokasi = $_POST['lokasi'] ?? '';
 
-        // 2A. Validasi status
         $allowedStatus = ['buka', 'tutup'];
         if (!in_array($status, $allowedStatus)) {
             ResponseHelper::error('Status recruitment tidak valid');
             return;
         }
 
-        // 3. Validasi input
         $validationErrors = $this->validateRecruitmentInput($judul, $deskripsi, $tanggal_buka, $tanggal_tutup, $lokasi);
 
         if (!empty($validationErrors)) {
-            ResponseHelper::error($validationErrors[0]); // Return error pertama
+            ResponseHelper::error($validationErrors[0]);
             return;
         }
 
-        // 4. Siapkan data untuk insert
         $recruitmentData = [
             'judul' => $judul,
             'deskripsi' => $deskripsi,
@@ -128,7 +126,6 @@ class RecruitmentController
             'lokasi' => $lokasi
         ];
 
-        // 5. Insert ke database
         $result = $this->recruitmentModel->insert($recruitmentData);
 
         if (!$result['success']) {
@@ -153,7 +150,6 @@ class RecruitmentController
     {
         $errors = [];
 
-        // Validasi judul
         if (empty($judul)) {
             $errors[] = "Judul recruitment wajib diisi";
         } else {
@@ -163,7 +159,6 @@ class RecruitmentController
             }
         }
 
-        // Validasi deskripsi
         if (empty($deskripsi)) {
             $errors[] = "Deskripsi wajib diisi";
         } else {
@@ -173,24 +168,20 @@ class RecruitmentController
             }
         }
 
-        // Validasi tanggal buka
         if (empty($tanggal_buka)) {
             $errors[] = "Tanggal buka wajib diisi";
         }
 
-        // Validasi tanggal tutup
         if (empty($tanggal_tutup)) {
             $errors[] = "Tanggal tutup wajib diisi";
         }
 
-        // Validasi tanggal tutup tidak lebih awal dari tanggal buka
         if (!empty($tanggal_buka) && !empty($tanggal_tutup)) {
             if ($tanggal_tutup < $tanggal_buka) {
                 $errors[] = "Tanggal tutup tidak boleh lebih awal dari tanggal buka";
             }
         }
 
-        // Validasi lokasi
         if (empty($lokasi)) {
             $errors[] = "Lokasi wajib diisi";
         } else {
@@ -208,50 +199,47 @@ class RecruitmentController
      * Method: POST
      * Endpoint: /applied-informatics/admin/recruitment/update
      *
-     * NOTE: Status akan AUTO-UPDATE berdasarkan tanggal:
-     * - Jika tanggal_tutup < hari ini -> status = "tutup"
-     * - Jika tanggal_tutup >= hari ini -> status = "buka" (auto-reopen saat diperpanjang)
+     * LOGIKA STATUS:
+     * - User dapat memilih status 'buka' atau 'tutup' dari form
+     * - Jika tanggal_tutup < hari ini -> status akan di-force menjadi 'tutup' oleh SP
+     * - Jika tanggal_tutup >= hari ini:
+     *   - Jika diperpanjang dari expired -> auto 'buka' oleh SP
+     *   - Jika tanggal masih valid -> gunakan pilihan user dari form
      *
      * @return void - Mengembalikan JSON response
      */
     public function updateRecruitment()
     {
-        // 1. Validasi request method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             ResponseHelper::error('Invalid request method');
             return;
         }
 
-        // 1A. Validasi csrf token
         $csrfToken = $_POST['csrf_token'] ?? '';
         if (!CsrfHelper::validateToken($csrfToken)) {
             ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
             return;
         }
 
-        // 2. Ambil data dari POST
         $id = $_POST['id'] ?? null;
         $judul = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
-        $status = $_POST['status'] ?? 'tutup'; // Status dari form (akan di-override oleh stored procedure)
+        $status = $_POST['status'] ?? 'tutup'; // Status dari form
         $tanggal_buka = $_POST['tanggal_buka'] ?? '';
         $tanggal_tutup = $_POST['tanggal_tutup'] ?? '';
         $lokasi = $_POST['lokasi'] ?? '';
 
-        // 3. Validasi ID (harus numeric)
         if (!$id || !is_numeric($id)) {
             ResponseHelper::error('ID recruitment tidak valid');
             return;
         }
 
-        // 3A. Validasi status
         $allowedStatus = ['buka', 'tutup'];
         if (!in_array($status, $allowedStatus)) {
             ResponseHelper::error('Status recruitment tidak valid');
             return;
         }
 
-        // 4. Validasi input
         $validationErrors = $this->validateRecruitmentInput($judul, $deskripsi, $tanggal_buka, $tanggal_tutup, $lokasi);
 
         if (!empty($validationErrors)) {
@@ -259,25 +247,22 @@ class RecruitmentController
             return;
         }
 
-        // 5. Get data recruitment lama untuk verifikasi
         $oldRecruitmentResult = $this->recruitmentModel->getById($id);
         if (!$oldRecruitmentResult['success']) {
             ResponseHelper::error('Recruitment tidak ditemukan');
             return;
         }
 
-        // 6. Siapkan data untuk update
-        // NOTE: Status akan di-override oleh stored procedure berdasarkan tanggal
+        // Status dari form akan digunakan, kecuali jika tanggal expired atau diperpanjang
         $recruitmentData = [
             'judul' => $judul,
             'deskripsi' => $deskripsi,
-            'status' => $status, // Ini akan di-override oleh SP
+            'status' => $status, // Akan diproses oleh SP
             'tanggal_buka' => $tanggal_buka,
             'tanggal_tutup' => $tanggal_tutup,
             'lokasi' => $lokasi
         ];
 
-        // 7. Update ke database
         $result = $this->recruitmentModel->update($id, $recruitmentData);
 
         if (!$result['success']) {
@@ -285,7 +270,6 @@ class RecruitmentController
             return;
         }
 
-        // 8. Return success response
         ResponseHelper::success('Data recruitment berhasil diupdate', ['id' => $id]);
     }
 
@@ -299,26 +283,22 @@ class RecruitmentController
      */
     public function deleteRecruitment($id)
     {
-        // 1. Validasi request method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             ResponseHelper::error('Invalid request method');
             return;
         }
 
-        // 1A. Validasi csrf token
         $csrfToken = $_POST['csrf_token'] ?? '';
         if (!CsrfHelper::validateToken($csrfToken)) {
             ResponseHelper::error('Invalid CSRF token. Silakan refresh halaman.');
             return;
         }
 
-        // 2. Validasi ID
         if (!$id || !is_numeric($id)) {
             ResponseHelper::error('ID recruitment tidak valid');
             return;
         }
 
-        // 3. Delete dari database menggunakan stored procedure
         $result = $this->recruitmentModel->delete($id);
 
         if (!$result['success']) {
@@ -326,7 +306,113 @@ class RecruitmentController
             return;
         }
 
-        // 4. Return success response
         ResponseHelper::success('Data recruitment berhasil dihapus');
+    }
+
+    /**
+     * Handle pendaftaran mahasiswa (form submission)
+     * Method: POST
+     * Endpoint: /rekrutment/submit
+     *
+     * @return void - Redirect ke halaman sukses atau kembali ke form dengan error
+     */
+    public function submitPendaftaran()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: " . base_url('rekrutment'));
+            exit;
+        }
+
+        $rekrutmen_id = $_POST['rekrutmen_id'] ?? null;
+        $nim = trim($_POST['nim'] ?? '');
+        $nama = trim($_POST['nama'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $no_hp = trim($_POST['no_hp'] ?? '');
+        $semester = $_POST['semester'] ?? null;
+        $ipk = $_POST['ipk'] ?? null;
+        $link_portfolio = trim($_POST['link_portfolio'] ?? '');
+        $link_github = trim($_POST['link_github'] ?? '');
+
+        $errors = [];
+
+        if (empty($rekrutmen_id) || !is_numeric($rekrutmen_id)) {
+            $errors[] = "ID Rekrutmen tidak valid";
+        }
+
+        if (empty($nim)) {
+            $errors[] = "NIM wajib diisi";
+        }
+
+        if (empty($nama)) {
+            $errors[] = "Nama lengkap wajib diisi";
+        }
+
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Email tidak valid";
+        }
+
+        if (empty($semester) || !is_numeric($semester)) {
+            $errors[] = "Semester wajib dipilih";
+        }
+
+        if (!isset($_FILES['file_cv']) || $_FILES['file_cv']['error'] === UPLOAD_ERR_NO_FILE) {
+            $errors[] = "Curriculum Vitae (CV) wajib diupload";
+        }
+
+        if (!empty($errors)) {
+            $_SESSION['error_message'] = implode('<br>', $errors);
+            header("Location: " . base_url('rekrutment/form/' . $rekrutmen_id));
+            exit;
+        }
+
+        $uploadCV = FileUploadHelper::upload($_FILES['file_cv'], 'pdf', 'cv', 2 * 1024 * 1024);
+
+        if (!$uploadCV['success']) {
+            $_SESSION['error_message'] = "Gagal upload CV: " . $uploadCV['message'];
+            header("Location: " . base_url('rekrutment/form/' . $rekrutmen_id));
+            exit;
+        }
+
+        $file_cv = $uploadCV['filename'];
+
+        $file_khs = null;
+        if (isset($_FILES['file_khs']) && $_FILES['file_khs']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $uploadKHS = FileUploadHelper::upload($_FILES['file_khs'], 'pdf', 'khs', 2 * 1024 * 1024);
+
+            if ($uploadKHS['success']) {
+                $file_khs = $uploadKHS['filename'];
+            }
+        }
+
+        $pendaftarData = [
+            'rekrutmen_id' => $rekrutmen_id,
+            'nim' => $nim,
+            'nama' => $nama,
+            'email' => $email,
+            'no_hp' => $no_hp,
+            'semester' => $semester,
+            'ipk' => $ipk,
+            'link_portfolio' => $link_portfolio,
+            'link_github' => $link_github,
+            'file_cv' => $file_cv,
+            'file_khs' => $file_khs
+        ];
+
+        $result = $this->recruitmentModel->insertPendaftar($pendaftarData);
+
+        if (!$result['success']) {
+            FileUploadHelper::delete($file_cv, 'cv');
+            if ($file_khs) {
+                FileUploadHelper::delete($file_khs, 'khs');
+            }
+
+            $_SESSION['error_message'] = $result['message'];
+            header("Location: " . base_url('rekrutment/form/' . $rekrutmen_id));
+            exit;
+        }
+
+        $_SESSION['success_message'] = $result['message'];
+        header("Location: " . base_url('rekrutment/sukses'));
+        exit;
     }
 }

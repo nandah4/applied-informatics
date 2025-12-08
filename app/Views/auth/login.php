@@ -52,6 +52,21 @@
                     <h4>Login ke Dashboard.</h4>
                 </div>
 
+                <!-- Session Timeout Message -->
+                <?php if (isset($_SESSION['timeout_message'])): ?>
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert" style="margin: 1rem 0;">
+                        <i data-feather="alert-circle" style="width: 18px; height: 18px; vertical-align: middle;"></i>
+                        <strong>Sesi Berakhir!</strong><br>
+                        <?= htmlspecialchars($_SESSION['timeout_message']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php
+                        // Clear timeout message after displaying
+                        unset($_SESSION['timeout_message']);
+                        unset($_SESSION['timeout_reason']);
+                    ?>
+                <?php endif; ?>
+
                 <!-- Main content login card -->
                 <div class="main-login-card">
                     <!-- gmail -->

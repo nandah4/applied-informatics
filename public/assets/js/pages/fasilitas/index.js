@@ -3,7 +3,7 @@
  * Deskripsi: Script untuk halaman list data fasilitas
  *
  * Fitur:
- * - Search/Filter data fasilitas (client-side)
+ * - Search/Filter data fasilitas (server-side)
  * - Pagination controls (server-side)
  * - Delete fasilitas dengan konfirmasi (AJAX)
  * - Mobile menu toggle
@@ -13,38 +13,74 @@
  * - jQueryHelpers.js
  */
 
-(function() {
+(function () {
     'use strict';
 
     // ============================================================
-    // MODUL SEARCH/FILTER
+    // MODUL SEARCH (SERVER-SIDE)
     // ============================================================
+
     const SearchModule = {
         /**
-         * Inisialisasi fungsi search/filter
+         * Inisialisasi fungsi search (server-side)
          */
-        init: function() {
-            const searchInput = document.querySelector('.search-input');
+        init: function () {
+            const searchInput = document.getElementById('searchInput');
+            const btnSearch = document.getElementById('btnSearch');
+            const btnClear = document.getElementById('btnClearSearch');
+
+            // Handle search button click
+            if (btnSearch) {
+                btnSearch.addEventListener('click', this.handleSearch);
+            }
+
+            // Handle Enter key pada search input
             if (searchInput) {
-                searchInput.addEventListener('input', this.handleSearch);
+                searchInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        SearchModule.handleSearch();
+                    }
+                });
+            }
+
+            // Handle clear button
+            if (btnClear) {
+                btnClear.addEventListener('click', this.handleClear);
             }
         },
 
         /**
-         * Handle event input pada search box
-         * Filter baris tabel berdasarkan keyword
-         *
-         * @param {Event} e - Event object
+         * Handle search - redirect ke URL dengan parameter search
          */
-        handleSearch: function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('.table-custom tbody tr');
+        handleSearch: function () {
+            const searchInput = document.getElementById('searchInput');
+            const searchValue = searchInput.value.trim();
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                // Tampilkan baris jika mengandung keyword, sembunyikan jika tidak
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
+            // Build URL dengan search parameter
+            const currentUrl = new URL(window.location.href);
+
+            if (searchValue) {
+                currentUrl.searchParams.set('search', searchValue);
+            } else {
+                currentUrl.searchParams.delete('search');
+            }
+
+            // Reset ke page 1 saat search
+            currentUrl.searchParams.set('page', '1');
+
+            // Redirect
+            window.location.href = currentUrl.toString();
+        },
+
+        /**
+         * Handle clear search - hapus parameter search dan reload
+         */
+        handleClear: function () {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.delete('search');
+            currentUrl.searchParams.set('page', '1');
+            window.location.href = currentUrl.toString();
         }
     };
 
@@ -55,7 +91,7 @@
         /**
          * Inisialisasi pagination controls
          */
-        init: function() {
+        init: function () {
             const perPageSelect = document.getElementById('perPageSelect');
 
             if (perPageSelect) {
@@ -68,7 +104,7 @@
          *
          * @param {Event} e - Event object
          */
-        handlePerPageChange: function(e) {
+        handlePerPageChange: function (e) {
             const perPage = e.target.value;
             const currentUrl = new URL(window.location.href);
 
@@ -92,7 +128,7 @@
          * @param {number} id - ID fasilitas yang akan dihapus
          * @param {string} deleteUrl - URL endpoint delete
          */
-        confirmDelete: function(id, deleteUrl) {
+        confirmDelete: function (id, deleteUrl) {
             // Tampilkan konfirmasi native browser
             if (!confirm('Apakah Anda yakin ingin menghapus data fasilitas ini?\n\nData yang dihapus tidak dapat dikembalikan.')) {
                 return; // User cancel, hentikan proses
@@ -109,7 +145,7 @@
          * @param {number} id - ID fasilitas yang akan dihapus
          * @param {string} deleteUrl - URL endpoint delete
          */
-        deleteFasilitas: function(id, deleteUrl) {
+        deleteFasilitas: function (id, deleteUrl) {
             // Disable tombol delete untuk mencegah multiple clicks
             // Gunakan selector yang lebih spesifik dengan data attribute
             const deleteBtn = $(`button[data-fasilitas-id="${id}"]`);
@@ -172,7 +208,7 @@
         /**
          * Inisialisasi mobile menu toggle
          */
-        init: function() {
+        init: function () {
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             if (mobileMenuBtn) {
                 mobileMenuBtn.addEventListener('click', this.toggleMenu);
@@ -182,7 +218,7 @@
         /**
          * Toggle mobile menu visibility
          */
-        toggleMenu: function() {
+        toggleMenu: function () {
             console.log('Mobile menu toggled');
             // TODO: Implementasi toggle menu untuk mobile
             // Contoh: document.querySelector('.sidebar').classList.toggle('active');
@@ -192,7 +228,7 @@
     // ============================================================
     // INISIALISASI
     // ============================================================
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Inisialisasi modul search
         SearchModule.init();
 
@@ -203,7 +239,7 @@
         MobileMenuModule.init();
 
         // Expose confirmDelete ke global scope untuk dipanggil dari HTML
-        window.confirmDelete = function(id, deleteUrl) {
+        window.confirmDelete = function (id, deleteUrl) {
             DeleteModule.confirmDelete(id, deleteUrl);
         };
     });

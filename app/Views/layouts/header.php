@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Get current path untuk set active menu
  * Parse URL path only (tanpa query string & base URL)
@@ -64,7 +65,7 @@ function isActive($path, $current)
     <!-- Header Navigation -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container-fluid px-4 px-lg-5">
-            <a href="#" class="navbar-brand">
+            <a href="<?= base_url('') ?>" class="navbar-brand">
                 <img src="<?= asset_url('images/lab-ai-logo.png') ?>" alt="Lab AI Logo" class="logo">
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
@@ -97,7 +98,10 @@ function isActive($path, $current)
                         <a class="nav-link  <?= isActive('/mitra-laboratorium', $current_path) ?>" href="<?= base_url('mitra-laboratorium') ?>">Mitra</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('rekrutment') ?>">Rekrutment</a>
+                        <a class="nav-link <?= isActive('/rekrutment', $current_path) ?>" href="<?= base_url('rekrutment') ?>">Rekrutment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= isActive('/ar-showcase', $current_path) ?>" href="<?= base_url('ar-showcase') ?>">AR Showcase</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('contact-us') ?>">Contact Us</a>

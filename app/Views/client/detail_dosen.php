@@ -10,8 +10,7 @@ include __DIR__ . '/../layouts/header.php';
 
 <!-- Main Content -->
 <main class="detail-dosen-page">
-    <!-- Breadcrumb -->
-    <div class="container">
+    <div class="container-fluid px-5 ">
         <div class="breadcrumb-nav">
             <a href="<?= base_url('anggota-laboratorium') ?>" class="breadcrumb-item breadcrumb-link">Anggota Laboratorium</a>
             <span class="breadcrumb-separator">›</span>
@@ -20,7 +19,8 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 
     <!-- Hero Section - Profile Header -->
-    <section class="profile-hero">
+    <section class="container-fluid px-5 pb-5">
+
         <div class="container">
             <div class="hero-content">
                 <!-- Photo Section -->
@@ -56,6 +56,14 @@ include __DIR__ . '/../layouts/header.php';
                                 <polyline points="17 11 19 13 23 9"></polyline>
                             </svg>
                             <span>NIDN: <?= htmlspecialchars($dosenData['nidn']) ?></span>
+                        </div>
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <polyline points="17 11 19 13 23 9"></polyline>
+                            </svg>
+                            <span>NIP: <?= htmlspecialchars($dosenData['nip']) ?></span>
                         </div>
                     </div>
                 </div>
@@ -150,9 +158,9 @@ include __DIR__ . '/../layouts/header.php';
                         $urlHost = parse_url($profil['url_profil'], PHP_URL_HOST) ?? '';
                     ?>
                         <a href="<?= htmlspecialchars($profil['url_profil']) ?>"
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           class="profil-card profil-<?= $cardClass ?>">
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="profil-card profil-<?= $cardClass ?>">
                             <div class="profil-card-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -189,17 +197,17 @@ include __DIR__ . '/../layouts/header.php';
                 <!-- Publikasi Tabs -->
                 <div class="publikasi-tabs">
                     <?php
-                    $tipeOrder = ['Riset', 'PPM', 'Kekayaan Intelektual'];
+                    $tipeOrder = ['Publikasi', 'Riset', 'PPM', 'Kekayaan Intelektual'];
                     $firstTab = true;
                     foreach ($tipeOrder as $tipe):
                         if (isset($publikasiGrouped[$tipe])):
                             $safeId = str_replace(' ', '_', strtolower($tipe));
                     ?>
-                        <button class="tab-button <?= $firstTab ? 'active' : '' ?>"
+                            <button class="tab-button <?= $firstTab ? 'active' : '' ?>"
                                 data-tab="<?= $safeId ?>">
-                            <?= htmlspecialchars($tipe) ?>
-                            <span class="tab-count"><?= count($publikasiGrouped[$tipe]) ?></span>
-                        </button>
+                                <?= htmlspecialchars($tipe) ?>
+                                <span class="tab-count"><?= count($publikasiGrouped[$tipe]) ?></span>
+                            </button>
                     <?php
                             $firstTab = false;
                         endif;
@@ -216,32 +224,32 @@ include __DIR__ . '/../layouts/header.php';
                             if (isset($publikasiGrouped[$tipe])):
                                 $safeId = str_replace(' ', '_', strtolower($tipe));
                         ?>
-                            <div class="tab-content <?= $firstContent ? 'active' : '' ?>"
-                                 id="<?= $safeId ?>">
-                                <div class="publikasi-list">
-                                    <?php foreach ($publikasiGrouped[$tipe] as $publikasi): ?>
-                                        <div class="publikasi-item">
-                                            <div class="publikasi-header">
-                                                <h3 class="publikasi-title"><?= htmlspecialchars($publikasi['judul']) ?></h3>
-                                                <span class="publikasi-year"><?= htmlspecialchars($publikasi['tahun_publikasi']) ?></span>
+                                <div class="tab-content <?= $firstContent ? 'active' : '' ?>"
+                                    id="<?= $safeId ?>">
+                                    <div class="publikasi-list">
+                                        <?php foreach ($publikasiGrouped[$tipe] as $publikasi): ?>
+                                            <div class="publikasi-item">
+                                                <div class="publikasi-header">
+                                                    <h3 class="publikasi-title"><?= htmlspecialchars($publikasi['judul']) ?></h3>
+                                                    <span class="publikasi-year"><?= htmlspecialchars($publikasi['tahun_publikasi']) ?></span>
+                                                </div>
+                                                <?php if (!empty($publikasi['url_publikasi'])): ?>
+                                                    <a href="<?= htmlspecialchars($publikasi['url_publikasi']) ?>"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="publikasi-link">
+                                                        Lihat Publikasi
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                            <polyline points="15 3 21 3 21 9"></polyline>
+                                                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                                                        </svg>
+                                                    </a>
+                                                <?php endif; ?>
                                             </div>
-                                            <?php if (!empty($publikasi['url_publikasi'])): ?>
-                                                <a href="<?= htmlspecialchars($publikasi['url_publikasi']) ?>"
-                                                   target="_blank"
-                                                   rel="noopener noreferrer"
-                                                   class="publikasi-link">
-                                                    Lihat Publikasi
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                                        <polyline points="15 3 21 3 21 9"></polyline>
-                                                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                                                    </svg>
-                                                </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
-                            </div>
                         <?php
                                 $firstContent = false;
                             endif;
@@ -254,7 +262,7 @@ include __DIR__ . '/../layouts/header.php';
     <?php endif; ?>
 
     <!-- Back Button -->
-    <div class="container">
+    <div class="container pb-5">
         <div class="back-button-wrapper">
             <a href="<?= base_url('anggota-laboratorium') ?>" class="btn-back">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

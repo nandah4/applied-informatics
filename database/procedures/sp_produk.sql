@@ -12,7 +12,7 @@ CREATE OR REPLACE PROCEDURE sp_insert_produk(
     p_nama_produk   VARCHAR(255),
     p_deskripsi     VARCHAR(255), -- Sesuai schema VARCHAR(255)
     p_foto_produk   TEXT,
-    p_link_produk   VARCHAR(255) DEFAULT NULL,
+    p_link_produk   TEXT,
     p_tim_mahasiswa VARCHAR(255) DEFAULT NULL, -- Sesuai nama kolom di schema
     p_dosen_ids     BIGINT[] DEFAULT NULL      -- Array ID Dosen untuk tabel map
 )
@@ -55,7 +55,7 @@ BEGIN
         TRIM(p_nama_produk), 
         p_deskripsi, 
         p_foto_produk, 
-        p_link_produk,
+        TRIM(p_link_produk),
         TRIM(p_tim_mahasiswa),
         NOW(),
         NOW()
@@ -85,7 +85,7 @@ CREATE OR REPLACE PROCEDURE sp_update_produk(
     p_nama_produk   VARCHAR(255),
     p_deskripsi     VARCHAR(255),
     p_foto_produk   TEXT,
-    p_link_produk   VARCHAR(255),
+    p_link_produk   TEXT,
     p_tim_mahasiswa VARCHAR(255),
     p_dosen_ids     BIGINT[] DEFAULT NULL
 )
@@ -124,7 +124,7 @@ BEGIN
         nama_produk   = TRIM(p_nama_produk),
         deskripsi     = p_deskripsi,
         foto_produk   = p_foto_produk,
-        link_produk   = p_link_produk,
+        link_produk   = TRIM(p_link_produk),
         tim_mahasiswa = TRIM(p_tim_mahasiswa),
         updated_at    = NOW()
     WHERE id = p_id;

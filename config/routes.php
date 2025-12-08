@@ -63,6 +63,14 @@ $router->get('/', function () {
 });
 
 /**
+ * AR Showcase - Augmented Reality Demo
+ * URL: /ar-showcase
+ */
+$router->get('ar-showcase', function () {
+    require __DIR__ . '/../app/Views/client/ar_showcase.php';
+});
+
+/**
  * API: Get publikasi by year (AJAX endpoint)
  * URL: /api/publikasi/year/{year}
  */
@@ -158,7 +166,7 @@ $router->get('aktivitas-laboratorium', function () {
  * Detail Aktivitas Lab
  * URL: /aktivitas/{id}
  */
-$router->get('aktivitas/(\d+)', function ($id) {
+$router->get('aktivitas-laboratorium/(\d+)', function ($id) {
     $aktivitasModel = new AktivitasModel();
     $aktivitasResult = $aktivitasModel->getById((int)$id);
 
@@ -208,14 +216,38 @@ $router->get('mitra-laboratorium', function () {
     $industri = $mitraModel->getMitraByKategori("industri");
     $industriList = $industri['data'];
 
+    $komunitas = $mitraModel->getMitraByKategori("komunitas");
+    $komunitasList = $komunitas['data'];
+
     require __DIR__ . '/../app/Views/client/mitra.php';
 });
 
 /**
  * Rekrutment
  * URL: /rekrutment
+ * Menampilkan semua recruitment yang terbuka dan tertutup
  */
 $router->get('rekrutment', function () {
+    $controller = new RecruitmentController();
+
+    // Ambil semua data recruitment (tanpa pagination untuk client)
+    $recruitmentModel = new RecruitmentModel();
+    $allRecruitment = $recruitmentModel->getAllRecruitmentWithPagination(1000, 0); // Ambil banyak data
+
+    // Pisahkan berdasarkan status
+    $recruitmentTerbuka = [];
+    $recruitmentTertutup = [];
+
+    if ($allRecruitment['success'] && !empty($allRecruitment['data'])) {
+        foreach ($allRecruitment['data'] as $recruitment) {
+            if ($recruitment['status'] === 'buka') {
+                $recruitmentTerbuka[] = $recruitment;
+            } else {
+                $recruitmentTertutup[] = $recruitment;
+            }
+        }
+    }
+
     require __DIR__ . '/../app/Views/client/rekrutment.php';
 });
 
@@ -226,6 +258,48 @@ $router->get('rekrutment', function () {
 $router->get('contact-us', function () {
     require __DIR__ . '/../app/Views/client/contact_us.php';
 });
+
+ * Rekrutment Form
+ * URL: /rekrutment/form/{id}
+ * Menampilkan form recruitment untuk mendaftar
+ */
+$router->get("rekrutment/form/(\\d+)", function ($rekrutmenId) {
+    // Validasi apakah rekrutmen ada dan statusnya buka
+    $recruitmentModel = new RecruitmentModel();
+    $recruitmentResult = $recruitmentModel->getById($rekrutmenId);
+
+    // Redirect jika rekrutmen tidak ditemukan atau sudah tutup
+    if (!$recruitmentResult['success'] || $recruitmentResult['data']['status'] !== 'buka') {
+        header("Location: " . base_url('rekrutment'));
+        exit;
+    }
+
+    $recruitmentData = $recruitmentResult['data'];
+
+    require __DIR__ . '/../app/Views/client/form_rekrutment.php';
+});
+
+/**
+ * Rekrutment Submit
+ * URL: POST /rekrutment/submit
+ * Handle form pendaftaran mahasiswa
+ */
+$router->post("rekrutment/submit", function () {
+    $controller = new RecruitmentController();
+    $controller->submitPendaftaran();
+});
+
+
+/**
+ * Rekrutment Sukses
+ * URL: /rekrutment/sukses
+ * Halaman sukses setelah pendaftaran
+ */
+$router->get("rekrutment/sukses", function () {
+    require __DIR__ . '/../app/Views/client/sukses_pendaftaran.php';
+});
+
+
 
 // ============================================================================
 // AUTH ROUTES
@@ -259,35 +333,15 @@ $router->post('admin/login', function () {
 
 /**
  * Logout
- * URL: GET /logout
+ * URL: GET /admin/logout
  *
  * Note: Idealnya logout menggunakan POST untuk keamanan,
  * tapi untuk kemudahan navigasi tetap menggunakan GET.
+ * Session akan dihapus menggunakan SessionHelper untuk proper cleanup.
  */
 $router->get('admin/logout', function () {
-    // Hapus semua data session
-    $_SESSION = [];
-
-    // Hapus session cookie
-    if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(
-            session_name(),
-            '',
-            time() - 42000,
-            $params["path"],
-            $params["domain"],
-            $params["secure"],
-            $params["httponly"]
-        );
-    }
-
-    // Destroy session
-    session_destroy();
-
-    // Redirect ke homepage
-    header("Location: " . base_url('/'));
-    exit;
+    $controller = new AuthController();
+    $controller->handleLogout();
 });
 
 
@@ -311,7 +365,7 @@ $router->get('admin/dashboard', function () {
     $stats = $statsResult['success'] ? $statsResult['data'] : [];
 
     // Ambil publikasi terbaru
-    $publikasiResult = $dashboardModel->getRecentPublikasi(3);
+    $publikasiResult = $dashboardModel->getRecentPublikasi(4);
     $recentPublikasi = $publikasiResult['success'] ? $publikasiResult['data'] : [];
 
     // Ambil statistik publikasi per tipe
@@ -321,6 +375,22 @@ $router->get('admin/dashboard', function () {
     // Ambil aktivitas lab terbaru
     $aktivitasLabResult = $dashboardModel->getRecentAktivitasLab(3);
     $recentAktivitas = $aktivitasLabResult['success'] ? $aktivitasLabResult['data'] : [];
+
+    // Ambil statistik rekrutmen
+    $recruitmentStatsResult = $dashboardModel->getRecruitmentStats();
+    $recruitmentStats = $recruitmentStatsResult['success'] ? $recruitmentStatsResult['data'] : [];
+
+    // Ambil statistik asisten lab
+    $asistenLabStatsResult = $dashboardModel->getAsistenLabStats();
+    $asistenLabStats = $asistenLabStatsResult['success'] ? $asistenLabStatsResult['data'] : [];
+
+    // Ambil rekrutmen aktif
+    $rekrutmenAktifResult = $dashboardModel->getActiveRecruitment(5);
+    $rekrutmenAktif = $rekrutmenAktifResult['success'] ? $rekrutmenAktifResult['data'] : [];
+
+    // Ambil pendaftar terbaru
+    $recentPendaftarResult = $dashboardModel->getRecentPendaftar(5);
+    $recentPendaftar = $recentPendaftarResult['success'] ? $recentPendaftarResult['data'] : [];
 
     // Load view dengan data
     require __DIR__ . '/../app/Views/admin/index.php';
@@ -553,16 +623,39 @@ $router->get('admin/dosen/(\d+)/profil-publikasi', function ($dosen_id) {
 // CRUD operations untuk data fasilitas laboratorium
 
 /**
- * Fasilitas - List/Index (dengan Pagination)
- * URL: GET /fasilitas?page=1&per_page=10
- * 
+ * Fasilitas - List/Index dengan Pagination & Search
+ * URL: GET /admin/fasilitas?page={number}&per_page={number}&search={keyword}
  */
 $router->get('admin/fasilitas', function () {
     $controller = new FasilitasController();
-    $result = $controller->getAllFasilitas();
 
-    $listFasilitas = $result['data'];      // Variable untuk view index.php
-    $pagination = $result['pagination'];
+    // Ambil parameter dari query string
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+    // Validasi input
+    $page = max(1, $page);
+    $perPage = max(1, min(100, $perPage));
+
+    // Hitung offset
+    $offset = ($page - 1) * $perPage;
+
+    // Siapkan params untuk search & filter
+    $params = [
+        'search' => $search,
+        'limit' => $perPage,
+        'offset' => $offset
+    ];
+
+    // Ambil data dengan search & pagination dari model
+    $fasilitasModel = new FasilitasModel();
+    $result = $fasilitasModel->getAllWithSearchAndFilter($params);
+
+    // Generate pagination
+    $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
+
+    $listFasilitas = $result['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/fasilitas/index.php';
 }, [AuthMiddleware::class]);
@@ -789,10 +882,33 @@ $router->post('admin/produk/delete/(\d+)', function ($id) {
  */
 $router->get('admin/mitra', function () {
     $controller = new MitraController();
-    $result = $controller->getAllMitra();
+    // Ambil parameter dari query string
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+    // Validasi input
+    $page = max(1, $page);
+    $perPage = max(1, min(100, $perPage));
+
+    // Hitung offset
+    $offset = ($page - 1) * $perPage;
+
+    // Siapkan params untuk search & filter
+    $params = [
+        'search' => $search,
+        'limit' => $perPage,
+        'offset' => $offset
+    ];
+
+    // Ambil data dengan search & pagination dari model
+    $mitraModel = new MitraModel();
+    $result = $mitraModel->getAllWithSearchAndFilter($params);
+
+    // Generate pagination
+    $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
     $listMitra = $result['data'] ?? [];
-    $pagination = $result['pagination'] ?? null;
 
     require __DIR__ . '/../app/Views/admin/mitra/index.php';
 }, [AuthMiddleware::class]);
@@ -1015,10 +1131,33 @@ $router->post('admin/aktivitas-lab/delete/(\\d+)', function ($id) {
  */
 $router->get('admin/recruitment', function () {
     $controller = new RecruitmentController();
-    $result = $controller->getAllRecruitment();
+    // Ambil parameter dari query string
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+    // Validasi input
+    $page = max(1, $page);
+    $perPage = max(1, min(100, $perPage));
+
+    // Hitung offset
+    $offset = ($page - 1) * $perPage;
+
+    // Siapkan params untuk search & filter
+    $params = [
+        'search' => $search,
+        'limit' => $perPage,
+        'offset' => $offset
+    ];
+
+    // Ambil data dengan search & pagination dari model
+    $recruitmentModel = new RecruitmentModel();
+    $result = $recruitmentModel->getAllWithSearchAndFilter($params);
+
+    // Generate pagination
+    $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
     $listRecruitment = $result['data'] ?? [];
-    $pagination = $result['pagination'] ?? null;
 
     require __DIR__ . '/../app/Views/admin/recruitment/index.php';
 }, [AuthMiddleware::class]);
@@ -1120,8 +1259,8 @@ $router->post('admin/recruitment/delete/(\\d+)', function ($id) {
 // ----------------------------------------
 
 /**
- * Publikasi - List/Index dengan Pagination
- * URL: GET /publikasi?page={number}&per_page={number}
+ * Publikasi - List/Index dengan Pagination & Search
+ * URL: GET /publikasi?page={number}&per_page={number}&search={keyword}
  */
 $router->get('admin/publikasi-akademik', function () {
     $controller = new PublikasiAkademikController();
@@ -1129,12 +1268,30 @@ $router->get('admin/publikasi-akademik', function () {
     // Ambil parameter dari query string
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-    // Ambil data dengan pagination
-    $result = $controller->getAllPublikasiWithPagination($page, $perPage);
+    // Validasi input
+    $page = max(1, $page);
+    $perPage = max(1, min(100, $perPage));
+
+    // Hitung offset
+    $offset = ($page - 1) * $perPage;
+
+    // Siapkan params untuk search & filter
+    $params = [
+        'search' => $search,
+        'limit' => $perPage,
+        'offset' => $offset
+    ];
+
+    // Ambil data dengan search & pagination dari model
+    $publikasiModel = new PublikasiAkademikModel();
+    $result = $publikasiModel->getAllWithSearchAndFilter($params);
+
+    // Generate pagination
+    $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
     $listPublikasi = $result['data'] ?? [];
-    $pagination = $result['pagination'] ?? null;
 
     require __DIR__ . '/../app/Views/admin/publikasi/index.php';
 }, [AuthMiddleware::class]);
@@ -1170,7 +1327,7 @@ $router->get('admin/publikasi-akademik/read/(\\d+)', function ($id) {
 $router->get('admin/publikasi-akademik/create', function () {
     // // Get list dosen untuk dropdown
     $dosenController = new DosenController();
-    $dosenResult = $dosenController->getAllDosen();
+    $dosenResult = $dosenController->getAllDosenActive();
     $listDosen = $dosenResult['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/publikasi/create.php';
@@ -1208,7 +1365,7 @@ $router->get('admin/publikasi-akademik/edit/(\\d+)', function ($id) {
 
     // Get list dosen untuk dropdown
     $dosenController = new DosenController();
-    $dosenResult = $dosenController->getAllDosen();
+    $dosenResult = $dosenController->getAllDosenActive();
     $listDosen = $dosenResult['data'] ?? [];
 
     require __DIR__ . '/../app/Views/admin/publikasi/edit.php';
@@ -1235,6 +1392,162 @@ $router->post('admin/publikasi-akademik/delete/(\\d+)', function ($id) {
     $controller = new PublikasiAkademikController();
     $controller->deletePublikasiAkademik((int)$id);
 }, [AuthMiddleware::class]);
+
+
+
+// ============================================================================
+// KELOLA PENDAFTAR
+// ============================================================================
+// CRUD operations untuk data pendaftar asisten lab
+
+// ----------------------------------------
+// READ Operations
+// ----------------------------------------
+
+/**
+ * Pendaftar - List/Index dengan Pagination & Search
+ * URL: GET /admin/daftar-pendaftar
+ */
+$router->get("admin/daftar-pendaftar", function () {
+    $controller = new PendaftarController();
+    $result = $controller->getAllPendaftar();
+
+    $listPendaftar = $result['data'];
+    $pagination = $result['pagination'];
+    $totalPendaftar = $result['total'];
+
+    require __DIR__ . '/../app/Views/admin/pendaftar/index.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Pendaftar - Detail Page
+ * URL: GET /admin/daftar-pendaftar/detail/{id}
+ */
+$router->get("admin/daftar-pendaftar/detail/(\\d+)", function ($id) {
+    $controller = new PendaftarController();
+    $result = $controller->getPendaftarById($id);
+
+    if (!$result['success']) {
+        header("Location: " . base_url('admin/daftar-pendaftar'));
+        exit;
+    }
+
+    $pendaftar = $result['data'];
+
+    require __DIR__ . '/../app/Views/admin/pendaftar/read.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Pendaftar - Update Status Seleksi
+ * URL: POST /admin/daftar-pendaftar/update-status
+ */
+$router->post("admin/daftar-pendaftar/update-status", function () {
+    $controller = new PendaftarController();
+    $result = $controller->updateStatusSeleksi();
+
+    // if (!$result['success']) {
+    //     header("Location: " . base_url('admin/daftar-pendaftar'));
+    //     exit;
+    // }
+    require __DIR__ . '/../app/Views/admin/pendaftar/read.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Pendaftar - Delete
+ * URL: POST /admin/daftar-pendaftar/delete/{id}
+ */
+$router->post("admin/daftar-pendaftar/delete/(\\d+)", function ($id) {
+    $controller = new PendaftarController();
+    $controller->deletePendaftar($id);
+}, [AuthMiddleware::class]);
+
+
+// ============================================================================
+// ASISTEN LAB MANAGEMENT
+// ============================================================================
+// CRUD operations untuk data asisten lab (mahasiswa yang diterima)
+
+// ----------------------------------------
+// READ Operations
+// ----------------------------------------
+
+/**
+ * Asisten Lab - List/Index dengan Pagination & Search
+ * URL: GET /admin/asisten-lab
+ */
+$router->get("admin/asisten-lab", function () {
+    $controller = new AsistenLabController();
+    $result = $controller->getAllAsistenLab();
+
+    $listAsistenLab = $result['data'];
+    $pagination = $result['pagination'];
+    $totalAsistenLab = $result['total'];
+
+    require __DIR__ . '/../app/Views/admin/asisten-lab/index.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Asisten Lab - Detail Page
+ * URL: GET /admin/asisten-lab/detail/{id}
+ */
+$router->get("admin/asisten-lab/detail/(\\d+)", function ($id) {
+    $controller = new AsistenLabController();
+    $result = $controller->getAsistenLabById($id);
+
+    if (!$result['success']) {
+        header("Location: " . base_url('admin/asisten-lab'));
+        exit;
+    }
+
+    $asisten = $result['data'];
+
+    require __DIR__ . '/../app/Views/admin/asisten-lab/read.php';
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// UPDATE Operations
+// ----------------------------------------
+
+/**
+ * Asisten Lab - Edit Page (Form)
+ * URL: GET /admin/asisten-lab/edit/{id}
+ */
+$router->get("admin/asisten-lab/edit/(\\d+)", function ($id) {
+    $controller = new AsistenLabController();
+    $result = $controller->getAsistenLabById($id);
+
+    if (!$result['success']) {
+        header("Location: " . base_url('admin/asisten-lab'));
+        exit;
+    }
+
+    $asisten = $result['data'];
+
+    require __DIR__ . '/../app/Views/admin/asisten-lab/edit.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Asisten Lab - Update (Handle Submit)
+ * URL: POST /admin/asisten-lab/update
+ */
+$router->post("admin/asisten-lab/update", function () {
+    $controller = new AsistenLabController();
+    $controller->updateAsistenLab();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// DELETE Operations
+// ----------------------------------------
+
+/**
+ * Asisten Lab - Delete
+ * URL: POST /admin/asisten-lab/delete/{id}
+ */
+$router->post("admin/asisten-lab/delete/(\\d+)", function ($id) {
+    $controller = new AsistenLabController();
+    $controller->deleteAsistenLab($id);
+}, [AuthMiddleware::class]);
+
 
 // ============================================================================
 // END OF ROUTES

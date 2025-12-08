@@ -9,17 +9,10 @@
 .detail-dosen-page {
     background: white;
     min-height: 100vh;
-    padding-bottom: 4rem;
 }
 
 
 /* ========== PROFILE HERO SECTION ========== */
-.profile-hero {
-    padding: 3rem 0 4rem;
-    background: var(--color-gray-50);
-    border-top: 1px solid var(--color-gray-200);
-    border-bottom: 1px solid var(--color-gray-200);
-}
 
 .hero-content {
     display: grid;

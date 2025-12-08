@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= base_url() ?>">
     <title>Edit Fasilitas - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
@@ -43,12 +44,9 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formFasilitas" method="POST" enctype="multipart/form-data"
-                    data-ajax-url="<?= base_url('admin/fasilitas/update') ?>"
-                    data-redirect-url="<?= base_url('admin/fasilitas') ?>"
-                    data-success-message="Data fasilitas berhasil diupdate.">
+                <form id="formFasilitas" method="POST" enctype="multipart/form-data">
 
-                    <!-- ✅ CSRF Token Hidden Field -->
+                    <!-- CSRF Token Hidden Field -->
                     <?= CsrfHelper::tokenField() ?>
 
                     <!-- Hidden Field: ID Fasilitas -->
@@ -63,9 +61,9 @@
                             <input type="text" class="form-control" id="nama" name="nama"
                                 placeholder="Masukkan nama fasilitas"
                                 value="<?= htmlspecialchars($fasilitas['nama']) ?>"
-                                maxlength="150">
-                            <div id="namaError" class="invalid-feedback"></div>
+                                maxlength="150" required>
                             <div class="helper-text">Maksimal 150 karakter</div>
+                            <div id="namaError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Deskripsi -->
@@ -74,8 +72,8 @@
                             <textarea class="form-control" id="deskripsi" name="deskripsi"
                                 rows="3" placeholder="Masukkan deskripsi singkat tentang fasilitas"
                                 maxlength="255"><?= htmlspecialchars($fasilitas['deskripsi'] ?? '') ?></textarea>
-                            <div id="deskripsiError" class="invalid-feedback"></div>
                             <div class="helper-text">Opsional. Maksimal 255 karakter</div>
+                            <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Foto Fasilitas -->
@@ -161,8 +159,8 @@
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-    <!-- Data Fasilitas Form Page JS -->
-    <script src="<?= asset_url('js/pages/fasilitas/form.js') ?>"></script>
+    <!-- Data Fasilitas EDIT Form JS -->
+    <script src="<?= asset_url('js/pages/fasilitas/edit.js') ?>"></script>
 </body>
 
 </html>

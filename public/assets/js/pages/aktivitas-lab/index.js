@@ -125,11 +125,68 @@
     DeleteAktivitasModule.confirmDelete(id, judul);
   };
 
+  const SearchModule = {
+
+    init: function() {
+        this.handleSearch();
+    },
+
+    handleSearch: function() {
+        const self = this;
+
+        // Enter / keypress
+        $('#searchInput').on('keypress', function(e) {
+            if (e.which === 13) {
+                self.performSearch();
+            }
+        });
+
+        // Tombol cari
+        $('#btnSearch').on('click', function() {
+            self.performSearch();
+        });
+
+        // Tombol hapus search
+        $('#btnClearSearch').on('click', function() {
+            window.location.href = `${BASE_URL}/admin/aktivitas-lab`;
+        });
+
+        // Select per page
+        $('#perPageSelect').on('change', function() {
+            const perPage = $(this).val();
+            const currentUrl = new URL(window.location.href);
+            const search = currentUrl.searchParams.get('search') || '';
+
+            let url = `${BASE_URL}/admin/aktivitas-lab?per_page=${perPage}`;
+            if (search) {
+                url += `&search=${encodeURIComponent(search)}`;
+            }
+
+            window.location.href = url;
+        });
+    },
+
+    performSearch: function() {
+        const searchValue = $('#searchInput').val().trim();
+        const currentUrl = new URL(window.location.href);
+        const perPage = currentUrl.searchParams.get('per_page') || '10';
+
+        if (searchValue) {
+            window.location.href =
+                `${BASE_URL}/admin/aktivitas-lab?search=${encodeURIComponent(searchValue)}&per_page=${perPage}`;
+        } else {
+            window.location.href =
+                `${BASE_URL}/admin/aktivitas-lab?per_page=${perPage}`;
+        }
+    }
+};
+
   // ============================================================
   // INISIALISASI
   // ============================================================
 
   $(document).ready(function () {
+    SearchModule.init();
     DeleteAktivitasModule.init();
     PaginationModule.init();
 

@@ -1,42 +1,369 @@
-main {
-  background-color: var(--bg-primary);
+@import '../../components/typography.css';
+
+/* Main Layout */
+.rekrutmen-page {
+    background-color: white;
+    min-height: 100vh;
 }
 
-.halaman, .deskripsi{
-    font-size: 18px;
+/* Breadcrumb */
+.breadcrumb-custom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: var(--fs-sm);
 }
 
-.halaman-ini{
-  color: var(--color-primary-500);
+.breadcrumb-item a {
+    color: var(--color-fourtiary-600);
+    text-decoration: none;
+    transition: color 0.2s;
 }
 
-.judul{
-    font-size: 40px;
+.breadcrumb-item a:hover {
+    color: var(--color-primary-600);
 }
 
-.badge-open {
-  background-color: #d1fae5;
-  color: #059669;
+.breadcrumb-item.active {
+    color: var(--color-primary-600);
+    font-weight: var(--fw-semibold);
 }
 
-.badge-closed {
-  background-color: #e5e7eb;
-  color: #6b7280;
+.breadcrumb-item + .breadcrumb-item::before {
+    content: '›';
+    color: var(--color-fourtiary-400);
+    margin-right: 12px;
 }
 
-.date-open {
-  color: #10b981;
+/* Header Section */
+.header-section {
+    margin-bottom: 3rem;
 }
 
-.date-close {
-  color: #ef4444;
+.page-title {
+    font-size: 2.5rem;
+    font-weight: var(--fw-semibold);
+    color: var(--color-primary-800);
+    margin-bottom: 0.5rem;
 }
 
-.date-close {
-  color: #ef4444;
+.page-subtitle {
+    font-size: var(--fs-lg);
+    color: var(--color-fourtiary-600);
+    line-height: 1.6;
+    max-width: 700px;
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+/* Info Box */
+.info-box {
+    display: flex;
+    gap: 24px;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px 28px;
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, #ffffff 100%);
+    border: 1px solid var(--color-primary-200);
+    border-radius: 12px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-number {
+    font-size: 2rem;
+    font-weight: var(--fw-bold);
+    color: var(--color-primary-700);
+    line-height: 1;
+}
+
+.info-label {
+    font-size: var(--fs-xs);
+    color: var(--color-fourtiary-600);
+    margin-top: 4px;
+}
+
+.divider-vertical {
+    width: 1px;
+    height: 40px;
+    background-color: var(--color-primary-200);
+}
+
+/* Custom Tabs */
+.tabs-container {
+    border-bottom: 2px solid var(--color-primary-100);
+}
+
+.custom-tabs {
+    border: none;
+    gap: 8px;
+}
+
+.custom-tabs .nav-link {
+    border: none;
+    border-radius: 12px 12px 0 0;
+    padding: 14px 24px;
+    color: var(--color-fourtiary-600);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-base);
+    background-color: transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.custom-tabs .nav-link:hover {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+}
+
+.custom-tabs .nav-link.active {
+    background-color: #ffffff;
+    color: var(--color-primary-700);
+    font-weight: var(--fw-semibold);
+    border: 2px solid var(--color-primary-200);
+    border-bottom: 2px solid #ffffff;
+    margin-bottom: -2px;
+}
+
+.tab-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: var(--fw-semibold);
+    margin-left: 4px;
+}
+
+.tab-badge.badge-open {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+.tab-badge.badge-closed {
+    background-color: #e5e7eb;
+    color: #6b7280;
+}
+
+/* Rekrutmen Card */
+.rekrutmen-card {
+    background: #ffffff;
+    border: 1px solid var(--color-primary-200);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.rekrutmen-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-primary-400);
+}
+
+.rekrutmen-card.card-closed {
+    opacity: 0.85;
+}
+
+.rekrutmen-card.card-closed:hover {
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+/* Card Header */
+.card-header-custom {
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid var(--color-primary-100);
+}
+
+.card-title-custom {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--color-primary-800);
+    line-height: 1.4;
+    margin-bottom: 0;
+    padding-right: 12px;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: var(--fw-semibold);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.status-badge.status-open {
+    background-color: #d1fae5;
+    color: #059669;
+    border: 1px solid #6ee7b7;
+}
+
+.status-badge.status-closed {
+    background-color: #e5e7eb;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+/* Card Body */
+.card-body-custom {
+    padding: 20px 24px;
+    flex-grow: 1;
+}
+
+.card-description {
+    font-size: var(--fs-sm);
+    color: var(--color-fourtiary-600);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: var(--fs-sm);
+    color: var(--color-fourtiary-600);
+}
+
+.meta-item .icon-recruitment-detail{
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+
+/* Card Footer */
+.card-footer-custom {
+    padding: 16px 24px;
+    background-color: var(--color-primary-25);
+    border-top: 1px solid var(--color-primary-100);
+    display: flex;
+    gap: 12px;
+}
+
+.btn-apply {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background-color: var(--color-primary-500);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-apply:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--color-primary-700) 0%, var(--color-primary-800) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.btn-apply i {
+    transition: transform 0.3s ease;
+}
+
+.btn-apply:hover:not(:disabled) i {
+    transform: translateX(4px);
+}
+
+.btn-apply:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.btn-detail {
+    padding: 12px 20px;
+    background-color: #ffffff;
+    color: var(--color-primary-700);
+    border: 2px solid var(--color-primary-300);
+    border-radius: 10px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-detail:hover {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-500);
+}
+
+/* Responsive */
+@media (max-width: 1199.98px) {
+    .info-box {
+        justify-content: center;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .card-footer-custom {
+        flex-direction: column;
+    }
+    
+    .btn-detail {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+    
+    .custom-tabs .nav-link {
+        font-size: var(--fs-sm);
+        padding: 12px 16px;
+    }
+    
+    .info-box {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .divider-vertical {
+        width: 100%;
+        height: 1px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .custom-tabs .nav-link span {
+        display: none;
+    }
 }

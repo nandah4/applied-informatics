@@ -125,6 +125,7 @@
 
     handleSubmit: function () {
       const formData = this.getFormData();
+
       const validationErrors = this.validateFormData(formData);
 
       jQueryHelpers.clearAllErrors("formCreateAktivitas");
@@ -137,10 +138,13 @@
       }
 
       const submitData = this.prepareFormData(formData);
+      
       const buttonState = jQueryHelpers.disableButton(
         "btn-submit-create-aktivitas",
         "Menyimpan ..."
       );
+
+
 
       jQueryHelpers.makeAjaxRequest({
         url: `${BASE_URL}/admin/aktivitas-lab/create`,
@@ -152,7 +156,8 @@
           if (response.success) {
             jQueryHelpers.showAlert(
               "Data aktivitas berhasil ditambahkan!",
-              "success"
+              "success",
+              2000
             );
             setTimeout(() => {
               window.location.href = `${BASE_URL}/admin/aktivitas-lab`;
@@ -167,7 +172,7 @@
           }
         },
         onError: (errorMessage) => {
-          jQueryHelpers.showAlert("Error: " + errorMessage, "danger");
+          jQueryHelpers.showAlert("Error: " + errorMessage, "danger", 5000);
           buttonState.enable();
         },
       });
@@ -176,7 +181,7 @@
     getFormData: () => {
       return {
         judul: $("#judul_aktivitas").val().trim(),
-        deskripsi: $("#deskripsi").val().trim(),
+        deskripsi: $(quill.root).html(),
         foto_aktivitas: $("#foto_aktivitas")[0].files[0],
         tanggal_kegiatan: $("#tanggal_kegiatan").val().trim(),
         csrf_token: $("input[name='csrf_token']").val(),
@@ -197,9 +202,11 @@
       }
 
       // Validasi deskripsi
-      if (!data.deskripsi || data.deskripsi.length < 10) {
+      const textDeskripsi = quill.getText().trim();
+      if (!textDeskripsi || textDeskripsi.length < 10) {
+        console.log(textDeskripsi)
         errors.push({
-          fieldId: "deskripsi",
+          fieldId: "",
           errorId: "deskripsiError",
           message: "Deskripsi minimal 10 karakter",
         });
