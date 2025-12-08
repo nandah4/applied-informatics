@@ -112,10 +112,10 @@
                         <!-- URL Publikasi -->
                         <div class="col-md-6 mb-3">
                             <label for="url_publikasi" class="form-label">
-                                URL Publikasi
+                                URL Publikasi <span class="required">*</span>
                             </label>
                             <input type="url" class="form-control" id="url_publikasi" name="url_publikasi" placeholder="https://..." value="<?= htmlspecialchars($publikasi['url_publikasi'] ?? '') ?>">
-                            <div class="helper-text">Link ke publikasi online (opsional)</div>
+                            <div class="helper-text">Link ke publikasi online </div>
                             <div id="urlPublikasiError" class="invalid-feedback"></div>
                         </div>
 

@@ -69,9 +69,6 @@
                                 <option value="buka" <?= $recruitment['status'] === 'buka' ? 'selected' : '' ?>>Buka</option>
                                 <option value="tutup" <?= $recruitment['status'] === 'tutup' ? 'selected' : '' ?>>Tutup</option>
                             </select>
-                            <div class="helper-text" style="color: #f59e0b;">
-                                ℹ️ Status akan otomatis diperbarui berdasarkan tanggal tutup
-                            </div>
                             <div id="statusError" class="invalid-feedback"></div>
                         </div>
 
@@ -95,21 +92,24 @@
                             <div id="tanggalTutupError" class="invalid-feedback"></div>
                         </div>
 
-                        <!-- Info Box untuk Auto-Status Feature -->
-                        <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
-                            <div style="display: flex; gap: 0.75rem; align-items: start;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                                </svg>
-                                <div>
-                                    <strong style="color: #1e40af; font-size: 0.875rem;">Informasi Status Otomatis</strong>
-                                    <p style="color: #1e40af; font-size: 0.8125rem; margin: 0.25rem 0 0 0; line-height: 1.5;">
-                                        Status recruitment akan diperbarui otomatis:
-                                        <br>• <strong>Tutup</strong>: jika tanggal tutup sudah terlewat
-                                        <br>• <strong>Buka</strong>: jika tanggal tutup masih di masa depan (termasuk saat diperpanjang)
-                                    </p>
+                        <!-- Info Box untuk Status Behavior -->
+                        <div class="col-12 mb-3">
+                            <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 8px;">
+                                <div style="display: flex; gap: 0.75rem; align-items: start;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                    </svg>
+                                    <div>
+                                        <strong style="color: #1e40af; font-size: 0.875rem;">Informasi Kontrol Status</strong>
+                                        <ul style="color: #1e40af; font-size: 0.8125rem; margin: 0.5rem 0 0 0; padding-left: 1.25rem; line-height: 1.6;">
+                                            <li><strong>Status Manual:</strong> Anda dapat menutup recruitment secara manual meskipun tanggal tutup masih panjang (Misal: Kuota terpenuhi)</li>
+                                            <li><strong>Auto-Close:</strong> Recruitment otomatis tertutup jika tanggal tutup sudah terlewat</li>
+                                            <li><strong>Auto-Open:</strong> Recruitment otomatis terbuka jika Anda memperpanjang tanggal dari expired ke masa depan</li>
+                                            <li><strong>Tidak Bisa Buka:</strong> Recruitment yang sudah expired tidak dapat dibuka kembali tanpa memperpanjang tanggal</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>

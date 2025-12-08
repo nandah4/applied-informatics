@@ -22,7 +22,7 @@ class MitraController
     // ========================================
 
     /**
-     * Get all mitra for index page
+     * Get all mitra for index page with search & pagination
      * Method: GET
      *
      * @return array
@@ -30,6 +30,7 @@ class MitraController
     public function getAllMitra()
     {
         // Ambil parameter dari GET request
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
@@ -37,18 +38,26 @@ class MitraController
         $page = max(1, $page);
         $perPage = max(1, min(100, $perPage));
 
-        // Hitung offset untuk query
+        // Hitung offset
         $offset = ($page - 1) * $perPage;
 
-        // Ambil data dengan pagination
-        $result = $this->mitraModel->getAllMitraWithPagination($perPage, $offset);
+        // Siapkan params untuk search & filter
+        $params = [
+            'search' => $search,
+            'limit' => $perPage,
+            'offset' => $offset
+        ];
 
-        // Generate pagination dari total yang dikembalikan model
+        // Ambil data dengan search & pagination dari model
+        $result = $this->mitraModel->getAllWithSearchAndFilter($params);
+
+        // Generate pagination
         $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
         return [
             'data' => $result['data'],
-            'pagination' => $pagination
+            'pagination' => $pagination,
+            'total' => $result['total']
         ];
     }
 

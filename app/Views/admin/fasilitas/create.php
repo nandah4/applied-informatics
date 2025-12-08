@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= base_url() ?>">
     <title>Tambah Fasilitas - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
@@ -43,12 +44,9 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formFasilitas" method="POST" enctype="multipart/form-data"
-                    data-ajax-url="<?= base_url('admin/fasilitas/create') ?>"
-                    data-redirect-url="<?= base_url('admin/fasilitas') ?>"
-                    data-success-message="Data fasilitas berhasil ditambahkan.">
+                <form id="formFasilitas" method="POST" enctype="multipart/form-data">
 
-                    <!-- ✅ CSRF Token Hidden Field -->
+                    <!-- CSRF Token Hidden Field -->
                     <?= CsrfHelper::tokenField() ?>
 
                     <div class="row">
@@ -58,7 +56,7 @@
                                 Nama Fasilitas <span class="required">*</span>
                             </label>
                             <input type="text" class="form-control" id="nama" name="nama" 
-                                   placeholder="Masukkan nama fasilitas" maxlength="150">
+                                   placeholder="Masukkan nama fasilitas" maxlength="150" required>
                             <div class="helper-text">Maksimal 150 karakter</div>
                             <div id="namaError" class="invalid-feedback"></div>
                         </div>
@@ -93,7 +91,7 @@
                                     PNG, JPG, JPEG maksimal 2MB
                                 </div>
                             </div>
-                            <input type="file" class="file-upload-input" id="foto" name="foto" accept="image/png,image/jpg,image/jpeg">
+                            <input type="file" class="file-upload-input" id="foto" name="foto" accept="image/png,image/jpg,image/jpeg" required>
                             <div id="fotoError" class="invalid-feedback"></div>
                             <div class="image-preview" id="imagePreview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
@@ -139,7 +137,7 @@
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-    <!-- Data fasilitas Form Page JS -->
+    <!-- Data Fasilitas CREATE Form JS -->
     <script src="<?= asset_url('js/pages/fasilitas/form.js') ?>"></script>
 
 </body>

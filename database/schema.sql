@@ -69,6 +69,7 @@ CREATE TABLE mst_dosen (
     full_name VARCHAR(255) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     nidn VARCHAR(50) UNIQUE,
+    nip VARCHAR(50) UNIQUE,
     foto_profil VARCHAR(255),
     deskripsi text default NULL,
     status_aktif    BOOLEAN DEFAULT TRUE,
@@ -114,7 +115,7 @@ CREATE TABLE mst_produk (
     nama_produk   VARCHAR(255) NOT NULL,
     deskripsi     VARCHAR(255),
     foto_produk   TEXT,
-    link_produk   VARCHAR(255),
+    link_produk   TEXT,
     tim_mahasiswa VARCHAR(255), 
     
     created_at    TIMESTAMP NOT NULL DEFAULT NOW(),

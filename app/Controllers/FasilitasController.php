@@ -32,28 +32,41 @@ class FasilitasController
     /**
      * GET ALL FASILITAS (Untuk View List)
      *
-     * Fungsi: Mengambil data dengan pagination
+     * Fungsi: Mengambil data dengan search dan pagination
      * Method: GET
      * @return array - ['data' => array, 'pagination' => array]
      */
     public function getAllFasilitas()
     {
+        // Ambil parameter dari GET request
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
+        // Validasi input
         $page = max(1, $page);
         $perPage = max(1, min(100, $perPage));
 
-        $paginationData = $this->fasilitasModel->getAllFasilitasPaginated($perPage, 0, true);
-        $totalRecords = $paginationData['total'];
+        // Hitung offset
+        $offset = ($page - 1) * $perPage;
 
-        $pagination = PaginationHelper::paginate($totalRecords, $page, $perPage);
+        // Siapkan params untuk model
+        $params = [
+            'search' => $search,
+            'limit' => $perPage,
+            'offset' => $offset
+        ];
 
-        $result = $this->fasilitasModel->getAllFasilitasPaginated($pagination['per_page'], $pagination['offset']);
+        // Get data dari model
+        $result = $this->fasilitasModel->getAllWithSearchAndFilter($params);
+
+        // Generate pagination
+        $pagination = PaginationHelper::paginate($result['total'], $page, $perPage);
 
         return [
             'data' => $result['data'],
-            'pagination' => $pagination
+            'pagination' => $pagination,
+            'total' => $result['total']
         ];
     }
 

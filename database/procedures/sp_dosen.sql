@@ -4,6 +4,7 @@ CREATE OR REPLACE PROCEDURE sp_insert_dosen(
     p_full_name VARCHAR,
     p_email VARCHAR,
     p_nidn VARCHAR,
+    p_nip VARCHAR,
     p_jabatan_id BIGINT,
     p_keahlian_ids BIGINT[],
     p_status_aktif BOOLEAN,
@@ -27,9 +28,16 @@ BEGIN
         END IF;
     END IF;
 
+    -- Validasi nip duplicate (hanya jika NIP tidak NULL)
+    IF p_nip IS NOT NULL THEN
+        IF EXISTS (SELECT 1 FROM mst_dosen WHERE nip = p_nip) THEN
+            RAISE EXCEPTION 'NIP sudah terdaftar';
+        END IF;
+    END IF;
+
     -- Insert data dosen
-    INSERT INTO mst_dosen (full_name, email, nidn, jabatan_id, foto_profil, deskripsi, status_aktif)
-    VALUES (p_full_name, p_email, p_nidn, p_jabatan_id, p_foto_profil, p_deskripsi, p_status_aktif)
+    INSERT INTO mst_dosen (full_name, email, nidn, nip, jabatan_id, foto_profil, deskripsi, status_aktif)
+    VALUES (p_full_name, p_email, p_nidn, p_nip, p_jabatan_id, p_foto_profil, p_deskripsi, p_status_aktif)
     RETURNING id INTO v_dosen_id;
 
     -- Insert keahlian menggunakan unnest ke many-to-many
@@ -52,6 +60,7 @@ CREATE OR REPLACE PROCEDURE sp_update_dosen(
     p_full_name VARCHAR,
     p_email VARCHAR,
     p_nidn VARCHAR,
+    p_nip VARCHAR,
     p_jabatan_id BIGINT,
     p_keahlian_ids BIGINT[],
     p_status_aktif BOOLEAN,
@@ -81,11 +90,22 @@ BEGIN
         END IF;
     END IF;
 
+    -- VALIDATION NIP (if not null)
+    IF p_nip IS NOT NULL THEN
+        IF EXISTS (
+            SELECT 1 FROM mst_dosen 
+            WHERE nip = p_nip AND id != p_id
+        ) THEN
+            RAISE EXCEPTION 'NIP sudah terdaftar';
+        END IF;
+    END IF;
+
     -- UPDATE MAIN TABLE
     UPDATE mst_dosen SET
         full_name   = p_full_name,
         email       = p_email,
         nidn        = p_nidn,
+        nip         = p_nip,
         jabatan_id  = p_jabatan_id,
         foto_profil = p_foto_profil,
         deskripsi   = p_deskripsi,

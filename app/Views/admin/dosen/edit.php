@@ -82,6 +82,17 @@
                             <div id="nidnError" class="invalid-feedback"></div>
                         </div>
 
+                        <!-- NIP  -->
+                        <div class="col-md-6 mb-3">
+                            <label for="nip" class="form-label">
+                                NIP <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="nip" name="nip"
+                                placeholder="Masukkan NIP" value="<?= htmlspecialchars($dosen['nip'] ?? '') ?>" required>
+                            <div class="helper-text">Nomor Induk Pegawai</div>
+                            <div id="nipError" class="invalid-feedback"></div>
+                        </div>
+
                         <!-- Jabatan -->
                         <div class="col-md-6 mb-3">
                             <label for="jabatan" class="form-label">

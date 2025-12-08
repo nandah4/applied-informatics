@@ -6,9 +6,9 @@
  *
  * Tabel yang digunakan:
  * - mst_dosen: Data utama dosen
- * - tbl_dosen_keahlian: Junction table untuk relasi many-to-many dosen-keahlian
- * - tbl_jabatan: Data jabatan dosen
- * - tbl_keahlian: Data keahlian dosen
+ * - map_dosen_keahlian: Junction table untuk relasi many-to-many dosen-keahlian
+ * - ref_jabatan: Data jabatan dosen
+ * - ref_keahlian: Data keahlian dosen
  *
  * Fungsi utama:
  * - insert(): Insert data dosen baru menggunakan stored procedure
@@ -30,6 +30,7 @@ class DosenModel extends BaseModel
      *                          'full_name' => string,
      *                          'email' => string,
      *                          'nidn' => string,
+     *                          'nip' => string,
      *                          'jabatan_id' => int,
      *                          'keahlian_ids' => array, // [1, 2, 3]
      *                          'foto_profil' => string|null,
@@ -57,11 +58,12 @@ class DosenModel extends BaseModel
             // Query CALL stored procedure
             // Format: CALL sp_name(param1, param2, ...)
             // Urutan parameter HARUS sesuai dengan stored procedure:
-            // sp_insert_dosen(p_full_name, p_email, p_nidn, p_jabatan_id, p_keahlian_ids, p_status_aktif, p_foto_profil, p_deskripsi)
+            // sp_insert_dosen(p_full_name, p_email, p_nidn, p_nip, p_jabatan_id, p_keahlian_ids, p_status_aktif, p_foto_profil, p_deskripsi)
             $query = "CALL sp_insert_dosen(
                 :full_name,
                 :email,
                 :nidn,
+                :nip,
                 :jabatan_id,
                 :keahlian_ids,
                 :status_aktif,
@@ -75,6 +77,7 @@ class DosenModel extends BaseModel
             $stmt->bindParam(':full_name', $data['full_name'], PDO::PARAM_STR);
             $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
             $stmt->bindParam(':nidn', $data['nidn'], PDO::PARAM_STR);
+            $stmt->bindParam(':nip', $data['nip'], PDO::PARAM_STR);
             $stmt->bindParam(':jabatan_id', $data['jabatan_id'], PDO::PARAM_INT);
             $stmt->bindParam(':keahlian_ids', $keahlianIds, PDO::PARAM_STR);
             $stmt->bindParam(':status_aktif', $data['status_aktif'], PDO::PARAM_INT);
@@ -110,6 +113,13 @@ class DosenModel extends BaseModel
                 ];
             }
 
+            if (strpos($errorMessage, 'NIP sudah terdaftar') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'NIP sudah terdaftar dalam sistem'
+                ];
+            }
+
             // Error lainnya
             return [
                 'success' => false,
@@ -136,7 +146,7 @@ class DosenModel extends BaseModel
             $bindParams = [];
 
             if (!empty($search)) {
-                $whereClauses[] = "(full_name ILIKE :search OR nidn ILIKE :search)";
+                $whereClauses[] = "(full_name ILIKE :search OR nidn ILIKE :search OR nip ILIKE :search)";
                 $bindParams[':search'] = "%{$search}%";
             }
 
@@ -185,44 +195,6 @@ class DosenModel extends BaseModel
             ];
         }
     }
-
-    // Prev Code
-    // public function getAllDosenPaginated($limit = 10, $offset = 0)
-    // {
-    //     try {
-    //         // Query untuk hitung total records
-    //         $countQuery = "SELECT COUNT(*) as total FROM vw_show_dosen";
-    //         $countStmt = $this->db->prepare($countQuery);
-    //         $countStmt->execute();
-    //         $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
-
-    //         // Query dengan pagination
-    //         $query = "SELECT * FROM vw_show_dosen
-    //                 ORDER BY created_at DESC
-    //                 LIMIT :limit OFFSET :offset";
-
-    //         $stmt = $this->db->prepare($query);
-    //         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-    //         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-    //         $stmt->execute();
-
-    //         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    //         return [
-    //             'success' => true,
-    //             'data' => $result,
-    //             'total' => (int)$totalRecords
-    //         ];
-    //     } catch (PDOException $e) {
-    //         error_log("DosenModel getAllDosenPaginated error: " . $e->getMessage());
-    //         return [
-    //             'success' => false,
-    //             'message' => 'Gagal mendapatkan data dosen',
-    //             'data' => [],
-    //             'total' => 0
-    //         ];
-    //     }
-    // }
 
     public function getAllDosenActive()
     {
@@ -312,12 +284,13 @@ class DosenModel extends BaseModel
     {
         try {
             // Urutan parameter HARUS sesuai dengan stored procedure:
-            // sp_update_dosen(p_id, p_full_name, p_email, p_nidn, p_jabatan_id, p_keahlian_ids, p_status_aktif, p_foto_profil, p_deskripsi)
+            // sp_update_dosen(p_id, p_full_name, p_email, p_nidn, p_nip, p_jabatan_id, p_keahlian_ids, p_status_aktif, p_foto_profil, p_deskripsi)
             $query = "CALL sp_update_dosen(
                 :id,
                 :full_name,
                 :email,
                 :nidn,
+                :nip,
                 :jabatan_id,
                 :keahlian_ids,
                 :status_aktif,
@@ -341,6 +314,7 @@ class DosenModel extends BaseModel
             $stmt->bindParam(':full_name', $data['full_name']);
             $stmt->bindParam(':email', $data['email']);
             $stmt->bindParam(':nidn', $data['nidn']);
+            $stmt->bindParam(':nip', $data['nip']);
             $stmt->bindParam(':jabatan_id', $data['jabatan_id'], PDO::PARAM_INT);
             $stmt->bindParam(':keahlian_ids', $keahlianIds);
             $stmt->bindParam(':status_aktif', $data['status_aktif'], PDO::PARAM_INT);
@@ -368,6 +342,13 @@ class DosenModel extends BaseModel
                 return [
                     'success' => false,
                     'message' => 'NIDN sudah terdaftar dalam sistem'
+                ];
+            }
+
+            if (strpos($e->getMessage(), 'mst_dosen_nip_key') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'NIP sudah terdaftar dalam sistem'
                 ];
             }
 
@@ -458,45 +439,3 @@ class DosenModel extends BaseModel
         }
     }
 }
-
-
-
-/**
- * ============================
- *  TRASH CODE
- * ============================
- */
-
-/**
- * Ambil semua data dosen dengan JOIN ke tabel terkait
- *
- * Query ini akan mengambil:
- * - Data dosen (dari mst_dosen)
- * - Nama jabatan (dari ref_jabatan)
- * - List keahlian dalam satu string (dari ref_keahlian via junction table)
- *
- * @return array - Format: ['success' => bool, 'message' => string, 'data' => array]
- */
-    // public function getAll()
-    // {
-    //     try {
-    //         $query = "SELECT * FROM vw_show_dosen";
-
-    //         $stmt = $this->db->prepare($query);
-    //         $stmt->execute();
-
-    //         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    //         return [
-    //             'success' => true,
-    //             'data' => $result
-    //         ];
-    //     } catch (PDOException $e) {
-    //         error_log("DosenModel getAllDosen error: " . $e->getMessage());
-    //         return [
-    //             'success' => false,
-    //             'message' => 'Gagal mendapatkan data dosen',
-    //             'data' => []
-    //         ];
-    //     }
-    // }

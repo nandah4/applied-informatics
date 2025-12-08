@@ -42,6 +42,89 @@ class MitraModel extends BaseModel
             ];
         }
     }
+    /**
+     * GET ALL MITRA WITH SEARCH AND FILTER
+     * 
+     * @param array $params - ['search' => string, 'limit' => int, 'offset' => int]
+     * @return array - ['success' => bool, 'data' => array, 'total' => int]
+     */
+    public function getAllWithSearchAndFilter($params = [])
+    {
+        try {
+            // Extract parameters
+            $search = $params['search'] ?? '';
+            $limit = $params['limit'] ?? 10;
+            $offset = $params['offset'] ?? 0;
+
+            // Build WHERE clause
+            $whereConditions = [];
+            $bindParams = [];
+
+            // Search by nama, kategori, OR status
+            if (!empty($search)) {
+                $whereConditions[] = "(
+                LOWER(nama) LIKE :search 
+                OR LOWER(CAST(kategori AS TEXT)) LIKE :search 
+                OR LOWER(CAST(status AS TEXT)) LIKE :search
+            )";
+                $bindParams[':search'] = '%' . strtolower($search) . '%';
+            }
+
+            // Combine WHERE conditions
+            $whereClause = '';
+            if (!empty($whereConditions)) {
+                $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+            }
+
+            // Count total records
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name} $whereClause";
+            $countStmt = $this->db->prepare($countQuery);
+            foreach ($bindParams as $key => $value) {
+                $countStmt->bindValue($key, $value);
+            }
+            $countStmt->execute();
+            $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+            // Get data with pagination
+            $query = "
+            SELECT 
+                id, nama, status, logo_mitra, kategori, 
+                tanggal_mulai, tanggal_akhir, created_at, updated_at
+            FROM {$this->table_name}
+            $whereClause
+            ORDER BY created_at DESC
+            LIMIT :limit OFFSET :offset
+        ";
+
+            $stmt = $this->db->prepare($query);
+
+            // Bind search params
+            foreach ($bindParams as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+
+            // Bind pagination params
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $data,
+                'total' => (int) $totalRecords
+            ];
+        } catch (PDOException $e) {
+            error_log("MitraModel getAllWithSearchAndFilter error: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Gagal mengambil data mitra: ' . $e->getMessage(),
+                'data' => [],
+                'total' => 0
+            ];
+        }
+    }
 
     /**
      * Ambil semua data mitra
