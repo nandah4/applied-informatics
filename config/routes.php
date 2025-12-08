@@ -252,6 +252,13 @@ $router->get('rekrutment', function () {
 });
 
 /**
+ * Contact Us
+ * URL: /contact-us
+ */
+$router->get('contact-us', function () {
+    require __DIR__ . '/../app/Views/client/contact_us.php';
+});
+
  * Rekrutment Form
  * URL: /rekrutment/form/{id}
  * Menampilkan form recruitment untuk mendaftar
