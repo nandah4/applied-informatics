@@ -15,8 +15,10 @@ include __DIR__ . '/../layouts/header.php';
                 <p>Jurusan Teknologi Informasi, Politeknik Negeri Malang.</p>
             </div>
 
-            <p class="mt-4 sambutan">Selamat Datang, mari jelajahi berbagai aktivitas, penelitian, dan inovasi yang terus kami kembangkan untuk menghadirkan dampak nyata.</p>
-            <a href="<?= base_url('publikasi-dosen') ?>" class="btn rounded-pill mt-3 px-3 btn-riset-hero">Lihat Riset Kami</a>
+            <p class="mt-4 sambutan">Selamat Datang, mari jelajahi berbagai aktivitas, penelitian, dan inovasi yang
+                terus kami kembangkan untuk menghadirkan dampak nyata.</p>
+            <a href="<?= base_url('publikasi-dosen') ?>" class="btn rounded-pill mt-3 px-3 btn-riset-hero">Lihat Riset
+                Kami</a>
         </div>
     </section>
 
@@ -33,7 +35,8 @@ include __DIR__ . '/../layouts/header.php';
                             <i data-feather="award" class="icon-vm-size"></i>
 
                             <h5 class="mb-3 visi">Visi Laboratorium Applied Informatics</h5>
-                            <p>Menjadi laboratorium unggulan dalam pengembangan dan penerapan teknologi informasi inovatif
+                            <p>Menjadi laboratorium unggulan dalam pengembangan dan penerapan teknologi informasi
+                                inovatif
                                 yang
                                 mendukung transformasi digital berkelanjutan, mendorong kolaborasi lintas sektor, serta
                                 menciptakan solusi cerdas berbasis data untuk menghadapi tantangan era industri 4.0.</p>
@@ -48,7 +51,8 @@ include __DIR__ . '/../layouts/header.php';
 
                             <h5 class="mb-3 misi">Misi Laboratorium Applied Informatics</h5>
                             <p>Berfokus solusi Industri 4.0 dengan mengembangkan dan menerapkan teknologi inovatif guna
-                                mengatasi tantangan seperti otomatisasi, integrasi sistem, dan pemrosesan data real-time,
+                                mengatasi tantangan seperti otomatisasi, integrasi sistem, dan pemrosesan data
+                                real-time,
                                 yang
                                 akan mendukung akselerasi transformasi digital dan meningkatkan efisiensi operasional di
                                 berbagai sektor.</p>
@@ -67,27 +71,40 @@ include __DIR__ . '/../layouts/header.php';
             <div class="row">
                 <div class="col-md-6">
                     <h3 class="title-section">Profil Statistik Laboratorium</h3>
-                    <p class="subtitle-section w-75">Gambaran perkembangan dan aktivitas utama Laboratorium Applied Informatics</p>
+                    <p class="subtitle-section w-75">Gambaran perkembangan dan aktivitas utama Laboratorium Applied
+                        Informatics</p>
                 </div>
 
                 <div class="col-md-6">
                     <div class="row row-angka">
-                        <div class="col-sl-4 col-md-6 mb-5 d-flex flex-column justify-content-center align-items-center ">
-                            <h1 class="angka-statistik"><?= $statisticData['total_publikasi'] > 800 ? 800 : $statisticData['total_publikasi'] ?>+</h1>
+                        <div
+                            class="col-sl-4 col-md-6 mb-5 d-flex flex-column justify-content-center align-items-center ">
+                            <h1 class="angka-statistik">
+                                <?= $statisticData['total_publikasi'] > 800 ? 800 : $statisticData['total_publikasi'] ?>+
+                            </h1>
                             <p class="info-statistik">Publikasi</p>
                         </div>
 
-                        <div class="col-sl-4 col-md-6 mb-5 d-flex flex-column justify-content-center align-items-center">
-                            <h1 class="angka-statistik"><?= $statisticData['total_anggota'] > 90 ? 90 : $statisticData['total_anggota'] ?>+</h1>
+                        <div
+                            class="col-sl-4 col-md-6 mb-5 d-flex flex-column justify-content-center align-items-center">
+                            <h1 class="angka-statistik">
+                                <?= $statisticData['total_anggota'] > 90 ? 90 : $statisticData['total_anggota'] ?>+
+                            </h1>
                             <p class="info-statistik">Anggota Aktif</p>
                         </div>
 
-                        <div class="col-sl-4 col-md-6 mb-5 d-flex flex-column justify-content-center align-items-center">
-                            <h1 class="angka-statistik"><?= $statisticData['total_mitra'] > 50 ? 50 : $statisticData['total_mitra'] ?>+</h1>
+                        <div
+                            class="col-sl-4 col-md-6 mb-5 d-flex flex-column justify-content-center align-items-center">
+                            <h1 class="angka-statistik">
+                                <?= $statisticData['total_mitra'] > 50 ? 50 : $statisticData['total_mitra'] ?>+
+                            </h1>
                             <p class="info-statistik">Mitra</p>
                         </div>
-                        <div class="col-sl-4 col-md-6 mb-5 d-flex flex-column justify-content-center align-items-center">
-                            <h1 class="angka-statistik"><?= $statisticData['total_produk'] > 30 ? 30 : $statisticData['total_produk'] ?>+</h1>
+                        <div
+                            class="col-sl-4 col-md-6 mb-5 d-flex flex-column justify-content-center align-items-center">
+                            <h1 class="angka-statistik">
+                                <?= $statisticData['total_produk'] > 30 ? 30 : $statisticData['total_produk'] ?>+
+                            </h1>
                             <p class="info-statistik">Produk</p>
                         </div>
                     </div>
@@ -121,18 +138,11 @@ include __DIR__ . '/../layouts/header.php';
 
                     <div class="container-item-fasilitas">
                         <!-- IMG sebagai trigger modal -->
-                        <img
-                            src="<?= $fasilitasFoto ?>"
-                            alt="<?= htmlspecialchars($fasilitas['nama']) ?>"
-                            class="foto-fasilitas rounded-3 mb-2"
-                            data-bs-toggle="modal"
-                            data-bs-target="#fasilitasModal"
+                        <img src="<?= $fasilitasFoto ?>" alt="<?= htmlspecialchars($fasilitas['nama']) ?>"
+                            class="foto-fasilitas rounded-3 mb-2" data-bs-toggle="modal" data-bs-target="#fasilitasModal"
                             data-fasilitas-nama="<?= htmlspecialchars($fasilitas['nama']) ?>"
-                            data-fasilitas-foto="<?= $fasilitasFoto ?>"
-                            data-fasilitas-deskripsi="<?= $deskripsi ?>"
-                            style="cursor: pointer;"
-                            role="button"
-                            tabindex="0">
+                            data-fasilitas-foto="<?= $fasilitasFoto ?>" data-fasilitas-deskripsi="<?= $deskripsi ?>"
+                            style="cursor: pointer;" role="button" tabindex="0">
 
                         <?php
                         $nama = htmlspecialchars($fasilitas['nama']);
@@ -161,14 +171,24 @@ include __DIR__ . '/../layouts/header.php';
     <div class="modal fade" id="fasilitasModal" tabindex="-1" aria-labelledby="fasilitasModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header border-0">
+                <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title" id="fasilitasModalLabel">Nama Fasilitas</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p id="modalFasilitasDeskripsi" class="text-secondary">Deskripsi fasilitas akan muncul di sini.</p>
+                    <!-- Gambar Fasilitas -->
+                    <div class="d-flex justify-content-center mb-4">
+                        <img src="" alt="Gambar Fasilitas" id="modalFasilitasGambar"
+                            class="img-fluid rounded-3 shadow-sm" style="max-height: 400px; object-fit: contain;">
+                    </div>
+
+                    <!-- Deskripsi -->
+                    <div>
+                        <p id="modalFasilitasDeskripsi" class="text-secondary mb-0">Deskripsi fasilitas akan muncul di
+                            sini.</p>
+                    </div>
                 </div>
-                <div class="modal-footer border-0">
+                <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
@@ -185,7 +205,8 @@ include __DIR__ . '/../layouts/header.php';
             <!-- Header Section -->
             <div class="mb-4">
                 <h3 class="title-section">Publikasi Penelitian</h3>
-                <p class="subtitle-section mb-0">Karya ilmiah dan penelitian yang telah dipublikasikan oleh tim laboratorium</p>
+                <p class="subtitle-section mb-0">Karya ilmiah dan penelitian yang telah dipublikasikan oleh tim
+                    laboratorium</p>
             </div>
 
             <!-- Year Filter Pills -->
@@ -198,10 +219,8 @@ include __DIR__ . '/../layouts/header.php';
                             <?php
                             $years = range(date('Y'), 2000);
                             foreach ($years as $index => $year):
-                            ?>
-                                <button
-                                    class="year-pill <?= $index === 0 ? 'active' : '' ?>"
-                                    data-year="<?= $year ?>">
+                                ?>
+                                <button class="year-pill <?= $index === 0 ? 'active' : '' ?>" data-year="<?= $year ?>">
                                     <?= $year ?>
                                 </button>
                             <?php endforeach; ?>
@@ -228,11 +247,13 @@ include __DIR__ . '/../layouts/header.php';
             <h3 class="title-section mb-2">Aktivitas Lab Terbaru</h3>
             <div class="row">
                 <div class="col-md-8">
-                    <p class="subtitle-section">Beragam kegiatan penelitian, pengembangan, dan kolaborasi yang dilakukan oleh anggota laboratorium.</p>
+                    <p class="subtitle-section">Beragam kegiatan penelitian, pengembangan, dan kolaborasi yang dilakukan
+                        oleh anggota laboratorium.</p>
                 </div>
 
                 <div class="col-md-4 text-md-end">
-                    <a href="<?= base_url("aktivitas-laboratorium") ?>" class="btn btn-riset-hero rounded-pill px-3">Semua Aktivitas</a>
+                    <a href="<?= base_url("aktivitas-laboratorium") ?>"
+                        class="btn btn-riset-hero rounded-pill px-3">Semua Aktivitas</a>
                 </div>
             </div>
 
@@ -257,10 +278,12 @@ include __DIR__ . '/../layouts/header.php';
                         ?>
 
                         <div class="col-12 col-sm-6 col-md-4">
-                            <a href="<?= base_url('aktivitas-laboratorium/' . $aktivitas['id']) ?>" class="aktivitas-card-link text-decoration-none">
+                            <a href="<?= base_url('aktivitas-laboratorium/' . $aktivitas['id']) ?>"
+                                class="aktivitas-card-link text-decoration-none">
                                 <div class="card aktivitas-card shadow-none h-100 border-0">
                                     <div class="aktivitas-card-image-wrapper">
-                                        <img src="<?= $aktivitasFoto ?>" class="card-img-top aktivitas-card-image" alt="<?= $judul ?>">
+                                        <img src="<?= $aktivitasFoto ?>" class="card-img-top aktivitas-card-image"
+                                            alt="<?= $judul ?>">
                                         <div class="aktivitas-card-overlay">
                                             <span class="aktivitas-view-detail">
                                                 <i data-feather="eye"></i>
@@ -304,12 +327,12 @@ include __DIR__ . '/../layouts/header.php';
             '"': '&quot;',
             "'": '&#039;'
         };
-        return text.replace(/[&<>"']/g, function(m) {
+        return text.replace(/[&<>"']/g, function (m) {
             return map[m];
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const container = $('#fasilitasScroll');
         const pauseBtn = $('#pauseBtn');
         const playBtn = $('#playBtn');
@@ -325,7 +348,7 @@ include __DIR__ . '/../layouts/header.php';
                 clearInterval(scrollInterval);
             }
 
-            scrollInterval = setInterval(function() {
+            scrollInterval = setInterval(function () {
                 if (!isPaused) {
                     const currentScroll = container.scrollLeft();
                     const maxScroll = container[0].scrollWidth - container[0].clientWidth;
@@ -349,24 +372,24 @@ include __DIR__ . '/../layouts/header.php';
         }
 
         // Toggle pause/play
-        pauseBtn.on('click', function() {
+        pauseBtn.on('click', function () {
             isPaused = true;
             pauseBtn.hide();
             playBtn.show();
         });
 
-        playBtn.on('click', function() {
+        playBtn.on('click', function () {
             isPaused = false;
             playBtn.hide();
             pauseBtn.show();
         });
 
         // Pause saat hover pada container
-        container.on('mouseenter', function() {
+        container.on('mouseenter', function () {
             isPaused = true;
         });
 
-        container.on('mouseleave', function() {
+        container.on('mouseleave', function () {
 
             isPaused = false;
 
@@ -374,36 +397,26 @@ include __DIR__ . '/../layouts/header.php';
 
         // Pause saat user manual scroll
         let scrollTimeout;
-        container.on('scroll', function() {
+        container.on('scroll', function () {
             if (!isPaused && scrollTimeout) {
                 clearTimeout(scrollTimeout);
             }
 
-            scrollTimeout = setTimeout(function() {
+            scrollTimeout = setTimeout(function () {
                 // Resume auto scroll setelah user berhenti manual scroll
             }, 1000);
         });
 
-        // // Duplicate items untuk seamless loop (optional, untuk efek infinite yang lebih smooth)
-        // function duplicateItems() {
-        //     const items = container.children('.container-item-fasilitas');
-        //     if (items.length > 0) {
-        //         // Clone semua items dan append ke container
-        //         items.clone().appendTo(container);
-        //     }
-        // }
 
-        // Initialize
-        // duplicateItems(); // Duplicate untuk seamless loop
         startAutoScroll();
 
         // Cleanup saat page unload
-        $(window).on('beforeunload', function() {
+        $(window).on('beforeunload', function () {
             stopAutoScroll();
         });
 
         // Pause saat tab tidak aktif (untuk performa)
-        document.addEventListener('visibilitychange', function() {
+        document.addEventListener('visibilitychange', function () {
             if (document.hidden) {
                 isPaused = true;
             } else {
@@ -430,20 +443,42 @@ include __DIR__ . '/../layouts/header.php';
         const fasilitasModal = document.getElementById('fasilitasModal');
 
         // Event listener saat modal akan ditampilkan
-        fasilitasModal.addEventListener('show.bs.modal', function(event) {
+        fasilitasModal.addEventListener('show.bs.modal', function (event) {
             // Tombol/image yang di-klik
             const button = event.relatedTarget;
 
             // Ambil data dari data attributes
             const nama = button.getAttribute('data-fasilitas-nama');
+            const foto = button.getAttribute('data-fasilitas-foto');
             const deskripsi = button.getAttribute('data-fasilitas-deskripsi');
 
             // Update modal content
             const modalTitle = fasilitasModal.querySelector('.modal-title');
+            const modalGambar = document.getElementById('modalFasilitasGambar');
             const modalDeskripsi = document.getElementById('modalFasilitasDeskripsi');
 
             modalTitle.textContent = nama;
+            modalGambar.src = foto;
+            modalGambar.alt = nama;
             modalDeskripsi.textContent = deskripsi;
+
+            // Handle jika gambar gagal dimuat
+            modalGambar.onerror = function () {
+                this.src = upload_url('default/image.png');
+                this.alt = 'Gambar tidak tersedia';
+            };
+        });
+
+        // Optional: Tambahkan loading state untuk gambar
+        fasilitasModal.addEventListener('shown.bs.modal', function () {
+            const img = document.getElementById('modalFasilitasGambar');
+            if (!img.complete) {
+                img.style.opacity = '0.5';
+                img.style.transition = 'opacity 0.3s';
+                img.onload = function () {
+                    this.style.opacity = '1';
+                };
+            }
         });
 
         // ========================================
@@ -480,7 +515,7 @@ include __DIR__ . '/../layouts/header.php';
         }
 
         // Handle click year pill
-        $yearPills.on('click', function() {
+        $yearPills.on('click', function () {
             const year = $(this).data('year');
 
             // Update active state
@@ -507,7 +542,7 @@ include __DIR__ . '/../layouts/header.php';
                 url: `<?= base_url('api/publikasi/year/') ?>${year}`,
                 method: 'GET',
                 dataType: 'json',
-                success: function(response) {
+                success: function (response) {
                     if (response.success && response.data && response.data.length > 0) {
                         let html = '';
 
@@ -546,7 +581,7 @@ include __DIR__ . '/../layouts/header.php';
                         showEmptyState(year);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error('Error:', error);
                     console.error('Response:', xhr.responseText);
                     $publikasiContainer.html(`
