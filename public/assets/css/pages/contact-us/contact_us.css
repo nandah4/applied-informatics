@@ -1,11 +1,33 @@
 @import '../../components/typography.css';
 
-
-.contactus-page{
+/* Minimal custom CSS - leveraging Bootstrap as much as possible */
+.contactus-page {
     background-color: var(--bg-primary);
 }
 
-.contact-form-wrapper{
+.contact-form-wrapper {
     background-color: var(--color-fourtiary-100);
     border-radius: 10px;
+    max-height: fit-content;
+}
+
+.contact-info-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-height: fit-content;
+}
+
+.map-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-container iframe{
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 320px; /* batas tinggi */
+    height: auto;
+    overflow: hidden;
+    border-radius: 8px;
 }
