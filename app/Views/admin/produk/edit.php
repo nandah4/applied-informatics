@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= base_url() ?>">
     <title>Edit Produk - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <!-- Base CSS - Must load first -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
@@ -62,12 +63,9 @@
         <!-- Form Card -->
         <div class="card">
             <div class="card-body">
-                <form id="formProduk" method="POST" enctype="multipart/form-data"
-                    data-ajax-url="<?= base_url('admin/produk/update') ?>"
-                    data-redirect-url="<?= base_url('admin/produk') ?>"
-                    data-success-message="Data produk berhasil diupdate.">
+                <form id="formProduk" method="POST" enctype="multipart/form-data">
 
-                    <!-- âœ… CSRF Token Hidden Field -->
+                    <!-- CSRF Token Hidden Field -->
                     <?= CsrfHelper::tokenField() ?>
 
                     <input type="hidden" id="id" name="id" value="<?= htmlspecialchars($produk['id']) ?>">
@@ -78,7 +76,7 @@
                             <label for="nama_produk" class="form-label">
                                 Nama Produk <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= htmlspecialchars($produk['nama_produk']) ?>" placeholder="Masukkan nama produk">
+                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= htmlspecialchars($produk['nama_produk']) ?>" placeholder="Masukkan nama produk" required>
                             <div class="helper-text">Berikan nama yang jelas dan deskriptif</div>
                             <div id="namaProdukError" class="invalid-feedback"></div>
                         </div>
@@ -89,8 +87,8 @@
                                 Link Produk
                             </label>
                             <input type="url" class="form-control" id="link_produk" name="link_produk" value="<?= htmlspecialchars($produk['link_produk'] ?? '') ?>" placeholder="https://example.com">
-                            <div class="helperdeskripsi singkat produk (Ppsional)</div>
-                            <div id=" linkProdukError" class="invalid-feedback"></div>
+                            <div class="helper-text">URL lengkap produk (Opsional)</div>
+                            <div id="linkProdukError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Foto Produk -->
@@ -169,7 +167,7 @@
                                 Pilih Dosen <span class="required" id="dosen_required">*</span>
                             </label>
 
-                            <!-- ✅ HANYA SATU hidden input dengan pre-filled value -->
+                            <!-- Hidden input dengan pre-filled value -->
                             <input type="hidden" id="dosen_ids" name="dosen_ids" value="<?= htmlspecialchars($selectedDosenIds) ?>">
 
                             <!-- Selected Dosen Badges (will be populated by JS) -->
@@ -221,7 +219,7 @@
                                 Deskripsi Produk
                             </label>
                             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="6" placeholder="Masukkan deskripsi produk"><?= htmlspecialchars($produk['deskripsi'] ?? '') ?></textarea>
-                            <div class="helper-text">Jelaskan deskripsi singkat produk (Ppsional)</div>
+                            <div class="helper-text">Jelaskan deskripsi singkat produk (Opsional, maksimal 255 karakter)</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
                     </div>
@@ -263,8 +261,8 @@
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
 
-    <!-- Page Specific Scripts -->
-    <script src="<?= asset_url('js/pages/produk/form.js') ?>"></script>
+    <!-- Produk EDIT Form JS -->
+    <script src="<?= asset_url('js/pages/produk/edit.js') ?>"></script>
 </body>
 
 </html>

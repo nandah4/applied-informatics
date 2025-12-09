@@ -523,6 +523,7 @@
         full_name: $("#full_name").val().trim(),
         email: $("#email").val().trim(),
         nidn: $("#nidn").val().trim(),
+        nip: $("#nip").val().trim(),  // ← TAMBAHKAN INI
         jabatan_id: $("#jabatan").val().trim(),
         keahlian_ids: $("#keahlian").val().trim(),
         deskripsi: $("#deskripsi").val().trim(),
@@ -548,6 +549,11 @@
       const nidn = validationHelpers.validateNIDN(data.nidn, true);
       if (!nidn.valid) {
         errors.push({ fieldId: "nidn", errorId: "nidnError", message: nidn.message });
+      }
+
+      const nip = validationHelpers.validateNIP(data.nip, true);
+      if (!nip.valid) {
+        errors.push({ fieldId: "nip", errorId: "nipError", message: nip.message });
       }
 
       const jabatan = validationHelpers.validateRequired(data.jabatan_id, "Jabatan");
@@ -580,6 +586,7 @@
       formData.append("full_name", data.full_name);
       formData.append("email", data.email);
       formData.append("nidn", data.nidn);
+      formData.append("nip", data.nip);
       formData.append("jabatan_id", data.jabatan_id);
       formData.append("keahlian_ids", data.keahlian_ids);
       formData.append("deskripsi", data.deskripsi);

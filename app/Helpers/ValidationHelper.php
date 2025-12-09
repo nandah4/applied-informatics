@@ -85,14 +85,6 @@ class ValidationHelper
             ];
         }
 
-        // Validasi panjang maksimal
-        if (strlen($url) > 255) {
-            return [
-                'valid' => false,
-                'message' => 'URL maksimal 255 karakter'
-            ];
-        }
-
         return [
             'valid' => true,
             'message' => ''
@@ -138,6 +130,54 @@ class ValidationHelper
             return [
                 'valid' => false,
                 'message' => 'NIDN minimal 10 digit'
+            ];
+        }
+
+        return [
+            'valid' => true,
+            'message' => ''
+        ];
+    }
+
+        /**
+     * Validasi NIP (Nomor Induk Pegawai)
+     * NIP harus 18 digit angka
+     *
+     * @param string $nip - NIP yang akan divalidasi
+     * @param bool $required - Apakah field wajib diisi (default: false)
+     * @return array - ['valid' => bool, 'message' => string]
+     */
+    public static function validateNIP($nip, $required = false)
+    {
+        // Jika tidak required dan kosong, anggap valid
+        if (!$required && empty($nip)) {
+            return [
+                'valid' => true,
+                'message' => ''
+            ];
+        }
+
+        // Cek apakah kosong (jika required)
+        if ($required && empty($nip)) {
+            return [
+                'valid' => false,
+                'message' => 'NIP tidak boleh kosong'
+            ];
+        }
+
+        // Validasi hanya angka
+        if (!ctype_digit($nip)) {
+            return [
+                'valid' => false,
+                'message' => 'NIP harus berisi angka saja'
+            ];
+        }
+
+        // Validasi panjang harus 18 digit
+        if (strlen($nip) < 18) {
+            return [
+                'valid' => false,
+                'message' => 'NIP minimal harus 18 digit'
             ];
         }
 

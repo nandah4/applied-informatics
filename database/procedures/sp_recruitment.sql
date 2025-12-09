@@ -1,5 +1,5 @@
 -- ============================================================================
--- STORED PROCEDURES FOR RECRUITMENT MANAGEMENT (FIXED VERSION)
+-- STORED PROCEDURES FOR RECRUITMENT MANAGEMENT (FIXED VERSION WITH MANUAL CLOSE)
 -- ============================================================================
 
 -- PROCEDURE: Insert Recruitment
@@ -23,14 +23,14 @@ BEGIN
 
     -- AUTO-DETERMINE STATUS BERDASARKAN TANGGAL:
     -- 1. Jika tanggal tutup sudah terlewat -> TUTUP
-    -- 2. Jika tanggal tutup >= hari ini -> BUKA
+    -- 2. Jika tanggal tutup >= hari ini -> Gunakan status dari parameter (bisa buka/tutup)
     IF p_tanggal_tutup < CURRENT_DATE THEN
         v_auto_status := 'tutup';
     ELSE
-        v_auto_status := 'buka';
+        v_auto_status := p_status; -- Gunakan status dari parameter
     END IF;
 
-    -- Insert dengan status yang sudah ditentukan otomatis
+    -- Insert dengan status yang sudah ditentukan
     INSERT INTO trx_rekrutmen (judul, deskripsi, status, tanggal_buka, tanggal_tutup, lokasi)
     VALUES (p_judul, p_deskripsi, v_auto_status, p_tanggal_buka, p_tanggal_tutup, p_lokasi);
 
@@ -38,12 +38,12 @@ END;
 $$;
 
 
--- PROCEDURE: Update Recruitment
+-- PROCEDURE: Update Recruitment (FIXED - Allow manual close)
 CREATE OR REPLACE PROCEDURE sp_update_recruitment (
     p_id BIGINT,
     p_judul VARCHAR,
     p_deskripsi TEXT,
-    p_status rekrutmen_status_enum,  -- Parameter ini akan di-ignore, status ditentukan otomatis
+    p_status rekrutmen_status_enum,
     p_tanggal_buka DATE,
     p_tanggal_tutup DATE,
     p_lokasi VARCHAR
@@ -51,33 +51,46 @@ CREATE OR REPLACE PROCEDURE sp_update_recruitment (
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_auto_status rekrutmen_status_enum;
+    v_final_status rekrutmen_status_enum;
+    v_old_tanggal_tutup DATE;
 BEGIN
     -- Validasi tanggal tutup tidak boleh lebih awal dari tanggal buka
     IF p_tanggal_tutup < p_tanggal_buka THEN 
         RAISE EXCEPTION 'Tanggal tutup tidak boleh lebih awal dari tanggal buka';
     END IF;
 
-    -- Cek apakah recruitment exists
-    IF NOT EXISTS (SELECT 1 FROM trx_rekrutmen WHERE id = p_id) THEN
+    -- Cek apakah recruitment exists dan ambil tanggal tutup lama
+    SELECT tanggal_tutup INTO v_old_tanggal_tutup 
+    FROM trx_rekrutmen 
+    WHERE id = p_id;
+    
+    IF v_old_tanggal_tutup IS NULL THEN
         RAISE EXCEPTION 'Recruitment dengan ID % tidak ditemukan', p_id;
     END IF;
 
-    -- AUTO-UPDATE STATUS BERDASARKAN TANGGAL:
-    -- 1. Jika tanggal tutup sudah terlewat (< hari ini) -> TUTUP
-    -- 2. Jika tanggal tutup >= hari ini -> BUKA (auto-reopen jika diperpanjang)
+    -- LOGIKA STATUS YANG LEBIH FLEKSIBEL:
+    -- 1. Jika tanggal tutup sudah terlewat -> SELALU tutup (tidak bisa dibuka)
+    -- 2. Jika tanggal tutup masih di masa depan:
+    --    a. Jika tanggal diperpanjang dari masa lalu ke masa depan -> Auto BUKA
+    --    b. Jika tanggal tidak berubah atau berubah tapi masih di masa depan -> Gunakan status dari parameter
+    
     IF p_tanggal_tutup < CURRENT_DATE THEN
-        v_auto_status := 'tutup';  -- Sudah expired atau diperpendek ke masa lalu
+        -- Sudah expired, tidak bisa dibuka
+        v_final_status := 'tutup';
+    ELSIF v_old_tanggal_tutup < CURRENT_DATE AND p_tanggal_tutup >= CURRENT_DATE THEN
+        -- Diperpanjang dari expired ke aktif -> Auto buka
+        v_final_status := 'buka';
     ELSE
-        v_auto_status := 'buka';   -- Masih aktif atau diperpanjang ke masa depan
+        -- Tanggal tutup masih valid -> Gunakan status dari parameter (allow manual close/open)
+        v_final_status := p_status;
     END IF;
 
-    -- Update dengan status yang ditentukan otomatis
+    -- Update dengan status yang ditentukan
     UPDATE trx_rekrutmen 
     SET 
         judul = p_judul,
         deskripsi = p_deskripsi,
-        status = v_auto_status,  -- Status ditentukan oleh logika di atas, bukan dari parameter
+        status = v_final_status,
         tanggal_buka = p_tanggal_buka,
         tanggal_tutup = p_tanggal_tutup,
         lokasi = p_lokasi,
@@ -109,10 +122,8 @@ $$;
 
 
 -- ============================================================================
--- FUNCTION: Auto-close expired recruitment
+-- FUNCTION: Auto-close expired recruitment (Hanya close yang expired)
 -- ============================================================================
--- Function ini dipanggil setiap kali ada operasi read untuk memastikan
--- status recruitment selalu up-to-date
 CREATE OR REPLACE FUNCTION fn_auto_close_expired_recruitment()
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -120,7 +131,9 @@ AS $$
 DECLARE
     v_updated_count INTEGER;
 BEGIN
-    -- Update status menjadi 'tutup' untuk recruitment yang tanggal tutupnya sudah terlewat
+    -- HANYA update status menjadi 'tutup' untuk recruitment yang:
+    -- 1. Tanggal tutupnya sudah terlewat
+    -- 2. Statusnya masih 'buka'
     UPDATE trx_rekrutmen
     SET status = 'tutup',
         updated_at = NOW()
@@ -135,19 +148,17 @@ $$;
 
 
 -- ============================================================================
--- OPTIONAL: Trigger untuk auto-update status saat insert/update
+-- TRIGGER: Auto-set status pada INSERT/UPDATE (FIXED)
 -- ============================================================================
--- Trigger ini akan otomatis set status berdasarkan tanggal
 CREATE OR REPLACE FUNCTION trg_auto_set_recruitment_status()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- Set status berdasarkan tanggal tutup
-    IF NEW.tanggal_tutup < CURRENT_DATE THEN
+    -- Hanya auto-close jika tanggal sudah expired dan masih buka
+    -- Jangan auto-open jika user sengaja menutup secara manual
+    IF NEW.tanggal_tutup < CURRENT_DATE AND NEW.status = 'buka' THEN
         NEW.status := 'tutup';
-    ELSE
-        NEW.status := 'buka';
     END IF;
     
     RETURN NEW;
@@ -172,64 +183,10 @@ CREATE TRIGGER trg_before_update_recruitment
 
 
 -- ============================================================================
--- TEST CASES (Uncomment untuk testing)
+-- STORED PROCEDURES LAINNYA UNTUK RECRUITMENT
 -- ============================================================================
 
-/*
--- Test 1: Insert recruitment dengan tanggal di masa depan (harus BUKA)
-CALL sp_insert_recruitment(
-    'Test Recruitment 1',
-    'Deskripsi test',
-    'tutup',  -- Akan di-override menjadi 'buka'
-    CURRENT_DATE,
-    CURRENT_DATE + INTERVAL '30 days',
-    'Lab AI'
-);
-
--- Test 2: Insert recruitment dengan tanggal sudah terlewat (harus TUTUP)
-CALL sp_insert_recruitment(
-    'Test Recruitment 2',
-    'Deskripsi test',
-    'buka',  -- Akan di-override menjadi 'tutup'
-    CURRENT_DATE - INTERVAL '60 days',
-    CURRENT_DATE - INTERVAL '30 days',
-    'Lab AI'
-);
-
--- Test 3: Update - perpanjang tanggal tutup (harus auto BUKA)
-CALL sp_update_recruitment(
-    1,  -- ID recruitment
-    'Updated Recruitment',
-    'Deskripsi updated',
-    'tutup',  -- Akan di-override menjadi 'buka' karena tanggal diperpanjang
-    CURRENT_DATE,
-    CURRENT_DATE + INTERVAL '60 days',
-    'Lab AI Updated'
-);
-
--- Test 4: Update - perpendek tanggal tutup ke masa lalu (harus auto TUTUP)
-CALL sp_update_recruitment(
-    1,
-    'Updated Recruitment',
-    'Deskripsi updated',
-    'buka',  -- Akan di-override menjadi 'tutup' karena tanggal sudah lewat
-    CURRENT_DATE - INTERVAL '10 days',
-    CURRENT_DATE - INTERVAL '5 days',
-    'Lab AI Updated'
-);
-
--- Test 5: Check auto-close function
-SELECT fn_auto_close_expired_recruitment();
-
--- Lihat hasil
-SELECT id, judul, status, tanggal_buka, tanggal_tutup, updated_at 
-FROM trx_rekrutmen 
-ORDER BY id;
-*/
-
-
--- Prosedur ini digunakan saat mahasiswa submit form pendaftaran
-
+-- Prosedur pendaftaran mahasiswa
 CREATE OR REPLACE PROCEDURE sp_daftar_rekrutmen (
     p_rekrutmen_id BIGINT,
     p_nim VARCHAR,
@@ -246,7 +203,7 @@ CREATE OR REPLACE PROCEDURE sp_daftar_rekrutmen (
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- 1. Validasi: Apakah rekrutmen ada dan statusnya 'buka'? (lowercase)
+    -- 1. Validasi: Apakah rekrutmen ada dan statusnya 'buka'?
     IF NOT EXISTS (SELECT 1 FROM trx_rekrutmen WHERE id = p_rekrutmen_id AND status = 'buka') THEN
         RAISE EXCEPTION 'Lowongan rekrutmen tidak ditemukan atau sudah ditutup.';
     END IF;
@@ -268,22 +225,19 @@ END;
 $$;
 
 
--- Digunakan admin untuk mengubah status (misal: dari  Pending -> Ditolak).
-
+-- Update status seleksi pendaftar
 CREATE OR REPLACE PROCEDURE sp_update_status_seleksi (
     p_pendaftar_id BIGINT,
     p_status_baru seleksi_status_enum,
-    p_deskripsi TEXT DEFAULT NULL  -- Feedback for rejected applicants
+    p_deskripsi TEXT DEFAULT NULL
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- Validasi ID
     IF NOT EXISTS (SELECT 1 FROM trx_pendaftar WHERE id = p_pendaftar_id) THEN
         RAISE EXCEPTION 'Data pendaftar tidak ditemukan.';
     END IF;
 
-    -- Update Status and Deskripsi
     UPDATE trx_pendaftar 
     SET status_seleksi = p_status_baru,
         deskripsi = CASE 
@@ -296,34 +250,29 @@ END;
 $$;
 
 
--- SP untuk Menerima Anggota (Promosi) (sp_terima_anggota) 
-
+-- Terima anggota (promosi)
 CREATE OR REPLACE PROCEDURE sp_terima_anggota (
     p_pendaftar_id BIGINT
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_rec RECORD; -- Variabel untuk menampung data pendaftar
+    v_rec RECORD;
 BEGIN
-    -- 1. Ambil data pendaftar
     SELECT * INTO v_rec FROM trx_pendaftar WHERE id = p_pendaftar_id;
 
     IF v_rec.id IS NULL THEN
         RAISE EXCEPTION 'Data pendaftar tidak ditemukan.';
     END IF;
 
-    -- 2. Validasi: Apakah NIM ini sudah ada di tabel anggota aktif?
     IF EXISTS (SELECT 1 FROM mst_mahasiswa WHERE nim = v_rec.nim) THEN
         RAISE EXCEPTION 'Mahasiswa dengan NIM % sudah menjadi anggota lab.', v_rec.nim;
     END IF;
 
-    -- 3. Update status di tabel pendaftar jadi 'Diterima'
     UPDATE trx_pendaftar 
     SET status_seleksi = 'Diterima', updated_at = NOW() 
     WHERE id = p_pendaftar_id;
 
-    -- 4. INSERT data ke tabel Master Mahasiswa (Promosi)
     INSERT INTO mst_mahasiswa (
         nim, nama, email, no_hp, 
         jabatan_lab, semester, link_github, status_aktif, tanggal_gabung, asal_pendaftar_id
@@ -332,7 +281,7 @@ BEGIN
         v_rec.nama, 
         v_rec.email, 
         v_rec.no_hp,
-        'Asisten Lab', -- Default Jabatan
+        'Asisten Lab',
         v_rec.semester,
         v_rec.link_github,
         TRUE, 

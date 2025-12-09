@@ -3,6 +3,7 @@
  * Deskripsi: Script untuk halaman index/list data recruitment
  *
  * Fitur:
+ * - Search/Filter data produk (server-side)
  * - Delete recruitment dengan konfirmasi
  * - Pagination controls
  *
@@ -86,6 +87,74 @@
   };
 
   // ============================================================
+  // MODUL SEARCH (SERVER-SIDE)
+  // ============================================================
+
+  const SearchModule = {
+    /**
+     * Inisialisasi fungsi search (server-side)
+     */
+    init: function () {
+      const searchInput = document.getElementById('searchInput');
+      const btnSearch = document.getElementById('btnSearch');
+      const btnClear = document.getElementById('btnClearSearch');
+
+      // Handle search button click
+      if (btnSearch) {
+        btnSearch.addEventListener('click', this.handleSearch);
+      }
+
+      // Handle Enter key pada search input
+      if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            SearchModule.handleSearch();
+          }
+        });
+      }
+
+      // Handle clear button
+      if (btnClear) {
+        btnClear.addEventListener('click', this.handleClear);
+      }
+    },
+
+    /**
+     * Handle search - redirect ke URL dengan parameter search
+     */
+    handleSearch: function () {
+      const searchInput = document.getElementById('searchInput');
+      const searchValue = searchInput.value.trim();
+
+      // Build URL dengan search parameter
+      const currentUrl = new URL(window.location.href);
+
+      if (searchValue) {
+        currentUrl.searchParams.set('search', searchValue);
+      } else {
+        currentUrl.searchParams.delete('search');
+      }
+
+      // Reset ke page 1 saat search
+      currentUrl.searchParams.set('page', '1');
+
+      // Redirect
+      window.location.href = currentUrl.toString();
+    },
+
+    /**
+     * Handle clear search - hapus parameter search dan reload
+     */
+    handleClear: function () {
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.delete('search');
+      currentUrl.searchParams.set('page', '1');
+      window.location.href = currentUrl.toString();
+    }
+  };
+
+  // ============================================================
   // MODUL PAGINATION
   // ============================================================
 
@@ -132,6 +201,7 @@
   // ============================================================
 
   $(document).ready(function () {
+    SearchModule.init();
     DeleteRecruitmentModule.init();
     PaginationModule.init();
 

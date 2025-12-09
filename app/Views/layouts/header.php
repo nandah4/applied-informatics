@@ -103,6 +103,9 @@ function isActive($path, $current)
                     <li class="nav-item">
                         <a class="nav-link <?= isActive('/ar-showcase', $current_path) ?>" href="<?= base_url('ar-showcase') ?>">AR Showcase</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('contact-us') ?>">Contact Us</a>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -24,7 +24,7 @@
     <!-- Alert Placeholder -->
     <div id="liveAlertPlaceholder"></div>
 
-    <!-- ✅ CSRF Token Hidden Field -->
+    <!-- CSRF Token Hidden Field -->
     <?= CsrfHelper::tokenField() ?>
 
     <!-- Sidebar -->
@@ -53,15 +53,35 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-                    <!-- Search Bar -->
-                    <!-- <div class="search-wrapper">
-                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input type="text" class="search-input" placeholder="Cari nama produk atau URL...">
-                    </div> -->
-
+                    <!-- Search Bar with Button -->
+                    <div class="d-flex gap-2">
+                        <div class="search-wrapper">
+                            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input type="text"
+                                id="searchInput"
+                                class="search-input"
+                                placeholder="Cari nama atau author produk..."
+                                value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+                            <?php if (!empty($_GET['search'])): ?>
+                                <button type="button" class="btn-clear-search" id="btnClearSearch" title="Hapus pencarian">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                        <button type="button" class="btn-search-custom" id="btnSearch">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            Cari
+                        </button>
+                    </div>
                     <!-- Add Button -->
                     <a href="<?= base_url('admin/produk/create') ?>" class="btn-primary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -135,7 +155,7 @@
 
                                                 <div class="d-flex align-items-center">
                                                     <span class="author-badge me-2">
-                                                        Dosen -
+                                                        Dosen
                                                     </span>
                                                     <span class="author-names text-sm">
                                                         <?= $dosenHtml ?>
@@ -144,7 +164,7 @@
 
                                                 <div class="d-flex align-items-center">
                                                     <span class="author-badge  me-2">
-                                                        Mahasiswa -
+                                                        Mahasiswa
                                                     </span>
                                                     <span class="author-names text-sm">
                                                         <?= htmlspecialchars($produk['tim_mahasiswa']) ?>
@@ -234,7 +254,10 @@
             </div>
 
             <!-- Pagination -->
-            <?php if (isset($pagination) && $pagination['total_pages'] > 0) : ?>
+            <?php if (isset($pagination) && $pagination['total_pages'] > 0) :
+                // Build query string untuk preserve search parameter
+                $searchParam = !empty($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
+            ?>
                 <div class="pagination-wrapper">
                     <div class="pagination-info">
                         <span>Menampilkan
@@ -253,7 +276,7 @@
                             <!-- Previous Button -->
                             <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_prev'] ? base_url('admin/produk?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>"
+                                    href="<?= $pagination['has_prev'] ? base_url('admin/produk?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'] . $searchParam) : '#' ?>"
                                     tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
                                     Previous
                                 </a>
@@ -266,7 +289,7 @@
                                 <?php else: ?>
                                     <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
                                         <a class="page-link"
-                                            href="<?= base_url('admin/produk?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page']) ?>">
+                                            href="<?= base_url('admin/produk?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page'] . $searchParam) ?>">
                                             <?= $pageData['number'] ?>
                                         </a>
                                     </li>
@@ -276,7 +299,7 @@
                             <!-- Next Button -->
                             <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_next'] ? base_url('admin/produk?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page']) : '#' ?>">
+                                    href="<?= $pagination['has_next'] ? base_url('admin/produk?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'] . $searchParam) : '#' ?>">
                                     Next
                                 </a>
                             </li>

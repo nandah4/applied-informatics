@@ -55,13 +55,14 @@ class DosenController
         $full_name = $_POST['full_name'] ?? '';
         $email = $_POST['email'] ?? '';
         $nidn = $_POST['nidn'] ?? '';
+        $nip = $_POST['nip'] ?? '';
         $jabatan_id = $_POST['jabatan_id'] ?? '';
         $keahlian_ids = $_POST['keahlian_ids'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $status_aktif = $_POST['status_aktif'] ?? '1';
 
         // 3. Validasi input menggunakan ValidationHelper
-        $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $jabatan_id, $keahlian_ids, $deskripsi);
+        $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $nip, $jabatan_id, $keahlian_ids, $deskripsi);
 
         if (!empty($validationErrors)) {
             ResponseHelper::error($validationErrors[0]); // Return error pertama
@@ -97,6 +98,7 @@ class DosenController
             'full_name' => $full_name,
             'email' => $email,
             'nidn' => $nidn,
+            'nip' => $nip,  
             'jabatan_id' => (int)$jabatan_id,
             'keahlian_ids' => $keahlianArray,
             'foto_profil' => $fotoFileName,
@@ -198,12 +200,13 @@ class DosenController
      * @param string $full_name
      * @param string $email
      * @param string $nidn
+     * @param string $nip
      * @param mixed $jabatan_id
      * @param mixed $keahlian_ids
      * @param string $deskripsi
      * @return array - Array of error messages (kosong jika valid)
      */
-    private function validateDosenInput($full_name, $email, $nidn, $jabatan_id, $keahlian_ids, $deskripsi)
+    private function validateDosenInput($full_name, $email, $nidn, $nip, $jabatan_id, $keahlian_ids, $deskripsi)
     {
         $errors = [];
 
@@ -223,6 +226,12 @@ class DosenController
         $nidnValidation = ValidationHelper::validateNIDN($nidn, true);
         if (!$nidnValidation['valid']) {
             $errors[] = $nidnValidation['message'];
+        }
+
+        // Validasi NIP
+        $nipValidation = ValidationHelper::validateNIP($nip, true);
+        if (!$nipValidation['valid']) {
+            $errors[] = $nipValidation['message'];
         }
 
         // Validasi jabatan ID
@@ -285,11 +294,12 @@ class DosenController
             return;
         }
 
-        // 3. Ambil data dari POST
+        // 3. Ambil data dari POST 
         $id = $_POST['id'] ?? '';
         $full_name = $_POST['full_name'] ?? '';
         $email = $_POST['email'] ?? '';
         $nidn = $_POST['nidn'] ?? '';
+        $nip = $_POST['nip'] ?? '';  
         $jabatan_id = $_POST['jabatan_id'] ?? '';
         $keahlian_ids = $_POST['keahlian_ids'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
@@ -303,7 +313,7 @@ class DosenController
         }
 
         // 3. Validasi input
-        $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $jabatan_id, $keahlian_ids, $deskripsi);
+        $validationErrors = $this->validateDosenInput($full_name, $email, $nidn, $nip, $jabatan_id, $keahlian_ids, $deskripsi);
         if (!empty($validationErrors)) {
             ResponseHelper::error($validationErrors[0]);
             return;
@@ -340,6 +350,7 @@ class DosenController
             'full_name' => $full_name,
             'email' => $email,
             'nidn' => $nidn,
+            'nip' => $nip,
             'jabatan_id' => (int)$jabatan_id,
             'keahlian_ids' => $keahlian_ids,
             'foto_profil' => $fotoFileName,
