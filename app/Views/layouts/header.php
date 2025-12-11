@@ -123,7 +123,7 @@ function isActive($paths, $current)
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('contact-us') ?>">Hubungi Kami</a>
+                        <a class="nav-link <?= isActive('/contact-us', $current_path) ?>" href="<?= base_url('contact-us') ?>">Contact Us</a>
                     </li>
                 </ul>
             </div>

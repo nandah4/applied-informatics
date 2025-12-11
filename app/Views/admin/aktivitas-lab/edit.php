@@ -40,7 +40,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('admin/aktivitas-lab') ?>">Aktivitas Laboratorium</a>
+                <a href="<?= base_url('admin/aktivitas-lab') ?>">Data Aktivitas Laboratorium</a>
                 <span>/</span>
                 <span>Edit Aktivitas</span>
             </div>

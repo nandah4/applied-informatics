@@ -57,7 +57,7 @@ include __DIR__ . '/../layouts/header.php';
                             <div class="mb-4 d-flex justify-content-center">
                                 <i data-feather="user-x" class="icon-something-not-found"></i>
                             </div>
-                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Terbuka.</h5>
+                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Dibuka.</h5>
                             <p class="text-secondary mb-0">Saat ini belum ada rekrutmen yang sedang dibuka. Silakan cek kembali nanti.</p>
                         </div>
                     <?php else: ?>
@@ -68,7 +68,7 @@ include __DIR__ . '/../layouts/header.php';
                                     <div class="card-header-custom">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <h3 class="card-title-custom"><?= htmlspecialchars($recruitment['judul']) ?></h3>
-                                            <span class="status-badge status-open">Terbuka</span>
+                                            <span class="status-badge status-open">Dibuka</span>
                                         </div>
                                     </div>
 
@@ -232,7 +232,7 @@ include __DIR__ . '/../layouts/header.php';
                             <div class="mb-4 d-flex justify-content-center">
                                 <i data-feather="user-x" class="icon-something-not-found"></i>
                             </div>
-                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Tertutup.</h5>
+                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Ditutup.</h5>
                             <p class="text-secondary mb-0">Belum ada riwayat rekrutmen yang ditutup.</p>
                         </div>
                     <?php else: ?>
