@@ -60,14 +60,14 @@ function formatTanggalIndonesia($tanggal)
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="terbuka-tab" data-bs-toggle="tab"
                         data-bs-target="#terbuka" type="button" role="tab">
-                        Rekrutmen Terbuka
+                        Rekrutmen Dibuka
                         <span class="tab-badge badge-open"><?= count($recruitmentTerbuka) ?></span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="tertutup-tab" data-bs-toggle="tab"
                         data-bs-target="#tertutup" type="button" role="tab">
-                        Rekrutmen Tertutup
+                        Rekrutmen Ditutup
                         <span class="tab-badge badge-closed"><?= count($recruitmentTertutup) ?></span>
                     </button>
                 </li>
@@ -87,7 +87,7 @@ function formatTanggalIndonesia($tanggal)
                             <div class="mb-4 d-flex justify-content-center">
                                 <i data-feather="user-x" class="icon-something-not-found"></i>
                             </div>
-                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Terbuka.</h5>
+                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Dibuka.</h5>
                             <p class="text-secondary mb-0">Saat ini belum ada rekrutmen yang sedang dibuka. Silakan cek kembali nanti.</p>
                         </div>
                     <?php else: ?>
@@ -98,7 +98,7 @@ function formatTanggalIndonesia($tanggal)
                                     <div class="card-header-custom">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <h3 class="card-title-custom"><?= htmlspecialchars($recruitment['judul']) ?></h3>
-                                            <span class="status-badge status-open">Terbuka</span>
+                                            <span class="status-badge status-open">Dibuka</span>
                                         </div>
                                     </div>
 
@@ -149,7 +149,7 @@ function formatTanggalIndonesia($tanggal)
                             <div class="mb-4 d-flex justify-content-center">
                                 <i data-feather="user-x" class="icon-something-not-found"></i>
                             </div>
-                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Tertutup.</h5>
+                            <h5 class="text-muted mb-2">Tidak Ada Rekrutmen Ditutup.</h5>
                             <p class="text-secondary mb-0">Belum ada riwayat rekrutmen yang ditutup.</p>
                         </div>
                     <?php else: ?>
