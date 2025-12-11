@@ -79,13 +79,64 @@
   color: var(--color-error);
 }
 
-.form-control,
-.form-select {
-  padding: 0.625rem 1rem;
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
   border: 1px solid var(--color-gray-300);
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: var(--fs-sm) !important;
   transition: all 0.2s;
+  background: white;
+}
+
+/* Wrapper utama Select2 */
+.select2-container--bootstrap-5 .select2-selection--single {
+  padding: 21px 12px;
+  border: 1px solid #ced4da;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+}
+
+/* Hilangkan efek shadow/ring saat fokus - semua kemungkinan state */
+.select2-container--bootstrap-5 .select2-selection,
+.select2-container--bootstrap-5 .select2-selection--single,
+.select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.select2-container--bootstrap-5.select2-container--focus .select2-selection--single,
+.form-select:focus+.select2-container--bootstrap-5 .select2-selection {
+  box-shadow: none !important;
+  outline: none !important;
+  border: 1px solid var(--color-gray-300);
+}
+
+/* Teks yang muncul setelah dipilih */
+.select2-selection__rendered {
+  line-height: 40px !important;
+  padding-left: 2px !important;
+  font-size: var(--fs-sm) !important;
+}
+
+/* Arrow dropdown */
+.select2-selection__arrow {
+  height: 38px !important;
+  right: 10px !important;
+}
+
+/* Dropdown option */
+.select2-results__option {
+  font-size: var(--fs-sm) !important;
+  padding: 10px 12px !important;
+}
+
+/* Highlight */
+.select2-results__option--highlighted {
+  background-color: var(--color-primary-500) !important;
+  color: #fff !important;
+}
+
+/* Jika error */
+.is-invalid~.select2-container--bootstrap-5 .select2-selection--single {
+  border-color: #ef4444 !important;
 }
 
 .form-control:focus,

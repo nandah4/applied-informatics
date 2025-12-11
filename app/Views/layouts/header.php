@@ -20,11 +20,20 @@ if (strpos($current_path, $base_path) === 0) {
  * @param string $current - Current path dari URL
  * @return string - 'active' jika match, empty string jika tidak
  */
-function isActive($path, $current)
+function isActive($paths, $current)
 {
     // Normalize path
-    $path = '/' . trim($path, '/');
+    $path = '/' . trim($paths, '/');
     $current = '/' . trim($current, '/');
+
+    // Jika input array (untuk parent dropdown), check salah satu
+    if (is_array($paths)) {
+        foreach ($paths as $path) {
+            $path = '/' . trim($path, '/');
+            if (stripos($current, $path) === 0) return 'active';
+        }
+        return '';
+    }
 
     // Special case: Homepage - exact match only
     if ($path === '/') {
@@ -78,33 +87,43 @@ function isActive($path, $current)
                     <li class="nav-item">
                         <a class="nav-link <?= isActive('/', $current_path) ?>" href="<?= base_url('') ?>">Beranda</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= isActive('/anggota-laboratorium', $current_path) ?>" href="<?= base_url('anggota-laboratorium') ?>">Anggota</a>
-                    </li>
+
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle <?= isActive('/publikasi-dosen', $current_path) || isActive('/produk-lab', $current_path) ? 'active' : '' ?>" href="#" role="button"
+                        <a class="nav-link dropdown-toggle <?= isActive('/anggota-laboratorium', $current_path) || isActive('/mitra-laboratorium', $current_path) ? 'active' : '' ?>" href="#" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            Riset dan Produk
+                            Profil
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item <?= isActive('/anggota-laboratorium', $current_path) ?>" href="<?= base_url('anggota-laboratorium') ?>">Anggota</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item  <?= isActive('/mitra-laboratorium', $current_path) ?>" href="<?= base_url('mitra-laboratorium') ?>">Mitra</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?= isActive('/publikasi-dosen', $current_path) || isActive('/produk-lab', $current_path) || isActive('/ar-showcase', $current_path) ? 'active' : '' ?>" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Riset dan Inovasi
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item <?= isActive('/publikasi-dosen', $current_path) ?>" href="<?= base_url('publikasi-dosen') ?>">Publikasi Dosen</a></li>
                             <li><a class="dropdown-item <?= isActive('/produk-lab', $current_path) ?>" href="<?= base_url('produk-lab') ?>">Produk Lab</a></li>
+                            <li><a class="dropdown-item <?= isActive('/ar-showcase', $current_path) ?>" href="<?= base_url('ar-showcase') ?>">AR Showcase</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?= isActive('/aktivitas-laboratorium', $current_path) ?>" href="<?= base_url('aktivitas-laboratorium') ?>">Aktivitas Lab</a>
                     </li>
+
                     <li class="nav-item">
-                        <a class="nav-link  <?= isActive('/mitra-laboratorium', $current_path) ?>" href="<?= base_url('mitra-laboratorium') ?>">Mitra</a>
+                        <a class="nav-link <?= isActive('/rekrutment', $current_path) ?>" href="<?= base_url('rekrutment') ?>">Rekrutmen</a>
                     </li>
+                    
                     <li class="nav-item">
-                        <a class="nav-link <?= isActive('/rekrutment', $current_path) ?>" href="<?= base_url('rekrutment') ?>">Rekrutment</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= isActive('/ar-showcase', $current_path) ?>" href="<?= base_url('ar-showcase') ?>">AR Showcase</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('contact-us') ?>">Contact Us</a>
+                        <a class="nav-link" href="<?= base_url('contact-us') ?>">Hubungi Kami</a>
                     </li>
                 </ul>
             </div>

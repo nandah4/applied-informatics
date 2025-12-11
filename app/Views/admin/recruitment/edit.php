@@ -19,6 +19,12 @@
 
     <!-- Data Recruitment Form Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/recruitment/form.css') ?>">
+
+    <!-- Form Styles for Image Upload -->
+    <link rel="stylesheet" href="<?= asset_url('css/pages/aktivitas-lab/form.css') ?>">
+
+    <!-- Rich Text Editor -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -48,6 +54,7 @@
 
                     <?= CsrfHelper::tokenField() ?>
                     <input type="hidden" name="id" value="<?= htmlspecialchars($recruitment['id']) ?>">
+                    <input type="hidden" name="old_banner_image" id="old_banner_image" value="<?= htmlspecialchars($recruitment['banner_image'] ?? '') ?>">
 
                     <div class="row">
                         <!-- Judul -->
@@ -70,6 +77,30 @@
                                 <option value="tutup" <?= $recruitment['status'] === 'tutup' ? 'selected' : '' ?>>Tutup</option>
                             </select>
                             <div id="statusError" class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Kategori -->
+                        <div class="col-md-6 mb-3">
+                            <label for="kategori" class="form-label">
+                                Kategori <span class="required">*</span>
+                            </label>
+                            <select class="form-control" id="kategori" name="kategori" required>
+                                <option value="">Pilih Kategori</option>
+                                <option value="asisten lab" <?= ($recruitment['kategori'] ?? '') === 'asisten lab' ? 'selected' : '' ?>>Asisten Lab</option>
+                                <option value="magang" <?= ($recruitment['kategori'] ?? '') === 'magang' ? 'selected' : '' ?>>Magang</option>
+                            </select>
+                            <div class="helper-text">Jenis posisi yang dibuka</div>
+                            <div id="kategoriError" class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Periode -->
+                        <div class="col-md-6 mb-3">
+                            <label for="periode" class="form-label">
+                                Periode <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="periode" name="periode" value="<?= htmlspecialchars($recruitment['periode'] ?? '') ?>" placeholder="Contoh: Ganjil 2024/2025" required>
+                            <div class="helper-text">Periode semester posisi ini berlaku</div>
+                            <div id="periodeError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Tanggal Buka -->
@@ -103,7 +134,7 @@
                                     </svg>
                                     <div>
                                         <strong style="color: #1e40af; font-size: 0.875rem;">Informasi Kontrol Status</strong>
-                                        <ul style="color: #1e40af; font-size: 0.8125rem; margin: 0.5rem 0 0 0; padding-left: 1.25rem; line-height: 1.6;">
+                                        <ul style="color: #1e40af; font-size: 0.8125rem;margin-top: 5px; padding-left: 0; line-height: 1.7;">
                                             <li><strong>Status Manual:</strong> Anda dapat menutup recruitment secara manual meskipun tanggal tutup masih panjang (Misal: Kuota terpenuhi)</li>
                                             <li><strong>Auto-Close:</strong> Recruitment otomatis tertutup jika tanggal tutup sudah terlewat</li>
                                             <li><strong>Auto-Open:</strong> Recruitment otomatis terbuka jika Anda memperpanjang tanggal dari expired ke masa depan</li>
@@ -114,22 +145,51 @@
                             </div>
                         </div>
 
-                        <!-- Lokasi -->
-                        <div class="col-12 mb-3">
-                            <label for="lokasi" class="form-label">
-                                Lokasi <span class="required">*</span>
+                        <!-- Banner Image -->
+                        <div class="col-12 mb-3 d-flex flex-column">
+                            <label class="form-label">
+                                Banner Image
                             </label>
-                            <input type="text" class="form-control" id="lokasi" name="lokasi" value="<?= htmlspecialchars($recruitment['lokasi'] ?? '') ?>" placeholder="Contoh: Lab AI - Gedung H7 Lantai 8" required>
-                            <div class="helper-text">Lokasi pelaksanaan recruitment atau pekerjaan</div>
-                            <div id="lokasiError" class="invalid-feedback"></div>
+
+                            <?php if (!empty($recruitment['banner_image'])): ?>
+                                <!-- Current Image -->
+                                <div class="current-image-wrapper mb-3" id="currentImageWrapper">
+                                    <p class="mb-2" style="font-size: 0.875rem; color: var(--color-gray-600);">Banner saat ini:</p>
+                                    <img src="<?= upload_url('recruitment/' . $recruitment['banner_image']) ?>" alt="Current Banner" class="current-image">
+                                    <p class="helper-text mt-2">Upload gambar baru untuk mengganti banner ini</p>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- File Upload -->
+                            <div class="file-upload-wrapper" id="fileUploadWrapper">
+                                <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <div class="file-upload-text">
+                                    <strong>Klik untuk upload banner baru</strong> atau drag and drop
+                                </div>
+                                <div class="file-upload-hint">
+                                    PNG, JPG, JPEG maksimal 2MB (Rekomendasi: 1200x400px)
+                                </div>
+                            </div>
+                            <input type="file" class="file-upload-input" id="banner_image" name="banner_image" accept="image/png,image/jpg,image/jpeg">
+
+                            <!-- Image Preview -->
+                            <div class="image-preview" id="imagePreview" style="display: none;">
+                                <img id="previewImg" src="" alt="Preview">
+                                <div class="helper-text" id="helper-text-preview">Klik preview untuk hapus banner baru</div>
+                            </div>
+                            <div id="bannerImageError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Deskripsi -->
-                        <div class="col-12 mb-3">
+                        <div class="col-12 mb-deskripsi">
                             <label for="deskripsi" class="form-label">
                                 Deskripsi <span class="required">*</span>
                             </label>
-                            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4" placeholder="Masukkan deskripsi singkat tentang posisi recruitment" required><?= htmlspecialchars($recruitment['deskripsi']) ?></textarea>
+                            <div id="editor-deskripsi"><?= $recruitment['deskripsi'] ?></div>
                             <div class="helper-text">Deskripsikan posisi, tanggung jawab, dan benefit</div>
                             <div id="deskripsiError" class="invalid-feedback"></div>
                         </div>
@@ -171,6 +231,33 @@
     <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
     <script src="<?= asset_url('js/helpers/validationHelpers.js') ?>"></script>
+
+    <!-- Rich Text Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+    <script>
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{
+                'list': 'ordered'
+            }, {
+                'list': 'bullet'
+            }],
+            [{
+                'header': [3, 4, false]
+            }],
+            [{
+                'align': []
+            }],
+        ];
+        const quill = new Quill('#editor-deskripsi', {
+            theme: 'snow',
+            placeholder: 'Deskripsikan posisi, tanggung jawab, dan benefit ...',
+            modules: {
+                toolbar: toolbarOptions
+            },
+        });
+    </script>
 
     <!-- Page Spesific Scripts -->
     <script src="<?= asset_url('js/pages/recruitment/edit.js') ?>"></script>

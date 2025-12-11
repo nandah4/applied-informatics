@@ -15,6 +15,7 @@
     <!-- Sidebar & Layout CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/base/admin_layout.css') ?>">
 
     <!-- Data Produk Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/produk/index.css') ?>">

@@ -12,16 +12,13 @@ include __DIR__ . '/../layouts/header.php';
             <div class="container-img-hero">
                 <img src="<?= asset_url('images/beranda/assets-home.png') ?>" alt=""
                     class="img-fluid mx-auto d-block gambar-sambutan">
-                <p>Jurusan Teknologi Informasi, Politeknik Negeri Malang.</p>
+                <p class="">Jurusan Teknologi Informasi, Politeknik Negeri Malang.</p>
             </div>
 
             <p class="mt-4 sambutan">Selamat Datang, mari jelajahi berbagai aktivitas, penelitian, dan inovasi yang terus kami kembangkan untuk menghadirkan dampak nyata.</p>
             <a href="<?= base_url('publikasi-dosen') ?>" class="btn rounded-pill mt-3 px-3 btn-riset-hero">Lihat Riset Kami</a>
         </div>
     </section>
-
-
-    <!-- ------ -->
 
     <!-- Section Visi Misi -->
     <section class="visi-misi">
@@ -59,15 +56,13 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </section>
 
-    <!-- ------ -->
-
     <!-- Section Statistik -->
     <section class="statistik">
         <div class="px-5 container-fluid">
             <div class="row">
                 <div class="col-md-6">
                     <h3 class="title-section">Profil Statistik Laboratorium</h3>
-                    <p class="subtitle-section w-75">Gambaran perkembangan dan aktivitas utama Laboratorium Applied Informatics</p>
+                    <p class="subtitle-section">Gambaran perkembangan dan aktivitas utama Laboratorium Applied Informatics</p>
                 </div>
 
                 <div class="col-md-6">
@@ -95,8 +90,6 @@ include __DIR__ . '/../layouts/header.php';
             </div>
         </div>
     </section>
-
-    <!-- ------ -->
 
     <!-- Section Fasilitas -->
     <section class="fasilitas-section">
@@ -225,15 +218,17 @@ include __DIR__ . '/../layouts/header.php';
 
     <section class="py-5">
         <div class="container-fluid px-5">
-            <h3 class="title-section mb-2">Aktivitas Lab Terbaru</h3>
+            <h3 class="title-section mb-2">Aktivitas Laboratorium Terbaru</h3>
             <div class="row">
                 <div class="col-md-8">
                     <p class="subtitle-section">Beragam kegiatan penelitian, pengembangan, dan kolaborasi yang dilakukan oleh anggota laboratorium.</p>
                 </div>
 
-                <div class="col-md-4 text-md-end">
+
+                <div class="col-md-4 text-center text-md-end">
                     <a href="<?= base_url("aktivitas-laboratorium") ?>" class="btn btn-riset-hero rounded-pill px-3">Semua Aktivitas</a>
                 </div>
+
             </div>
 
             <?php if (empty($aktivitasData)): ?>
@@ -383,15 +378,6 @@ include __DIR__ . '/../layouts/header.php';
                 // Resume auto scroll setelah user berhenti manual scroll
             }, 1000);
         });
-
-        // // Duplicate items untuk seamless loop (optional, untuk efek infinite yang lebih smooth)
-        // function duplicateItems() {
-        //     const items = container.children('.container-item-fasilitas');
-        //     if (items.length > 0) {
-        //         // Clone semua items dan append ke container
-        //         items.clone().appendTo(container);
-        //     }
-        // }
 
         // Initialize
         // duplicateItems(); // Duplicate untuk seamless loop

@@ -21,36 +21,10 @@
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
 
     <!-- Data Dosen Read Page CSS -->
-    <link rel="stylesheet" href="<?= asset_url('css/pages/dosen/read.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/pages/pendaftar/read.css') ?>">
 
     <!-- Quill Editor CSS -->
     <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
-    <style>
-        .feedback-container {
-            margin-top: 1rem;
-            display: none;
-        }
-        .feedback-container.show {
-            display: block;
-        }
-        .feedback-container label {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-        #feedback-editor {
-            height: 150px;
-            background: #fff;
-            border-radius: 0 0 8px 8px;
-        }
-        .ql-toolbar.ql-snow {
-            border-radius: 8px 8px 0 0;
-        }
-        .ql-container.ql-snow {
-            border-radius: 0 0 8px 8px;
-        }
-    </style>
 </head>
 
 <body>
@@ -86,7 +60,7 @@
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        Informasi Dasar
+                        Informasi Dasar Pendaftar
                     </h3>
                     <div class="info-row">
                         <div class="info-label">ID Pendaftar</div>
@@ -215,11 +189,11 @@
 
                     <div class="info-row">
                         <div class="info-label">Status Seleksi</div>
-                        <div class="info-value w-50">
+                        <div class="info-value">
                             <form id="formUpdateStatus">
                                 <input type="hidden" name="pendaftar_id" value="<?= $pendaftar['id'] ?>">
 
-                                <select name="status_seleksi" class="form-select info-value" id="selectStatusSeleksi">
+                                <select name="status_seleksi" class="form-select info-value w-50" id="selectStatusSeleksi">
                                     <option value="Pending" <?= $pendaftar['status_seleksi'] === 'Pending' ? 'selected' : '' ?>>
                                         Pending
                                     </option>
@@ -236,6 +210,33 @@
                                     <label for="feedback-editor">Alasan Penolakan</label>
                                     <div id="feedback-editor"></div>
                                     <input type="hidden" name="deskripsi" id="deskripsiInput">
+                                </div>
+
+                                <!-- Info Box untuk Status Behavior -->
+                                <div class="col-12 mt-4">
+                                    <div style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 8px;">
+                                        <div style="display: flex; gap: 0.75rem; align-items: start;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                            </svg>
+                                            <div>
+                                                <strong style="color: #92400e; font-size: 0.875rem;">Penting: Aksi Bersifat Final (Satu Arah)</strong>
+                                                <ul style="color: #92400e; font-size: 0.8125rem; margin-top: 5px; padding-left: 0px; line-height: 1.6;">
+                                                    <li>
+                                                        <strong>Promosi Otomatis:</strong> Memilih status <b>Diterima</b> akan memicu sistem untuk memindahkan data pendaftar ke Database Anggota secara permanen.
+                                                    </li>
+                                                    <li>
+                                                        <strong>Tidak Dapat Dibatalkan:</strong> Status yang sudah diubah menjadi <b>Diterima</b> atau <b>Ditolak</b> tidak dapat dikembalikan menjadi <i>Pending</i>.
+                                                    </li>
+                                                    <li>
+                                                        <strong>Keputusan Mutlak:</strong> Pastikan hasil wawancara/seleksi sudah final sebelum menekan tombol update.
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <button type="submit" class="btn-primary-custom mt-3" id="btnUpdateStatus">
@@ -300,7 +301,6 @@
 
     <!-- Data Dosen Read Page JS -->
     <script src="<?= asset_url('js/pages/pendaftar/read.js') ?>"></script>
-    <!-- <script src="<?= asset_url('js/pages/pendaftar/index.js') ?>"></script> -->
 </body>
 
 </html>

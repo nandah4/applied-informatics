@@ -42,6 +42,7 @@ class PendaftarController
         // Siapkan params
         $params = [
             'search' => $search,
+            'status_seleksi' => isset($_GET['status_seleksi']) ? $_GET['status_seleksi'] : 'all',
             'limit' => $perPage,
             'offset' => $offset
         ];
@@ -145,8 +146,8 @@ class PendaftarController
 
         // 7. Update status di database (dengan deskripsi untuk penolakan)
         $updateResult = $this->pendaftarModel->updateStatusSeleksi(
-            $pendaftar_id, 
-            $status_baru, 
+            $pendaftar_id,
+            $status_baru,
             $status_baru === 'Ditolak' ? $deskripsi : null
         );
 

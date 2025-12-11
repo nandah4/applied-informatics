@@ -30,13 +30,43 @@ class AktivitasModel extends BaseModel
      * @return array
      */
 
-    public function getAll($limit = 6)
+    /**
+     * Get all aktivitas dengan optional filter bulan & tahun
+     * 
+     * @param int $limit - Jumlah data yang diambil
+     * @param int|null $month - Filter bulan (1-12), null untuk semua
+     * @param int|null $year - Filter tahun, null untuk semua
+     * @return array
+     */
+    public function getAll($limit = 6, $month = null, $year = null)
     {
         try {
-            $query = "SELECT id, judul_aktivitas, foto_aktivitas, deskripsi, tanggal_kegiatan FROM {$this->table_name} ORDER BY tanggal_kegiatan DESC, created_at DESC LIMIT :limit";
+            $whereClauses = [];
+            $bindParams = [];
+
+            // Filter by month and year if provided
+            if ($month !== null && $year !== null) {
+                $whereClauses[] = "EXTRACT(MONTH FROM tanggal_kegiatan) = :month";
+                $whereClauses[] = "EXTRACT(YEAR FROM tanggal_kegiatan) = :year";
+                $bindParams[':month'] = (int)$month;
+                $bindParams[':year'] = (int)$year;
+            }
+
+            $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
+
+            $query = "SELECT id, judul_aktivitas, foto_aktivitas, deskripsi, tanggal_kegiatan 
+                      FROM {$this->table_name} 
+                      {$whereSQL}
+                      ORDER BY tanggal_kegiatan DESC, created_at DESC 
+                      LIMIT :limit";
 
             $stmt = $this->db->prepare($query);
+
+            foreach ($bindParams as $key => $value) {
+                $stmt->bindValue($key, $value, PDO::PARAM_INT);
+            }
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
+
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -102,7 +132,7 @@ class AktivitasModel extends BaseModel
                     ORDER BY tanggal_kegiatan DESC, created_at DESC
                     LIMIT :limit OFFSET :offset";
             $stmt = $this->db->prepare($query);
-            
+
             // Bind search params
             foreach ($bindParams as $key => $value) {
                 $stmt->bindValue($key, $value);
@@ -140,16 +170,18 @@ class AktivitasModel extends BaseModel
     {
         try {
             $query = "SELECT
-                        id,
-                        judul_aktivitas,
-                        deskripsi,
-                        foto_aktivitas,
-                        tanggal_kegiatan,
-                        created_at,
-                        updated_at
-                    FROM {$this->table_name}
-                    WHERE id = :id
-                    ORDER BY tanggal_kegiatan DESC, created_at DESC";
+                        tl.id,
+                        tl.judul_aktivitas,
+                        tl.deskripsi,
+                        tl.foto_aktivitas,
+                        tl.tanggal_kegiatan,
+                        td.id as penulis_id,
+                        td.full_name as penulis_nama,
+                        tl.created_at,
+                        tl.updated_at
+                    FROM {$this->table_name} tl
+                    LEFT JOIN mst_dosen td ON tl.penulis_id = td.id
+                    WHERE tl.id = :id";
 
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -185,13 +217,14 @@ class AktivitasModel extends BaseModel
     public function insert($data)
     {
         try {
-            $query = "CALL sp_insert_aktivitas_lab(:judul_aktivitas, :deskripsi, :foto_aktivitas, :tanggal_kegiatan)";
+            $query = "CALL sp_insert_aktivitas_lab(:judul_aktivitas, :deskripsi, :foto_aktivitas, :tanggal_kegiatan, :penulis_id)";
             $stmt = $this->db->prepare($query);
 
             $stmt->bindParam(':judul_aktivitas', $data['judul_aktivitas']);
             $stmt->bindParam(':deskripsi', $data['deskripsi']);
             $stmt->bindParam(':foto_aktivitas', $data['foto_aktivitas']);
             $stmt->bindParam(':tanggal_kegiatan', $data['tanggal_kegiatan']);
+            $stmt->bindValue(':penulis_id', $data['penulis_id']);
 
             $stmt->execute();
 
@@ -207,6 +240,13 @@ class AktivitasModel extends BaseModel
                 return [
                     'success' => false,
                     'message' => 'Judul aktivitas tidak boleh kosong'
+                ];
+            }
+
+            if (strpos($errorMessage, 'Penulis dengan ID') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Penulis tidak ditemukan'
                 ];
             }
 
@@ -228,7 +268,7 @@ class AktivitasModel extends BaseModel
     public function update($id, $data)
     {
         try {
-            $query = "CALL sp_update_aktivitas_lab(:id, :judul_aktivitas, :deskripsi, :foto_aktivitas, :tanggal_kegiatan)";
+            $query = "CALL sp_update_aktivitas_lab(:id, :judul_aktivitas, :deskripsi, :foto_aktivitas, :tanggal_kegiatan, :penulis_id)";
             $stmt = $this->db->prepare($query);
 
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -236,6 +276,7 @@ class AktivitasModel extends BaseModel
             $stmt->bindParam(':deskripsi', $data['deskripsi']);
             $stmt->bindParam(':foto_aktivitas', $data['foto_aktivitas']);
             $stmt->bindParam(':tanggal_kegiatan', $data['tanggal_kegiatan']);
+            $stmt->bindParam(':penulis_id', $data['penulis_id']);
 
             $stmt->execute();
 
@@ -258,6 +299,13 @@ class AktivitasModel extends BaseModel
                 return [
                     'success' => false,
                     'message' => 'Judul aktivitas tidak boleh kosong'
+                ];
+            }
+
+            if (strpos($errorMessage, 'Penulis dengan ID') !== false) {
+                return [
+                    'success' => false,
+                    'message' => 'Penulis tidak ditemukan'
                 ];
             }
 

@@ -5,7 +5,7 @@
  * Deskripsi: Model untuk menangani operasi database terkait data recruitment
  *
  * PERUBAHAN UTAMA:
- * - Tidak lagi menggunakan view (vw_show_recruitment)
+ * - Added kategori, periode, banner_image fields
  * - Query langsung ke tabel trx_rekrutmen
  * - Auto-close expired recruitment dipanggil sebelum setiap operasi read
  *
@@ -25,20 +25,45 @@ class RecruitmentModel extends BaseModel
     protected $table_name = "trx_rekrutmen";
 
     /**
-     * Ambil semua data recruitment dengan pagination
-     * @param int $limit
-     * @param int $offset
+     * Ambil semua data recruitment dengan pagination dan optional filter
+     * 
+     * @param int $limit - Jumlah data per halaman
+     * @param int $offset - Offset untuk pagination
+     * @param string|null $status - Filter by status ('buka', 'tutup', null untuk semua)
+     * @param int|null $month - Filter bulan tutup (1-12)
+     * @param int|null $year - Filter tahun tutup
      * @return array
      */
-    public function getAllRecruitmentWithPagination($limit = 10, $offset = 0)
+    public function getAllRecruitmentWithPagination($limit = 10, $offset = 0, $status = null, $month = null, $year = null)
     {
         try {
             // Auto-close expired recruitments sebelum fetch data
             $this->autoCloseExpiredRecruitments();
 
-            // Count total records
-            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name}";
+            // Build WHERE clause
+            $whereClauses = [];
+            $bindParams = [];
+
+            if ($status !== null) {
+                $whereClauses[] = "status = :status";
+                $bindParams[':status'] = $status;
+            }
+
+            if ($month !== null && $year !== null) {
+                $whereClauses[] = "EXTRACT(MONTH FROM tanggal_tutup) = :month";
+                $whereClauses[] = "EXTRACT(YEAR FROM tanggal_tutup) = :year";
+                $bindParams[':month'] = (int)$month;
+                $bindParams[':year'] = (int)$year;
+            }
+
+            $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
+
+            // Count total records with filter
+            $countQuery = "SELECT COUNT(*) as total FROM {$this->table_name} {$whereSQL}";
             $countStmt = $this->db->prepare($countQuery);
+            foreach ($bindParams as $key => $value) {
+                $countStmt->bindValue($key, $value);
+            }
             $countStmt->execute();
             $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
@@ -49,17 +74,23 @@ class RecruitmentModel extends BaseModel
                     judul,
                     deskripsi,
                     status,
+                    kategori,
+                    periode,
+                    banner_image,
                     tanggal_buka,
                     tanggal_tutup,
-                    lokasi,
                     created_at,
                     updated_at
                 FROM {$this->table_name} 
-                ORDER BY created_at DESC
+                {$whereSQL}
+                ORDER BY tanggal_tutup DESC, created_at DESC
                 LIMIT :limit OFFSET :offset
             ";
 
             $stmt = $this->db->prepare($query);
+            foreach ($bindParams as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
             $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
@@ -80,11 +111,11 @@ class RecruitmentModel extends BaseModel
             ];
         }
     }
-    
+
     /**
      * GET ALL RECRUITMENT WITH SEARCH AND FILTER
      * Ambil semua data recruitment dengan search dan pagination
-     * Mencari berdasarkan judul, status, dan lokasi.
+     * Mencari berdasarkan judul, status, kategori, dan periode.
      * @param array $params - ['search' => string, 'limit' => int, 'offset' => int]
      * @return array - ['success' => bool, 'data' => array, 'total' => int]
      */
@@ -103,13 +134,14 @@ class RecruitmentModel extends BaseModel
             $whereConditions = [];
             $bindParams = [];
 
-            // 1. Search: Judul ATAU Lokasi ATAU Status
+            // 1. Search: Judul ATAU Kategori ATAU Status ATAU Periode
             if (!empty($search)) {
                 $searchLower = '%' . strtolower($search) . '%';
 
                 $whereConditions[] = "(
                     LOWER(judul) LIKE :search 
-                    OR LOWER(lokasi) LIKE :search
+                    OR LOWER(kategori::text) LIKE :search
+                    OR LOWER(periode) LIKE :search
                     OR LOWER(status::text) LIKE :search
                 )";
                 $bindParams[':search'] = $searchLower;
@@ -139,9 +171,11 @@ class RecruitmentModel extends BaseModel
                     judul,
                     deskripsi,
                     status,
+                    kategori,
+                    periode,
+                    banner_image,
                     tanggal_buka,
                     tanggal_tutup,
-                    lokasi,
                     created_at,
                     updated_at
                 FROM {$this->table_name} 
@@ -198,9 +232,11 @@ class RecruitmentModel extends BaseModel
                     judul,
                     deskripsi,
                     status,
+                    kategori,
+                    periode,
+                    banner_image,
                     tanggal_buka,
                     tanggal_tutup,
-                    lokasi,
                     created_at,
                     updated_at
                 FROM {$this->table_name} 
@@ -242,7 +278,7 @@ class RecruitmentModel extends BaseModel
     public function insert($data)
     {
         try {
-            $query = "CALL sp_insert_recruitment (:judul, :deskripsi, :status, :tanggal_buka, :tanggal_tutup, :lokasi)";
+            $query = "CALL sp_insert_recruitment (:judul, :deskripsi, :status, :tanggal_buka, :tanggal_tutup, :kategori, :periode, :banner_image)";
             $stmt = $this->db->prepare($query);
 
             $stmt->bindParam(':judul', $data['judul']);
@@ -250,7 +286,9 @@ class RecruitmentModel extends BaseModel
             $stmt->bindParam(':status', $data['status']); // Will be overridden by SP
             $stmt->bindParam(':tanggal_buka', $data['tanggal_buka']);
             $stmt->bindParam(':tanggal_tutup', $data['tanggal_tutup']);
-            $stmt->bindParam(':lokasi', $data['lokasi']);
+            $stmt->bindParam(':kategori', $data['kategori']);
+            $stmt->bindParam(':periode', $data['periode']);
+            $stmt->bindParam(':banner_image', $data['banner_image']);
 
             $stmt->execute();
 
@@ -291,16 +329,18 @@ class RecruitmentModel extends BaseModel
     public function update($id, $data)
     {
         try {
-            $query = "CALL sp_update_recruitment (:id, :judul, :deskripsi, :status, :tanggal_buka, :tanggal_tutup, :lokasi)";
+            $query = "CALL sp_update_recruitment (:id, :judul, :deskripsi, :status, :tanggal_buka, :tanggal_tutup, :kategori, :periode, :banner_image)";
             $stmt = $this->db->prepare($query);
 
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->bindParam(':judul', $data['judul']);
             $stmt->bindParam(':deskripsi', $data['deskripsi']);
-            $stmt->bindParam(':status', $data['status']); // Will be overridden by SP
+            $stmt->bindParam(':status', $data['status']);
             $stmt->bindParam(':tanggal_buka', $data['tanggal_buka']);
             $stmt->bindParam(':tanggal_tutup', $data['tanggal_tutup']);
-            $stmt->bindParam(':lokasi', $data['lokasi']);
+            $stmt->bindParam(':kategori', $data['kategori']);
+            $stmt->bindParam(':periode', $data['periode']);
+            $stmt->bindParam(':banner_image', $data['banner_image']);
 
             $stmt->execute();
 

@@ -63,7 +63,7 @@ include __DIR__ . '/../layouts/header.php';
                                 <circle cx="8.5" cy="7" r="4"></circle>
                                 <polyline points="17 11 19 13 23 9"></polyline>
                             </svg>
-                            <span>NIP: <?= htmlspecialchars($dosenData['nip']) ?></span>
+                            <span>NIP: <?= htmlspecialchars($dosenData['nip'] ?? '-') ?></span>
                         </div>
                     </div>
                 </div>

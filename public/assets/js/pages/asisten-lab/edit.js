@@ -1,21 +1,22 @@
 /**
- * File: js/pages/asisten-lab/edit.js
- * Deskripsi: JavaScript untuk halaman edit asisten lab
+ * File: pages/asisten-lab/edit.js
+ * Deskripsi: Script untuk halaman edit data asisten lab
  *
  * Fitur:
- * - Form validation
- * - AJAX form submission
+ * - Validasi form (NIM, nama, email, semester, dll)
+ * - Submit form update via AJAX
+ * - Input sanitization (trim whitespace)
  *
  * Dependencies:
  * - jQuery
  * - jQueryHelpers.js
  * - validationHelpers.js
- * - Bootstrap
  */
 
 (function () {
     "use strict";
 
+    /** @type {string} Base URL aplikasi */
     const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
     $(document).ready(function () {
@@ -23,13 +24,18 @@
         // Form Submission
         // ========================================
 
+        /**
+         * Event listener untuk tombol submit form
+         * Melakukan validasi dan mengirim data ke server
+         * @listens click
+         */
         $('#btnSubmit').on('click', function (e) {
             e.preventDefault();
 
             // Clear previous errors
             jQueryHelpers.clearAllErrors('formEditAsistenLab');
 
-            // Get form data
+            /** @type {AsistenLabFormData} */
             const formData = {
                 id: $('#formEditAsistenLab input[name="id"]').val(),
                 nim: $('#nim').val().trim(),
@@ -38,12 +44,41 @@
                 no_hp: $('#no_hp').val().trim(),
                 semester: $('#semester').val(),
                 link_github: $('#link_github').val().trim(),
-                jabatan_lab: $('#jabatan_lab').val(),
+                tipe_anggota: $('#tipe_anggota').val(),
+                periode_aktif: $('#periode_aktif').val().trim(),
+                tanggal_selesai: $('#tanggal_selesai').val(),
                 status_aktif: $('#status_aktif').val(),
                 csrf_token: $('input[name="csrf_token"]').val()
             };
 
             // Validation
+            const isValid = validateForm(formData);
+
+            if (!isValid) {
+                jQueryHelpers.showAlert('Mohon periksa kembali form Anda', 'danger', 3000);
+                return;
+            }
+
+            // Disable submit button
+            const submitBtn = $('#btnSubmit');
+            const originalButtonHtml = submitBtn.html();
+            submitBtn.prop('disabled', true);
+            submitBtn.html(`
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Menyimpan...
+            `);
+
+            // Submit via AJAX
+            submitFormData(formData, submitBtn, originalButtonHtml);
+        });
+
+        /**
+         * Memvalidasi seluruh field form
+         * @function validateForm
+         * @param {AsistenLabFormData} formData - Data form yang akan divalidasi
+         * @returns {boolean} True jika semua validasi lolos
+         */
+        function validateForm(formData) {
             let isValid = true;
 
             // Validate NIM
@@ -95,12 +130,12 @@
                 jQueryHelpers.clearError('link_github', 'linkGithubError');
             }
 
-            // Validate Jabatan Lab
-            if (!formData.jabatan_lab) {
-                jQueryHelpers.showError('jabatan_lab', 'jabatanLabError', 'Jabatan Lab wajib dipilih');
+            // Validate Tipe Anggota
+            if (!formData.tipe_anggota) {
+                jQueryHelpers.showError('tipe_anggota', 'tipeAnggotaError', 'Tipe Anggota wajib dipilih');
                 isValid = false;
             } else {
-                jQueryHelpers.clearError('jabatan_lab', 'jabatanLabError');
+                jQueryHelpers.clearError('tipe_anggota', 'tipeAnggotaError');
             }
 
             // Validate Status Aktif
@@ -111,21 +146,18 @@
                 jQueryHelpers.clearError('status_aktif', 'statusAktifError');
             }
 
-            if (!isValid) {
-                jQueryHelpers.showAlert('Mohon periksa kembali form Anda', 'danger', 3000);
-                return;
-            }
+            return isValid;
+        }
 
-            // Disable submit button
-            const submitBtn = $('#btnSubmit');
-            const originalButtonHtml = submitBtn.html();
-            submitBtn.prop('disabled', true);
-            submitBtn.html(`
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Menyimpan...
-            `);
-
-            // Submit via AJAX
+        /**
+         * Mengirim data form ke server via AJAX
+         * @function submitFormData
+         * @param {AsistenLabFormData} formData - Data form yang akan dikirim
+         * @param {jQuery} submitBtn - jQuery element tombol submit
+         * @param {string} originalButtonHtml - HTML asli tombol submit untuk restore
+         * @returns {void}
+         */
+        function submitFormData(formData, submitBtn, originalButtonHtml) {
             jQueryHelpers.makeAjaxRequest({
                 url: `${BASE_URL}/admin/asisten-lab/update`,
                 method: 'POST',
@@ -134,7 +166,7 @@
                     if (response.success) {
                         jQueryHelpers.showAlert(response.message || 'Data berhasil disimpan!', 'success', 2000);
 
-                        // Redirect to detail page after 1 second
+                        // Redirect to list page after 1 second
                         setTimeout(() => {
                             window.location.href = `${BASE_URL}/admin/asisten-lab`;
                         }, 1000);
@@ -150,16 +182,20 @@
                     submitBtn.html(originalButtonHtml);
                 },
             });
-        });
+        }
 
         // ========================================
         // Input Sanitization
         // ========================================
 
-        // Trim input on blur
+        /**
+         * Event listener untuk trim whitespace pada blur
+         * @listens blur
+         */
         $('input[type="text"], input[type="email"]').on('blur', function () {
             $(this).val($(this).val().trim());
         });
     });
 
 })();
+

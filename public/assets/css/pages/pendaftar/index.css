@@ -1,5 +1,4 @@
-/* Data Asisten Lab - List Page Styles */
-@import '../../components/admin_layout.css';
+/* Data Pendaftar - List Page Styles */
 
 /* --- Table Structure --- */
 .table-custom {
@@ -16,14 +15,52 @@
     width: 60px;
 }
 
-/* Digunakan untuk NIM, Nama, Email, Tipe, Periode */
-.col-posisi {
+.col-status {
+    min-width: 150px;
+}
+.col-posisi, .col-nim {
     min-width: 200px;
 }
 
+.col-nama, .col-email {
+    min-width: 250px;
+}
+
+.col-created {
+    min-width: 250px;
+}
+
 .info-value {
-    font-size: 0.875rem;
-    color: var(--color-gray-900);
+  font-size: 0.875rem;
+  color: var(--color-gray-900);
+}
+
+/* --- Badges --- */
+.badge-custom {
+    display: inline-block;
+    font-size: var(--fs-xs);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Status: Pending */
+.badge-custom.badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Status: Diterima */
+.badge-custom.badge-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Status: Ditolak */
+.badge-custom.badge-danger {
+    background: #ffdede;
+    color: rgb(235, 0, 0);
 }
 
 /* --- Action Cell (Sticky Right) --- */
@@ -63,41 +100,4 @@
 
 .table-custom tbody tr:last-child td {
     border-bottom: none;
-}
-
-/* --- Badge Styles --- */
-/* Base Badge Style (Overrides Bootstrap if needed) */
-.badge {
-    padding: 10px 12px;
-    font-size: var(--fs-xs); 
-    font-weight: var(--fw-semibold);
-    border-radius: 6px;
-    display: inline-block;
-    white-space: nowrap;
-}
-
-/* Badge Variants (Sesuai Logic PHP) */
-
-/* Tipe: Asisten Lab */
-.badge-info {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-/* Tipe: Magang */
-.badge-warning {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-/* Status: Aktif */
-.badge-success {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-/* Status: Tidak Aktif */
-.badge-danger {
-    background: #fee2e2;
-    color: #991b1b;
 }

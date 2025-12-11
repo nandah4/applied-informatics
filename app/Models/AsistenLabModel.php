@@ -32,6 +32,9 @@ class AsistenLabModel
      */
     public function getAllWithSearchAndFilter($params = [])
     {
+        // Auto-deactivate expired mahasiswa before fetching
+        $this->autoDeactivateExpiredMahasiswa();
+
         try {
             $search = $params['search'] ?? '';
             $statusFilter = $params['status_aktif'] ?? 'all';
@@ -75,7 +78,9 @@ class AsistenLabModel
                     email,
                     no_hp,
                     semester,
-                    jabatan_lab,
+                    tipe_anggota,
+                    periode_aktif,
+                    tanggal_selesai,
                     status_aktif,
                     tanggal_gabung,
                     created_at,
@@ -122,6 +127,9 @@ class AsistenLabModel
      */
     public function getById($id)
     {
+        // Auto-deactivate expired mahasiswa before fetching
+        $this->autoDeactivateExpiredMahasiswa();
+        
         try {
             $query = "SELECT * FROM {$this->table_name} WHERE id = :id";
             $stmt = $this->db->prepare($query);
@@ -159,65 +167,36 @@ class AsistenLabModel
     public function update($id, $data)
     {
         try {
-            // Validasi data yang akan diupdate
-            $allowedFields = ['nim', 'nama', 'email', 'no_hp', 'semester', 'link_github', 'jabatan_lab', 'status_aktif'];
-            $updateFields = [];
-            $bindParams = [':id' => $id];
 
-            foreach ($allowedFields as $field) {
-                if (isset($data[$field])) {
-                    $updateFields[] = "{$field} = :{$field}";
-                    $bindParams[":{$field}"] = $data[$field];
-                }
-            }
 
-            if (empty($updateFields)) {
-                return [
-                    'success' => false,
-                    'message' => 'Tidak ada data yang diupdate'
-                ];
-            }
-
-            // Check if NIM or Email already exists for other records
-            if (isset($data['nim'])) {
-                $checkQuery = "SELECT id FROM {$this->table_name} WHERE nim = :nim AND id != :id";
-                $checkStmt = $this->db->prepare($checkQuery);
-                $checkStmt->bindParam(':nim', $data['nim']);
-                $checkStmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $checkStmt->execute();
-
-                if ($checkStmt->fetch()) {
-                    return [
-                        'success' => false,
-                        'message' => 'NIM sudah digunakan oleh asisten lab lain'
-                    ];
-                }
-            }
-
-            if (isset($data['email'])) {
-                $checkQuery = "SELECT id FROM {$this->table_name} WHERE email = :email AND id != :id";
-                $checkStmt = $this->db->prepare($checkQuery);
-                $checkStmt->bindParam(':email', $data['email']);
-                $checkStmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $checkStmt->execute();
-
-                if ($checkStmt->fetch()) {
-                    return [
-                        'success' => false,
-                        'message' => 'Email sudah digunakan oleh asisten lab lain'
-                    ];
-                }
-            }
-
-            // Build and execute update query
-            $updateSQL = implode(", ", $updateFields);
-            $query = "UPDATE {$this->table_name} SET {$updateSQL}, updated_at = NOW() WHERE id = :id";
+            // Build update query dengan explicit fields
+            $query = "call sp_update_mahasiswa(
+                :id,
+                :nim,
+                :nama,
+                :email,
+                :no_hp,
+                :semester,
+                :link_github,
+                :tipe_anggota,
+                :periode_aktif,
+                :status_aktif,
+                :tanggal_selesai
+            )";
 
             $stmt = $this->db->prepare($query);
 
-            foreach ($bindParams as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':nim', $data['nim']);
+            $stmt->bindParam(':nama', $data['nama']);
+            $stmt->bindParam(':email', $data['email']);
+            $stmt->bindParam(':no_hp', $data['no_hp']);
+            $stmt->bindParam(':semester', $data['semester'], PDO::PARAM_INT);
+            $stmt->bindParam(':link_github', $data['link_github']);
+            $stmt->bindParam(':tipe_anggota', $data['tipe_anggota']);
+            $stmt->bindParam(':periode_aktif', $data['periode_aktif']);
+            $stmt->bindParam(':status_aktif', $data['status_aktif'], PDO::PARAM_INT);
+            $stmt->bindParam(':tanggal_selesai', $data['tanggal_selesai']);
 
             $stmt->execute();
 
@@ -226,6 +205,20 @@ class AsistenLabModel
                 'message' => 'Data asisten lab berhasil diupdate'
             ];
         } catch (PDOException $e) {
+            error_log("Error Update: " . $e->getMessage());
+            $rawMessage = $e->getMessage();
+
+            // Regex ini mencari teks setelah kata "ERROR:" sampai baris baru
+            if (preg_match('/ERROR:\s+(.+?)(\n|$)/', $rawMessage, $matches)) {
+
+                // $matches[1] otomatis berisi: "Tanggal mulai tidak boleh lebih dari tanggal akhir"
+                // atau "Data mitra tidak ditemukan", sesuai apa yang dikirim SQL.
+                return [
+                    'success' => false,
+                    'message' => $matches[1]
+                ];
+            }
+
             return [
                 'success' => false,
                 'message' => 'Gagal update data: ' . $e->getMessage()
@@ -298,6 +291,19 @@ class AsistenLabModel
                 'success' => false,
                 'message' => 'Gagal mengambil statistik: ' . $e->getMessage()
             ];
+        }
+    }
+
+
+    private function autoDeactivateExpiredMahasiswa()
+    {
+        try {
+            $query = "SELECT fn_auto_deactivate_expired_mahasiswa()";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            // ...
+        } catch (PDOException $e) {
+            error_log('Auto-deactivate expired mahasiswa failed: ' . $e->getMessage());
         }
     }
 }

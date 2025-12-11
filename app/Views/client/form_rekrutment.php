@@ -21,13 +21,10 @@
         <!-- Header Card -->
         <div class="header-card">
             <div class="header-icon">
-                 <img src="<?= asset_url('images/lab-ai-logo.png') ?>" alt="Lab AI Logo" class="logo">
+                <img src="<?= asset_url('images/lab-ai-logo.png') ?>" alt="Lab AI Logo" class="logo">
             </div>
-            <h1 class="header-title">Pendaftaran Asisten Lab</h1>
-            <p class="header-subtitle">Applied Informatics Laboratory</p>
-            <div class="recruitment-badge">
-                <i class="bi bi-calendar-event me-2"></i><?= htmlspecialchars($recruitmentData['judul']) ?>
-            </div>
+            <h3 class="header-title"><?= htmlspecialchars($recruitmentData['judul']) ?></h3>
+            <p class="header-subtitle">Laboratorium Applied Informatics </p>
         </div>
 
         <!-- Form Card -->

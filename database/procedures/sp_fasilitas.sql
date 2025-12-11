@@ -55,9 +55,6 @@ BEGIN
 END;
 $$;
 
-COMMENT ON PROCEDURE sp_insert_fasilitas IS 
-'Insert fasilitas baru. Validasi nama unik (case-insensitive). Auto-timestamp created_at dan updated_at.';
-
 
 -- =================================================================
 -- PROCEDURE: Update data fasilitas
@@ -113,8 +110,6 @@ BEGIN
 END;
 $$;
 
-COMMENT ON PROCEDURE sp_update_fasilitas IS 
-'Update fasilitas. Validasi ID dan nama unik (case-insensitive, exclude ID sendiri). Auto-update timestamp.';
 
 
 -- =================================================================
@@ -165,9 +160,6 @@ BEGIN
 
 END;
 $$;
-
-COMMENT ON PROCEDURE sp_delete_fasilitas IS 
-'Delete fasilitas berdasarkan ID. Validasi ID existence. File foto harus dihapus manual di PHP.';
 
 
 -- =================================================================

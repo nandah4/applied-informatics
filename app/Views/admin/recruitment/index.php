@@ -65,7 +65,7 @@
                             <input type="text"
                                 id="searchInput"
                                 class="search-input"
-                                placeholder="Cari judul, lokasi atau status..."
+                                placeholder="Cari judul atau status..."
                                 value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
                             <?php if (!empty($_GET['search'])): ?>
                                 <button type="button" class="btn-clear-search" id="btnClearSearch" title="Hapus pencarian">
@@ -103,7 +103,6 @@
                             <th class="col-id">ID</th>
                             <th class="col-judul">Judul</th>
                             <th class="col-deskripsi">Deskripsi</th>
-                            <th class="col-lokasi">Lokasi</th>
                             <th class="col-periode">Periode</th>
                             <th class="col-status">Status</th>
                             <th class="action-cell">Aksi</th>
@@ -127,19 +126,10 @@
                                         <div style="font-weight: 600; color: var(--color-gray-900);"><?= htmlspecialchars($dt['judul']) ?></div>
                                     </td>
                                     <td class="col-deskripsi ">
-                                        <div class="text-truncate-2">
-                                            <?= !empty($dt['deskripsi']) ? htmlspecialchars($dt['deskripsi']) : '-' ?>
-                                        </div>
-                                    </td>
-                                    <td class="col-lokasi">
-                                        <?= !empty($dt['lokasi']) ? htmlspecialchars($dt['lokasi']) : '-' ?>
+                                        <?= truncateText($dt['deskripsi'], 100) ??  '-' ?>
                                     </td>
                                     <td class="col-periode">
-                                        <div class="periode-wrapper">
-                                            <span class="periode-date"><?= date('d/m/Y', strtotime($dt['tanggal_buka'])) ?></span>
-                                            <span>-</span>
-                                            <span class="periode-date"><?= date('d/m/Y', strtotime($dt['tanggal_tutup'])) ?></span>
-                                        </div>
+                                        <?= $dt['periode'] ?>
                                     </td>
                                     <td class="col-status">
                                         <?php if ($dt['status'] === 'buka'): ?>

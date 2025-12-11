@@ -131,13 +131,16 @@ CREATE TABLE mst_mahasiswa (
     email           VARCHAR(150) UNIQUE NOT NULL,
     nama            VARCHAR(150) NOT NULL,
     no_hp           VARCHAR(20), 
-    jabatan_lab     VARCHAR(100) DEFAULT 'Asisten Lab',
+    tipe_anggota    kategori_rekrutmen_enum NOT NULL DEFAULT 'asisten lab',
     semester        INT NOT NULL,
     
     link_github     VARCHAR(255),
     
     status_aktif    BOOLEAN DEFAULT TRUE,
     tanggal_gabung  DATE DEFAULT CURRENT_DATE,
+    tanggal_selesai DATE,
+    
+    periode_aktif   VARCHAR(20),
     
     asal_pendaftar_id BIGINT,
 
@@ -150,13 +153,6 @@ CREATE TABLE mst_mahasiswa (
         REFERENCES trx_pendaftar(id)
         ON DELETE SET NULL
 );
-
--- Trigger
-CREATE TRIGGER trg_set_timestamp_mahasiswa
-BEFORE UPDATE ON mst_mahasiswa
-FOR EACH ROW EXECUTE FUNCTION fn_trigger_set_timestamp();
-
-
 
 -- Mapping Table: Produk <-> Dosen
 CREATE TABLE map_produk_dosen (
@@ -190,22 +186,33 @@ CREATE TABLE trx_aktivitas_lab(
     deskripsi       TEXT,
     foto_aktivitas  TEXT, 
     tanggal_kegiatan DATE, 
+    penulis_id      BIGINT, 
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+
+    CONSTRAINT fk_aktivitas_penulis
+        FOREIGN KEY (penulis_id)
+        REFERENCES mst_dosen(id)
+        ON DELETE SET NULL
 );
 
 CREATE TYPE rekrutmen_status_enum AS ENUM ('buka', 'tutup');
 
--- Mengganti tbl_rekrutmen menjadi trx_rekrutmen
--- Masuk transaksi karena ada periode buka/tutup
+-- TABLE : tbl_rekrutmen menjadi trx_rekrutmen
+CREATE TYPE kategori_rekrutmen_enum AS ENUM ('asisten lab', 'magang');
+
 CREATE TABLE trx_rekrutmen (
     id            BIGSERIAL PRIMARY KEY,
     judul         VARCHAR(255) NOT NULL,
     deskripsi     TEXT NOT NULL,
+    banner_image  TEXT,
+
     status        rekrutmen_status_enum NOT NULL DEFAULT 'tutup', 
+    kategori      kategori_rekrutmen_enum NOT NULL DEFAULT 'asisten lab',
+    periode       VARCHAR(20) NOT NULL,
+
     tanggal_buka  DATE,
     tanggal_tutup DATE,
-    lokasi        VARCHAR(255),
     created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -263,12 +270,6 @@ CREATE TABLE trx_pendaftar (
         REFERENCES trx_rekrutmen(id)
         ON DELETE CASCADE
 );
-
--- Trigger
-CREATE TRIGGER trg_set_timestamp_pendaftar
-BEFORE UPDATE ON trx_pendaftar
-FOR EACH ROW EXECUTE FUNCTION fn_trigger_set_timestamp();
-
 
 
 

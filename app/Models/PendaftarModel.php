@@ -34,6 +34,7 @@ class PendaftarModel
     {
         try {
             $search = $params['search'] ?? '';
+            $statusSeleksi = $params['status_seleksi'] ?? 'all';
             $limit = $params['limit'] ?? 10;
             $offset = $params['offset'] ?? 0;
 
@@ -45,6 +46,12 @@ class PendaftarModel
             if (!empty($search)) {
                 $whereClauses[] = "(nama ILIKE :search OR nim ILIKE :search OR email ILIKE :search)";
                 $bindParams[':search'] = "%{$search}%";
+            }
+
+            // Filter by status_seleksi
+            if ($statusSeleksi !== 'all' && in_array($statusSeleksi, ['Pending', 'Diterima', 'Ditolak'])) {
+                $whereClauses[] = "status_seleksi = :status_seleksi";
+                $bindParams[':status_seleksi'] = $statusSeleksi;
             }
 
             $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
@@ -69,7 +76,8 @@ class PendaftarModel
                     email,
                     semester,
                     status_seleksi,
-                    created_at
+                    created_at,
+                    updated_at
                 FROM {$this->view_name}
                 {$whereSQL}
                 ORDER BY created_at DESC

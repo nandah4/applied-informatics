@@ -176,9 +176,7 @@ textarea.form-control {
 
 .image-preview {
     margin-top: 1rem;
-    border-radius: 8px;
     overflow: hidden;
-    border: 1px solid var(--color-gray-200);
 }
 
 .image-preview img {

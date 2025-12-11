@@ -9,7 +9,9 @@ CREATE OR REPLACE PROCEDURE sp_insert_recruitment (
     p_status rekrutmen_status_enum,
     p_tanggal_buka DATE,
     p_tanggal_tutup DATE,
-    p_lokasi VARCHAR
+    p_kategori kategori_rekrutmen_enum,
+    p_periode VARCHAR,
+    p_banner_image TEXT
 )
 LANGUAGE plpgsql
 AS $$
@@ -31,8 +33,8 @@ BEGIN
     END IF;
 
     -- Insert dengan status yang sudah ditentukan
-    INSERT INTO trx_rekrutmen (judul, deskripsi, status, tanggal_buka, tanggal_tutup, lokasi)
-    VALUES (p_judul, p_deskripsi, v_auto_status, p_tanggal_buka, p_tanggal_tutup, p_lokasi);
+    INSERT INTO trx_rekrutmen (judul, deskripsi, status, tanggal_buka, tanggal_tutup, kategori, periode, banner_image)
+    VALUES (p_judul, p_deskripsi, v_auto_status, p_tanggal_buka, p_tanggal_tutup, p_kategori, p_periode, p_banner_image);
 
 END;
 $$;
@@ -46,7 +48,9 @@ CREATE OR REPLACE PROCEDURE sp_update_recruitment (
     p_status rekrutmen_status_enum,
     p_tanggal_buka DATE,
     p_tanggal_tutup DATE,
-    p_lokasi VARCHAR
+    p_kategori kategori_rekrutmen_enum,
+    p_periode VARCHAR,
+    p_banner_image TEXT
 )
 LANGUAGE plpgsql
 AS $$
@@ -93,7 +97,9 @@ BEGIN
         status = v_final_status,
         tanggal_buka = p_tanggal_buka,
         tanggal_tutup = p_tanggal_tutup,
-        lokasi = p_lokasi,
+        kategori = p_kategori,
+        periode = p_periode,
+        banner_image = p_banner_image,
         updated_at = NOW()
     WHERE 
         id = p_id; 
