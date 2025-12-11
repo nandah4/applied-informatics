@@ -139,26 +139,30 @@ function hasActiveChild($urls, $current)
                             <span class="nav-text">Kelola Informasi Rekrutment</span>
                         </a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a href="<?= base_url('index.php?url=aktivitas/publikasi') ?>" class="nav-link <?= isActive('publikasi', $current_url) ?>">
-                            <span class="nav-text">Publikasi Akademik</span>
+                </ul>
+            </li>
+
+            <!-- Contact Us -->
+            <li class="nav-item">
+                <a class="nav-link parent-menu <?= hasActiveChild(['admin/contact'], $current_url) ?>">
+                    <i data-feather="phone"></i>
+                    <span class="nav-text">Contact-Us</span>
+                </a>
+                <ul class="nav flex-column submenu">
+                    <li class="nav-item">
+                        <a href="<?= base_url('admin/contact') ?>" class="nav-link <?= isActive('admin/contact', $current_url) ?>">
+                            <span class="nav-text">Kelola Pesan Masuk</span>
+                            <?php
+                            // Optional: Badge untuk pesan baru
+                            $contactModel = new ContactModel();
+                            $stats = $contactModel->getStatistik();
+                            $pesanBaru = $stats['data']['pesan_baru'] ?? 0;
+                            if ($pesanBaru > 0):
+                            ?>
+                                <span class="badge-notif"><?= $pesanBaru ?></span>
+                            <?php endif; ?>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="<?= base_url('index.php?url=aktivitas/penelitian') ?>" class="nav-link <?= isActive('penelitian', $current_url) ?>">
-                            <span class="nav-text">Penelitian</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?= base_url('index.php?url=aktivitas/pengabdian') ?>" class="nav-link <?= isActive('pengabdian', $current_url) ?>">
-                            <span class="nav-text">Pengabdian</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?= base_url('index.php?url=aktivitas/kekayaan') ?>" class="nav-link <?= isActive('kekayaan', $current_url) ?>">
-                            <span class="nav-text">Kekayaan Intelektual</span>
-                        </a>
-                    </li> -->
                 </ul>
             </li>
 

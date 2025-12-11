@@ -449,4 +449,222 @@ class EmailHelper
 </html>
         ';
     }
+
+    /**
+     * Kirim email balasan ke pengirim pesan contact us
+     *
+     * @param string $toEmail - Email penerima
+     * @param string $namaPengirim - Nama pengirim pesan
+     * @param string $balasanHTML - Balasan dari admin (HTML from Quill)
+     * @param string $pesanAsli - Pesan asli dari pengirim (untuk context)
+     * @return array - ['success' => bool, 'message' => string]
+     */
+    public static function sendReplyEmail($toEmail, $namaPengirim, $balasanHTML, $pesanAsli)
+    {
+        $subject = "Balasan dari Applied Informatics Laboratory";
+
+        $body = self::getReplyEmailTemplate($namaPengirim, $balasanHTML, $pesanAsli);
+
+        return self::sendMail($toEmail, $namaPengirim, $subject, $body);
+    }
+
+    /**
+     * Template HTML untuk email balasan contact us
+     *
+     * @param string $namaPengirim
+     * @param string $balasanHTML - HTML dari Quill editor
+     * @param string $pesanAsli - Pesan asli untuk context
+     * @return string - HTML template
+     */
+
+    /**
+     * Template HTML untuk email balasan contact us
+     * FIXED: Removed emoji unicode, improved styling
+     */
+    private static function getReplyEmailTemplate($namaPengirim, $balasanHTML, $pesanAsli)
+    {
+        return '
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #01a3a7 0%, #0891b2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+        .reply-box {
+            background: #f7fafc;
+            border-left: 4px solid #01a3a7;
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+        .reply-box h3 {
+            margin: 0 0 12px 0;
+            color: #2d3748;
+            font-size: 16px;
+        }
+        .reply-content {
+            color: #4a5568;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        .reply-content p {
+            margin: 0 0 12px 0;
+        }
+        .reply-content strong, .reply-content b {
+            font-weight: 700;
+        }
+        .reply-content em, .reply-content i {
+            font-style: italic;
+        }
+        .reply-content u {
+            text-decoration: underline;
+        }
+        .reply-content h1, .reply-content h2, .reply-content h3 {
+            margin: 16px 0 12px 0;
+            color: #2d3748;
+        }
+        .reply-content ol, .reply-content ul {
+            margin: 10px 0;
+            padding-left: 24px;
+        }
+        .reply-content li {
+            margin-bottom: 6px;
+        }
+        .reply-content a {
+            color: #01a3a7;
+            text-decoration: none;
+        }
+        .original-message-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+        .original-message-box h4 {
+            margin: 0 0 10px 0;
+            color: #78350f;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .original-message-box p {
+            margin: 0;
+            color: #92400e;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .footer {
+            background: #f7fafc;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer p {
+            margin: 5px 0;
+            color: #718096;
+            font-size: 14px;
+        }
+        .signature {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-style: italic;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="icon">💬</div>
+            <h1>Balasan Pesan Anda</h1>
+        </div>
+
+        <div class="content">
+            <p class="greeting">Halo, ' . htmlspecialchars($namaPengirim) . '</p>
+
+            <p class="message">
+                Terima kasih telah menghubungi Applied Informatics Laboratory. 
+                Berikut adalah balasan dari tim kami:
+            </p>
+
+            <div class="reply-box">
+                <h3>📧 Balasan dari Tim Kami</h3>
+                <div class="reply-content">' . $balasanHTML . '</div>
+            </div>
+
+            <div class="original-message-box">
+                <h4>Pesan Anda:</h4>
+                <p>' . nl2br(htmlspecialchars($pesanAsli)) . '</p>
+            </div>
+
+            <p class="message">
+                Jika Anda memiliki pertanyaan lebih lanjut, jangan ragu untuk menghubungi kami kembali.
+            </p>
+
+            <p class="signature">
+                Salam hormat,<br>
+                <strong>Tim Applied Informatics Laboratory</strong>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p><strong>Applied Informatics Laboratory</strong></p>
+            <p>Email ini adalah balasan dari pesan Anda sebelumnya.</p>
+            <p style="margin-top: 16px; font-size: 12px; color: #a0aec0;">
+                © ' . date('Y') . ' Applied Informatics Laboratory. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+        ';
+    }
 }

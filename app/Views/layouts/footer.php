@@ -1,4 +1,3 @@
-
 <!-- Footer Section -->
 <footer class="modern-footer">
     <div class="container-fluid px-5">
@@ -61,19 +60,22 @@
                 <!-- Contact Column -->
                 <div class="col-lg-3 col-md-6">
                     <h3 class="footer-title">Kontak</h3>
-                    <ul class="footer-contact">
-                        <li>
-                            <i data-feather="home"></i>
-                            <span>Gedung Pascasarjana Lt. 2<br>Polinema, Malang</span>
-                        </li>
-                        <li>
-                            <i data-feather="phone"></i>
-                            <span>(0341) 404424</span>
-                        </li>
-                        <li>
-                            <i data-feather="mail"></i>
-                            <span>ai.lab@polinema.ac.id</span>
-                        </li>
+                    <ul class="footer-links">
+                        <li><a href="<?= base_url("contact-us") ?>">Contact Us</a></li>
+                        <ul class="footer-contact">
+                            <li>
+                                <i data-feather="home"></i>
+                                <span>Gedung Pascasarjana Lt. 2<br>Polinema, Malang</span>
+                            </li>
+                            <li>
+                                <i data-feather="phone"></i>
+                                <span>(0341) 404424</span>
+                            </li>
+                            <li>
+                                <i data-feather="mail"></i>
+                                <span>ai.lab@polinema.ac.id</span>
+                            </li>
+                        </ul>
                     </ul>
                 </div>
 

@@ -295,3 +295,47 @@ CREATE TABLE map_dosen_keahlian(
     
     PRIMARY KEY(dosen_id, keahlian_id)
 );
+
+-- ==========================================
+-- CONTACT US / PESAN MASUK
+-- ==========================================
+
+-- 1. Buat ENUM untuk status pesan
+CREATE TYPE pesan_status_enum AS ENUM ('Baru', 'Dibalas');
+
+-- 2. Buat Tabel Transaksi Pesan
+CREATE TABLE trx_pesan_masuk (
+    id BIGSERIAL PRIMARY KEY,
+    
+    -- Informasi Pengirim (Guest)
+    nama_pengirim VARCHAR(150) NOT NULL,
+    email_pengirim VARCHAR(150) NOT NULL,
+    isi_pesan TEXT NOT NULL,
+    
+    -- Status Pengelolaan (Admin)
+    status pesan_status_enum DEFAULT 'Baru',
+    
+    -- Tracking Balasan
+    dibalas_oleh BIGINT,
+    balasan_email TEXT, -- HTML content dari Quill editor
+    catatan_admin TEXT, -- Catatan internal admin
+    tanggal_dibalas TIMESTAMP,
+    
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    
+    -- Constraint
+    CONSTRAINT fk_admin_balas 
+        FOREIGN KEY(dibalas_oleh) 
+        REFERENCES sys_users(id) 
+        ON DELETE SET NULL
+);
+
+-- Trigger untuk updated_at
+CREATE TRIGGER trg_set_timestamp_pesan
+BEFORE UPDATE ON trx_pesan_masuk
+FOR EACH ROW EXECUTE FUNCTION fn_trigger_set_timestamp();
+
+-- Index untuk performa
+CREATE INDEX idx_pesan_status ON trx_pesan_masuk(status);
+CREATE INDEX idx_pesan_created ON trx_pesan_masuk(created_at DESC);
