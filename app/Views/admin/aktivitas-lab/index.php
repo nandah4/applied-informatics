@@ -38,7 +38,7 @@
         <div class="page-header-list">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="page-title">Aktivitas Laboratorium</h1>
+                    <h1 class="page-title">Data Aktivitas Laboratorium</h1>
                     <p class="page-subtitle">Kelola data aktivitas Laboratorium Applied Informatics</p>
                 </div>
                 <button class="btn-mobile-menu d-md-none" id="mobileMenuBtn">

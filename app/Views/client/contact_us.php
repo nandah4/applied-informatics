@@ -38,7 +38,6 @@ include __DIR__ . '/../layouts/header.php';
                                 id="name"
                                 name="nama_pengirim"
                                 placeholder="Masukkan nama lengkap Anda"
-                                required
                                 maxlength="150">
                         </div>
 
@@ -50,7 +49,6 @@ include __DIR__ . '/../layouts/header.php';
                                 id="email"
                                 name="email_pengirim"
                                 placeholder="Masukkan email Anda"
-                                required
                                 maxlength="150">
                         </div>
 
@@ -61,10 +59,8 @@ include __DIR__ . '/../layouts/header.php';
                                 id="message"
                                 name="isi_pesan"
                                 rows="4"
-                                placeholder="Sampaikan pesan Anda di sini"
-                                required
+                                placeholder="Sampaikan pesan Anda di sini (Minimal 10 karakter)"
                                 minlength="10"></textarea>
-                            <small class="text-muted">Minimal 10 karakter</small>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 py-3">Kirim Pesan</button>

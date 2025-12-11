@@ -146,21 +146,12 @@ function hasActiveChild($urls, $current)
             <li class="nav-item">
                 <a class="nav-link parent-menu <?= hasActiveChild(['admin/contact'], $current_url) ?>">
                     <i data-feather="phone"></i>
-                    <span class="nav-text">Contact-Us</span>
+                    <span class="nav-text">Contact Us</span>
                 </a>
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
                         <a href="<?= base_url('admin/contact') ?>" class="nav-link <?= isActive('admin/contact', $current_url) ?>">
-                            <span class="nav-text">Kelola Pesan Masuk</span>
-                            <?php
-                            // Optional: Badge untuk pesan baru
-                            $contactModel = new ContactModel();
-                            $stats = $contactModel->getStatistik();
-                            $pesanBaru = $stats['data']['pesan_baru'] ?? 0;
-                            if ($pesanBaru > 0):
-                            ?>
-                                <span class="badge-notif"><?= $pesanBaru ?></span>
-                            <?php endif; ?>
+                            <span class="nav-text">Kelola Pesan Masuk</span> 
                         </a>
                     </li>
                 </ul>

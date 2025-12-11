@@ -41,7 +41,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('admin/contact') ?>">Pesan Masuk</a>
+                <a href="<?= base_url('admin/contact') ?>"> Data Pesan Masuk</a>
                 <span>/</span>
                 <span>Detail Pesan</span>
             </div>
@@ -53,24 +53,57 @@
         <div class="card">
             <div class="card-body">
 
-                <!-- Status Badge -->
-                <div style="margin-bottom: 2rem;">
-                    <?php
-                    $badgeClass = $pesan['status'] === 'Baru' ? 'badge-warning' : 'badge-success';
-                    ?>
-                    <span class="badge-custom-large <?= $badgeClass ?>">
-                        <?= htmlspecialchars($pesan['status']) ?>
-                    </span>
+                <!-- Message Header with Meta Information (Only 2 Items) -->
+                <div class="message-header">
+                    <div class="message-meta">
+                        <!-- Status -->
+                        <div class="meta-item">
+                            <div class="meta-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                            <div class="meta-content">
+                                <div class="meta-label">Status Pesan</div>
+                                <div class="meta-value">
+                                    <?php
+                                    $badgeClass = $pesan['status'] === 'Baru' ? 'badge-warning' : 'badge-success';
+                                    ?>
+                                    <span class="badge-custom <?= $badgeClass ?>">
+                                        <?= htmlspecialchars($pesan['status']) ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tanggal Dikirim -->
+                        <div class="meta-item">
+                            <div class="meta-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                            <div class="meta-content">
+                                <div class="meta-label">Tanggal Dikirim</div>
+                                <div class="meta-value"><?= htmlspecialchars(formatTanggal($pesan['created_at'], true)) ?></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Basic Information -->
                 <div style="margin-bottom: 2rem;">
                     <h3 class="section-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        Informasi Pengirim
+                        Informasi Detail
                     </h3>
 
                     <div class="info-row">
@@ -79,12 +112,12 @@
                     </div>
 
                     <div class="info-row">
-                        <div class="info-label">Nama Pengirim</div>
+                        <div class="info-label">Nama Lengkap</div>
                         <div class="info-value"><?= htmlspecialchars($pesan['nama_pengirim']) ?></div>
                     </div>
 
                     <div class="info-row">
-                        <div class="info-label">Email Pengirim</div>
+                        <div class="info-label">Alamat Email</div>
                         <div class="info-value">
                             <a href="mailto:<?= htmlspecialchars($pesan['email_pengirim']) ?>">
                                 <?= htmlspecialchars($pesan['email_pengirim']) ?>
@@ -92,10 +125,15 @@
                         </div>
                     </div>
 
-                    <div class="info-row">
-                        <div class="info-label">Tanggal Dikirim</div>
+                    <!-- <div class="info-row">
+                        <div class="info-label">Dibuat Pada</div>
                         <div class="info-value"><?= htmlspecialchars(formatTanggal($pesan['created_at'], true)) ?></div>
                     </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Diperbarui Pada</div>
+                        <div class="info-value"><?= htmlspecialchars(formatTanggal($pesan['updated_at'], true)) ?></div>
+                    </div> -->
                 </div>
 
                 <!-- Message Content -->
@@ -166,8 +204,9 @@
                                     class="form-control" 
                                     id="catatan_admin" 
                                     name="catatan_admin" 
-                                    rows="3"
+                                    rows="5"
                                     placeholder="Catatan internal untuk admin (tidak akan dikirim ke pengirim)"><?= htmlspecialchars($pesan['catatan_admin'] ?? '') ?></textarea>
+                                <small class="text-muted">Catatan ini hanya untuk internal admin, tidak akan dikirim ke pengirim</small>
                             </div>
 
                             <button type="submit" class="btn-primary-custom" id="btnBalasPesan">
@@ -181,7 +220,7 @@
                     </div>
                 <?php endif; ?>
 
-                <!-- Admin Notes (can always be updated) -->
+                <!-- Admin Notes Section -->
                 <div style="margin-bottom: 2rem;">
                     <h3 class="section-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -191,10 +230,51 @@
                         Catatan Admin
                     </h3>
 
-                    <?php if ($pesan['status'] === 'Dibalas'): ?>
-                        <div class="catatan-box">
-                            <?= !empty($pesan['catatan_admin']) ? nl2br(htmlspecialchars($pesan['catatan_admin'])) : '<em class="text-muted">Tidak ada catatan</em>' ?>
+                    <?php if ($pesan['status'] === 'Baru'): ?>
+                        <!-- Pesan Belum Dibalas - Show Info Box -->
+                        <div class="info-box-custom warning-box">
+                            <div class="info-box-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                            <div class="info-box-content">
+                                <div class="info-box-title">Pesan Belum Dibalas</div>
+                                <div class="info-box-text">
+                                    Pesan ini belum mendapat balasan. Silakan balas pesan di atas untuk mengirim email balasan ke pengirim. 
+                                    Anda juga dapat menambahkan catatan internal untuk dokumentasi admin.
+                                </div>
+                            </div>
                         </div>
+                    <?php else: ?>
+                        <!-- Pesan Sudah Dibalas - Show Catatan or Empty State -->
+                        <?php if (!empty($pesan['catatan_admin']) && trim($pesan['catatan_admin']) !== ''): ?>
+                            <!-- Ada Catatan Admin -->
+                            <div class="catatan-box">
+                                <?= nl2br(htmlspecialchars($pesan['catatan_admin'])) ?>
+                            </div>
+                        <?php else: ?>
+                            <!-- Tidak Ada Catatan Admin -->
+                            <div class="info-box-custom info-box">
+                                <div class="info-box-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="12" y1="18" x2="12" y2="12"></line>
+                                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                                    </svg>
+                                </div>
+                                <div class="info-box-content">
+                                    <div class="info-box-title">Tidak Ada Catatan Internal</div>
+                                    <div class="info-box-text">
+                                        Tidak ada catatan internal yang ditambahkan untuk pesan ini. 
+                                        Catatan internal bersifat opsional dan hanya untuk dokumentasi admin.
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
 
