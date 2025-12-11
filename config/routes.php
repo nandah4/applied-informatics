@@ -259,7 +259,7 @@ $router->get('contact-us', function () {
     require __DIR__ . '/../app/Views/client/contact_us.php';
 });
 
- * Rekrutment Form
+ /* Rekrutment Form
  * URL: /rekrutment/form/{id}
  * Menampilkan form recruitment untuk mendaftar
  */
@@ -1548,6 +1548,95 @@ $router->post("admin/asisten-lab/delete/(\\d+)", function ($id) {
     $controller->deleteAsistenLab($id);
 }, [AuthMiddleware::class]);
 
+// ============================================================================
+// CONTACT US MANAGEMENT
+// ============================================================================
+// CRUD operations untuk pesan masuk dari contact form
+
+// ----------------------------------------
+// PUBLIC ROUTES - Contact Form Submit
+// ----------------------------------------
+
+/**
+ * Contact Us - Submit Form (Public)
+ * URL: POST /contact-us/submit
+ */
+$router->post("contact-us/submit", function () {
+    $controller = new ContactController();
+    $controller->submitContactForm();
+});
+
+// ----------------------------------------
+// ADMIN ROUTES - READ Operations
+// ----------------------------------------
+
+/**
+ * Contact - List/Index dengan Pagination & Search
+ * URL: GET /admin/contact
+ */
+$router->get("admin/contact", function () {
+    $controller = new ContactController();
+    $result = $controller->getAllPesan();
+
+    $listPesan = $result['data'];
+    $pagination = $result['pagination'];
+    $totalPesan = $result['total'];
+
+    require __DIR__ . '/../app/Views/admin/contact/index.php';
+}, [AuthMiddleware::class]);
+
+/**
+ * Contact - Detail Page
+ * URL: GET /admin/contact/detail/{id}
+ */
+$router->get("admin/contact/detail/(\\d+)", function ($id) {
+    $controller = new ContactController();
+    $result = $controller->getPesanById($id);
+
+    if (!$result['success']) {
+        header("Location: " . base_url('admin/contact'));
+        exit;
+    }
+
+    $pesan = $result['data'];
+
+    require __DIR__ . '/../app/Views/admin/contact/read.php';
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// ADMIN ROUTES - UPDATE Operations
+// ----------------------------------------
+
+/**
+ * Contact - Balas Pesan (Send Reply Email)
+ * URL: POST /admin/contact/balas
+ */
+$router->post("admin/contact/balas", function () {
+    $controller = new ContactController();
+    $controller->balasPesan();
+}, [AuthMiddleware::class]);
+
+/**
+ * Contact - Update Catatan Admin
+ * URL: POST /admin/contact/update-catatan
+ */
+$router->post("admin/contact/update-catatan", function () {
+    $controller = new ContactController();
+    $controller->updateCatatanAdmin();
+}, [AuthMiddleware::class]);
+
+// ----------------------------------------
+// ADMIN ROUTES - DELETE Operations
+// ----------------------------------------
+
+/**
+ * Contact - Delete Pesan
+ * URL: POST /admin/contact/delete/{id}
+ */
+$router->post("admin/contact/delete/(\\d+)", function ($id) {
+    $controller = new ContactController();
+    $controller->deletePesan($id);
+}, [AuthMiddleware::class]);
 
 // ============================================================================
 // END OF ROUTES

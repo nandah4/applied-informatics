@@ -124,19 +124,12 @@
 .badge-buka {
     background: #d1fae5;
     color: #065f46;
-    padding: 7px 20px;
-    border-radius: 6px;
-    font-size: var(--fs-sm);
-    font-weight: var(--fw-medium);
+    padding: 0.375rem 0.925rem;
 }
 
 .badge-tutup {
     background: #fee2e2;
     color: #981616;
-    padding: 7px 17px;
-    border-radius: 6px;
-    font-size: var(--fs-sm);
-    font-weight: var(--fw-medium);
 }
 
 .badge-secondary {
