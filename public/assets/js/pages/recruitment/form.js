@@ -5,6 +5,7 @@
  * Fitur:
  * - Validasi form
  * - Submit form via AJAX
+ * - Image upload dengan preview
  *
  * Dependencies:
  * - jQuery
@@ -16,6 +17,112 @@
   "use strict";
 
   const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
+
+  // ============================================================
+  // MODUL IMAGE UPLOAD
+  // ============================================================
+
+  const ImageUpload = {
+    init: function () {
+      this.setupFileUpload();
+      this.setupDragAndDrop();
+    },
+
+    setupFileUpload: function () {
+      const fileInput = $("#banner_image");
+      const uploadWrapper = $("#fileUploadWrapper");
+      const imagePreview = $("#imagePreview");
+      const previewImg = $("#previewImg");
+
+      // Click wrapper to trigger file input
+      uploadWrapper.on("click", function () {
+        fileInput.click();
+      });
+
+      // Handle file selection
+      fileInput.on("change", function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          ImageUpload.handleFileSelect(file, imagePreview, previewImg, uploadWrapper);
+        }
+      });
+
+      // Click preview to remove
+      imagePreview.on("click", function () {
+        ImageUpload.removePreview(fileInput, imagePreview, uploadWrapper);
+      });
+    },
+
+    setupDragAndDrop: function () {
+      const uploadWrapper = $("#fileUploadWrapper");
+      const fileInput = $("#banner_image");
+      const imagePreview = $("#imagePreview");
+      const previewImg = $("#previewImg");
+
+      uploadWrapper.on("dragover", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).addClass("dragover");
+      });
+
+      uploadWrapper.on("dragleave", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).removeClass("dragover");
+      });
+
+      uploadWrapper.on("drop", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).removeClass("dragover");
+
+        const files = e.originalEvent.dataTransfer.files;
+        if (files.length > 0) {
+          const file = files[0];
+          if (file.type.startsWith("image/")) {
+            // Set file to input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput[0].files = dataTransfer.files;
+
+            ImageUpload.handleFileSelect(file, imagePreview, previewImg, uploadWrapper);
+          } else {
+            jQueryHelpers.showAlert("Hanya file gambar yang diperbolehkan", "danger", 3000);
+          }
+        }
+      });
+    },
+
+    handleFileSelect: function (file, imagePreview, previewImg, uploadWrapper) {
+      // Validate file type
+      const allowedTypes = ["image/png", "image/jpg", "image/jpeg"];
+      if (!allowedTypes.includes(file.type)) {
+        jQueryHelpers.showAlert("Format file tidak valid. Gunakan PNG, JPG, atau JPEG", "danger", 3000);
+        return;
+      }
+
+      // Validate file size (2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        jQueryHelpers.showAlert("Ukuran file maksimal 2MB", "danger", 3000);
+        return;
+      }
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewImg.attr("src", e.target.result);
+        imagePreview.show();
+        uploadWrapper.hide();
+      };
+      reader.readAsDataURL(file);
+    },
+
+    removePreview: function (fileInput, imagePreview, uploadWrapper) {
+      fileInput.val("");
+      imagePreview.hide();
+      uploadWrapper.show();
+    },
+  };
 
   // ============================================================
   // MODUL SUBMIT FORM
@@ -80,14 +187,26 @@
     },
 
     getFormData: () => {
+      // Get deskripsi from Quill editor
+      let deskripsi = "";
+      if (typeof quill !== "undefined") {
+        deskripsi = quill.root.innerHTML;
+        // Clear if only contains empty paragraph
+        if (deskripsi === "<p><br></p>") {
+          deskripsi = "";
+        }
+      }
+
       return {
-        judul: $("#judul").val().trim(),
-        status: $("#status").val(),
-        tanggal_buka: $("#tanggal_buka").val().trim(),
-        tanggal_tutup: $("#tanggal_tutup").val().trim(),
-        lokasi: $("#lokasi").val().trim(),
-        deskripsi: $("#deskripsi").val().trim(),
-        csrf_token: $("input[name='csrf_token']").val(),
+        judul: ($("#judul").val() || "").trim(),
+        status: $("#status").val() || "",
+        kategori: $("#kategori").val() || "",
+        periode: ($("#periode").val() || "").trim(),
+        tanggal_buka: ($("#tanggal_buka").val() || "").trim(),
+        tanggal_tutup: ($("#tanggal_tutup").val() || "").trim(),
+        deskripsi: deskripsi,
+        banner_image: $("#banner_image")[0]?.files[0] || null,
+        csrf_token: $("input[name='csrf_token']").val() || "",
       };
     },
 
@@ -119,6 +238,24 @@
         });
       }
 
+      // Validasi kategori
+      if (!data.kategori || data.kategori === "") {
+        errors.push({
+          fieldId: "kategori",
+          errorId: "kategoriError",
+          message: "Kategori wajib dipilih",
+        });
+      }
+
+      // Validasi periode
+      if (!data.periode || data.periode.length < 1) {
+        errors.push({
+          fieldId: "periode",
+          errorId: "periodeError",
+          message: "Periode wajib diisi",
+        });
+      }
+
       // Validasi tanggal buka
       if (!data.tanggal_buka || data.tanggal_buka.length < 1) {
         errors.push({
@@ -146,16 +283,6 @@
         });
       }
 
-      // Validasi lokasi
-      const lokasiValidation = validationHelpers.validateName(data.lokasi, 1, 255);
-      if (!lokasiValidation.valid) {
-        errors.push({
-          fieldId: "lokasi",
-          errorId: "lokasiError",
-          message: "Lokasi wajib diisi",
-        });
-      }
-
       // Validasi deskripsi
       if (!data.deskripsi || data.deskripsi.length < 1) {
         errors.push({
@@ -173,11 +300,17 @@
 
       formData.append("judul", data.judul);
       formData.append("status", data.status);
+      formData.append("kategori", data.kategori);
+      formData.append("periode", data.periode);
       formData.append("tanggal_buka", data.tanggal_buka);
       formData.append("tanggal_tutup", data.tanggal_tutup);
-      formData.append("lokasi", data.lokasi);
       formData.append("deskripsi", data.deskripsi);
       formData.append("csrf_token", data.csrf_token);
+
+      // Add banner image if selected
+      if (data.banner_image) {
+        formData.append("banner_image", data.banner_image);
+      }
 
       return formData;
     },
@@ -188,6 +321,7 @@
   // ============================================================
 
   $(document).ready(function () {
+    ImageUpload.init();
     FormCreateRecruitment.init();
   });
 })();

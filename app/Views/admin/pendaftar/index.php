@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="<?= asset_url('css/components/admin_layout.css') ?>">
 
     <!-- Data Publikasi Page CSS -->
-    <link rel="stylesheet" href="<?= asset_url('css/pages/recruitment/index.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/pages/pendaftar/index.css') ?>">
 </head>
 
 <body>
@@ -84,6 +84,17 @@
                         </button>
                     </div>
 
+                    <!-- Filter Status Seleksi -->
+                    <div class="d-flex gap-3 align-items-center">
+                        <label for="statusFilter" class="mb-0 info-value" style="white-space: nowrap;">Status Seleksi:</label>
+                        <select id="statusFilter" class="form-select info-value" style="width: auto; min-width: 150px;">
+                            <option value="all" <?= (!isset($_GET['status_seleksi']) || $_GET['status_seleksi'] === 'all') ? 'selected' : '' ?>>Semua</option>
+                            <option value="Pending" <?= (isset($_GET['status_seleksi']) && $_GET['status_seleksi'] === 'Pending') ? 'selected' : '' ?>>Pending</option>
+                            <option value="Diterima" <?= (isset($_GET['status_seleksi']) && $_GET['status_seleksi'] === 'Diterima') ? 'selected' : '' ?>>Diterima</option>
+                            <option value="Ditolak" <?= (isset($_GET['status_seleksi']) && $_GET['status_seleksi'] === 'Ditolak') ? 'selected' : '' ?>>Ditolak</option>
+                        </select>
+                    </div>
+
                 </div>
             </div>
 
@@ -95,10 +106,12 @@
                             <th class="col-id">ID</th>
                             <th class="col-id">Rekrutment ID</th>
                             <th class="col-status">Status</th>
-                            <th class="col-posisi">NIM</th>
-                            <th class="col-posisi">Nama</th>
-                            <th class="col-posisi">Email</th>
+                            <th class="col-id">NIM</th>
+                            <th class="col-nama">Nama</th>
+                            <th class="col-email">Email</th>
                             <th class="col-id">Semester</th>
+                            <th class="col-created">Diperbarui</th>
+                            <th class="col-created">Ditambahkan</th>
                             <th class="action-cell">Aksi</th>
                         </tr>
                     </thead>
@@ -134,6 +147,8 @@
                                     </td>
                                     <td class="col-posisi"><?= htmlspecialchars($dt['email']) ?></td>
                                     <td class="col-id"><?= htmlspecialchars($dt['semester']) ?></td>
+                                    <td class="col-created"><?= formatTanggal($dt['updated_at'], true) ?></td>
+                                    <td class="col-created"><?= formatTanggal($dt['created_at'], true) ?></td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
                                             <a href="<?= base_url('admin/daftar-pendaftar/detail/' . $dt['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
@@ -159,8 +174,9 @@
 
             <!-- Pagination -->
             <?php if (isset($pagination) && $pagination['total_pages'] > 0) :
-                // Build query string untuk preserve search parameter
+                // Build query string untuk preserve search dan filter parameters
                 $searchParam = !empty($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
+                $statusParam = (!empty($_GET['status_seleksi']) && $_GET['status_seleksi'] !== 'all') ? '&status_seleksi=' . urlencode($_GET['status_seleksi']) : '';
             ?>
                 <div class="pagination-wrapper">
                     <div class="pagination-info">
@@ -180,7 +196,7 @@
                             <!-- Previous Button -->
                             <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_prev'] ? base_url('admin/daftar-pendaftar?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'] . $searchParam)
+                                    href="<?= $pagination['has_prev'] ? base_url('admin/daftar-pendaftar?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'] . $searchParam . $statusParam)
                                                 : '#' ?>"
                                     tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
                                     Previous
@@ -198,7 +214,7 @@
                                     <!-- Page Number -->
                                     <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
                                         <a class="page-link"
-                                            href="<?= base_url('admin/daftar-pendaftar?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page'] . $searchParam) ?>">
+                                            href="<?= base_url('admin/daftar-pendaftar?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page'] . $searchParam . $statusParam) ?>">
                                             <?= $pageData['number'] ?>
                                         </a>
                                     </li>
@@ -208,7 +224,7 @@
                             <!-- Next Button -->
                             <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_next'] ? base_url('admin/daftar-pendaftar?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'] . $searchParam)
+                                    href="<?= $pagination['has_next'] ? base_url('admin/daftar-pendaftar?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'] . $searchParam . $statusParam)
                                                 : '#' ?>">
                                     Next
                                 </a>

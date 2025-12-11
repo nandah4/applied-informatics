@@ -16,6 +16,10 @@
     <!-- Rich Text Editor -->
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 
+    <!-- Select2 CSS for dropdown -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
     <!-- Sidebar & Layout CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
@@ -62,9 +66,29 @@
                             <label for="judul_aktivitas" class="form-label">
                                 Judul Aktivitas <span class="required">*</span>
                             </label>
-                            <input type="text" class="form-control" id="judul_aktivitas" name="judul" value="<?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>" placeholder="Masukkan judul aktivitas" required>
+                            <input type="text" class="form-control" id="judul_aktivitas" value="<?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>" placeholder="Masukkan judul aktivitas" required>
                             <div class="helper-text">Berikan judul yang jelas dan deskriptif</div>
                             <div id="judulAktivitasError" class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Penulis -->
+                        <div class="col-md-6 mb-3">
+                            <label for="penulis_id" class="form-label">
+                                Penulis (Dosen)
+                            </label>
+                            <select class="form-control" id="penulis_id" name="penulis_id" required>
+                                <option value="">Pilih Penulis </option>
+                                <?php if (!empty($listDosen)): ?>
+                                    <?php foreach ($listDosen as $dosen): ?>
+                                        <option value="<?= $dosen['id'] ?>" <?= ($aktivitas['penulis_id'] == $dosen['id']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($dosen['full_name']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <div class="helper-text">1. Pilih dosen penulis aktivitas laboratorium</div>
+                            <div class="helper-text mt-1">2. Biarkan kosong jika aktivitas berasal dari pihak laboratorium</div>
+                            <div id="dosenIdError" class="invalid-feedback"></div>
                         </div>
 
                         <!-- Tanggal Kegiatan -->
@@ -170,35 +194,13 @@
             }, {
                 'list': 'check'
             }],
-            // [{
-            //     'script': 'sub'
-            // }, {
-            //     'script': 'super'
-            // }], // superscript/subscript
-            // [{
-            //     'indent': '-1'
-            // }, {
-            //     'indent': '+1'
-            // }], // outdent/indent
-            // [{
-            //     'direction': 'rtl'
-            // }], // text direction
 
             [{
                 'size': ['small', false, 'large']
-            }], // custom dropdown
+            }],
             [{
                 'header': [3, 4, false]
             }],
-
-            // [{
-            //     'color': []
-            // }, {
-            //     'background': []
-            // }], // dropdown with defaults from theme
-            // [{
-            //     'font': []
-            // }],
             [{
                 'align': []
             }],
@@ -207,6 +209,7 @@
         ];
         const quill = new Quill('#editor-deskripsi', {
             theme: 'snow',
+            placeholder: 'Deskripsikan aktivitas laboratorium di sini! ...',
             modules: {
                 toolbar: toolbarOptions
             },
@@ -214,7 +217,10 @@
     </script>
 
     <!-- Sidebar JS -->
-    <script src="<?= asset_url('js/components/sidebar.js') ?>"></script>
+    <!-- <script src="<?= asset_url('js/components/sidebar.js') ?>"></script> -->
+
+    <!-- Select2 JS for dropdown -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- Helper Scripts -->
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>

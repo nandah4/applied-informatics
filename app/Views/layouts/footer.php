@@ -37,19 +37,20 @@
 
                 <!-- Quick Links Column -->
                 <div class="col-lg-2 col-md-6">
-                    <h3 class="footer-title">Menu</h3>
+                    <h3 class="footer-title text-lg-start text-center">Menu</h3>
                     <ul class="footer-links">
                         <li><a href="<?= base_url("") ?>">Beranda</a></li>
                         <li><a href="<?= base_url("anggota-laboratorium") ?>">Anggota</a></li>
                         <li><a href="<?= base_url("aktivitas-laboratorium") ?>">Aktivitas Laboratorium</a></li>
                         <li><a href="<?= base_url("mitra-laboratorium") ?>">Mitra</a></li>
                         <li><a href="<?= base_url("rekrutment") ?>">Rekrutmen</a></li>
+                        <li><a href="<?= base_url('contact-us') ?>">Hubungi Kami</a></li>
                     </ul>
                 </div>
 
                 <!-- Riset & Produk Column -->
                 <div class="col-lg-3 col-md-6">
-                    <h3 class="footer-title">Riset & Produk</h3>
+                    <h3 class="footer-title text-center text-lg-start">Riset & Produk</h3>
                     <ul class="footer-links">
                         <li><a href="<?= base_url("publikasi-dosen") ?>">Publikasi Dosen</a></li>
                         <li><a href="<?= base_url("produk-lab") ?>">Produk Lab</a></li>
@@ -59,23 +60,20 @@
 
                 <!-- Contact Column -->
                 <div class="col-lg-3 col-md-6">
-                    <h3 class="footer-title">Kontak</h3>
-                    <ul class="footer-links">
-                        <li><a href="<?= base_url("contact-us") ?>">Contact Us</a></li>
-                        <ul class="footer-contact">
-                            <li>
-                                <i data-feather="home"></i>
-                                <span>Gedung Pascasarjana Lt. 2<br>Polinema, Malang</span>
-                            </li>
-                            <li>
-                                <i data-feather="phone"></i>
-                                <span>(0341) 404424</span>
-                            </li>
-                            <li>
-                                <i data-feather="mail"></i>
-                                <span>ai.lab@polinema.ac.id</span>
-                            </li>
-                        </ul>
+                    <h3 class="footer-title text-center text-lg-start">Kontak</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i data-feather="home"></i>
+                            <span>Gedung Pascasarjana Lt. 2<br>Polinema, Malang</span>
+                        </li>
+                        <li>
+                            <i data-feather="phone"></i>
+                            <span>(0341) 404424</span>
+                        </li>
+                        <li>
+                            <i data-feather="mail"></i>
+                            <span>ai.lab@polinema.ac.id</span>
+                        </li>
                     </ul>
                 </div>
 

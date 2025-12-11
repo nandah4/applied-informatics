@@ -287,11 +287,14 @@
     margin-bottom: 2rem;
 }
 
-.description-text {
-    font-size: 0.875rem;
-    color: var(--color-gray-700);
-    line-height: 1.7;
+.description-text li[data-list="ordered"] {
+    list-style-type: decimal;
 }
+
+.description-text li[data-list="bullet"] {
+    list-style-type: disc;
+}
+
 
 /* ===== Requirements List ===== */
 .requirements-section {

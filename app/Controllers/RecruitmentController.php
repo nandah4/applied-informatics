@@ -5,6 +5,8 @@
  * Deskripsi: Controller untuk menangani request terkait data recruitment
  *
  * PERUBAHAN:
+ * - Removed lokasi field
+ * - Added kategori, periode, banner_image fields
  * - Status sekarang bisa diubah manual menjadi 'tutup' meskipun tanggal masih panjang
  * - Auto-open tetap aktif saat tanggal diperpanjang dari expired ke valid
  * - Auto-close tetap aktif untuk recruitment yang sudah expired
@@ -100,9 +102,10 @@ class RecruitmentController
         $judul = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $status = $_POST['status'] ?? 'tutup';
+        $kategori = $_POST['kategori'] ?? 'asisten lab';
+        $periode = $_POST['periode'] ?? '';
         $tanggal_buka = $_POST['tanggal_buka'] ?? '';
         $tanggal_tutup = $_POST['tanggal_tutup'] ?? '';
-        $lokasi = $_POST['lokasi'] ?? '';
 
         $allowedStatus = ['buka', 'tutup'];
         if (!in_array($status, $allowedStatus)) {
@@ -110,25 +113,48 @@ class RecruitmentController
             return;
         }
 
-        $validationErrors = $this->validateRecruitmentInput($judul, $deskripsi, $tanggal_buka, $tanggal_tutup, $lokasi);
+        $allowedKategori = ['asisten lab', 'magang'];
+        if (!in_array($kategori, $allowedKategori)) {
+            ResponseHelper::error('Kategori recruitment tidak valid');
+            return;
+        }
+
+        $validationErrors = $this->validateRecruitmentInput($judul, $deskripsi, $kategori, $periode, $tanggal_buka, $tanggal_tutup);
 
         if (!empty($validationErrors)) {
             ResponseHelper::error($validationErrors[0]);
             return;
         }
 
+        // Handle banner image upload
+        $banner_image = null;
+        if (isset($_FILES['banner_image']) && $_FILES['banner_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $uploadResult = FileUploadHelper::upload($_FILES['banner_image'], 'image', 'recruitment', 2 * 1024 * 1024);
+            if (!$uploadResult['success']) {
+                ResponseHelper::error('Gagal upload banner: ' . $uploadResult['message']);
+                return;
+            }
+            $banner_image = $uploadResult['filename'];
+        }
+
         $recruitmentData = [
             'judul' => $judul,
             'deskripsi' => $deskripsi,
             'status' => $status,
+            'kategori' => $kategori,
+            'periode' => $periode,
             'tanggal_buka' => $tanggal_buka,
             'tanggal_tutup' => $tanggal_tutup,
-            'lokasi' => $lokasi
+            'banner_image' => $banner_image
         ];
 
         $result = $this->recruitmentModel->insert($recruitmentData);
 
         if (!$result['success']) {
+            // Delete uploaded file if insert failed
+            if ($banner_image) {
+                FileUploadHelper::delete($banner_image, 'recruitment');
+            }
             ResponseHelper::error($result['message']);
             return;
         }
@@ -141,12 +167,13 @@ class RecruitmentController
      *
      * @param string $judul
      * @param string $deskripsi
+     * @param string $kategori
+     * @param string $periode
      * @param string $tanggal_buka
      * @param string $tanggal_tutup
-     * @param string $lokasi
      * @return array - Array of error messages (kosong jika valid)
      */
-    private function validateRecruitmentInput($judul, $deskripsi, $tanggal_buka, $tanggal_tutup, $lokasi)
+    private function validateRecruitmentInput($judul, $deskripsi, $kategori, $periode, $tanggal_buka, $tanggal_tutup)
     {
         $errors = [];
 
@@ -168,6 +195,14 @@ class RecruitmentController
             }
         }
 
+        if (empty($kategori)) {
+            $errors[] = "Kategori wajib dipilih";
+        }
+
+        if (empty($periode)) {
+            $errors[] = "Periode wajib diisi";
+        }
+
         if (empty($tanggal_buka)) {
             $errors[] = "Tanggal buka wajib diisi";
         }
@@ -179,15 +214,6 @@ class RecruitmentController
         if (!empty($tanggal_buka) && !empty($tanggal_tutup)) {
             if ($tanggal_tutup < $tanggal_buka) {
                 $errors[] = "Tanggal tutup tidak boleh lebih awal dari tanggal buka";
-            }
-        }
-
-        if (empty($lokasi)) {
-            $errors[] = "Lokasi wajib diisi";
-        } else {
-            $lokasiValidation = ValidationHelper::validateName($lokasi, 1, 255);
-            if (!$lokasiValidation['valid']) {
-                $errors[] = $lokasiValidation['message'];
             }
         }
 
@@ -225,9 +251,11 @@ class RecruitmentController
         $judul = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $status = $_POST['status'] ?? 'tutup'; // Status dari form
+        $kategori = $_POST['kategori'] ?? 'asisten lab';
+        $periode = $_POST['periode'] ?? '';
         $tanggal_buka = $_POST['tanggal_buka'] ?? '';
         $tanggal_tutup = $_POST['tanggal_tutup'] ?? '';
-        $lokasi = $_POST['lokasi'] ?? '';
+        $old_banner_image = $_POST['old_banner_image'] ?? '';
 
         if (!$id || !is_numeric($id)) {
             ResponseHelper::error('ID recruitment tidak valid');
@@ -240,7 +268,13 @@ class RecruitmentController
             return;
         }
 
-        $validationErrors = $this->validateRecruitmentInput($judul, $deskripsi, $tanggal_buka, $tanggal_tutup, $lokasi);
+        $allowedKategori = ['asisten lab', 'magang'];
+        if (!in_array($kategori, $allowedKategori)) {
+            ResponseHelper::error('Kategori recruitment tidak valid');
+            return;
+        }
+
+        $validationErrors = $this->validateRecruitmentInput($judul, $deskripsi, $kategori, $periode, $tanggal_buka, $tanggal_tutup);
 
         if (!empty($validationErrors)) {
             ResponseHelper::error($validationErrors[0]);
@@ -253,14 +287,32 @@ class RecruitmentController
             return;
         }
 
+        // Handle banner image upload
+        $banner_image = $old_banner_image; // Keep old image by default
+        if (isset($_FILES['banner_image']) && $_FILES['banner_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $uploadResult = FileUploadHelper::upload($_FILES['banner_image'], 'image', 'recruitment', 2 * 1024 * 1024);
+            if (!$uploadResult['success']) {
+                ResponseHelper::error('Gagal upload banner: ' . $uploadResult['message']);
+                return;
+            }
+            $banner_image = $uploadResult['filename'];
+
+            // Delete old image if new one uploaded successfully
+            if (!empty($old_banner_image)) {
+                FileUploadHelper::delete($old_banner_image, 'recruitment');
+            }
+        }
+
         // Status dari form akan digunakan, kecuali jika tanggal expired atau diperpanjang
         $recruitmentData = [
             'judul' => $judul,
             'deskripsi' => $deskripsi,
             'status' => $status, // Akan diproses oleh SP
+            'kategori' => $kategori,
+            'periode' => $periode,
             'tanggal_buka' => $tanggal_buka,
             'tanggal_tutup' => $tanggal_tutup,
-            'lokasi' => $lokasi
+            'banner_image' => $banner_image
         ];
 
         $result = $this->recruitmentModel->update($id, $recruitmentData);
@@ -297,6 +349,12 @@ class RecruitmentController
         if (!$id || !is_numeric($id)) {
             ResponseHelper::error('ID recruitment tidak valid');
             return;
+        }
+
+        // Get recruitment data first to delete banner image
+        $recruitmentResult = $this->recruitmentModel->getById($id);
+        if ($recruitmentResult['success'] && !empty($recruitmentResult['data']['banner_image'])) {
+            FileUploadHelper::delete($recruitmentResult['data']['banner_image'], 'recruitment');
         }
 
         $result = $this->recruitmentModel->delete($id);

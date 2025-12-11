@@ -93,7 +93,7 @@
                                     </svg>
                                     <div>
                                         <div class="meta-label">NIP</div>
-                                        <div class="meta-value"><?= htmlspecialchars($dosenData['nip']) ?></div>
+                                        <div class="meta-value"><?= htmlspecialchars($dosenData['nip'] ?? '-') ?></div>
                                     </div>
                                 </div>
                             </div>

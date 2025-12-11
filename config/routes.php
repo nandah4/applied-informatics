@@ -149,15 +149,33 @@ $router->get('produk-lab', function () {
 /**
  * Aktivitas Lab
  * URL: /aktivitas-laboratorium
+ * Query params:
+ *   - limit: int (default 6)
+ *   - month: string (format: YYYY-MM, for filtering by month/year)
  */
 $router->get('aktivitas-laboratorium', function () {
-    // Ambil data terbaru aktivitas dengan limit dari query parameter
-    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 6;
-    if ($limit < 6) $limit = 6; // Minimum limit
+    // Ambil parameter limit
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 12;
+    if ($limit < 12) $limit = 12; // Minimum limit
+
+    // Ambil parameter filter month/year (format: YYYY-MM)
+    $month = null;
+    $year = null;
+    if (isset($_GET['month']) && !empty($_GET['month'])) {
+        $monthYear = $_GET['month']; // Format: "2024-12"
+        $parts = explode('-', $monthYear);
+        if (count($parts) === 2) {
+            $year = (int)$parts[0];
+            $month = (int)$parts[1];
+        }
+    }
 
     $aktivitasModel = new AktivitasModel();
-    $listAktivitas = $aktivitasModel->getAll($limit);
+    $listAktivitas = $aktivitasModel->getAll($limit, $month, $year);
     $aktivitasData = $listAktivitas['data'];
+
+    // Pass filter values to view for preserving state
+    $filterMonth = $_GET['month'] ?? '';
 
     require __DIR__ . '/../app/Views/client/aktivitas_lab.php';
 });
@@ -225,28 +243,33 @@ $router->get('mitra-laboratorium', function () {
 /**
  * Rekrutment
  * URL: /rekrutment
+ * Query params:
+ *   - month: string (format: YYYY-MM for filtering closed recruitments by tanggal_tutup)
  * Menampilkan semua recruitment yang terbuka dan tertutup
  */
 $router->get('rekrutment', function () {
-    $controller = new RecruitmentController();
-
-    // Ambil semua data recruitment (tanpa pagination untuk client)
     $recruitmentModel = new RecruitmentModel();
-    $allRecruitment = $recruitmentModel->getAllRecruitmentWithPagination(1000, 0); // Ambil banyak data
 
-    // Pisahkan berdasarkan status
-    $recruitmentTerbuka = [];
-    $recruitmentTertutup = [];
+    // Parse filter bulan/tahun untuk rekrutmen tertutup
+    $filterMonth = null;
+    $filterYear = null;
+    $filterMonthParam = $_GET['month'] ?? '';
 
-    if ($allRecruitment['success'] && !empty($allRecruitment['data'])) {
-        foreach ($allRecruitment['data'] as $recruitment) {
-            if ($recruitment['status'] === 'buka') {
-                $recruitmentTerbuka[] = $recruitment;
-            } else {
-                $recruitmentTertutup[] = $recruitment;
-            }
+    if (!empty($filterMonthParam)) {
+        $parts = explode('-', $filterMonthParam);
+        if (count($parts) === 2) {
+            $filterYear = (int)$parts[0];
+            $filterMonth = (int)$parts[1];
         }
     }
+
+    // Ambil data recruitment terbuka (tanpa filter bulan)
+    $terbukaResult = $recruitmentModel->getAllRecruitmentWithPagination(1000, 0, 'buka');
+    $recruitmentTerbuka = $terbukaResult['success'] ? $terbukaResult['data'] : [];
+
+    // Ambil data recruitment tertutup (dengan optional filter bulan)
+    $tertutupResult = $recruitmentModel->getAllRecruitmentWithPagination(1000, 0, 'tutup', $filterMonth, $filterYear);
+    $recruitmentTertutup = $tertutupResult['success'] ? $tertutupResult['data'] : [];
 
     require __DIR__ . '/../app/Views/client/rekrutment.php';
 });
@@ -259,10 +282,12 @@ $router->get('contact-us', function () {
     require __DIR__ . '/../app/Views/client/contact_us.php';
 });
 
- /* Rekrutment Form
+/**
+ * Rekrutment Form
  * URL: /rekrutment/form/{id}
  * Menampilkan form recruitment untuk mendaftar
  */
+
 $router->get("rekrutment/form/(\\d+)", function ($rekrutmenId) {
     // Validasi apakah rekrutmen ada dan statusnya buka
     $recruitmentModel = new RecruitmentModel();
@@ -1058,6 +1083,11 @@ $router->get('admin/aktivitas-lab/detail/(\\d+)', function ($id) {
  * URL: GET /admin/aktivitas-lab/create
  */
 $router->get('admin/aktivitas-lab/create', function () {
+    // // Get list dosen untuk dropdown
+    $dosenController = new DosenController();
+    $dosenResult = $dosenController->getAllDosenActive();
+    $listDosen = $dosenResult['data'] ?? [];
+
     require __DIR__ . '/../app/Views/admin/aktivitas-lab/create.php';
 }, [AuthMiddleware::class]);
 
@@ -1080,6 +1110,11 @@ $router->post('admin/aktivitas-lab/create', function () {
  */
 $router->get('admin/aktivitas-lab/edit/(\\d+)', function ($id) {
     $controller = new AktivitasController();
+
+    // // Get list dosen untuk dropdown
+    $dosenController = new DosenController();
+    $dosenResult = $dosenController->getAllDosenActive();
+    $listDosen = $dosenResult['data'] ?? [];
 
     // Get data aktivitas by ID
     $aktivitasData = $controller->getAktivitasById((int)$id);
@@ -1444,11 +1479,6 @@ $router->get("admin/daftar-pendaftar/detail/(\\d+)", function ($id) {
 $router->post("admin/daftar-pendaftar/update-status", function () {
     $controller = new PendaftarController();
     $result = $controller->updateStatusSeleksi();
-
-    // if (!$result['success']) {
-    //     header("Location: " . base_url('admin/daftar-pendaftar'));
-    //     exit;
-    // }
     require __DIR__ . '/../app/Views/admin/pendaftar/read.php';
 }, [AuthMiddleware::class]);
 

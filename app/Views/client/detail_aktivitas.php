@@ -22,18 +22,22 @@ include __DIR__ . '/../layouts/header.php';
                 <!-- Article Header -->
                 <header class="article-header">
                     <h1 class="article-title">
-                        <?= htmlspecialchars($aktivitas['judul_aktivitas'], ENT_QUOTES, 'UTF-8') ?>
+                        <?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>
                     </h1>
 
                     <div class="article-meta">
                         <div class="meta-item">
+                            <i class="bi bi-person"></i>
+                            <span><?= $aktivitas['penulis_nama'] ?? 'Laboratorium Applied Informatics' ?></span>
+                        </div>
+                        <div class="meta-item">
                             <i class="bi bi-calendar-event"></i>
-                            <span><?= date('d F Y', strtotime($aktivitas['tanggal_kegiatan'])) ?></span>
+                            <span><?= formatTanggal($aktivitas['tanggal_kegiatan']) ?></span>
                         </div>
                         <?php if (!empty($aktivitas['created_at'])): ?>
                             <div class="meta-item">
                                 <i class="bi bi-clock"></i>
-                                <span>Dipublikasi <?= date('d M Y', strtotime($aktivitas['created_at'])) ?></span>
+                                <span>Dipublikasi <?= formatTanggal($aktivitas['created_at']) ?></span>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -70,80 +74,10 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </article>
 
-    <!-- Share Section (Optional) -->
-    <!-- <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 col-xl-8">
-                <div class="share-section">
-                    <h5 class="share-title">Bagikan Aktivitas Ini</h5>
-                    <div class="share-buttons">
-                        <a href="#" class="share-btn share-facebook" onclick="shareToFacebook(event)">
-                            <i class="bi bi-facebook"></i>
-                            <span>Facebook</span>
-                        </a>
-                        <a href="#" class="share-btn share-twitter" onclick="shareToTwitter(event)">
-                            <i class="bi bi-twitter"></i>
-                            <span>Twitter</span>
-                        </a>
-                        <a href="#" class="share-btn share-whatsapp" onclick="shareToWhatsApp(event)">
-                            <i class="bi bi-whatsapp"></i>
-                            <span>WhatsApp</span>
-                        </a>
-                        <a href="#" class="share-btn share-link" onclick="copyLink(event)">
-                            <i class="bi bi-link-45deg"></i>
-                            <span>Salin Link</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
 </main>
 
 <link rel="stylesheet" href="<?= asset_url('css/pages/aktivitas-lab/detail_aktivitas_user.css') ?>">
 
-<script>
-    function shareToFacebook(e) {
-        e.preventDefault();
-        const url = encodeURIComponent(window.location.href);
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
-    }
-
-    function shareToTwitter(e) {
-        e.preventDefault();
-        const url = encodeURIComponent(window.location.href);
-        const text = encodeURIComponent(document.querySelector('.article-title').textContent);
-        window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
-    }
-
-    function shareToWhatsApp(e) {
-        e.preventDefault();
-        const url = encodeURIComponent(window.location.href);
-        const text = encodeURIComponent(document.querySelector('.article-title').textContent);
-        window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
-    }
-
-    function copyLink(e) {
-        e.preventDefault();
-        const url = window.location.href;
-
-        navigator.clipboard.writeText(url).then(() => {
-            // Show success feedback
-            const btn = e.currentTarget;
-            const originalText = btn.querySelector('span').textContent;
-            btn.querySelector('span').textContent = 'Tersalin!';
-            btn.classList.add('copied');
-
-            setTimeout(() => {
-                btn.querySelector('span').textContent = originalText;
-                btn.classList.remove('copied');
-            }, 2000);
-        }).catch(err => {
-            console.error('Failed to copy: ', err);
-            alert('Gagal menyalin link');
-        });
-    }
-</script>
 
 <!--footer -->
 <?php

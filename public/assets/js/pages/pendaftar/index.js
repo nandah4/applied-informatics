@@ -1,21 +1,21 @@
 /**
- * File: js/pages/pendaftar/index.js
- * Deskripsi: JavaScript untuk halaman admin/daftar-pendaftar (Index)
+ * File: pages/pendaftar/index.js
+ * Deskripsi: Script untuk halaman daftar pendaftar rekrutmen
  *
  * Fitur:
- * - Search & filter pendaftar
+ * - Search & filter pendaftar (by status seleksi)
  * - Pagination control
  * - Delete pendaftar dengan konfirmasi
  *
  * Dependencies:
  * - jQuery
  * - jQueryHelpers.js
- * - Bootstrap
  */
 
 (function () {
     "use strict";
 
+    /** @type {string} Base URL aplikasi */
     const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
     $(document).ready(function () {
@@ -23,45 +23,94 @@
         // Search Functionality
         // ========================================
 
-        // Enter key di search input
+        /**
+         * Event listener untuk pencarian dengan tombol Enter
+         * @listens keypress
+         */
         $('#searchInput').on('keypress', function (e) {
             if (e.which === 13) {
                 performSearch();
             }
         });
 
-        // Click search button
+        /**
+         * Event listener untuk tombol search
+         * @listens click
+         */
         $('#btnSearch').on('click', function () {
             performSearch();
         });
 
-        // Clear search button
+        /**
+         * Event listener untuk tombol clear search
+         * Menghapus kata kunci pencarian tapi mempertahankan filter status
+         * @listens click
+         */
         $('#btnClearSearch').on('click', function () {
-            window.location.href = `${BASE_URL}/admin/daftar-pendaftar`;
+            const currentUrl = new URL(window.location.href);
+            const statusFilter = currentUrl.searchParams.get('status_seleksi') || 'all';
+            window.location.href = `${BASE_URL}/admin/daftar-pendaftar?status_seleksi=${statusFilter}`;
         });
 
+        /**
+         * Melakukan pencarian pendaftar berdasarkan kata kunci
+         * Mempertahankan filter status dan per_page saat pencarian
+         * @function performSearch
+         * @returns {void}
+         */
         function performSearch() {
             const searchValue = $('#searchInput').val().trim();
             const currentUrl = new URL(window.location.href);
             const perPage = currentUrl.searchParams.get('per_page') || '10';
+            const statusFilter = currentUrl.searchParams.get('status_seleksi') || 'all';
+
+            let url = `${BASE_URL}/admin/daftar-pendaftar?per_page=${perPage}&status_seleksi=${statusFilter}`;
 
             if (searchValue) {
-                window.location.href = `${BASE_URL}/admin/daftar-pendaftar?search=${encodeURIComponent(searchValue)}&per_page=${perPage}`;
-            } else {
-                window.location.href = `${BASE_URL}/admin/daftar-pendaftar?per_page=${perPage}`;
+                url += `&search=${encodeURIComponent(searchValue)}`;
             }
+
+            window.location.href = url;
         }
+
+        // ========================================
+        // Status Filter Change
+        // ========================================
+
+        /**
+         * Event listener untuk perubahan filter status seleksi
+         * @listens change
+         */
+        $('#statusFilter').on('change', function () {
+            const statusValue = $(this).val();
+            const currentUrl = new URL(window.location.href);
+            const perPage = currentUrl.searchParams.get('per_page') || '10';
+            const search = currentUrl.searchParams.get('search') || '';
+
+            let url = `${BASE_URL}/admin/daftar-pendaftar?per_page=${perPage}&status_seleksi=${statusValue}`;
+
+            if (search) {
+                url += `&search=${encodeURIComponent(search)}`;
+            }
+
+            window.location.href = url;
+        });
 
         // ========================================
         // Per Page Change
         // ========================================
 
+        /**
+         * Event listener untuk perubahan jumlah item per halaman
+         * @listens change
+         */
         $('#perPageSelect').on('change', function () {
             const perPage = $(this).val();
             const currentUrl = new URL(window.location.href);
             const search = currentUrl.searchParams.get('search') || '';
+            const statusFilter = currentUrl.searchParams.get('status_seleksi') || 'all';
 
-            let url = `${BASE_URL}/admin/daftar-pendaftar?per_page=${perPage}`;
+            let url = `${BASE_URL}/admin/daftar-pendaftar?per_page=${perPage}&status_seleksi=${statusFilter}`;
             if (search) {
                 url += `&search=${encodeURIComponent(search)}`;
             }
@@ -75,9 +124,18 @@
     // ========================================
 
     /**
-     * Proses delete pendaftar via AJAX
-     *
+     * Menampilkan konfirmasi dan memproses penghapusan pendaftar
+     * Mengirim request DELETE via AJAX dengan CSRF token
+     * File CV dan KHS akan otomatis terhapus di server
+     * 
+     * @function confirmDelete
+     * @global
      * @param {number} id - ID pendaftar yang akan dihapus
+     * @returns {void}
+     * 
+     * @example
+     * // Dipanggil dari onclick button
+     * confirmDelete(123);
      */
     window.confirmDelete = function (id) {
         if (!confirm("Apakah Anda yakin ingin menghapus data pendaftar ini?\n\nFile CV dan KHS juga akan terhapus.")) {
@@ -112,3 +170,4 @@
     };
 
 })();
+

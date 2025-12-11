@@ -19,57 +19,6 @@
 }
 
 /* ============================================================
-   PAGE HEADER
-   ============================================================ */
-
-.page-header {
-    background: white;
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    margin-bottom: 2rem;
-}
-
-.breadcrumb-custom {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-    font-size: 0.875rem;
-}
-
-.breadcrumb-custom a {
-    color: var(--color-primary-500);
-    text-decoration: none;
-    transition: color 0.2s;
-    font-weight: 500;
-}
-
-.breadcrumb-custom a:hover {
-    color: var(--color-primary-600);
-}
-
-.breadcrumb-custom span {
-    color: var(--color-gray-400);
-}
-
-.page-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--color-gray-900);
-    margin: 0;
-    line-height: 1.3;
-}
-
-.page-subtitle {
-    color: var(--color-gray-500);
-    font-size: 0.9375rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0;
-}
-
-
-/* ============================================================
    CARD CONTAINER
    ============================================================ */
 
@@ -149,6 +98,9 @@
     gap: 1rem;
     padding: 1rem 0;
     border-bottom: 1px solid var(--color-gray-200);
+}
+.info-row a:hover {
+    text-decoration: underline;
 }
 
 .info-row:last-child {

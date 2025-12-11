@@ -15,27 +15,23 @@
     width: 60px;
 }
 .col-judul {
-    width: 350px;
+    min-width: 350px;
 }
 
 .col-deskripsi {
-    min-width: 300px;
-}
-
-.col-lokasi {
-    min-width: 200px;
+    min-width: 400px;
 }
 
 
 .col-periode {
-    min-width: 250px;
+    min-width: 150px;
 }
 
 .col-status {
     width: 150px;
 }
 .badge-custom {
-    padding: 8px 16px;
+    padding: 6px 14px;
     color: white;
 }
 .badge-custom.badge-warning {

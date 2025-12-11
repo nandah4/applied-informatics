@@ -105,6 +105,8 @@
                             <th class="col-foto">Foto</th>
                             <th class="col-judul">Judul Aktivitas</th>
                             <th class="col-tanggal">Tanggal Kegiatan</th>
+                            <th class="col-created">Diperbarui</th>
+                            <th class="col-created">Ditambahkan</th>
                             <th class="action-cell">Aksi</th>
                         </tr>
                     </thead>
@@ -112,8 +114,7 @@
                         <?php
                         if (!empty($listAktivitas)) :
                             foreach ($listAktivitas as $aktivitas) :
-                                $fotoUrl = upload_url('aktivitas-lab/' . $aktivitas['foto_aktivitas']);
-                                $tanggalFormatted = date('d M Y', strtotime($aktivitas['tanggal_kegiatan']));
+                                $fotoUrl = $aktivitas['foto_aktivitas'] ? upload_url('aktivitas-lab/' . $aktivitas['foto_aktivitas']) : upload_url('default/image.png');
                         ?>
                                 <tr>
                                     <td class="col-id"><?= htmlspecialchars($aktivitas['id']) ?></td>
@@ -121,9 +122,11 @@
                                         <img src="<?= $fotoUrl ?>" alt="Foto <?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>" class="foto-aktivitas">
                                     </td>
                                     <td class="col-judul">
-                                        <div class="aktivitas-judul"><?= htmlspecialchars($aktivitas['judul_aktivitas']) ?></div>
+                                        <div class="aktivitas-judul"><?= truncateText(htmlspecialchars($aktivitas['judul_aktivitas']), 100) ?></div>
                                     </td>
                                     <td class="col-tanggal"><?= formatTanggal($aktivitas['tanggal_kegiatan']); ?></td>
+                                    <td class="col-created"><?= formatTanggal($aktivitas['updated_at'], true) ?></td>
+                                    <td class="col-created"><?= formatTanggal($aktivitas['created_at'], true)  ?></td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
                                             <a href="<?= base_url('admin/aktivitas-lab/detail/' . $aktivitas['id']) ?>" class="btn-action btn-view" title="Lihat Detail">
@@ -145,6 +148,7 @@
                                             </button>
                                         </div>
                                     </td>
+
                                 </tr>
                             <?php
                             endforeach;

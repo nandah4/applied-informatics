@@ -16,6 +16,8 @@
     <!-- Sidebar & Layout CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/components/header_crud_admin.css') ?>">
+
 
     <!-- Aktivitas Detail Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/aktivitas-lab/read.css') ?>">
@@ -88,15 +90,26 @@
                         <div class="info-label">ID Aktivitas</div>
                         <div class="info-value"><?= $aktivitas['id'] ?></div>
                     </div>
-
                     <div class="info-row">
-                        <div class="info-label">Nama Aktifitas</div>
+                        <div class="info-label">ID Penulis</div>
+                        <div class="info-value"><?= $aktivitas['penulis_id'] ?? '-' ?></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Penulis</div>
+                        <?php if ($aktivitas['penulis_nama']): ?>
+                            <a href="<?= base_url("admin/dosen/detail/" . ($aktivitas['penulis_id'])) ?>" class="info-value"><?= htmlspecialchars($aktivitas['penulis_nama']) ?></a>
+                        <?php else: ?>
+                            <div class="info-value">Laboratorium Applied Informatics</div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Nama Aktivitas</div>
                         <div class="info-value"><?= htmlspecialchars($aktivitas['judul_aktivitas']) ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Tanggal Aktivitas</div>
-                        <div class="info-value"><?= date('d M Y H', strtotime($aktivitas['tanggal_kegiatan'])) ?></div>
+                        <div class="info-value"><?= formatTanggal($aktivitas['tanggal_kegiatan']) ?></div>
                     </div>
 
                     <div class="info-row">
@@ -140,7 +153,7 @@
                         </svg>
                         Edit Data
                     </a>
-                     <button class="btn-danger-custom" onclick="confirmDelete(<?= $aktivitas['id'] ?>, '<?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>')">
+                    <button class="btn-danger-custom" onclick="confirmDelete(<?= $aktivitas['id'] ?>, '<?= htmlspecialchars($aktivitas['judul_aktivitas']) ?>')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>

@@ -9,8 +9,6 @@
     padding-bottom: 80px;
 }
 
-
-
 /* Article Header */
 .article-header {
     text-align: center;
@@ -20,7 +18,7 @@
 }
 
 .article-title {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: var(--fs-4xl);
     font-weight: var(--fw-semibold);
     color: var(--color-neutral-900, #111827);
     line-height: 1.2;
@@ -64,7 +62,6 @@
 }
 
 .featured-image {
-    
     width: 100%;
     height: auto;
     display: block;
@@ -81,11 +78,12 @@
 .content-body span, 
 .content-body strong, 
 .content-body p,
-.content-body i
-{
+.content-body i {
     color: var(--color-gray-700) !important;
+    margin: 0 !important;
 }
 
+/* Helper classes for dynamic content (Keep these for WYSIWYG content) */
 .ql-align-center {
     text-align: center;
 }
@@ -95,7 +93,6 @@
 .ql-align-justify {
     text-align: justify;
 }
-
 
 /* Article Footer */
 .article-footer {
@@ -121,99 +118,6 @@
     border-color: var(--color-primary-600, #0066cc);
     color: #ffffff;
     transform: translateY(-2px);
-}
-
-/* Share Section */
-.share-section {
-    margin-top: 64px;
-    padding: 40px;
-    background: linear-gradient(135deg, var(--color-neutral-50, #f9fafb) 0%, #ffffff 100%);
-    border-radius: 16px;
-    border: 1px solid var(--color-neutral-200, #e5e7eb);
-    text-align: center;
-}
-
-.share-title {
-    font-size: var(--fs-lg, 1.125rem);
-    font-weight: 700;
-    color: var(--color-neutral-800, #1f2937);
-    margin: 0 0 24px 0;
-}
-
-.share-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.share-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-size: var(--fs-sm, 0.875rem);
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.share-facebook {
-    background: #1877f2;
-    color: #ffffff;
-}
-
-.share-facebook:hover {
-    background: #0e62c7;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(24, 119, 242, 0.3);
-    color: #ffffff;
-}
-
-.share-twitter {
-    background: #1da1f2;
-    color: #ffffff;
-}
-
-.share-twitter:hover {
-    background: #0d8bd9;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(29, 161, 242, 0.3);
-    color: #ffffff;
-}
-
-.share-whatsapp {
-    background: #25d366;
-    color: #ffffff;
-}
-
-.share-whatsapp:hover {
-    background: #1ebe57;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(37, 211, 102, 0.3);
-    color: #ffffff;
-}
-
-.share-link {
-    background: #ffffff;
-    color: var(--color-neutral-700, #374151);
-    border-color: var(--color-neutral-300, #d1d5db);
-}
-
-.share-link:hover {
-    background: var(--color-neutral-100, #f3f4f6);
-    border-color: var(--color-neutral-400, #9ca3af);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    color: var(--color-neutral-800, #1f2937);
-}
-
-.share-link.copied {
-    background: var(--color-success-500, #10b981);
-    color: #ffffff;
-    border-color: var(--color-success-500, #10b981);
 }
 
 /* Responsive Design */
@@ -290,42 +194,12 @@
         padding: 10px 24px;
         font-size: var(--fs-sm, 0.875rem);
     }
-
-    .share-section {
-        margin-top: 48px;
-        padding: 32px 24px;
-    }
-
-    .share-buttons {
-        gap: 12px;
-    }
-
-    .share-btn {
-        padding: 8px 16px;
-        font-size: 0.813rem;
-    }
-
-    .share-btn i {
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 575px) {
-    .share-buttons {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .share-btn {
-        justify-content: center;
-    }
 }
 
 /* Print Styles */
 @media print {
     .breadcrumb-nav,
-    .article-footer,
-    .share-section {
+    .article-footer {
         display: none;
     }
 

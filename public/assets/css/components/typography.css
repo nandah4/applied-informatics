@@ -20,30 +20,30 @@
 /* ========== BREADCRUMB ========== */
 .breadcrumb-nav {
   margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0;
 }
 
 .breadcrumb-item {
-    color: #6b7280;
-    transition: color 0.2s;
-    font-size: var(--fs-base);
+  color: #6b7280;
+  transition: color 0.2s;
+  font-size: var(--fs-base);
 }
 
 .breadcrumb-link:hover {
-    color: var(--color-primary-600);
+  color: var(--color-primary-600);
 }
 
 .breadcrumb-item.active {
-    color: var(--color-primary-500, #01b5b9);
-    font-weight: 500;
+  color: var(--color-primary-500, #01b5b9);
+  font-weight: 500;
 }
 
 .breadcrumb-separator {
-    color: #d1d5db;
-    font-size: var(--fs-lg);
+  color: #d1d5db;
+  font-size: var(--fs-lg);
 }
 
 .divider-hr {
@@ -62,27 +62,102 @@
 
 /* Text Truncate */
 .text-truncate-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
 }
 
 .text-truncate-4 {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
 }
+
 .text-truncate-6 {
-    display: -webkit-box;
-    -webkit-line-clamp: 6;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+
+
+/* ==========================================
+   RESPONSIVE DESIGN - TITLE SECTIONS ONLY
+   ========================================== */
+
+/* Desktop (992px - 1399px) */
+@media (min-width: 992px) and (max-width: 1399px) {
+  .title-lab {
+    font-size: 50px;
+    text-align: center;
+  }
+}
+
+/* Tablet (max-width: 991px) */
+@media (max-width: 991px) {
+
+  /* Section Titles */
+  .title-section {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .subtitle-section {
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
+/* Mobile Landscape & Small Tablet (max-width: 767px) */
+@media (max-width: 767px) {
+
+
+  /* Section Titles */
+  .title-section {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+
+  .subtitle-section {
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+
+
+}
+
+/* Mobile Portrait (max-width: 575px) */
+@media (max-width: 575px) {
+
+  /* Section Titles */
+  .title-section {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .subtitle-section {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+}
+
+/* Extra Small Mobile (max-width: 380px) */
+@media (max-width: 380px) {
+
+
+  .title-section {
+    font-size: 1.1rem;
+  }
 }

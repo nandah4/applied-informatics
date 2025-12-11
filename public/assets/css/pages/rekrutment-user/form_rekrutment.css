@@ -15,7 +15,7 @@ body {
 .header-card {
   background: var(--color-primary-600);
   border-radius: 18px;
-  padding: 48px;
+  padding: 35px;
   margin-bottom: 32px;
   text-align: center;
   color: white;
@@ -39,7 +39,7 @@ body {
 }
 
 .header-title {
-  font-size: var(--fs-4xl);
+  font-size: var(--fs-3xl);
   font-weight: var(--fw-medium);
   margin-bottom: 12px;
   color: white;

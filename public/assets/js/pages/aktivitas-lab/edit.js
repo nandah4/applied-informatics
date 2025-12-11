@@ -18,6 +18,22 @@
 
   const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
+   // ============================================================
+  // MODUL SELECT2 INITIALIZATION
+  // ============================================================
+
+  const Select2Module = {
+    init: function () {
+      // Initialize Select2 untuk dropdown dosen
+      $("#penulis_id").select2({
+        theme: "bootstrap-5",
+        placeholder: "Pilih Penulis",
+        allowClear: true,
+        width: "100%",
+      });
+    },
+  };
+
   // ============================================================
   // MODUL FILE UPLOAD
   // ============================================================
@@ -181,6 +197,7 @@
     getFormData: () => {
       return {
         id: $('input[name="id"]').val(),
+        penulis_id : $("#penulis_id").val().trim(),
         judul: $("#judul_aktivitas").val().trim(),
         deskripsi: $(quill.root).html(),
         foto_aktivitas: $("#foto_aktivitas")[0].files[0],
@@ -262,6 +279,9 @@
       formData.append("tanggal_kegiatan", data.tanggal_kegiatan);
       formData.append("csrf_token", data.csrf_token);
 
+      if(data.penulis_id) {
+        formData.append("penulis_id", data.penulis_id);
+      }
       if (data.foto_aktivitas) {
         formData.append("foto_aktivitas", data.foto_aktivitas);
       }
@@ -275,6 +295,7 @@
   // ============================================================
 
   $(document).ready(function () {
+    Select2Module.init();
     FileUploadModule.init();
     FormUpdateAktivitas.init();
   });

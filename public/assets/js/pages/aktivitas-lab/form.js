@@ -19,6 +19,22 @@
   const BASE_URL = $('meta[name="base-url"]').attr("content") || "/applied-informatics";
 
   // ============================================================
+  // MODUL SELECT2 INITIALIZATION
+  // ============================================================
+
+  const Select2Module = {
+    init: function () {
+      // Initialize Select2 untuk dropdown dosen
+      $("#penulis_id").select2({
+        theme: "bootstrap-5",
+        placeholder: "Pilih Penulis",
+        allowClear: true,
+        width: "100%",
+      });
+    },
+  };
+
+  // ============================================================
   // MODUL FILE UPLOAD
   // ============================================================
 
@@ -144,8 +160,6 @@
         "Menyimpan ..."
       );
 
-
-
       jQueryHelpers.makeAjaxRequest({
         url: `${BASE_URL}/admin/aktivitas-lab/create`,
         method: "POST",
@@ -180,6 +194,7 @@
 
     getFormData: () => {
       return {
+        penulis_id: $("#penulis_id").val(),
         judul: $("#judul_aktivitas").val().trim(),
         deskripsi: $(quill.root).html(),
         foto_aktivitas: $("#foto_aktivitas")[0].files[0],
@@ -221,7 +236,7 @@
         });
       }
 
-      // Validasi foto (opsional, tapi jika ada harus valid)
+      // Validasi foto 
       if (data.foto_aktivitas) {
         const sizeValidation = validationHelpers.validateFileSize(
           data.foto_aktivitas,
@@ -254,11 +269,14 @@
 
     prepareFormData: (data) => {
       const formData = new FormData();
-
       formData.append("judul", data.judul);
       formData.append("deskripsi", data.deskripsi);
       formData.append("tanggal_kegiatan", data.tanggal_kegiatan);
       formData.append("csrf_token", data.csrf_token);
+
+      if(data.penulis_id) {
+        formData.append("penulis_id", data.penulis_id);
+      }
 
       if (data.foto_aktivitas) {
         formData.append("foto_aktivitas", data.foto_aktivitas);
@@ -273,6 +291,8 @@
   // ============================================================
 
   $(document).ready(function () {
+    Select2Module.init();
+
     FileUploadModule.init();
     FormCreateAktivitas.init();
   });

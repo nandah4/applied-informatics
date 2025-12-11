@@ -219,6 +219,13 @@
     align-items: center;
 }
 
+.action-cell {
+    position: sticky;
+    right: 0;
+    background: white;
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.05);
+}
+
 .btn-action {
     display: inline-flex;
     align-items: center;
@@ -382,4 +389,8 @@
 
 .text-muted {
     color: var(--color-gray-400);
+}
+
+.col-created {
+    min-width: 250px;
 }

@@ -41,6 +41,7 @@ body {
     border-radius: 8px; 
     padding: 8px 18px;
     transition: all 0.2s ease;
+    font-weight: var(--fw-medium);
 }
 
 /* Dropdown Menu */
@@ -59,7 +60,7 @@ body {
     font-size: var(--fs-sm);
 }
 .dropdown-item.active {
-    background-color: var(--color-primary-600) !important;
+    background-color: var(--color-primary-500) !important;
 }
 
 .dropdown-item:hover {

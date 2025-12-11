@@ -104,7 +104,9 @@ class AsistenLabController
         $no_hp = $_POST['no_hp'] ?? '';
         $semester = $_POST['semester'] ?? '';
         $link_github = $_POST['link_github'] ?? '';
-        $jabatan_lab = $_POST['jabatan_lab'] ?? '';
+        $tipe_anggota = $_POST['tipe_anggota'] ?? '';
+        $periode_aktif = $_POST['periode_aktif'] ?? '';
+        $tanggal_selesai = $_POST['tanggal_selesai'] ?? null;
         $status_aktif = isset($_POST['status_aktif']) ? $_POST['status_aktif'] : '';
 
         // 3. Validasi input
@@ -134,8 +136,8 @@ class AsistenLabController
             return;
         }
 
-        if (empty($jabatan_lab)) {
-            ResponseHelper::error('Jabatan Lab wajib diisi');
+        if (empty($tipe_anggota)) {
+            ResponseHelper::error('Tipe Anggota wajib dipilih');
             return;
         }
 
@@ -171,7 +173,9 @@ class AsistenLabController
             'no_hp' => $no_hp,
             'semester' => (int)$semester,
             'link_github' => $link_github,
-            'jabatan_lab' => $jabatan_lab,
+            'tipe_anggota' => $tipe_anggota,
+            'periode_aktif' => $periode_aktif,
+            'tanggal_selesai' => !empty($tanggal_selesai) ? $tanggal_selesai : null,
             'status_aktif' => $status_aktif_int
         ];
 

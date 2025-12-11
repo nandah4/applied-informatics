@@ -11,7 +11,7 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <!-- Base CSS - Must load first -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/base/variables.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/reset.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="<?= asset_url('css/components/sidebar.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
 
-    <!-- Data Read Page CSS -->
+    <!-- Read Page CSS -->
     <link rel="stylesheet" href="<?= asset_url('css/pages/asisten-lab/read.css') ?>">
 </head>
 
@@ -43,14 +43,14 @@
                 <span>Detail Asisten Lab</span>
             </div>
             <h1 class="page-title">Detail Asisten Lab</h1>
-            <p class="page-subtitle">Informasi lengkap tentang asisten laboratorium</p>
+            <p class="page-subtitle">Informasi lengkap tentang anggota laboratorium</p>
         </div>
 
         <!-- Profile Card -->
         <div class="card">
             <div class="card-body">
 
-                <!-- Basic Information -->
+                <!-- Section: Informasi Dasar -->
                 <div style="margin-bottom: 2rem;">
                     <h3 class="section-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -64,10 +64,6 @@
                         <div class="info-label">ID</div>
                         <div class="info-value"><?= htmlspecialchars($asisten['id']) ?></div>
                     </div>
-                    <div class="info-row">
-                        <div class="info-label">Rekrutment ID</div>
-                        <div class="info-value"><?= htmlspecialchars($asisten['asal_pendaftar_id'] ?? '-') ?></div>
-                    </div>
 
                     <div class="info-row">
                         <div class="info-label">NIM</div>
@@ -76,16 +72,12 @@
 
                     <div class="info-row">
                         <div class="info-label">Nama</div>
-                        <div class="info-value"><?= htmlspecialchars($asisten['nama']) ?></div>
+                        <div class="info-value fw-bold"><?= htmlspecialchars($asisten['nama']) ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Email</div>
                         <div class="info-value"><?= htmlspecialchars($asisten['email']) ?></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Semester</div>
-                        <div class="info-value"><?= htmlspecialchars($asisten['semester']) ?></div>
                     </div>
 
                     <div class="info-row">
@@ -100,17 +92,42 @@
                     </div>
 
                     <div class="info-row">
-                        <div class="info-label">Jabatan Lab</div>
-                        <div class="info-value"><?= htmlspecialchars($asisten['jabatan_lab']) ?></div>
+                        <div class="info-label">Semester</div>
+                        <div class="info-value"><?= htmlspecialchars($asisten['semester']) ?></div>
                     </div>
 
                     <div class="info-row">
                         <div class="info-label">Link Github</div>
-                        <div class="info-value"><?php if ($asisten['link_github']): ?>
-                                <a href="<?= $asisten['link_github'] ?>">Lihat Github</a>
+                        <div class="info-value">
+                            <?php if (!empty($asisten['link_github'])): ?>
+                                <a href="<?= htmlspecialchars($asisten['link_github']) ?>" target="_blank" class="text-primary">
+                                    <?= htmlspecialchars($asisten['link_github']) ?>
+                                </a>
                             <?php else: ?>
-                                <span>-</span>
+                                <span class="text-muted">-</span>
                             <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Status Keanggotaan -->
+                <div style="margin-bottom: 2rem;">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Status Keanggotaan
+                    </h3>
+
+                    <div class="info-row">
+                        <div class="info-label">Tipe Anggota</div>
+                        <div class="info-value">
+                            <span class="badge <?= ($asisten['tipe_anggota'] ?? '') === 'magang' ? 'badge-warning' : 'badge-info' ?>">
+                                <?= ucwords(htmlspecialchars($asisten['tipe_anggota'] ?? 'Asisten Lab')) ?>
+                            </span>
                         </div>
                     </div>
 
@@ -120,9 +137,14 @@
                             <?php if ($asisten['status_aktif']): ?>
                                 <span class="badge badge-success">Aktif</span>
                             <?php else: ?>
-                                <span class="badge badge-warning">Tidak Aktif</span>
+                                <span class="badge badge-danger">Tidak Aktif</span>
                             <?php endif; ?>
                         </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Periode Aktif</div>
+                        <div class="info-value"><?= htmlspecialchars($asisten['periode_aktif'] ?? '-') ?></div>
                     </div>
 
                     <div class="info-row">
@@ -130,6 +152,23 @@
                         <div class="info-value"><?= htmlspecialchars(formatTanggal($asisten['tanggal_gabung'], false)) ?></div>
                     </div>
 
+                    <div class="info-row">
+                        <div class="info-label">Tanggal Selesai</div>
+                        <div class="info-value">
+                            <?php if (!empty($asisten['tanggal_selesai'])): ?>
+                                <?= htmlspecialchars(formatTanggal($asisten['tanggal_selesai'], false)) ?>
+                            <?php else: ?>
+                                <span class="text-muted">-</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <?php if (!empty($asisten['asal_pendaftar_id'])): ?>
+                        <div class="info-row">
+                            <div class="info-label">Asal Pendaftar ID</div>
+                            <div class="info-value"><?= htmlspecialchars($asisten['asal_pendaftar_id']) ?></div>
+                        </div>
+                    <?php endif; ?>
                     <div class="info-row">
                         <div class="info-label">Dibuat Pada</div>
                         <div class="info-value"><?= htmlspecialchars(formatTanggal($asisten['created_at'], true)) ?></div>
@@ -139,7 +178,6 @@
                         <div class="info-label">Diperbarui Pada</div>
                         <div class="info-value"><?= htmlspecialchars(formatTanggal($asisten['updated_at'], true)) ?></div>
                     </div>
-
                 </div>
 
                 <!-- Action Buttons -->

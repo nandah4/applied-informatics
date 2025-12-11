@@ -18,44 +18,60 @@ include __DIR__ . '/../layouts/header.php';
                 anggota laboratorium.</p>
         </div>
 
+        <div class="d-flex justify-content-center align-items-center mb-5">
+            <div class="w-auto d-flex gap-3 align-items-center">
+                <div class="d-flex gap-3 align-items-center">
+                    <label for="idAktivitasMY" class="news-description m-0">Filter bulan & tahun: </label>
+                    <input type="month" id="idAktivitasMY" name="aktivitasMonthYear"
+                        value="<?= htmlspecialchars($filterMonth ?? '') ?>">
+                </div>
+                <button type="button" class="btn-search" id="btnFilterCari">
+                    Cari
+                </button>
+                <button type="button" class="btn-search" id="btnFilterSemua">
+                    Semua Aktivitas
+                </button>
+
+            </div>
+        </div>
+
         <div class="row g-4" id="aktivitasContainer">
             <?php if (!empty($aktivitasData)): ?>
                 <?php foreach ($aktivitasData as $aktivitas): ?>
                     <div class="col-md-6 col-lg-4 aktivitas-item">
-                        <a href="<?= base_url("aktivitas-laboratorium/" . $aktivitas['id']) ?>" class="text-decoration-none">
-                            <article class="news-card h-100">
-                                <!-- Image Section -->
-                                <div class="news-image-wrapper">
-                                    <?php $urlPhoto = empty($aktivitas['foto_aktivitas']) ? upload_url("default/image.png") : upload_url("aktivitas-lab/" . $aktivitas['foto_aktivitas']); ?>
-                                    <img src="<?= $urlPhoto ?>"
-                                        alt="<?= htmlspecialchars($aktivitas['judul_aktivitas'], ENT_QUOTES, 'UTF-8') ?>"
-                                        class="news-image">
-                                    <div class="news-overlay">
-                                        <span class="news-date">
-                                            <i class="bi bi-calendar-event me-1"></i>
-                                            <?= date('d M Y', strtotime($aktivitas['tanggal_kegiatan'])) ?>
-                                        </span>
-                                    </div>
+                        <article class="news-card h-100">
+                            <!-- Image Section -->
+                            <div class="news-image-wrapper">
+                                <?php $urlPhoto = empty($aktivitas['foto_aktivitas']) ? upload_url("default/image.png") : upload_url("aktivitas-lab/" . $aktivitas['foto_aktivitas']); ?>
+                                <img src="<?= $urlPhoto ?>"
+                                    alt="<?= htmlspecialchars($aktivitas['judul_aktivitas'], ENT_QUOTES, 'UTF-8') ?>"
+                                    class="news-image">
+                                <div class="news-overlay">
+                                    <span class="news-date">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        <?= formatTanggal($aktivitas['tanggal_kegiatan']) ?>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Content Section -->
+                            <div class="news-content">
+                                <h3 class="news-title text-truncate-2">
+                                    <?= truncateText($aktivitas['judul_aktivitas'], 100) ?>
+                                </h3>
+                                <div class="news-description ">
+                                    <?= truncateText($aktivitas['deskripsi'], 200) ?>
                                 </div>
 
-                                <!-- Content Section -->
-                                <div class="news-content">
-                                    <h3 class="news-title text-truncate-2">
-                                        <?= $aktivitas['judul_aktivitas'] ?>
-                                    </h3>
-                                    <div class="news-description text-truncate-4">
-                                        <?= $aktivitas['deskripsi'] ?>
-                                    </div>
-
-                                    <div class="news-footer">
-                                        <span class="read-more-link">
-                                            Baca Selengkapnya
-                                            <i class="bi bi-arrow-right ms-1"></i>
-                                        </span>
-                                    </div>
+                                <div class="news-footer">
+                                    <a href="<?= base_url("aktivitas-laboratorium/" . $aktivitas['id']) ?>" class="read-more-link">
+                                        Baca Selengkapnya
+                                        <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
                                 </div>
-                            </article>
-                        </a>
+                            </div>
+                        </article>
+
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -111,9 +127,33 @@ include __DIR__ . '/../layouts/header.php';
     }
 
     function reloadAktivitas() {
-        // Reload page with new limit parameter
+        // Reload page with new limit parameter, preserve month filter
         const url = new URL(window.location.href);
         url.searchParams.set('limit', currentLimit);
+        window.location.href = url.toString();
+    }
+
+    // Filter by month/year
+    function filterByMonth() {
+        const monthInput = document.getElementById('idAktivitasMY');
+        const monthValue = monthInput.value;
+
+        if (!monthValue) {
+            alert('Silakan pilih bulan dan tahun terlebih dahulu');
+            return;
+        }
+
+        const url = new URL(window.location.origin + window.location.pathname);
+        url.searchParams.set('month', monthValue);
+        url.searchParams.set('limit', initialLimit); // Reset limit when filtering
+        window.location.href = url.toString();
+    }
+
+    // Show all aktivitas (clear filter)
+    function showAllAktivitas() {
+        const url = new URL(window.location.origin + window.location.pathname);
+        url.searchParams.set('limit', initialLimit);
+        // Don't add month param = show all
         window.location.href = url.toString();
     }
 
@@ -138,6 +178,28 @@ include __DIR__ . '/../layouts/header.php';
         const aktivitasItems = document.querySelectorAll('.aktivitas-item');
         if (aktivitasItems.length < currentLimit && loadMoreBtn) {
             loadMoreBtn.style.display = 'none';
+        }
+
+        // Add event listeners for filter buttons
+        const btnFilterCari = document.getElementById('btnFilterCari');
+        const btnFilterSemua = document.getElementById('btnFilterSemua');
+
+        if (btnFilterCari) {
+            btnFilterCari.addEventListener('click', filterByMonth);
+        }
+
+        if (btnFilterSemua) {
+            btnFilterSemua.addEventListener('click', showAllAktivitas);
+        }
+
+        // Allow Enter key on month input to trigger filter
+        const monthInput = document.getElementById('idAktivitasMY');
+        if (monthInput) {
+            monthInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    filterByMonth();
+                }
+            });
         }
     });
 </script>

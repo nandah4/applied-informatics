@@ -93,6 +93,7 @@ class AktivitasController
         }
 
         // 2. Ambil data dari POST
+        $penulis_id = $_POST['penulis_id'] ?? null;
         $judul_aktivitas = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $tanggal_kegiatan = $_POST['tanggal_kegiatan'] ?? '';
@@ -127,6 +128,7 @@ class AktivitasController
 
         // 5. Siapkan data untuk insert
         $aktivitasData = [
+            'penulis_id' => $penulis_id,
             'judul_aktivitas' => $judul_aktivitas,
             'deskripsi' => $deskripsi,
             'foto_aktivitas' => $fotoFileName,
@@ -211,6 +213,7 @@ class AktivitasController
 
         // 2. Ambil data dari POST
         $id = $_POST['id'] ?? null;
+        $penulis_id = $_POST['penulis_id'] ?? null;
         $judul_aktivitas = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
         $tanggal_kegiatan = $_POST['tanggal_kegiatan'] ?? '';
@@ -266,7 +269,8 @@ class AktivitasController
             'judul_aktivitas' => $judul_aktivitas,
             'deskripsi' => $deskripsi,
             'foto_aktivitas' => $fotoFileName,
-            'tanggal_kegiatan' => $tanggal_kegiatan
+            'tanggal_kegiatan' => $tanggal_kegiatan,
+            'penulis_id' => $penulis_id
         ];
 
         // 8. Update ke database
