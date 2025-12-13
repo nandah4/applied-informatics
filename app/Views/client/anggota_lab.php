@@ -11,7 +11,7 @@ include __DIR__ . '/../layouts/header.php';
 <main class="tentang-kami-page">
 
     <!-- Leadership Section -->
-    <section class="container-fluid px-5 pb-5">
+    <section class="container-fluid px-md-5 pb-5">
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
             <span class="breadcrumb-separator">›</span>

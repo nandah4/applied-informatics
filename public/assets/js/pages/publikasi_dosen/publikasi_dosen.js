@@ -27,6 +27,7 @@
             const $btnClear = $('#btnClear');
             const $btnSearch = $('#btnSearch');
             const $filterTipe = $('#filterTipe');
+            const $filterTahun = $('#filterTahun');
 
             // Show/hide clear button based on input value
             $searchInput.on('input', function() {
@@ -55,6 +56,11 @@
                 SearchFilterModule.applyFilters();
             });
 
+            // Handle filter tahun change
+            $filterTahun.on('change', function() {
+                SearchFilterModule.applyFilters();
+            });
+
             // Handle Enter key pada search input
             $searchInput.on('keypress', function(e) {
                 if (e.which === 13) { // Enter key
@@ -70,6 +76,7 @@
         applyFilters: function() {
             const searchValue = $('#searchInput').val().trim();
             const tipeValue = $('#filterTipe').val();
+            const tahunValue = $('#filterTahun').val();
 
             // Build URL dengan query parameters
             const baseUrl = window.location.pathname;
@@ -83,6 +90,11 @@
             // Add tipe_publikasi parameter jika ada
             if (tipeValue) {
                 params.append('tipe_publikasi', tipeValue);
+            }
+
+            // Add tahun parameter jika ada
+            if (tahunValue) {
+                params.append('tahun', tahunValue);
             }
 
             // Reset ke page 1 saat apply filter
@@ -101,6 +113,7 @@
             return {
                 search: params.get('search') || '',
                 tipe_publikasi: params.get('tipe_publikasi') || '',
+                tahun: params.get('tahun') || '',
                 page: params.get('page') || '1'
             };
         }

@@ -5,7 +5,7 @@ include __DIR__ . '/../layouts/header.php';
 
 <main class="aktivitas-lab-page">
 
-    <div class="container-fluid px-5 pb-5">
+    <div class="container-fluid px-md-5 pb-5">
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
             <span class="breadcrumb-separator">›</span>
@@ -14,7 +14,7 @@ include __DIR__ . '/../layouts/header.php';
 
         <div class="mb-5">
             <h1 class="title-section mb-3">Semua Aktivitas Lab</h1>
-            <p class="subtitle-section w-75">Beragam kegiatan penelitian, pengembangan, dan kolaborasi yang dilakukan oleh
+            <p class="subtitle-section">Beragam kegiatan penelitian, pengembangan, dan kolaborasi yang dilakukan oleh
                 anggota laboratorium.</p>
         </div>
 

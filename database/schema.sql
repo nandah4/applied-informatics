@@ -188,7 +188,7 @@ CREATE TABLE trx_aktivitas_lab(
     tanggal_kegiatan DATE, 
     penulis_id      BIGINT, 
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
 
     CONSTRAINT fk_aktivitas_penulis
         FOREIGN KEY (penulis_id)
@@ -331,11 +331,6 @@ CREATE TABLE trx_pesan_masuk (
         REFERENCES sys_users(id) 
         ON DELETE SET NULL
 );
-
--- Trigger untuk updated_at
-CREATE TRIGGER trg_set_timestamp_pesan
-BEFORE UPDATE ON trx_pesan_masuk
-FOR EACH ROW EXECUTE FUNCTION fn_trigger_set_timestamp();
 
 -- Index untuk performa
 CREATE INDEX idx_pesan_status ON trx_pesan_masuk(status);

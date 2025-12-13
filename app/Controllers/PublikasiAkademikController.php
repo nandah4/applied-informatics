@@ -204,7 +204,7 @@ class PublikasiAkademikController
         }
 
         // 6. Validasi tipe publikasi (whitelist)
-        $allowedTipe = ['Publikasi','Riset', 'Kekayaan Intelektual', 'PPM'];
+        $allowedTipe = ['Publikasi', 'Riset', 'Kekayaan Intelektual', 'PPM'];
         if (empty($tipe_publikasi) || !in_array($tipe_publikasi, $allowedTipe)) {
             ResponseHelper::error('Tipe publikasi tidak valid');
             return;
@@ -331,6 +331,7 @@ class PublikasiAkademikController
         $params = [
             'search' => $search,
             'tipe_publikasi' => $tipePublikasi,
+            'tahun_publikasi' => isset($_GET['tahun']) ? trim($_GET['tahun']) : '',
             'limit' => $perPage,
             'offset' => $offset
         ];

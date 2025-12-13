@@ -412,17 +412,27 @@ class DosenModel extends BaseModel
      * @param string $jabatanName - Nama jabatan (contoh: "Kepala Laboratorium", "Dosen")
      * @return array - Format: ['success' => bool, 'data' => array]
      */
-    public function getDosenByJabatan($jabatanName)
+    public function getDosenByJabatan($jabatanName = null)
     {
         try {
-            $query = "SELECT * FROM vw_show_dosen
+
+            if (!$jabatanName) {
+                $query = "SELECT * FROM vw_show_dosen
+                      WHERE jabatan_name != 'Kepala Laboratorium' AND status_aktif = TRUE
+                      ORDER BY created_at DESC";
+
+                $stmt = $this->db->prepare($query);
+
+            } else {
+                $query = "SELECT * FROM vw_show_dosen
                       WHERE jabatan_name = :jabatan_name AND status_aktif = TRUE
                       ORDER BY created_at DESC";
 
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':jabatan_name', $jabatanName, PDO::PARAM_STR);
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':jabatan_name', $jabatanName, PDO::PARAM_STR);
+            }
+            
             $stmt->execute();
-
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return [

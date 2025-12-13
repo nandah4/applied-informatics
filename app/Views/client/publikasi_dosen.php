@@ -5,7 +5,7 @@ include __DIR__ . '/../layouts/header.php';
 
 <main class="publikasi-dosen-page">
 
-    <div class="container-fluid px-5 pb-5">
+    <div class="container-fluid px-md-5 pb-5">
 
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
@@ -16,7 +16,7 @@ include __DIR__ . '/../layouts/header.php';
         <!-- Header Section -->
         <div class="header-content mb-5">
             <h1 class="title-section mb-3">Repositori Penelitian</h1>
-            <p class="subtitle-section w-75">
+            <p class="subtitle-section">
                 Temukan berbagai hasil penelitian yang dikembangkan oleh dosen laboratorium.
                 Setiap penelitian dirancang untuk memberikan kontribusi serta mendukung pengembangan ilmu pengetahuan di berbagai bidang.
             </p>
@@ -25,7 +25,7 @@ include __DIR__ . '/../layouts/header.php';
         <!-- Search & Filter Section -->
         <div class="search-filter-container mb-4">
             <div class="row g-3">
-                <div class="col-lg-5">
+                <div class="col-lg-4">
                     <div class="search-box">
                         <i class="fas fa-search search-icon" data-feather="search"></i>
                         <input
@@ -39,7 +39,7 @@ include __DIR__ . '/../layouts/header.php';
                         </button>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-3 col-md-4">
                     <select class="form-select filter-select" id="filterTipe">
                         <option value="">Semua Tipe Publikasi</option>
                         <option value="Riset" <?= (isset($_GET['tipe_publikasi']) && $_GET['tipe_publikasi'] === 'Riset') ? 'selected' : '' ?>>Riset</option>
@@ -47,7 +47,18 @@ include __DIR__ . '/../layouts/header.php';
                         <option value="PPM" <?= (isset($_GET['tipe_publikasi']) && $_GET['tipe_publikasi'] === 'PPM') ? 'selected' : '' ?>>PPM</option>
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-6">
+                <div class="col-lg-2 col-md-4">
+                    <select class="form-select filter-select" id="filterTahun">
+                        <option value="">Semua Tahun</option>
+                        <?php
+                        $currentYear = (int)date('Y');
+                        for ($y = $currentYear; $y >= 2000; $y--):
+                        ?>
+                            <option value="<?= $y ?>" <?= (isset($_GET['tahun']) && $_GET['tahun'] == $y) ? 'selected' : '' ?>><?= $y ?></option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-4">
                     <button class="btn-search" id="btnSearch">
                         <i class="fas fa-search"></i>
                         Cari
@@ -104,7 +115,7 @@ include __DIR__ . '/../layouts/header.php';
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-3 px-4 px-md-0 pb-3 pb-md-0">
                                 <div class="penelitian-action">
                                     <?php if (!empty($publikasi['url_publikasi'])): ?>
                                         <a href="<?= htmlspecialchars($publikasi['url_publikasi']) ?>" class="btn-detail" target="_blank" rel="noopener noreferrer">
@@ -134,7 +145,7 @@ include __DIR__ . '/../layouts/header.php';
                         <!-- Previous Button -->
                         <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
                             <a class="page-link"
-                                href="<?= $pagination['has_prev'] ? '?page=' . $pagination['prev_page'] . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '') . (isset($_GET['tipe_publikasi']) ? '&tipe_publikasi=' . urlencode($_GET['tipe_publikasi']) : '') : '#' ?>"
+                                href="<?= $pagination['has_prev'] ? '?page=' . $pagination['prev_page'] . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '') . (isset($_GET['tipe_publikasi']) ? '&tipe_publikasi=' . urlencode($_GET['tipe_publikasi']) : '') . (isset($_GET['tahun']) ? '&tahun=' . urlencode($_GET['tahun']) : '') : '#' ?>"
                                 tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
                                 <i data-feather="chevron-left"></i>
                             </a>
@@ -149,7 +160,7 @@ include __DIR__ . '/../layouts/header.php';
                             <?php else: ?>
                                 <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
                                     <a class="page-link"
-                                        href="?page=<?= $pageData['number'] ?><?= isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '' ?><?= isset($_GET['tipe_publikasi']) ? '&tipe_publikasi=' . urlencode($_GET['tipe_publikasi']) : '' ?>">
+                                        href="?page=<?= $pageData['number'] ?><?= isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '' ?><?= isset($_GET['tipe_publikasi']) ? '&tipe_publikasi=' . urlencode($_GET['tipe_publikasi']) : '' ?><?= isset($_GET['tahun']) ? '&tahun=' . urlencode($_GET['tahun']) : '' ?>">
                                         <?= $pageData['number'] ?>
                                     </a>
                                 </li>
@@ -159,7 +170,7 @@ include __DIR__ . '/../layouts/header.php';
                         <!-- Next Button -->
                         <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                             <a class="page-link"
-                                href="<?= $pagination['has_next'] ? '?page=' . $pagination['next_page'] . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '') . (isset($_GET['tipe_publikasi']) ? '&tipe_publikasi=' . urlencode($_GET['tipe_publikasi']) : '') : '#' ?>">
+                                href="<?= $pagination['has_next'] ? '?page=' . $pagination['next_page'] . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '') . (isset($_GET['tipe_publikasi']) ? '&tipe_publikasi=' . urlencode($_GET['tipe_publikasi']) : '') . (isset($_GET['tahun']) ? '&tahun=' . urlencode($_GET['tahun']) : '') : '#' ?>">
                                 <i data-feather="chevron-right"></i>
                             </a>
                         </li>

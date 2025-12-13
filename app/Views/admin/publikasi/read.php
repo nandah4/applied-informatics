@@ -11,7 +11,6 @@
 
     <!-- Base CSS - Must load first -->
     <link rel="stylesheet" href="<?= asset_url('css/base/variables.css') ?>">
-    <link rel="stylesheet" href="<?= asset_url('css/base/reset.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
