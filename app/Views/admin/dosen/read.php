@@ -13,7 +13,6 @@
 
     <!-- Base CSS - Must load first -->
     <link rel="stylesheet" href="<?= asset_url('css/base/variables.css') ?>">
-    <link rel="stylesheet" href="<?= asset_url('css/base/reset.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/base/main.css') ?>">
 
     <!-- Sidebar & Layout CSS -->
@@ -140,9 +139,9 @@
                         <div class="info-label">Status</div>
                         <div class="info-value">
                             <?php if ($dosenData['status_aktif']): ?>
-                                <span class="badge badge-success">Aktif</span>
+                                <span class="badge-custom badge-secondary">Aktif</span>
                             <?php else: ?>
-                                <span class="badge badge-warning">Tidak Aktif</span>
+                                <span class="badge-custom badge-primary">Tidak Aktif</span>
                             <?php endif; ?>
                         </div>
                     </div>

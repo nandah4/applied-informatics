@@ -30,16 +30,6 @@
 /* @import 'layouts/footer.css'; */
 /* @import 'layouts/sidebar.css'; */
 
-/* ========== PAGES ========== */
-/* @import 'pages/home.css'; */
-/* @import 'pages/login.css'; */
-
-/* ========== UTILITIES ========== */
-@import 'utilities.css';
-/* @import 'utilities/spacing.css'; */
-/* @import 'utilities/display.css'; */
-
-
 /* ========== GLOBAL STYLES ========== */
 body {
     background-color: var(--bg-secondary);

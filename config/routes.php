@@ -43,16 +43,8 @@ $router->get('/', function () {
 
     // Ambil data publikasi untuk section penelitian
     $publikasiModel = new PublikasiAkademikModel();
-    $yearsResult = $publikasiModel->getDistinctYears();
-    $publikasiYears = $yearsResult['success'] ? $yearsResult['data'] : [];
-
-    // Ambil publikasi dari tahun pertama (terbaru) sebagai default
-    $publikasiData = [];
-    if (!empty($publikasiYears)) {
-        $firstYear = $publikasiYears[0];
-        $publikasiResult = $publikasiModel->getByYear($firstYear);
-        $publikasiData = $publikasiResult['success'] ? $publikasiResult['data'] : [];
-    }
+    $publikasiResult = $publikasiModel->getByYear(date('Y'));
+    $listPublikasi = $publikasiResult['data'];
 
     // Ambil data terbaru aktivitas
     $aktivitasModel = new AktivitasModel();
@@ -95,7 +87,7 @@ $router->get('anggota-laboratorium', function () {
     $leadership = $leadershipResult['success'] ? $leadershipResult['data'] : [];
 
     // Ambil data Dosen (anggota)
-    $membersResult = $dosenModel->getDosenByJabatan('Anggota');
+    $membersResult = $dosenModel->getDosenByJabatan();
     $members = $membersResult['success'] ? $membersResult['data'] : [];
 
     require __DIR__ . '/../app/Views/client/anggota_lab.php';

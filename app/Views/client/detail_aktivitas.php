@@ -7,7 +7,7 @@ include __DIR__ . '/../layouts/header.php';
 <main class="detail-aktivitas-page">
 
     <!-- Article Container -->
-    <article class="container-fluid px-5 pb-5">
+    <article class="container-fluid px-md-5 pb-5">
         <div class="breadcrumb-nav">
             <a href="<?= base_url('') ?>" class="breadcrumb-item">Laboratorium Applied Informatics</a>
             <span class="breadcrumb-separator">›</span>

@@ -69,6 +69,26 @@ Website ini adalah sistem manajemen konten (CMS) untuk Laboratorium Applied Info
 - **File Upload System** - Upload foto dengan validasi
 - **Modern Dashboard** - Statistik dan overview data
 
+#### 🌐 Client/Public Pages
+- **Homepage** - Landing page dengan sections:
+  - Hero Section dengan CTA button
+  - Visi Misi V2 dengan Accordion design
+  - Statistik Laboratorium
+  - Fasilitas V2 dengan grid dan modal
+  - Publikasi V2 dengan horizontal scroll
+  - Aktivitas Lab dengan card grid dan date badge
+  - CTA Section dengan glass bubble animations
+- **Publikasi Dosen** - Repositori penelitian dengan:
+  - Search by judul/nama dosen
+  - Filter by tipe publikasi (Riset, Kekayaan Intelektual, PPM)
+  - Filter by tahun publikasi
+  - Server-side pagination
+- **Aktivitas Laboratorium** - Daftar kegiatan lab dengan detail view
+- **Mitra Laboratorium** - Showcase partnership
+- **Produk Lab** - Galeri produk/project
+- **Contact Us** - Informasi kontak dengan embedded Google Maps
+- **Rekrutment** - Form pendaftaran asisten lab
+
 ---
 
 ## 🛠️ Technology Stack
@@ -146,7 +166,18 @@ applied-informatics/
 │   │   ├── 📂 auth/                 # Authentication views
 │   │   │   └── login.php            # Login page with timeout messages
 │   │   ├── 📂 client/               # Public client pages
-│   │   │   └── recruitment.php      # Public recruitment form
+│   │   │   ├── index.php            # Homepage (hero, visi-misi, statistik, fasilitas, publikasi, aktivitas, CTA)
+│   │   │   ├── publikasi_dosen.php  # Publikasi dengan search & filter
+│   │   │   ├── aktivitas_lab.php    # Daftar aktivitas laboratorium
+│   │   │   ├── detail_aktivitas.php # Detail aktivitas
+│   │   │   ├── anggota_lab.php      # Daftar anggota laboratorium
+│   │   │   ├── detail_dosen.php     # Profil detail dosen
+│   │   │   ├── mitra.php            # Mitra kerjasama
+│   │   │   ├── produk_lab.php       # Produk laboratorium
+│   │   │   ├── contact_us.php       # Halaman kontak
+│   │   │   ├── rekrutment.php       # Daftar rekrutment
+│   │   │   ├── form_rekrutment.php  # Form pendaftaran
+│   │   │   └── sukses_pendaftaran.php # Halaman sukses daftar
 │   │   └── 📂 layouts/              # Reusable layouts
 │   │       └── sidebar.php          # Admin sidebar navigation
 │   │
@@ -178,8 +209,13 @@ applied-informatics/
 │   ├── 📂 assets/                   # Static assets
 │   │   ├── 📂 css/                  # Stylesheets
 │   │   │   ├── 📂 base/             # Base styles (reset, variables, layout)
-│   │   │   ├── 📂 components/       # Component styles (sidebar, navbar)
+│   │   │   ├── 📂 components/       # Component styles (sidebar, navbar, typography)
 │   │   │   └── 📂 pages/            # Page-specific styles
+│   │   │       ├── 📂 home/         # Homepage styles (home.css)
+│   │   │       ├── 📂 publikasi/    # Publikasi dosen styles
+│   │   │       ├── 📂 aktivitas-lab/# Aktivitas styles
+│   │   │       ├── 📂 contact-us/   # Contact page styles
+│   │   │       └── ...              # Other page styles
 │   │   ├── 📂 js/                   # JavaScript files
 │   │   │   ├── 📂 components/       # Component scripts
 │   │   │   ├── 📂 helpers/          # Helper functions
@@ -807,11 +843,27 @@ public/assets/
 ├── css/
 │   ├── base/
 │   │   ├── main.css          # Global styles
-│   │   ├── variables.css     # CSS variables
+│   │   ├── variables.css     # CSS variables (colors, fonts, spacing)
 │   │   └── layout.css        # Layout utilities
 │   ├── components/
-│   │   └── sidebar.css       # Sidebar styles
+│   │   ├── sidebar.css       # Sidebar styles
+│   │   └── typography.css    # Typography styles
 │   └── pages/
+│       ├── home/
+│       │   └── home.css      # Homepage styles dengan sections:
+│       │                     # - Global & Utilities
+│       │                     # - Hero Section
+│       │                     # - Visi Misi V2 (Accordion)
+│       │                     # - Statistik Section
+│       │                     # - Fasilitas V2 (Grid & Modal)
+│       │                     # - Publikasi V2 (Horizontal Scroll)
+│       │                     # - Aktivitas Section (Card Grid)
+│       │                     # - CTA Section (Glass Bubbles)
+│       │                     # - Responsive Design (5 breakpoints)
+│       ├── publikasi/
+│       │   └── publikasi_dosen.css  # Publikasi dosen page
+│       ├── aktivitas-lab/
+│       ├── contact-us/
 │       └── dosen/
 │           ├── index.css     # List page
 │           └── form.css      # Create/Edit form
@@ -823,10 +875,15 @@ public/assets/
 │   │   ├── jQueryHelpers.js  # AJAX helpers
 │   │   └── validationHelpers.js # Validation
 │   └── pages/
+│       ├── publikasi_dosen/
+│       │   └── publikasi_dosen.js # Search, filter tahun, filter tipe
 │       └── dosen/
 │           ├── index.js      # List page logic
 │           └── form.js       # Form logic
 └── images/
+    ├── beranda/              # Homepage images
+    │   ├── pattern-hero-section-bg.png
+    │   └── assets-home.png
     └── lab-ai-logo.png
 ```
 
@@ -1666,11 +1723,11 @@ Response:
 
 **Applied Informatics Laboratory Development Team**
 
-- **Project Lead:** [Nama]
-- **Backend Developer:** [Nama]
-- **Frontend Developer:** [Nama]
-- **Database Administrator:** [Nama]
-- **UI/UX Designer:** [Nama]
+- **Project Lead and Backend Developer:** Ananda Priya Yustira
+- **Backend Developer:** Fadhil Taufiqurrahman
+- **Frontend Developer:** Muhammad Fattahul Alim
+- **System Analyst:** Louis Judia B Sinaga
+- **UI/UX Designer:** Rizal
 
 **Contact:**
 - Email: lab.ai@teknokrat.ac.id
@@ -1746,30 +1803,6 @@ Response:
 - 👥 Dosen management CRUD
 - 📁 File upload system
 - 🎨 Bootstrap UI implementation
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-```
-MIT License
-
-Copyright (c) 2024 Applied Informatics Laboratory - Universitas Teknokrat Indonesia
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
-
----
-
-## 🔗 Related Documentation
-
-- [ROUTING.md](ROUTING.md) - Detailed routing guide
-- [API.md](API.md) - API documentation (if exists)
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment guide (if exists)
 
 ---
 

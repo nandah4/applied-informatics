@@ -195,7 +195,7 @@ class PublikasiAkademikModel extends BaseModel
         } catch (PDOException $e) {
             // Handle RAISE EXCEPTION dari stored procedure
             $errorMessage = $e->getMessage();
-            
+
             if (strpos($errorMessage, 'Publikasi dengan ID') !== false) {
                 return ['success' => false, 'message' => 'Publikasi tidak ditemukan'];
             }
@@ -256,36 +256,6 @@ class PublikasiAkademikModel extends BaseModel
             return [
                 'success' => false,
                 'message' => 'Gagal menghapus publikasi: ' . $errorMessage
-            ];
-        }
-    }
-
-    /**
-     * Ambil tahun publikasi yang unik (distinct)
-     * Diurutkan dari yang terbaru
-     *
-     * @return array - Format: ['success' => bool, 'data' => array, 'message' => string]
-     */
-    public function getDistinctYears()
-    {
-        try {
-            $query = "SELECT DISTINCT tahun_publikasi
-                      FROM trx_publikasi
-                      ORDER BY tahun_publikasi DESC";
-
-            $stmt = $this->db->prepare($query);
-            $stmt->execute();
-            $data = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-            return [
-                'success' => true,
-                'data' => $data
-            ];
-        } catch (PDOException $e) {
-            return [
-                'success' => false,
-                'message' => 'Gagal mengambil tahun publikasi: ' . $e->getMessage(),
-                'data' => []
             ];
         }
     }
@@ -409,6 +379,13 @@ class PublikasiAkademikModel extends BaseModel
             if (!empty($tipePublikasi)) {
                 $whereConditions[] = "tipe_publikasi = :tipe_publikasi";
                 $bindParams[':tipe_publikasi'] = $tipePublikasi;
+            }
+
+            // Filter by tahun publikasi
+            $tahunPublikasi = $params['tahun_publikasi'] ?? '';
+            if (!empty($tahunPublikasi) && is_numeric($tahunPublikasi)) {
+                $whereConditions[] = "tahun_publikasi = :tahun_publikasi";
+                $bindParams[':tahun_publikasi'] = (int)$tahunPublikasi;
             }
 
             // Combine WHERE conditions

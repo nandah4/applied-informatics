@@ -10,7 +10,7 @@ include __DIR__ . '/../layouts/header.php';
 
 <!-- Main Content -->
 <main class="detail-dosen-page">
-    <div class="container-fluid px-5 ">
+    <div class="container-fluid px-md-5 ">
         <div class="breadcrumb-nav">
             <a href="<?= base_url('anggota-laboratorium') ?>" class="breadcrumb-item breadcrumb-link">Anggota Laboratorium</a>
             <span class="breadcrumb-separator">›</span>

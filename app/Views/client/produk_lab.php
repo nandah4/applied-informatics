@@ -8,7 +8,7 @@ include __DIR__ . '/../layouts/header.php';
 
 <main class="produk-lab-page">
 
-    <div class="container-fluid px-5 pb-5">
+    <div class="container-fluid px-md-5 pb-5">
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
             <span class="breadcrumb-separator">›</span>
@@ -17,7 +17,7 @@ include __DIR__ . '/../layouts/header.php';
 
         <div class="mb-5">
             <h1 class="title-section mb-3">Semua Produk</h1>
-            <p class="subtitle-section w-75">Temukan berbagai produk inovatif yang dikembangkan oleh tim laboratorium. Setiap produk dirancang untuk memberikan nilai serta mendukung pengembangan teknologi di berbagai bidang.</p>
+            <p class="subtitle-section">Temukan berbagai produk inovatif yang dikembangkan oleh tim laboratorium. Setiap produk dirancang untuk memberikan nilai serta mendukung pengembangan teknologi di berbagai bidang.</p>
         </div>
 
         <?php if (!empty($listProduk)): ?>
@@ -71,7 +71,7 @@ include __DIR__ . '/../layouts/header.php';
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header border-0">
-                    <h5 id="modal-title" class="subtitle-section fw-bold" style="color: black;">Nama Produk</h5>
+                    <h5 id="modal-title" class="subtitle-section text-start" style="color: black;">Nama Produk</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

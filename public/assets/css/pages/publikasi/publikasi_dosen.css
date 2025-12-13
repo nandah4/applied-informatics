@@ -11,7 +11,7 @@
     background: #ffffff;
     padding: 24px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--color-primary-500);
 }
 
@@ -131,7 +131,7 @@
 }
 
 .penelitian-card:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     border-color: var(--color-primary-400);
     transform: translateX(4px);
 }
@@ -326,7 +326,7 @@
         justify-content: flex-start;
         margin-top: 20px;
     }
-    
+
     .btn-detail {
         width: 100%;
         justify-content: center;
@@ -337,20 +337,104 @@
     .title-section {
         font-size: var(--fs-3xl);
     }
-    
+
     .search-filter-container {
         padding: 16px;
     }
-    
-    .penelitian-card {
-        padding: 20px;
+
+    .search-input {
+        font-size: var(--fs-xs);
+        padding: 10px 40px 10px 40px;
     }
-    
+
+    .search-icon {
+        font-size: 16px;
+        left: 14px;
+    }
+
+    .filter-select {
+        font-size: var(--fs-xs);
+        padding: 10px 12px;
+    }
+
+    .btn-search {
+        font-size: var(--fs-xs);
+        padding: 10px 16px;
+    }
+
+    .penelitian-card {
+        padding: 16px;
+    }
+
     .penelitian-content {
         padding-right: 0;
     }
-    
+
     .penelitian-title {
         font-size: var(--fs-base);
+    }
+
+    .badge-tipe {
+        font-size: var(--fs-xss);
+        padding: 4px 10px;
+    }
+
+    .penelitian-year {
+        font-size: var(--fs-xs);
+    }
+
+    .penelitian-author {
+        font-size: var(--fs-xs);
+    }
+
+    .btn-detail {
+        font-size: var(--fs-xs);
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .search-input {
+        font-size: var(--fs-xss);
+        padding: 10px 36px 10px 36px;
+    }
+
+    .search-input::placeholder {
+        font-size: var(--fs-xss);
+    }
+
+    .filter-select {
+        font-size: var(--fs-xss);
+    }
+
+    .btn-search {
+        font-size: var(--fs-xss);
+    }
+
+    .penelitian-card {
+        padding: 14px;
+    }
+
+    .penelitian-title {
+        font-size: var(--fs-sm);
+        margin: 8px 0;
+    }
+
+    .badge-tipe {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+    }
+
+    .penelitian-year {
+        font-size: var(--fs-xss);
+    }
+
+    .penelitian-author {
+        font-size: var(--fs-xss);
+    }
+
+    .btn-detail {
+        font-size: var(--fs-xss);
+        padding: 8px 12px;
     }
 }

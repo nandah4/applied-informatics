@@ -623,7 +623,6 @@ class EmailHelper
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="icon">💬</div>
             <h1>Balasan Pesan Anda</h1>
         </div>
 
@@ -636,7 +635,7 @@ class EmailHelper
             </p>
 
             <div class="reply-box">
-                <h3>📧 Balasan dari Tim Kami</h3>
+                <h3>Balasan dari Tim Kami</h3>
                 <div class="reply-content">' . $balasanHTML . '</div>
             </div>
 

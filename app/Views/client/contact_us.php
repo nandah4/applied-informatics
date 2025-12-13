@@ -4,26 +4,27 @@ include __DIR__ . '/../layouts/header.php';
 ?>
 
 <main class="contactus-page mb-5">
-    <div class="container-fluid px-5 pb-5">
+    <div class="container-fluid px-md-5 pb-5">
         <div class="breadcrumb-nav">
             <span class="breadcrumb-item">Laboratorium Applied Informatics</span>
             <span class="breadcrumb-separator">›</span>
-            <span class="breadcrumb-item active">Contact Us</span>
+            <span class="breadcrumb-item active">Hubungi Kami</span>
         </div>
 
         <!-- Header Section -->
         <div class="mb-5 text-center text-md-start">
             <h1 class="title-section mb-3">Hubungi Tim Kami</h1>
-            <p class="subtitle-section w-75">Laboratorium Applied Informatics siap mendukung pengembangan proyek
+            <p class="subtitle-section">Laboratorium Applied Informatics siap mendukung pengembangan proyek
                 software Anda. Diskusikan kebutuhan digital Anda dengan tim ahli kami.</p>
         </div>
 
         <!-- Main Content -->
         <div class="row g-4 gx-lg-5">
             <!-- Left Column - Contact Form -->
+
             <div class="col-lg-6 col-md-12 mb-5">
-                <div class="contact-form-wrapper p-4 p-md-5 h-100">
-                    <h2 class="mb-4">Mari Diskusikan Proyek Anda</h2>
+                <div class="contact-form-wrapper p-4 p-md-5">
+                    <h3 class="mb-4 contact-us-title">Mari Diskusikan Proyek Anda</h3>
 
                     <!-- CSRF Token -->
                     <?= CsrfHelper::tokenField() ?>
@@ -71,28 +72,29 @@ include __DIR__ . '/../layouts/header.php';
             <!-- Right Column - Contact Info and Map -->
             <div class="col-lg-6 col-md-12">
                 <div class="contact-info-wrapper h-100">
-                    <h2 class="mb-4">Ingin menghubungi kami secara langsung?</h2>
+                    <h3 class="mb-4 contact-us-title">Ingin menghubungi kami secara langsung?</h3>
 
                     <!-- Contact Details -->
                     <div class="contact-details mb-4">
                         <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-telephone text-primary me-3 fs-5"></i>
+                            <i class="bi bi-telephone me-3 fs-5"></i>
                             <span>+62-8234-5678-8901</span>
                         </div>
 
                         <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-envelope text-primary me-3 fs-5"></i>
+                            <i class="bi bi-envelope me-3 fs-5"></i>
                             <span>contact@appliedinformatics.com</span>
                         </div>
 
                         <div class="d-flex align-items-center mb-4">
-                            <i class="bi bi-clock text-primary me-3 fs-5"></i>
+                            <i class="bi bi-clock me-3 fs-5"></i>
                             <span>Monday to Friday, 9 AM - 6 PM (GMT)</span>
                         </div>
                     </div>
 
-                    <!-- Map -->
-                    <div class="map-wrapper">
+                    <!-- Map Section - Enhanced -->
+                    <div class="map-card">
+                        <!-- Map Container with Floating Info -->
                         <div class="map-container">
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1975.7693098921495!2d112.6140782!3d-7.943157599999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e78830014402101%3A0xb909c1117857383d!2sApplied%20Informatics%20Laboratory!5e0!3m2!1sen!2sid!4v1764481175684!5m2!1sen!2sid"
@@ -101,6 +103,38 @@ include __DIR__ . '/../layouts/header.php';
                                 loading="lazy"
                                 referrerpolicy="no-referrer-when-downgrade">
                             </iframe>
+
+                            <!-- Floating Location Info -->
+                            <div class="location-info-floating">
+                                <div class="location-header">
+                                    <div class="location-icon">
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                    </div>
+                                    <div class="location-title">
+                                        <h4>Applied Informatics Laboratory</h4>
+
+                                    </div>
+                                </div>
+
+                                <p class="location-address">
+                                    Jl. Simpang Remujung, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141
+                                </p>
+
+                                <div class="location-actions">
+                                    <a href="https://www.google.com/maps/dir//Applied+Informatics+Laboratory,+3J47%2BQH5,+Jl.+Simpang+Remujung,+Jatimulyo,+Kec.+Lowokwaru,+Kota+Malang,+Jawa+Timur+65141"
+                                        target="_blank"
+                                        class="btn-directions">
+                                        <i class="bi bi-sign-turn-right"></i>
+                                        <span>Directions</span>
+                                    </a>
+                                    <a href="https://www.google.com/maps/place/Applied+Informatics+Laboratory/@-7.9431017,112.6114072,799m/data=!3m2!1e3!4b1!4m6!3m5!1s0x2e78830014402101:0xb909c1117857383d!8m2!3d-7.9431017!4d112.6139821!16s%2Fg%2F11l_8x_qd_?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D"
+                                        target="_blank"
+                                        class="btn-view-larger">
+                                        <i class="bi bi-arrows-fullscreen"></i>
+                                        <span>View Larger</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -259,7 +293,7 @@ include __DIR__ . '/../layouts/header.php';
 
             function showSuccessMessage(message) {
                 const alertHtml = `
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <div class="alert alert-success alert-dismissible fade show mt-5" role="alert">
                     <div class="d-flex align-items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill me-2" viewBox="0 0 16 16">
                             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>

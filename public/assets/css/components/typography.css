@@ -15,7 +15,10 @@
   font-size: var(--fs-lg);
   font-weight: var(--fw-regular);
   color: var(--color-fourtiary-600);
+  width: 75%;
 }
+
+
 
 /* ========== BREADCRUMB ========== */
 .breadcrumb-nav {
@@ -24,13 +27,36 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1.5rem 0;
+  flex-wrap: wrap;
 }
 
 .breadcrumb-item {
   color: #6b7280;
   transition: color 0.2s;
-  font-size: var(--fs-base);
+  font-size: var(--fs-base) !important; 
 }
+
+/* ≥768px (md) */
+@media (max-width: 768px) {
+  .breadcrumb-item {
+    font-size: var(--fs-sm) !important;
+  }
+  .breadcrumb-nav {
+  gap: 0.50rem;
+  }
+  .subtitle-section {
+  width: 100%;
+  }
+
+}
+
+/* ≥576px (sm) */
+@media (max-width: 576px) {
+  .breadcrumb-item {
+    font-size: var(--fs-xs) !important;
+  }
+}
+
 
 .breadcrumb-link:hover {
   color: var(--color-primary-600);

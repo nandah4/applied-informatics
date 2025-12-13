@@ -1,33 +1,408 @@
 @import '../../components/typography.css';
 
-/* Minimal custom CSS - leveraging Bootstrap as much as possible */
+/* ============================================
+   CONTACT US PAGE - Responsive Styling
+   ============================================ */
+
 .contactus-page {
     background-color: var(--bg-primary);
 }
 
+
+/* Contact Form Wrapper */
 .contact-form-wrapper {
-    background-color: var(--color-fourtiary-100);
-    border-radius: 10px;
-    max-height: fit-content;
+    background-color: var(--color-gray-50);
+    border-radius: 12px;
+    border: 1px solid var(--color-gray-200);
+    display: flex;
+    flex-direction: column;
 }
 
+.contact-us-title {
+    font-size: 1.25rem;
+    font-weight: var(--fw-semibold);
+    color: var(--color-primary-700);
+}
+
+/* Form Elements */
+.contact-form-wrapper .form-label {
+    font-size: 0.875rem;
+    font-weight: var(--fw-medium);
+    color: var(--color-gray-700);
+}
+
+.contact-form-wrapper .form-control {
+    font-size: 0.9375rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-gray-300);
+}
+
+.contact-form-wrapper .form-control:focus {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(1, 181, 185, 0.1);
+}
+
+.contact-form-wrapper .btn-primary {
+    font-size: 0.9375rem;
+    font-weight: var(--fw-semibold);
+    background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
+    border: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.contact-form-wrapper .btn-primary:hover {
+    background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-800) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(1, 181, 185, 0.25);
+}
+
+/* Contact Info Wrapper */
 .contact-info-wrapper {
     display: flex;
     flex-direction: column;
-    max-height: fit-content;
 }
 
-.map-wrapper {
+.contact-info-wrapper .map-card {
+    margin-top: 13px;
+}
+
+.contact-info-wrapper .map-container {
     flex: 1;
-    display: flex;
-    flex-direction: column;
 }
 
-.map-container iframe{
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    max-height: 320px; /* batas tinggi */
-    height: auto;
+/* Contact Details - Icon Color */
+.contact-details i {
+    color: var(--color-primary-600);
+    font-size: 1.25rem;
+    width: 24px;
+    text-align: center;
+}
+
+.contact-details span {
+    font-size: 0.9375rem;
+    color: var(--color-fourtiary-600);
+}
+
+/* Map Wrapper */
+/* Map Container - see MAP CARD section below */
+
+/* ============================================
+   RESPONSIVE STYLES
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 991.98px) {
+
+
+    .contact-us-title {
+        font-size: 1.125rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 767.98px) {
+
+    .contact-form-wrapper {
+        padding: 1.25rem !important;
+    }
+
+    .contact-us-title {
+        font-size: 1.0625rem;
+        margin-bottom: 1rem !important;
+    }
+
+    .contact-form-wrapper .form-control {
+        font-size: 0.875rem;
+        padding: 0.625rem 0.875rem;
+    }
+
+    .contact-form-wrapper .form-label {
+        font-size: 0.8125rem;
+    }
+
+    .contact-form-wrapper .btn-primary {
+        font-size: 0.875rem;
+        padding: 0.75rem 1rem !important;
+    }
+
+    .contact-details i {
+        font-size: 1.125rem;
+    }
+
+    .contact-details span {
+        font-size: 0.875rem;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 575.98px) {
+
+    .contact-us-title {
+        font-size: 1rem;
+    }
+
+    .contact-details span {
+        font-size: 0.8125rem;
+    }
+
+    .location-info {
+        padding: 16px !important;
+    }
+
+    .location-header {
+        flex-direction: column;
+        gap: 12px !important;
+    }
+
+    .location-icon {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .location-title h4 {
+        font-size: 1rem !important;
+    }
+
+    .location-actions {
+        flex-direction: column;
+    }
+
+    .btn-directions,
+    .btn-view-larger {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   MAP CARD - Floating Overlay Design
+   ============================================ */
+
+.map-card {
+    background: #ffffff;
+    border-radius: 16px;
     overflow: hidden;
-    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--color-gray-200);
+}
+
+.map-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 330px !important;
+    display: block;
+}
+
+/* Floating Location Info - Overlay on Map */
+.location-info-floating {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.location-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.location-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.location-icon i {
+    color: #ffffff;
+    font-size: 1.125rem;
+}
+
+.location-title {
+    flex: 1;
+}
+
+.location-title h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary-800);
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+}
+
+
+
+.location-info-floating .location-address {
+    font-size: 0.8125rem;
+    color: var(--color-fourtiary-600);
+    line-height: 1.5;
+    margin: 0 0 14px 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+.location-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-directions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-directions:hover {
+    background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-800) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(1, 181, 185, 0.25);
+    color: #ffffff;
+}
+
+.btn-directions i {
+    font-size: 1rem;
+}
+
+.btn-view-larger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #ffffff;
+    color: var(--color-primary-700);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 2px solid var(--color-primary-300);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-view-larger:hover {
+    background: var(--color-primary-50);
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-700);
+}
+
+.btn-view-larger i {
+    font-size: 0.875rem;
+}
+
+/* Map Card Responsive */
+@media (max-width: 767.98px) {
+    .map-container iframe {
+        height: 320px;
+    }
+
+    .location-info-floating {
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 14px 16px;
+    }
+
+    .location-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .location-icon i {
+        font-size: 1rem;
+    }
+
+    .location-title h4 {
+        font-size: 0.9375rem;
+    }
+
+    .location-info-floating .location-address {
+        font-size: 0.75rem;
+    }
+
+    .btn-directions,
+    .btn-view-larger {
+        padding: 8px 14px;
+        font-size: 0.75rem;
+        gap: 6px;
+    }
+
+    .btn-directions i,
+    .btn-view-larger i {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .map-container iframe {
+        height: 350px;
+    }
+
+    .location-info-floating {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 12px 14px;
+    }
+
+    .location-header {
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .location-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .location-title h4 {
+        font-size: 0.875rem;
+    }
+
+   
+    .location-info-floating .location-address {
+        font-size: 0.6875rem;
+        margin-bottom: 10px;
+    }
+
+    .location-actions {
+        gap: 8px;
+    }
+
+    .btn-directions,
+    .btn-view-larger {
+        padding: 6px 10px;
+        font-size: 0.6875rem;
+        flex: 1;
+        justify-content: center;
+    }
 }
