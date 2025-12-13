@@ -1412,7 +1412,7 @@ Response:
         {
             "id": 1,
             "full_name": "Yuri Ariyanto, S.Kom., M.Kom.",
-            "email": "yuri@teknokrat.ac.id",
+            "email": "yuri@polinema.ac.id",
             "nidn": "1234567890",
             "jabatan_name": "Kepala Laboratorium",
             "keahlian_list": "Machine Learning, AI",
@@ -1730,7 +1730,7 @@ Response:
 - **UI/UX Designer:** Rizal
 
 **Contact:**
-- Email: lab.ai@teknokrat.ac.id
+- Email: lab.ai@polinema.ac.id
 - Website: [URL]
 
 ---
@@ -1827,6 +1827,4 @@ Response:
 - ✨ Status aktif field for dosen
 - 📊 Enhanced security features
 
----
 
-📧 **Need Help?** Contact: lab.ai@teknokrat.ac.id
