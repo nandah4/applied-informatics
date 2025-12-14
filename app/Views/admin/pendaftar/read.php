@@ -162,27 +162,30 @@
                     <div class="info-row">
                         <div class="info-label">File KHS</div>
                         <div class="info-value">
-                            <button type="button" class="info-value" data-bs-toggle="modal" data-bs-target="#staticKHS">
-                                Lihat KHS
-                            </button>
-
-                            <div class="modal fade" id="staticKHS" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <iframe src="<?= upload_url('khs/' . $pendaftar['file_khs']) ?>"
-                                                width="100%"
-                                                height="600vh"></iframe>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <?php if (empty($pendaftar['file_khs'])): ?>
+                                <span class="fw-bold">-</span>
+                            <?php else: ?>
+                                <button type="button" class="info-value" data-bs-toggle="modal" data-bs-target="#staticKHS">
+                                    Lihat KHS
+                                </button>
+                                <div class="modal fade" id="staticKHS" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <iframe src="<?= upload_url('khs/' . $pendaftar['file_khs']) ?>"
+                                                    width="100%"
+                                                    height="600vh"></iframe>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 

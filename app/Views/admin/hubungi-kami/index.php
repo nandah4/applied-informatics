@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="<?= asset_url('css/components/admin_layout.css') ?>">
 
     <!-- Contact Page CSS -->
-    <link rel="stylesheet" href="<?= asset_url('css/pages/contact/index.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/pages/hubungi-kami/index.css') ?>">
 </head>
 
 <body>
@@ -38,7 +38,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="page-title"> Data Pesan Masuk</h1>
-                    <p class="page-subtitle">Kelola pesan dari formulir Contact Us</p>
+                    <p class="page-subtitle">Kelola pesan dari formulir Hubungi Kami</p>
                 </div>
                 <button class="btn-mobile-menu d-md-none" id="mobileMenuBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -115,7 +115,7 @@
                                 <td colspan="7">
                                     <div class="empty-state">
                                         <h6>Tidak ada pesan masuk</h6>
-                                        <p>Belum ada pesan dari formulir Contact Us</p>
+                                        <p>Belum ada pesan dari formulir Hubungi Kami</p>
                                     </div>
                                 </td>
                             </tr>
@@ -148,7 +148,7 @@
                                     </td>
                                     <td class="action-cell">
                                         <div class="action-buttons">
-                                            <a href="<?= base_url('admin/contact/detail/' . $dt['id']) ?>" 
+                                            <a href="<?= base_url('admin/hubungi-kami/detail/' . $dt['id']) ?>" 
                                                class="btn-action btn-view" 
                                                title="Lihat & Balas">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -196,7 +196,7 @@
                         <ul class="pagination">
                             <li class="page-item <?= !$pagination['has_prev'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_prev'] ? base_url('admin/contact?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'] . $queryParams) : '#' ?>"
+                                    href="<?= $pagination['has_prev'] ? base_url('admin/hubungi-kami?page=' . $pagination['prev_page'] . '&per_page=' . $pagination['per_page'] . $queryParams) : '#' ?>"
                                     tabindex="<?= !$pagination['has_prev'] ? '-1' : '' ?>">
                                     Previous
                                 </a>
@@ -210,7 +210,7 @@
                                 <?php else: ?>
                                     <li class="page-item <?= ($pageData['number'] == $pagination['current_page']) ? 'active' : '' ?>">
                                         <a class="page-link"
-                                            href="<?= base_url('admin/contact?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page'] . $queryParams) ?>">
+                                            href="<?= base_url('admin/hubungi-kami?page=' . $pageData['number'] . '&per_page=' . $pagination['per_page'] . $queryParams) ?>">
                                             <?= $pageData['number'] ?>
                                         </a>
                                     </li>
@@ -219,7 +219,7 @@
 
                             <li class="page-item <?= !$pagination['has_next'] ? 'disabled' : '' ?>">
                                 <a class="page-link"
-                                    href="<?= $pagination['has_next'] ? base_url('admin/contact?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'] . $queryParams) : '#' ?>">
+                                    href="<?= $pagination['has_next'] ? base_url('admin/hubungi-kami?page=' . $pagination['next_page'] . '&per_page=' . $pagination['per_page'] . $queryParams) : '#' ?>">
                                     Next
                                 </a>
                             </li>
@@ -247,7 +247,7 @@
     <script src="<?= asset_url('js/helpers/jQueryHelpers.js') ?>"></script>
 
     <!-- Contact Page JS -->
-    <script src="<?= asset_url('js/pages/contact/index.js') ?>"></script>
+    <script src="<?= asset_url('js/pages/hubungi-kami/index.js') ?>"></script>
 </body>
 
 </html>

@@ -101,7 +101,7 @@
 
             // AJAX Request
             jQueryHelpers.makeAjaxRequest({
-                url: `${BASE_URL}/admin/contact/balas`,
+                url: `${BASE_URL}/admin/hubungi-kami/balas`,
                 method: 'POST',
                 data: requestData,
                 onSuccess: (response) => {
@@ -110,7 +110,7 @@
 
                         // Redirect ke list setelah 3 detik
                         setTimeout(() => {
-                            window.location.href = `${BASE_URL}/admin/contact`;
+                            window.location.href = `${BASE_URL}/admin/hubungi-kami`;
                         }, 3000);
                     } else {
                         jQueryHelpers.showAlert(response.message, 'danger', 5000);
@@ -150,14 +150,14 @@
         deleteBtn.prop("disabled", true);
 
         jQueryHelpers.makeAjaxRequest({
-            url: `${BASE_URL}/admin/contact/delete/${id}`,
+            url: `${BASE_URL}/admin/hubungi-kami/delete/${id}`,
             method: 'POST',
             data: { csrf_token: csrfToken },
             onSuccess: (response) => {
                 if (response.success) {
                     jQueryHelpers.showAlert(response.message || 'Pesan berhasil dihapus!', 'success', 2000);
                     setTimeout(() => {
-                        window.location.href = `${BASE_URL}/admin/contact`;
+                        window.location.href = `${BASE_URL}/admin/hubungi-kami`;
                     }, 1000);
                 } else {
                     jQueryHelpers.showAlert(response.message || 'Gagal menghapus pesan', 'danger', 5000);

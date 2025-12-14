@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?= base_url() ?>">
-    <title>Tambah Recruitment - Applied Informatics Laboratory</title>
+    <title>Tambah Rekrutment - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -39,12 +39,12 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('admin/recruitment') ?>">Data Recruitment</a>
+                <a href="<?= base_url('admin/recruitment') ?>">Data Rekrutment</a>
                 <span>/</span>
                 <span>Tambah Recruitment</span>
             </div>
-            <h1 class="page-title">Tambah Recruitment</h1>
-            <p class="page-subtitle">Tambahkan informasi recruitment baru ke sistem</p>
+            <h1 class="page-title">Tambah Rekrutment</h1>
+            <p class="page-subtitle">Tambahkan informasi rekrutment baru ke sistem</p>
         </div>
 
         <!-- Form Card -->
@@ -107,7 +107,7 @@
                                 Tanggal Buka <span class="required">*</span>
                             </label>
                             <input type="date" class="form-control" id="tanggal_buka" name="tanggal_buka" required>
-                            <div class="helper-text">Tanggal dimulainya periode recruitment</div>
+                            <div class="helper-text">Tanggal dimulainya periode rekrutment</div>
                             <div id="tanggalBukaError" class="invalid-feedback"></div>
                         </div>
 
@@ -117,7 +117,7 @@
                                 Tanggal Tutup <span class="required">*</span>
                             </label>
                             <input type="date" class="form-control" id="tanggal_tutup" name="tanggal_tutup" required>
-                            <div class="helper-text">Tanggal berakhirnya periode recruitment</div>
+                            <div class="helper-text">Tanggal berakhirnya periode rekrutment</div>
                             <div id="tanggalTutupError" class="invalid-feedback"></div>
                         </div>
 

@@ -144,13 +144,13 @@ function hasActiveChild($urls, $current)
 
             <!-- Contact Us -->
             <li class="nav-item">
-                <a class="nav-link parent-menu <?= hasActiveChild(['admin/contact'], $current_url) ?>">
+                <a class="nav-link parent-menu <?= hasActiveChild(['admin/hubungi-kami'], $current_url) ?>">
                     <i data-feather="phone"></i>
-                    <span class="nav-text">Contact Us</span>
+                    <span class="nav-text">Hubungi Kami</span>
                 </a>
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a href="<?= base_url('admin/contact') ?>" class="nav-link <?= isActive('admin/contact', $current_url) ?>">
+                        <a href="<?= base_url('admin/hubungi-kami') ?>" class="nav-link <?= isActive('admin/hubungi-kami', $current_url) ?>">
                             <span class="nav-text">Kelola Pesan Masuk</span> 
                         </a>
                     </li>

@@ -218,9 +218,12 @@ include __DIR__ . '/../layouts/header.php';
             </div>
 
             <?php if (empty($fasilitasData)): ?>
-                <div class="text-center py-5">
-                    <i data-feather="inbox" class="icon-something-not-found mx-auto"></i>
-                    <h5 class="text-muted mt-3">Belum Ada Data Fasilitas</h5>
+                <div class="empty-state">
+                    <div class="empty-state-icon mx-auto">
+                        <i data-feather="inbox" class="icon-something-not-found"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">Belum Ada Data Fasilitas.</h5>
+                    <p class="text-secondary mb-0">Data fasilitas laboratorium belum tersedia saat ini.</p>
                 </div>
             <?php else: ?>
                 <div class="fasilitas-v2-grid">

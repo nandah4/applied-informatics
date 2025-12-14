@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?= base_url() ?>">
-    <title>Detail Recruitment - Applied Informatics Laboratory</title>
+    <title>Detail Rekrutment - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -36,12 +36,12 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('admin/recruitment') ?>">Data Recruitment</a>
+                <a href="<?= base_url('admin/recruitment') ?>">Data Rekrutment</a>
                 <span>/</span>
-                <span>Detail Recruitment</span>
+                <span>Detail Rekrutment</span>
             </div>
-            <h1 class="page-title">Detail Recruitment</h1>
-            <p class="page-subtitle">Informasi lengkap tentang recruitment</p>
+            <h1 class="page-title">Detail Rekrutment</h1>
+            <p class="page-subtitle">Informasi lengkap tentang rekrutment</p>
         </div>
 
         <!-- Detail Card -->
@@ -169,7 +169,7 @@
                     </h3>
 
                     <div class="info-row">
-                        <div class="info-label">ID Recruitment</div>
+                        <div class="info-label">ID Rekrutment</div>
                         <div class="info-value"><?= $recruitment['id']; ?></div>
                     </div>
 

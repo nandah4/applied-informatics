@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?= base_url() ?>">
-    <title>Data Recruitment - Applied Informatics Laboratory</title>
+    <title>Data Rekrutment - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -38,8 +38,8 @@
         <div class="page-header-list">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="page-title">Data Recruitment</h1>
-                    <p class="page-subtitle">Kelola informasi recruitment Laboratorium Applied Informatics</p>
+                    <h1 class="page-title">Data Rekrutment</h1>
+                    <p class="page-subtitle">Kelola informasi rekrutment Laboratorium Applied Informatics</p>
                 </div>
                 <button class="btn-mobile-menu d-md-none" id="mobileMenuBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -90,7 +90,7 @@
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        Tambah Recruitment
+                        Tambah Rekrutment
                     </a>
                 </div>
             </div>
@@ -113,8 +113,8 @@
                             <tr>
                                 <td colspan="7">
                                     <div class="empty-state">
-                                        <h6>Tidak ada data recruitment</h6>
-                                        <p>Mulai dengan menambahkan informasi recruitment pertama Anda</p>
+                                        <h6>Tidak ada data rekrutment</h6>
+                                        <p>Mulai dengan menambahkan informasi rekrutment pertama Anda</p>
                                     </div>
                                 </td>
                             </tr>
