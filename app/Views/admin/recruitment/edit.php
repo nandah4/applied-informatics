@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?= base_url() ?>">
-    <title>Edit Recruitment - Applied Informatics Laboratory</title>
+    <title>Edit Rekrutment - Applied Informatics Laboratory</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -39,12 +39,12 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('admin/recruitment') ?>">Data Recruitment</a>
+                <a href="<?= base_url('admin/recruitment') ?>">Data Rekrutment</a>
                 <span>/</span>
-                <span>Edit Recruitment</span>
+                <span>Edit Rekrutment</span>
             </div>
-            <h1 class="page-title">Edit Recruitment</h1>
-            <p class="page-subtitle">Edit data recruitment yang sudah ada</p>
+            <h1 class="page-title">Edit Rekrutment</h1>
+            <p class="page-subtitle">Edit data Rekrutment yang sudah ada</p>
         </div>
 
         <!-- Form Card -->
@@ -109,7 +109,7 @@
                                 Tanggal Buka <span class="required">*</span>
                             </label>
                             <input type="date" class="form-control" id="tanggal_buka" name="tanggal_buka" value="<?= htmlspecialchars($recruitment['tanggal_buka']) ?>" required>
-                            <div class="helper-text">Tanggal dimulainya periode recruitment</div>
+                            <div class="helper-text">Tanggal dimulainya periode rekrutment</div>
                             <div id="tanggalBukaError" class="invalid-feedback"></div>
                         </div>
 
@@ -119,7 +119,7 @@
                                 Tanggal Tutup <span class="required">*</span>
                             </label>
                             <input type="date" class="form-control" id="tanggal_tutup" name="tanggal_tutup" value="<?= htmlspecialchars($recruitment['tanggal_tutup']) ?>" required>
-                            <div class="helper-text">Tanggal berakhirnya periode recruitment</div>
+                            <div class="helper-text">Tanggal berakhirnya periode rekrutment</div>
                             <div id="tanggalTutupError" class="invalid-feedback"></div>
                         </div>
 
@@ -135,10 +135,10 @@
                                     <div>
                                         <strong style="color: #1e40af; font-size: 0.875rem;">Informasi Kontrol Status</strong>
                                         <ul style="color: #1e40af; font-size: 0.8125rem;margin-top: 5px; padding-left: 0; line-height: 1.7;">
-                                            <li><strong>Status Manual:</strong> Anda dapat menutup recruitment secara manual meskipun tanggal tutup masih panjang (Misal: Kuota terpenuhi)</li>
-                                            <li><strong>Auto-Close:</strong> Recruitment otomatis tertutup jika tanggal tutup sudah terlewat</li>
-                                            <li><strong>Auto-Open:</strong> Recruitment otomatis terbuka jika Anda memperpanjang tanggal dari expired ke masa depan</li>
-                                            <li><strong>Tidak Bisa Buka:</strong> Recruitment yang sudah expired tidak dapat dibuka kembali tanpa memperpanjang tanggal</li>
+                                            <li><strong>Status Manual:</strong> Anda dapat menutup rekrutment secara manual meskipun tanggal tutup masih panjang (Misal: Kuota terpenuhi)</li>
+                                            <li><strong>Auto-Close:</strong> Rekrutment otomatis tertutup jika tanggal tutup sudah terlewat</li>
+                                            <li><strong>Auto-Open:</strong> Rekrutment otomatis terbuka jika Anda memperpanjang tanggal dari expired ke masa depan</li>
+                                            <li><strong>Tidak Bisa Buka:</strong> Rekrutment yang sudah expired tidak dapat dibuka kembali tanpa memperpanjang tanggal</li>
                                         </ul>
                                     </div>
                                 </div>

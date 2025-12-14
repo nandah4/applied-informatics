@@ -1583,7 +1583,7 @@ $router->post("admin/asisten-lab/delete/(\\d+)", function ($id) {
  * Contact Us - Submit Form (Public)
  * URL: POST /contact-us/submit
  */
-$router->post("contact-us/submit", function () {
+$router->post("hubungi-kami/submit", function () {
     $controller = new ContactController();
     $controller->submitContactForm();
 });
@@ -1596,7 +1596,7 @@ $router->post("contact-us/submit", function () {
  * Contact - List/Index dengan Pagination & Search
  * URL: GET /admin/contact
  */
-$router->get("admin/contact", function () {
+$router->get("admin/hubungi-kami", function () {
     $controller = new ContactController();
     $result = $controller->getAllPesan();
 
@@ -1604,25 +1604,25 @@ $router->get("admin/contact", function () {
     $pagination = $result['pagination'];
     $totalPesan = $result['total'];
 
-    require __DIR__ . '/../app/Views/admin/contact/index.php';
+    require __DIR__ . '/../app/Views/admin/hubungi-kami/index.php';
 }, [AuthMiddleware::class]);
 
 /**
  * Contact - Detail Page
  * URL: GET /admin/contact/detail/{id}
  */
-$router->get("admin/contact/detail/(\\d+)", function ($id) {
+$router->get("admin/hubungi-kami/detail/(\\d+)", function ($id) {
     $controller = new ContactController();
     $result = $controller->getPesanById($id);
 
     if (!$result['success']) {
-        header("Location: " . base_url('admin/contact'));
+        header("Location: " . base_url('admin/hubungi-kami'));
         exit;
     }
 
     $pesan = $result['data'];
 
-    require __DIR__ . '/../app/Views/admin/contact/read.php';
+    require __DIR__ . '/../app/Views/admin/hubungi-kami/read.php';
 }, [AuthMiddleware::class]);
 
 // ----------------------------------------
@@ -1633,7 +1633,7 @@ $router->get("admin/contact/detail/(\\d+)", function ($id) {
  * Contact - Balas Pesan (Send Reply Email)
  * URL: POST /admin/contact/balas
  */
-$router->post("admin/contact/balas", function () {
+$router->post("admin/hubungi-kami/balas", function () {
     $controller = new ContactController();
     $controller->balasPesan();
 }, [AuthMiddleware::class]);
@@ -1642,7 +1642,7 @@ $router->post("admin/contact/balas", function () {
  * Contact - Update Catatan Admin
  * URL: POST /admin/contact/update-catatan
  */
-$router->post("admin/contact/update-catatan", function () {
+$router->post("admin/hubungi-kami/update-catatan", function () {
     $controller = new ContactController();
     $controller->updateCatatanAdmin();
 }, [AuthMiddleware::class]);
@@ -1655,7 +1655,7 @@ $router->post("admin/contact/update-catatan", function () {
  * Contact - Delete Pesan
  * URL: POST /admin/contact/delete/{id}
  */
-$router->post("admin/contact/delete/(\\d+)", function ($id) {
+$router->post("admin/hubungi-kami/delete/(\\d+)", function ($id) {
     $controller = new ContactController();
     $controller->deletePesan($id);
 }, [AuthMiddleware::class]);

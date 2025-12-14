@@ -265,7 +265,11 @@ AS $$
 DECLARE
     v_rec RECORD;
 BEGIN
-    SELECT * INTO v_rec FROM trx_pendaftar WHERE id = p_pendaftar_id;
+    SELECT p.*, r.kategori AS tipe_anggota
+    INTO v_rec 
+    FROM trx_pendaftar p
+    JOIN trx_rekrutmen r ON p.rekrutmen_id = r.id
+    WHERE p.id = p_pendaftar_id;
 
     IF v_rec.id IS NULL THEN
         RAISE EXCEPTION 'Data pendaftar tidak ditemukan.';
@@ -281,13 +285,13 @@ BEGIN
 
     INSERT INTO mst_mahasiswa (
         nim, nama, email, no_hp, 
-        jabatan_lab, semester, link_github, status_aktif, tanggal_gabung, asal_pendaftar_id
+        tipe_anggota, semester, link_github, status_aktif, tanggal_gabung, asal_pendaftar_id
     ) VALUES (
         v_rec.nim, 
         v_rec.nama, 
         v_rec.email, 
         v_rec.no_hp,
-        'Asisten Lab',
+        v_rec.tipe_anggota,
         v_rec.semester,
         v_rec.link_github,
         TRUE, 

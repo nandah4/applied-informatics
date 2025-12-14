@@ -203,7 +203,7 @@ include __DIR__ . '/../layouts/header.php';
 
                 // AJAX Request
                 $.ajax({
-                    url: `${BASE_URL}/contact-us/submit`,
+                    url: `${BASE_URL}/hubungi-kami/submit`,
                     method: 'POST',
                     data: formData,
                     dataType: 'json',

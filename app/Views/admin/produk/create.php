@@ -38,7 +38,7 @@
                 <span>Tambah Produk</span>
             </div>
             <h1 class="page-title">Tambah Produk</h1>
-            <p class="page-subtitle">Tambahkan produk baru ke sistem</p>
+            <p class="page-subtitle">Tambahkan data produk baru ke sistem</p>
         </div>
 
         <!-- Form Card -->

@@ -38,7 +38,7 @@
 
         // Clear search button
         $('#btnClearSearch').on('click', function () {
-            window.location.href = `${BASE_URL}/admin/contact`;
+            window.location.href = `${BASE_URL}/admin/hubungi-kami`;
         });
 
         function performSearch() {
@@ -47,7 +47,7 @@
             const perPage = currentUrl.searchParams.get('per_page') || '10';
             const status = currentUrl.searchParams.get('status') || '';
 
-            let url = `${BASE_URL}/admin/contact?per_page=${perPage}`;
+            let url = `${BASE_URL}/admin/hubungi-kami?per_page=${perPage}`;
             
             if (searchValue) {
                 url += `&search=${encodeURIComponent(searchValue)}`;
@@ -70,7 +70,7 @@
             const perPage = currentUrl.searchParams.get('per_page') || '10';
             const search = currentUrl.searchParams.get('search') || '';
 
-            let url = `${BASE_URL}/admin/contact?per_page=${perPage}`;
+            let url = `${BASE_URL}/admin/hubungi-kami?per_page=${perPage}`;
             
             if (search) {
                 url += `&search=${encodeURIComponent(search)}`;
@@ -93,7 +93,7 @@
             const search = currentUrl.searchParams.get('search') || '';
             const status = currentUrl.searchParams.get('status') || '';
 
-            let url = `${BASE_URL}/admin/contact?per_page=${perPage}`;
+            let url = `${BASE_URL}/admin/hubungi-kami?per_page=${perPage}`;
             
             if (search) {
                 url += `&search=${encodeURIComponent(search)}`;
@@ -126,7 +126,7 @@
         deleteBtn.prop("disabled", true);
 
         jQueryHelpers.makeAjaxRequest({
-            url: `${BASE_URL}/admin/contact/delete/${id}`,
+            url: `${BASE_URL}/admin/hubungi-kami/delete/${id}`,
             method: "POST",
             data: { csrf_token: csrfToken },
             onSuccess: (response) => {

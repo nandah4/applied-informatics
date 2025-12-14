@@ -43,9 +43,9 @@
             <div class="breadcrumb-custom">
                 <a href="<?= base_url('admin/aktivitas-lab') ?>">Data Aktivitas Laboratorium</a>
                 <span>/</span>
-                <span>Tambah Aktivitas Laborator</span>
+                <span>Tambah Aktivitas Laboratorium</span>
             </div>
-            <h1 class="page-title">Tambah Aktivitas Laboratorium Baru</h1>
+            <h1 class="page-title">Tambah Aktivitas</h1>
             <p class="page-subtitle">Buat aktivitas laboratorium baru</p>
         </div>
 

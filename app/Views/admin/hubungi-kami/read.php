@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="<?= asset_url('css/base/layout.css') ?>">
 
     <!-- Contact Read CSS -->
-    <link rel="stylesheet" href="<?= asset_url('css/pages/contact/read.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/pages/hubungi-kami/read.css') ?>">
 
     <!-- Quill Editor CSS -->
     <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
@@ -40,7 +40,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="breadcrumb-custom">
-                <a href="<?= base_url('admin/contact') ?>"> Data Pesan Masuk</a>
+                <a href="<?= base_url('admin/hubungi-kami') ?>"> Data Pesan Masuk</a>
                 <span>/</span>
                 <span>Detail Pesan</span>
             </div>
@@ -279,7 +279,7 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="<?= base_url('admin/contact') ?>" class="btn-secondary-custom">
+                    <a href="<?= base_url('admin/hubungi-kami') ?>" class="btn-secondary-custom">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
@@ -317,7 +317,7 @@
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
     <!-- Contact Read Page JS -->
-    <script src="<?= asset_url('js/pages/contact/read.js') ?>"></script>
+    <script src="<?= asset_url('js/pages/hubungi-kami/read.js') ?>"></script>
 </body>
 
 </html>

@@ -31,7 +31,7 @@ include __DIR__ . '/../layouts/header.php';
                         <input
                             type="text"
                             class="form-control search-input"
-                            placeholder="Cari penelitian berdasarkan judul, dosen, atau kata kunci..."
+                            placeholder="Cari berdasarkan judul, dosen, atau kata kunci..."
                             id="searchInput"
                             value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
                         <button class="btn-clear" id="btnClear" style="<?= !empty($_GET['search']) ? '' : 'display: none;' ?>">
@@ -42,6 +42,7 @@ include __DIR__ . '/../layouts/header.php';
                 <div class="col-lg-3 col-md-4">
                     <select class="form-select filter-select" id="filterTipe">
                         <option value="">Semua Tipe Publikasi</option>
+                        <option value="Publikasi" <?= (isset($_GET['tipe_publikasi']) && $_GET['tipe_publikasi'] === 'Publikasi') ? 'selected' : '' ?>>Publikasi</option>
                         <option value="Riset" <?= (isset($_GET['tipe_publikasi']) && $_GET['tipe_publikasi'] === 'Riset') ? 'selected' : '' ?>>Riset</option>
                         <option value="Kekayaan Intelektual" <?= (isset($_GET['tipe_publikasi']) && $_GET['tipe_publikasi'] === 'Kekayaan Intelektual') ? 'selected' : '' ?>>Kekayaan Intelektual</option>
                         <option value="PPM" <?= (isset($_GET['tipe_publikasi']) && $_GET['tipe_publikasi'] === 'PPM') ? 'selected' : '' ?>>PPM</option>

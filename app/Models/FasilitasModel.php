@@ -104,7 +104,7 @@ class FasilitasModel
             // Search by nama fasilitas
             if (!empty($search)) {
                 $whereConditions[] = "LOWER(nama) LIKE :search";
-                $bindParams[':search'] = '%' . $search . '%';
+                $bindParams[':search'] = '%' . strtolower($search) . '%';
             }
 
             // Combine WHERE conditions
