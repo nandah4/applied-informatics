@@ -219,7 +219,7 @@ include __DIR__ . '/../layouts/header.php';
 
             <?php if (empty($fasilitasData)): ?>
                 <div class="text-center py-5">
-                    <i data-feather="inbox" class="icon-something-not-found"></i>
+                    <i data-feather="inbox" class="icon-something-not-found mx-auto"></i>
                     <h5 class="text-muted mt-3">Belum Ada Data Fasilitas</h5>
                 </div>
             <?php else: ?>
@@ -344,7 +344,7 @@ include __DIR__ . '/../layouts/header.php';
             <?php else: ?>
                 <!-- Empty State -->
                 <div class="empty-state">
-                    <div class="empty-state-icon">
+                    <div class="empty-state-icon mx-auto">
                         <i data-feather="search" class="icon-something-not-found"></i>
                     </div>
                     <h5 class="text-muted mb-2">Belum Ada Hasil.</h5>
@@ -384,7 +384,7 @@ include __DIR__ . '/../layouts/header.php';
             <?php if (empty($aktivitasData)): ?>
                 <!-- Empty State -->
                 <div class="empty-state">
-                    <div class="empty-state-icon">
+                    <div class="empty-state-icon mx-auto">
                         <i data-feather="calendar" class="icon-something-not-found"></i>
                     </div>
                     <h5 class="text-muted mb-2">Belum Ada Aktivitas.</h5>
