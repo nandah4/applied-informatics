@@ -97,7 +97,7 @@ include __DIR__ . '/../layouts/header.php';
                                                 <div class="mitra-card">
                                                     <div class="mitra-logo-container">
                                                         <?php if (!empty($mitra['logo_mitra'])): ?>
-                                                            <img src="<?= upload_url('images/mitra/' . $mitra['logo_mitra']) ?>"
+                                                            <img src="<?= upload_url('mitra/' . $mitra['logo_mitra']) ?>"
                                                                 alt="<?= htmlspecialchars($mitra['nama']) ?>" class="img-fluid">
                                                         <?php else: ?>
                                                             <span class="text-muted">No Logo</span>
@@ -179,7 +179,7 @@ include __DIR__ . '/../layouts/header.php';
                                                 <div class="mitra-card">
                                                     <div class="mitra-logo-container">
                                                         <?php if (!empty($mitra['logo_mitra'])): ?>
-                                                            <img src="<?= upload_url('images/mitra/' . $mitra['logo_mitra']) ?>"
+                                                            <img src="<?= upload_url('mitra/' . $mitra['logo_mitra']) ?>"
                                                                 alt="<?= htmlspecialchars($mitra['nama']) ?>" class="img-fluid">
                                                         <?php else: ?>
                                                             <span class="text-muted">No Logo</span>
@@ -262,7 +262,7 @@ include __DIR__ . '/../layouts/header.php';
                                                 <div class="mitra-card">
                                                     <div class="mitra-logo-container">
                                                         <?php if (!empty($mitra['logo_mitra'])): ?>
-                                                            <img src="<?= upload_url('images/mitra/' . $mitra['logo_mitra']) ?>"
+                                                            <img src="<?= upload_url('mitra/' . $mitra['logo_mitra']) ?>"
                                                                 alt="<?= htmlspecialchars($mitra['nama']) ?>" class="img-fluid">
                                                         <?php else: ?>
                                                             <span class="text-muted">No Logo</span>
@@ -346,7 +346,7 @@ include __DIR__ . '/../layouts/header.php';
                                                 <div class="mitra-card">
                                                     <div class="mitra-logo-container">
                                                         <?php if (!empty($mitra['logo_mitra'])): ?>
-                                                            <img src="<?= upload_url('images/mitra/' . $mitra['logo_mitra']) ?>"
+                                                            <img src="<?= upload_url('mitra/' . $mitra['logo_mitra']) ?>"
                                                                 alt="<?= htmlspecialchars($mitra['nama']) ?>" class="img-fluid">
                                                         <?php else: ?>
                                                             <span class="text-muted">No Logo</span>
@@ -430,7 +430,7 @@ include __DIR__ . '/../layouts/header.php';
                                                 <div class="mitra-card">
                                                     <div class="mitra-logo-container">
                                                         <?php if (!empty($mitra['logo_mitra'])): ?>
-                                                            <img src="<?= upload_url('images/mitra/' . $mitra['logo_mitra']) ?>"
+                                                            <img src="<?= upload_url('mitra/' . $mitra['logo_mitra']) ?>"
                                                                 alt="<?= htmlspecialchars($mitra['nama']) ?>" class="img-fluid">
                                                         <?php else: ?>
                                                             <span class="text-muted">No Logo</span>
